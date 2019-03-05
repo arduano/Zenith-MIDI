@@ -171,21 +171,9 @@
       <Project>{60f2212a-d56c-4776-836f-6a49453cdbc4}</Project>
       <Name>BMEngine</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ClassicRender\ClassicRender.csproj">
-      <Project>{b733d6f1-78a8-43ca-91a3-28fa3e7025d4}</Project>
-      <Name>ClassicRender</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\FlatRender\FlatRender.csproj">
-      <Project>{ae59479c-9d0d-464c-a4d3-8fdd7e1f3786}</Project>
-      <Name>FlatRender</Name>
-    </ProjectReference>
     <ProjectReference Include="..\MidiUtils\MidiUtils.csproj">
       <Project>{1a849712-b3e2-4ac5-b899-3a5aa3018f7a}</Project>
       <Name>MidiUtils</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PFARender\PFARender.csproj">
-      <Project>{84e13869-0d33-4a56-a1a8-0b6f12c76081}</Project>
-      <Name>PFARender</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -228,11 +216,7 @@
     <Move SourceFiles="@(PluginPdbs)" DestinationFolder="$(OutputPath)debug" OverwriteReadOnlyFiles="true" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>del Plugins\OpenTK.dll
-del Plugins\ZenithEngine.dll
-del Plugins\MidiUtils.dll
-del Plugins\Newtonsoft.Json.dll
-del Plugins\Xceed.Wpf.Toolkit.dll
-del Plugins\Poly2Tri.dll</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>
