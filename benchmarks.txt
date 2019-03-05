@@ -1,0 +1,13 @@
+Tau
+Note count: 6283185
+File size: 49.15kb
+Peak: 0.42GB
+Avg: 0.34GB
+Minutes to render: 7.51
+
+Smash mouth - All Star
+Note count: 44529227
+Peak: 1.51GB
+Avg: 0.65GB
+Minutes to render: 5.38
+
