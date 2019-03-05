@@ -1,0 +1,47 @@
+<app-page-scroller>
+  <div class="content">
+    <div class="content-inner">
+      <div class="title">
+        <h1>Plugins</h1>
+        <p>
+          As a general rule, all custom and original plugins are completely free
+          and open for anyone to use. However clones (PFA, miditrail, etc.) will
+          be kept private and only handed out to people I trust, to prevent
+          overuse.
+        </p>
+        <p>
+          I am actively working on new plugins, and it is possible for anyone
+          else to make a plugin themselves as well.
+        </p>
+        <p></p>
+      </div>
+      <app-plugin
+        [imgUrl]="
+          'https://raw.githubusercontent.com/arduano/Zenith-MIDI/master/ClassicRender/preview.png'
+        "
+        [name]="'Classic'"
+      >
+        <p>
+          The original render engine for Zenith. Any new render features in
+          Zenith will always be supported first by this plugin.
+        </p>
+        <p class="how-to-get public">Included with the program</p>
+      </app-plugin>
+
+      <app-plugin
+        [imgUrl]="
+          'https://github.com/arduano/Zenith-MIDI/blob/master/PFARender/preview.png?raw=true'
+        "
+        [name]="'PFA+'"
+      >
+        <p>
+          An almost identical visual clone of the original program, with support
+          for some exclusive features, including: same width notes, tick based
+          rendering, gradient and transparency support with the midi track color
+          event.
+        </p>
+        <p class="how-to-get public">Private</p>
+      </app-plugin>
+    </div>
+  </div>
+</app-page-scroller>

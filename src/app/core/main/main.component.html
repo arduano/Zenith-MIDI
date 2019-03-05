@@ -1,0 +1,69 @@
+<div class="fake-body">
+  <nav
+    class="navbar navbar-expand-md navbar-dark"
+    [ngClass]="{ floating: ui.scrollDistance > 20 }"
+  >
+    <button
+      class="navbar-toggler"
+      type="button"
+      (click)="toggleMenu()"
+      [ngClass]="{ collapsed: !navbarOut }"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div
+      class="collapse navbar-collapse"
+      id="collapsibleNavbar"
+      [ngClass]="{
+        collapsing: navbarCollapseDown || navbarCollapseUp,
+        collapse: !(navbarCollapseDown || navbarCollapseUp),
+        show: navbarOut
+      }"
+      [ngStyle]="{
+        'height.px': mobile
+          ? !navbarOut || navbarCollapseUp
+            ? 0
+            : links.length * 60
+          : null
+      }"
+    >
+      <ul
+        class="navbar-nav"
+        id="navbar-nav"
+        [ngClass]="{ show: navbarOut || navbarCollapseUp }"
+        [ngStyle]="{
+          display:
+            !mobile || navbarOut || navbarCollapseDown || navbarCollapseUp
+              ? 'flex'
+              : 'none'
+        }"
+      >
+        <li
+          class="nav-item"
+          *ngFor="let u of links"
+          [ngClass]="{ active: urlChild == u.url }"
+        >
+          <a
+            *ngIf="mobile"
+            class="nav-link"
+            (click)="routeTo(u.url)"
+            (click)="toggleMenu()"
+            >{{ u.name }}</a
+          >
+          <a *ngIf="!mobile" class="nav-link" (click)="routeTo(u.url)">{{
+            u.name
+          }}</a>
+        </li>
+        <li class="nav-item nav-item-icon">
+          <div class="navbar-brand">
+            <img class="nav-logo" src="assets/icon.svg" alt="logo" />
+          </div>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <main [@routerTransition]="transition(o)" class="main-content">
+    <router-outlet #o="outlet" (activate)="routeActivated()"></router-outlet>
+  </main>
+</div>

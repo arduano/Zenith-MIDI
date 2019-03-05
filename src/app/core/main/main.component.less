@@ -1,0 +1,146 @@
+@primary-col: #558B2F;
+
+@media (min-width: 768px) {
+    .navbar-nav {
+        margin-left:auto;
+        margin-right:auto;
+    }
+
+    .navbar-collapse {
+        display: flex;
+    }
+
+    .nav-item{
+        display: inline;
+    }
+
+    .nav-link{
+        margin: 30px 20px;
+        -webkit-transition: all 0.3s ease;
+        -moz-transition: all 0.3s ease;
+        -o-transition: all 0.3s ease;
+        transition: all 0.3s ease;
+    }
+
+    .navbar.floating .nav-link{
+        margin: 10px 20px;
+    }
+
+    .nav-item.active > a:after {
+        background:#fff;
+        width: 100%;
+    }
+
+    .nav-link:after {
+        content: '';
+        position: relative;
+        display: inline-block;
+        overflow: hidden;
+        height: 1px;
+        width: 0;
+        left: 0px;
+        top: -7px;
+        margin: 0px;
+        background: transparent;
+        -webkit-transition: ease-in-out 400ms;
+        -moz-transition: ease-in-out 400ms;
+        -ms-transition: ease-in-out 400ms;
+        transition: ease-in-out 400ms;
+    }
+
+    .main-content{
+        //margin-top: 120px;
+        height:100vh;//min-height: calc(100vh - 120px);
+    }
+}
+
+@media (max-width: 767px){
+    .nav-link{
+        margin: 10px;
+    }
+
+    .main-content{
+        //margin-top: 60px;
+        height:100vh;//min-height: calc(100vh - 80px);
+    }
+}
+
+.main-content{
+    margin-bottom: 0px;
+    display: flex;
+}
+
+.navbar{
+    position: fixed;
+    width: 100%;
+    margin: 0px;
+    top: 0px;
+    background-color: @primary-col;
+    border-bottom: 1px solid rgba(255,255,255,0.0);
+    box-shadow: 0px 5px 30px rgba(0,0,0,0.2);
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+    z-index: 100;
+}
+
+.navbar.floating{
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0px 5px 30px rgba(0,0,0,0.2)
+}
+
+.navbar-toggler{
+    margin-left:auto;
+    border: none;
+}
+
+.navbar-brand{
+    position: inherit;
+}
+
+.nav-link{
+    display: block;
+    padding: 10px 20px;
+    font-family: "Uni Sans", sans-serif;
+    font-weight: bold !important;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    text-align: center;
+    height: 40px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.nav-item-icon{
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+  padding-left: 10px;
+}
+
+.nav-logo{
+    width: 50px;
+    height: 50px;
+    padding-bottom: 7px;
+}
+
+ .navbar-collapse{
+//     height:200px;
+    -webkit-transition: all 0.35s cubic-bezier(.65,.01,.37,1);
+    -moz-transition: all 0.35s cubic-bezier(.65,.01,.37,1);
+    -o-transition: all 0.35s cubic-bezier(.65,.01,.37,1);
+    transition: all 0.35s cubic-bezier(.65,.01,.37,1);
+    overflow: hidden;
+    display: block;
+}
+
+.fake-body{
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}

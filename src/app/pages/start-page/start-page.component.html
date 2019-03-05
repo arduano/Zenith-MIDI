@@ -1,0 +1,88 @@
+<app-page-scroller>
+  <div class="content">
+    <div class="content1">
+      <div class="title">
+        <h1 class="heading">
+          Zenith
+        </h1>
+        <h3 class="subheading">
+          The world's most optimised<br />MIDI renderer!
+        </h3>
+      </div>
+      <div>
+        <button class="download-button">
+          <a href="{{ url64 }}" download>
+            Download x64
+          </a>
+        </button>
+        <button class="download-button">
+          <a href="{{ url86 }}" download>
+            Download x86
+          </a>
+        </button>
+      </div>
+      <div class="ffmpeg-note">
+        <p>
+          Requires FFMPEG for rendering
+          <a target="_blank" href="https://ffmpeg.zeranoe.com/builds/"
+            >Download</a
+          >
+        </p>
+      </div>
+      <div class="other-releases">
+        <a
+          href="https://github.com/arduano/Black-Midi-Render"
+          target="_blank"
+          id="git-icon-left"
+          >Source Code</a
+        >
+        <img src="assets/icons/git-mark.png" class="git-logo-d" />
+        <a
+          href="https://github.com/arduano/Black-Midi-Render/releases"
+          target="_blank"
+          id="git-icon-right"
+          >Other Releases</a
+        >
+      </div>
+      <img id="streaks-left" src="assets/star-streaks.svg" />
+      <img id="streaks-right" src="assets/star-streaks.svg" />
+      <div class="screenshot-container">
+        <img src="/assets/screenshot.png" class="screenshot" />
+      </div>
+    </div>
+    <div class="content2">
+      <div class="features-row">
+        <div class="invite-part">
+          <iframe
+            src="https://discordapp.com/widget?id=549344616210628609&theme=dark"
+            width="350"
+            height="500"
+            allowtransparency="true"
+            frameborder="0"
+          ></iframe>
+        </div>
+        <div class="features-part">
+          <div class="features-box">
+            <h1>Current features include:</h1>
+            <div>
+              Much better performance than any other midi renderer currently out
+              there
+            </div>
+            <div>
+              Custom render plugins! Anyone can make a render plugin and use it
+              with my Zenith, just by dropping it into the Plugins folder!
+            </div>
+            <div>
+              Highly optimised note catcher, loading only lart of the midi file
+              at the time and O(1) performance all round
+            </div>
+            <div>
+              Customisable render settings, with the ability to change them
+              during preview mode to see real time changes
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-page-scroller>

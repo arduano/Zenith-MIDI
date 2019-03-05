@@ -1,19 +1,29 @@
-# Black-Midi-Render
+# This is the README.md. To get to the website, [go to /start](https://nicklas-mstke.github.io/start).
 
-## Creating a plugin project:
-- Create a new class library project
-- Add references to: BMEngine project, PresentationCore, PresentationFramework, OpenTK (through nuget)
-- Optionally, add references (though nuget) to Newtonsoft.Json, Extended.Wpf.Toolkit
-- Add a **public** "Render" class to the project that implements the IPluginRender interface from BMEngine
+## MstkeWeb
 
-- Name, Description and PreviewImage are static fields that show the information on the plugins tab
-- Initialized needs to be set to true when Init() is called, and to false when Dispose is called
-- NoteScreenTime is the time the window of time (in ticks) that the notes can spend on the screen before getting deleted
-- LastNoteCount is the last number of notes rendered. 
-- SettingsControl is a WPF control that will be visible on the Plugin Settings page
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.0.5.
 
-- Init() can be used to initialise frame buffers and vertex buffers
-- Dispose() removed them
-- SetTrackColors() sets the initial colors of the midi tracks/channels (for custom note color schemes)
-- RenderFrame() renders a frame, the final image has to be loaded into the framebuffer "finalCompositeBuff"
-- For those new to framebuffers, this is done by: `GL.BindFramebuffer(FramebufferTarget.Framebuffer, finalCompositeBuff);`
+## Development server
+
+Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+
+## Code scaffolding
+
+Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+
+## Build
+
+Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+
+## Running unit tests
+
+Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+
+## Running end-to-end tests
+
+Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+
+## Further help
+
+To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
