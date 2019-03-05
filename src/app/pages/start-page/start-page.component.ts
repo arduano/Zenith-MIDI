@@ -14,7 +14,7 @@ export class StartPageComponent implements OnInit {
   url64: string = '';
 
   gitURL: string =
-    'https://api.github.com/repos/arduano/Black-Midi-Render/releases/latest';
+    'https://api.github.com/repos/arduano/Zenith-MIDI/releases/latest';
   async ngOnInit() {
     let data: any = this.http.get(this.gitURL);
     data = await data.toPromise();
