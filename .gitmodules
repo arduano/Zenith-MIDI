@@ -1,0 +1,3 @@
+[submodule "ClassicRender"]
+	path = ClassicRender
+	url = https://github.com/arduano/Zenith-Classic-Render.git
