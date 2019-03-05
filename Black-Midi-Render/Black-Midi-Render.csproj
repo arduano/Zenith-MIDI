@@ -213,7 +213,7 @@
     </ItemGroup>
     <Move SourceFiles="@(MoveToDebugFolder)" DestinationFolder="$(OutputPath)debug" OverwriteReadOnlyFiles="true" />
     <Move SourceFiles="@(MoveToLibFolder)" DestinationFolder="$(OutputPath)lib" OverwriteReadOnlyFiles="true" />
-    <Move SourceFiles="@(PluginPdbs)" DestinationFolder="$(OutputPath)debug" OverwriteReadOnlyFiles="true" />
+    <!-- <Move SourceFiles="@(PluginPdbs)" DestinationFolder="$(OutputPath)debug" OverwriteReadOnlyFiles="true" /> -->
   </Target>
   <PropertyGroup>
     <PostBuildEvent>
