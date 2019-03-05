@@ -1,3 +1,9 @@
 [submodule "ClassicRender"]
 	path = ClassicRender
 	url = https://github.com/arduano/Zenith-Classic-Render.git
+[submodule "PFARender"]
+	path = PFARender
+	url = https://github.com/arduano/Zenith-PFA-Render.git
+[submodule "FlatRender"]
+	path = FlatRender
+	url = https://github.com/arduano/Zenith-Flat-Render.git
