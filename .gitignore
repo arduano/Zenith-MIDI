@@ -42,3 +42,4 @@ packages
 
 .vscode
 bin/
+*/obj/*
