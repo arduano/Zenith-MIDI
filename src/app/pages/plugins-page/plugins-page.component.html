@@ -5,9 +5,10 @@
         <h1>Plugins</h1>
         <p>
           As a general rule, all custom and original plugins are completely free
-          and open for anyone to use. However clones (PFA, miditrail, etc.) will
-          be kept private and only handed out to people I trust, to prevent
-          overuse.
+          and open for anyone to use. However exact clones (PFA, miditrail,
+          etc.) will be slightly modified to make them distinct from the
+          original. I might release the exact looking copies, however BMT
+          members are highly against them spreading anywhere.
         </p>
         <p>
           I am actively working on new plugins, and it is possible for anyone
@@ -15,12 +16,7 @@
         </p>
         <p></p>
       </div>
-      <app-plugin
-        [imgUrl]="
-          'https://raw.githubusercontent.com/arduano/Zenith-MIDI/master/ClassicRender/preview.png'
-        "
-        [name]="'Classic'"
-      >
+      <app-plugin [imgUrl]="'assets/plugins/classic.png'" [name]="'Classic'">
         <p>
           The original render engine for Zenith. Any new render features in
           Zenith will always be supported first by this plugin.
@@ -28,19 +24,22 @@
         <p class="how-to-get public">Included with the program</p>
       </app-plugin>
 
-      <app-plugin
-        [imgUrl]="
-          'https://github.com/arduano/Zenith-MIDI/blob/master/PFARender/preview.png?raw=true'
-        "
-        [name]="'PFA+'"
-      >
+      <app-plugin [imgUrl]="'assets/plugins/pfa.png'" [name]="'PFA+'">
         <p>
           An almost identical visual clone of the original program, with support
           for some exclusive features, including: same width notes, tick based
           rendering, gradient and transparency support with the midi track color
           event.
         </p>
-        <p class="how-to-get public">Private</p>
+        <p class="how-to-get public">Included with the program</p>
+      </app-plugin>
+
+      <app-plugin [imgUrl]="'assets/plugins/flat.png'" [name]="'Flat'">
+        <p>
+          Very similar to the classic plugin, and more of a proof of concept
+          than anything. Basically the classic version except without shading.
+        </p>
+        <p class="how-to-get public">Included with the program</p>
       </app-plugin>
     </div>
   </div>
