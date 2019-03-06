@@ -200,6 +200,8 @@
                     <Button Content="Stop" HorizontalAlignment="Left" Margin="109,181,0,0" Width="75" IsEnabled="{Binding IsEnabled, ElementName=stopEnabled}" Click="StopButton_Click" Height="20" VerticalAlignment="Top" />
                     <xctk:DecimalUpDown x:Name="secondsDelay" FormatString="F1" Value="0" Increment="0.5"  Maximum="10" Minimum="0" Margin="135,126,0,0" HorizontalAlignment="Left" Width="82" Height="26" VerticalAlignment="Top" IsEnabled="{Binding ElementName=notRendering, Path=IsEnabled}" />
                     <Label Content="Delay start (seconds)" HorizontalAlignment="Left" Margin="10,126,0,0" VerticalAlignment="Top"/>
+                    <TextBox x:Name="creditText" AcceptsReturn="True" IsReadOnly="True" HorizontalAlignment="Left" Height="37" Margin="10,328,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="281"/>
+                    <Label Content="If uploading the video online, please credit the program" HorizontalAlignment="Left" Margin="10,302,0,0" VerticalAlignment="Top"/>
                 </Grid>
             </TabItem>
         </TabControl>

@@ -43,6 +43,7 @@ namespace Black_Midi_Render
             InitializeComponent();
             settings = new RenderSettings();
             InitialiseSettingsValues();
+            creditText.Text = "Video was rendered by Zenith\n>> https://arduano.github.io/Zenith-MIDI/start";
         }
 
         void InitialiseSettingsValues()
