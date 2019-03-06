@@ -71,6 +71,7 @@ namespace MidiUtils
             List<byte> track = new List<byte>();
             long trackTime = 0;
             bool hasEndEvent = false;
+            byte prevCommand = 0;
             while (true)
             {
                 try
@@ -79,6 +80,12 @@ namespace MidiUtils
                     var dtimeb = ReadVariableLen(reader, out dtime);
                     trackTime += dtime;
                     byte command = reader.Read();
+                    if (command < 0x80)
+                    {
+                        reader.Pushback = command;
+                        command = prevCommand;
+                    }
+                    prevCommand = command;
                     byte comm = (byte)(command & 0b11110000);
                     if (comm == 0b10010000)
                     {
