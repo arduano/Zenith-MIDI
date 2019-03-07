@@ -101,24 +101,40 @@ namespace Black_Midi_Render
                 {
                     SpinWait.SpinUntil(() => midifile.currentSyncTime < win.midiTime + win.lastDeltaTimeOnScreen + (long)(win.tempoFrameStep * 10) || !settings.running);
                     if (!settings.running) break;
-                    nc = 0;
                     Note n;
+                    long cutoffTime = (long)win.midiTime;
+                    bool manualDelete = false;
+                    bool receivedInfo = false;
+                    while (!receivedInfo)
+                        try
+                        {
+                            manualDelete = renderer.renderer.ManualNoteDelete;
+                            receivedInfo = true;
+                        }
+                        catch
+                        { }
                     lock (midifile.globalDisplayNotes)
                     {
                         var i = midifile.globalDisplayNotes.Iterate();
-                        double cutoffTime = 0;
-                        cutoffTime = win.midiTime;
-                        while (i.MoveNext(out n))
-                        {
-                            if (n.delete)
-                                i.Remove();
-                            else nc++;
-                        }
+                        if (manualDelete)
+                            while (i.MoveNext(out n))
+                            {
+                                if (n.delete)
+                                    i.Remove();
+                                else nc++;
+                            }
+                        else
+                            while (i.MoveNext(out n))
+                            {
+                                if (n.hasEnded && n.end < cutoffTime)
+                                    i.Remove();
+                                if (n.start > cutoffTime) break;
+                            }
                     }
                     try
                     {
                         Console.WriteLine(
-                            Math.Round((double)time / midifile.maxTrackTime * 10000) / 100 + "%\tNotes loaded: " + nc +
+                            Math.Round((double)time / midifile.maxTrackTime * 10000) / 100 +
                             "\tNotes drawn: " + renderer.renderer.LastNoteCount +
                             "\tRender FPS: " + Math.Round(settings.liveFps) + "        "
                             );
@@ -259,14 +275,14 @@ namespace Black_Midi_Render
             try
             {
 #endif
-                settings.maxTrackBufferSize = (int)maxBufferSize.Value;
+            settings.maxTrackBufferSize = (int)maxBufferSize.Value;
 
-                if (midifile != null) midifile.Dispose();
-                midifile = null;
-                GC.Collect();
-                GC.WaitForFullGCComplete();
-                midifile = new MidiFile(midipath, settings);
-                Resources["midiLoaded"] = true;
+            if (midifile != null) midifile.Dispose();
+            midifile = null;
+            GC.Collect();
+            GC.WaitForFullGCComplete();
+            midifile = new MidiFile(midipath, settings);
+            Resources["midiLoaded"] = true;
 #if !DEBUG_LOAD
             }
             catch (Exception ex)

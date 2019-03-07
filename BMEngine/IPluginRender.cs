@@ -15,6 +15,7 @@ namespace BMEngine
         string Description { get; }
         bool Initialized { get; }
         ImageSource PreviewImage { get; }
+        bool ManualNoteDelete { get; }
 
         double LastMidiTimePerTick { get; set; }
 
