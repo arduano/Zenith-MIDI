@@ -7,3 +7,6 @@
 [submodule "FlatRender"]
 	path = FlatRender
 	url = https://github.com/arduano/Zenith-Flat-Render.git
+[submodule "MidiTrailRender"]
+	path = MidiTrailRender
+	url = https://github.com/arduano/Zenith-MidiTrail-Render.git
