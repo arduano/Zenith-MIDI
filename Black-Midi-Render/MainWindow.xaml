@@ -202,6 +202,7 @@
                     <Label Content="Delay start (seconds)" HorizontalAlignment="Left" Margin="10,126,0,0" VerticalAlignment="Top"/>
                     <TextBox x:Name="creditText" AcceptsReturn="True" IsReadOnly="True" HorizontalAlignment="Left" Height="37" Margin="10,328,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="281"/>
                     <Label Content="If uploading the video online, please credit the program" HorizontalAlignment="Left" Margin="10,302,0,0" VerticalAlignment="Top"/>
+                    <CheckBox x:Name="ffdebug" Content="ffmpeg debug" HorizontalAlignment="Left" Margin="189,184,0,0" VerticalAlignment="Top"/>
                 </Grid>
             </TabItem>
         </TabControl>

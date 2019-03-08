@@ -1,6 +1,4 @@
-﻿using Poly2Tri.Triangulation;
-using Poly2Tri.Triangulation.Polygon;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;

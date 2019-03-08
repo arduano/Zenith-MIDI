@@ -39,11 +39,7 @@ namespace Black_Midi_Render
         string postShaderVert = @"#version 330 compatibility
 
 in vec3 position;
-//in vec4 glColor;
-//in vec2 texCoordV;
 out vec2 UV;
-
-//out vec4 color;
 
 void main()
 {
@@ -155,10 +151,11 @@ void main()
                 {
                     double fstep = ((double)midi.division / lastTempo) * (1000000 / settings.fps);
                     double offset = -midiTime / fstep / settings.fps;
+                    offset = Math.Round(offset * 100) / 100;
                     args = "" +
                         " -f rawvideo -s " + settings.width + "x" + settings.height +
                         " -pix_fmt rgb24 -r " + settings.fps + " -i -" +
-                        " -itsoffset " + offset + " -i \"" + settings.audioPath + "\"" +
+                        " -itsoffset " + offset.ToString().Replace(",", ".") + " -i \"" + settings.audioPath + "\"" +
                         " -vf vflip -vcodec libx264 -pix_fmt yuv420p -acodec aac";
                 }
                 else
@@ -183,33 +180,36 @@ void main()
                 ffmpeg.StartInfo = new ProcessStartInfo("ffmpeg", args);
                 ffmpeg.StartInfo.RedirectStandardInput = true;
                 ffmpeg.StartInfo.UseShellExecute = false;
-                ffmpeg.StartInfo.RedirectStandardError = true;
+                ffmpeg.StartInfo.RedirectStandardError = !settings.ffmpegDebug;
                 try
                 {
                     ffmpeg.Start();
-                    Console.OpenStandardOutput();
-                    Regex messageMatch = new Regex("\\[.*@.*\\]");
-                    ffmpeg.ErrorDataReceived += (s, e) =>
+                    if (!settings.ffmpegDebug)
                     {
-                        if (e.Data == null) return;
-                        if (e.Data.Contains("frame="))
+                        Console.OpenStandardOutput();
+                        Regex messageMatch = new Regex("\\[.*@.*\\]");
+                        ffmpeg.ErrorDataReceived += (s, e) =>
                         {
-                            Console.Write(e.Data);
-                            Console.SetCursorPosition(0, Console.CursorTop);
-                        }
-                        if(e.Data.Contains("Conversion failed!"))
-                        {
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine("An error occured in FFMPEG, closing!");
-                            Console.ResetColor();
-                            settings.running = false;
-                        }
-                        if (messageMatch.IsMatch(e.Data))
-                        {
-                            Console.WriteLine(e.Data);
-                        }
-                    };
-                    ffmpeg.BeginErrorReadLine();
+                            if (e.Data == null) return;
+                            if (e.Data.Contains("frame="))
+                            {
+                                Console.Write(e.Data);
+                                Console.SetCursorPosition(0, Console.CursorTop);
+                            }
+                            if (e.Data.Contains("Conversion failed!"))
+                            {
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.WriteLine("An error occured in FFMPEG, closing!");
+                                Console.ResetColor();
+                                settings.running = false;
+                            }
+                            if (messageMatch.IsMatch(e.Data))
+                            {
+                                Console.WriteLine(e.Data);
+                            }
+                        };
+                        ffmpeg.BeginErrorReadLine();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -314,7 +314,9 @@ void main()
                                     while (true)
                                     {
                                         var r = render.disposeQueue.Dequeue();
-                                        if (r.Initialized) r.Dispose();
+                                        if (r.Initialized)
+                                            try { r.Dispose(); }
+                                            catch { }
                                     }
                                 }
                                 catch (InvalidOperationException) { }
@@ -453,7 +455,11 @@ void main()
                 }
             }
             catch (InvalidOperationException) { }
-            render.renderer.Dispose();
+            try
+            {
+                render.renderer.Dispose();
+            }
+            catch { }
             this.Close();
         }
 

@@ -62,7 +62,7 @@ namespace BMEngine
             return shader;
         }
 
-        public static void GenFrameBufferTexture(int width, int height, out int fbuffer, out int rtexture)
+        public static void GenFrameBufferTexture(int width, int height, out int fbuffer, out int rtexture, bool depth = false)
         {
             fbuffer = GL.GenFramebuffer();
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbuffer);
@@ -71,6 +71,16 @@ namespace BMEngine
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0, PixelFormat.Rgba, PixelType.Byte, (IntPtr)0);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+
+            if (depth)
+            {
+                int depthrenderbuffer;
+                depthrenderbuffer = GL.GenRenderbuffer();
+                GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, depthrenderbuffer);
+                GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, width, height);
+                GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, depthrenderbuffer);
+            }
+
             GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, rtexture, 0);
             if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete) throw new Exception();
         }

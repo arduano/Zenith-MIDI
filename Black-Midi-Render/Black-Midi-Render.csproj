@@ -181,6 +181,10 @@
       <Project>{ae59479c-9d0d-464c-a4d3-8fdd7e1f3786}</Project>
       <Name>FlatRender</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MidiTrailRender\MidiTrailRender.csproj">
+      <Project>{991e132a-a56d-49ab-bbee-9828359bb307}</Project>
+      <Name>MidiTrailRender</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MidiUtils\MidiUtils.csproj">
       <Project>{1a849712-b3e2-4ac5-b899-3a5aa3018f7a}</Project>
       <Name>MidiUtils</Name>

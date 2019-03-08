@@ -354,6 +354,8 @@ namespace Black_Midi_Render
             settings.tempoMultiplier = 1;
             tempoSlider.Value = 0;
 
+            settings.ffmpegDebug = (bool)ffdebug.IsChecked;
+
             settings.useBitrate = (bool)bitrateOption.IsChecked;
             if (settings.useBitrate) settings.bitrate = (int)bitrate.Value;
             else

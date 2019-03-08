@@ -48,6 +48,7 @@ namespace BMEngine
         public int bitrate = 20000;
         public int crf = 17;
         public string crfPreset = "medium";
+        public bool ffmpegDebug = false;
 
         public bool showNoteCount = false;
         public bool showNotesRendered = false;
