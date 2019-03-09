@@ -104,15 +104,18 @@ namespace Black_Midi_Render
                     Note n;
                     long cutoffTime = (long)win.midiTime;
                     bool manualDelete = false;
+                    int noteCollectorOffset = 0;
                     bool receivedInfo = false;
                     while (!receivedInfo)
                         try
                         {
                             manualDelete = renderer.renderer.ManualNoteDelete;
+                            noteCollectorOffset = renderer.renderer.NoteCollectorOffset;
                             receivedInfo = true;
                         }
                         catch
                         { }
+                    cutoffTime += noteCollectorOffset;
                     lock (midifile.globalDisplayNotes)
                     {
                         var i = midifile.globalDisplayNotes.Iterate();
@@ -248,9 +251,11 @@ namespace Black_Midi_Render
             if (c.Parent != null)
                 (c.Parent as Panel).Children.Clear();
             pluginsSettings.Children.Add(c);
+            c.VerticalAlignment = VerticalAlignment.Stretch;
+            c.HorizontalAlignment = HorizontalAlignment.Stretch;
+            c.Width = double.NaN;
+            c.Height = double.NaN;
             c.Margin = new Thickness(0);
-            c.VerticalAlignment = VerticalAlignment.Top;
-            c.HorizontalAlignment = HorizontalAlignment.Left;
         }
 
         private void BrowseMidiButton_Click(object sender, RoutedEventArgs e)
