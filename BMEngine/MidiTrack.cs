@@ -190,15 +190,9 @@ namespace BMEngine
                         if (!readOnly)
                             try
                             {
-                                var q = UnendedNotes[note << 4 | channel];
-                                var iter = q.Iterate();
-                                Note n;
-                                while (iter.MoveNext(out n))
-                                {
-                                    n.end = trackTime;
-                                    n.hasEnded = true;
-                                }
-                                q.Unlink();
+                                Note n = UnendedNotes[note << 4 | channel].Pop();
+                                n.end = trackTime;
+                                n.hasEnded = true;
                             }
                             catch { }
                     }
@@ -234,15 +228,9 @@ namespace BMEngine
                     if (!readOnly)
                         try
                         {
-                            var q = UnendedNotes[note << 4 | channel];
-                            var iter = q.Iterate();
-                            Note n;
-                            while (iter.MoveNext(out n))
-                            {
-                                n.end = trackTime;
-                                n.hasEnded = true;
-                            }
-                            q.Unlink();
+                            Note n = UnendedNotes[note << 4 | channel].Pop();
+                            n.end = trackTime;
+                            n.hasEnded = true;
                         }
                         catch { }
                 }
@@ -544,7 +532,7 @@ namespace BMEngine
                     throw new Exception("Corrupt Track");
                 }
             }
-            catch(IndexOutOfRangeException)
+            catch (IndexOutOfRangeException)
             {
                 EndTrack();
             }
@@ -560,7 +548,7 @@ namespace BMEngine
                 trackTime += ReadVariableLen();
                 prevTrackTime = _t;
                 byte command = reader.Read();
-                if(command < 0x80)
+                if (command < 0x80)
                 {
                     reader.Pushback = command;
                     command = prevCommand;
@@ -699,7 +687,7 @@ namespace BMEngine
                         int btempo = 0;
                         for (int i = 0; i != 3; i++)
                             btempo = (int)((btempo << 8) | reader.Read());
-                        if(trackTime == 0)
+                        if (trackTime == 0)
                         {
                             zerothTempo = btempo;
                         }

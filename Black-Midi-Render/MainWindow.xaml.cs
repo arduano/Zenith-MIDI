@@ -43,7 +43,7 @@ namespace Black_Midi_Render
             InitializeComponent();
             settings = new RenderSettings();
             InitialiseSettingsValues();
-            creditText.Text = "Video was rendered by Zenith\n>> https://arduano.github.io/Zenith-MIDI/start";
+            creditText.Text = "Video was rendered by Zenith\nhttps://arduano.github.io/Zenith-MIDI/start";
         }
 
         void InitialiseSettingsValues()
@@ -102,7 +102,7 @@ namespace Black_Midi_Render
                     SpinWait.SpinUntil(() => midifile.currentSyncTime < win.midiTime + win.lastDeltaTimeOnScreen + (long)(win.tempoFrameStep * 10) || !settings.running);
                     if (!settings.running) break;
                     Note n;
-                    long cutoffTime = (long)win.midiTime;
+                    double cutoffTime = (long)win.midiTime;
                     bool manualDelete = false;
                     int noteCollectorOffset = 0;
                     bool receivedInfo = false;

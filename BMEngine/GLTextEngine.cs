@@ -42,11 +42,11 @@ in vec4 Color;
 
 out vec4 color;
 
-uniform sampler2D myTextureSampler;
+uniform sampler2D textureSampler;
 
 void main()
 {
-    float mask = texture2D( myTextureSampler, UV ).y;
+    float mask = texture2D( textureSampler, UV ).y;
     color = vec4(1, 1, 1, mask) * Color;
 }
 ";

@@ -7,7 +7,7 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:local="clr-namespace:Black_Midi_Render"
         mc:Ignorable="d"
-        Title="Zenith" Height="434.389" Width="658.056" MinWidth="658.056" MinHeight="434.389">
+        Title="Zenith" Height="549.889" Width="779.556" MinWidth="779.556" MinHeight="549.889">
     <Window.Resources>
         <!--<Style TargetType="{x:Type Window}">
             <Setter Property="FontFamily" Value="Microsoft Sans Serif" />
