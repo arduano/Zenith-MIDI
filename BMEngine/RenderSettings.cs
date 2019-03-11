@@ -29,10 +29,7 @@ namespace BMEngine
 
         public bool ffRender = false;
         public string ffPath = "out.mp4";
-        public bool imgRender = false;
-        public string imgPath = "imgs";
         public bool vsync = true;
-        public bool renderStartBlankScreen = false;
         public double renderSecondsDelay = 0;
 
         public bool paused = false;

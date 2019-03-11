@@ -457,6 +457,44 @@ namespace Black_Midi_Render
             SelectRenderer(pluginsList.SelectedIndex);
         }
 
+        private void ResolutionPreset_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string preset = (string)((ComboBoxItem)resolutionPreset.SelectedItem).Content;
+            switch (preset)
+            {
+                case "720p":
+                    viewWidth.Value = 1280;
+                    viewHeight.Value = 720;
+                    break;
+                case "1080p":
+                    viewWidth.Value = 1920;
+                    viewHeight.Value = 1080;
+                    break;
+                case "1440p":
+                    viewWidth.Value = 2560;
+                    viewHeight.Value = 1440;
+                    break;
+                case "4k":
+                    viewWidth.Value = 3840;
+                    viewHeight.Value = 2160;
+                    break;
+                case "5k":
+                    viewWidth.Value = 5120;
+                    viewHeight.Value = 2880;
+                    break;
+                case "8k":
+                    viewWidth.Value = 7680;
+                    viewHeight.Value = 4320;
+                    break;
+                case "16k":
+                    viewWidth.Value = 15360;
+                    viewHeight.Value = 8640;
+                    break;
+                default:
+                    break;
+            }
+        }
+
         //private void ShowNoteScreenCount_Checked(object sender, RoutedEventArgs e)
         //{
         //    settings.showNotesRendered = (bool)showNoteScreenCount.IsChecked;

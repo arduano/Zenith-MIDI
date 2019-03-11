@@ -11,6 +11,7 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Graphics;
 using OpenTK;
 using System.Drawing.Imaging;
+using Size = System.Drawing.Size;
 
 namespace BMEngine
 {

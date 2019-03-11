@@ -137,8 +137,6 @@ void main()
                 tempoFrameStep = ((double)midi.division / lastTempo) * (1000000 / settings.fps);
                 midiTime -= tempoFrameStep * settings.renderSecondsDelay  *settings.fps;
             }
-            pixels = new byte[settings.width * settings.height * 3];
-
             //WindowBorder = WindowBorder.Hidden;
             globalDisplayNotes = midi.globalDisplayNotes;
             globalTempoEvents = midi.globalTempoEvents;
@@ -146,6 +144,7 @@ void main()
             this.midi = midi;
             if (settings.ffRender)
             {
+                pixels = new byte[settings.width * settings.height * 4];
                 string args = "-hide_banner";
                 if (settings.includeAudio)
                 {
@@ -154,7 +153,7 @@ void main()
                     offset = Math.Round(offset * 100) / 100;
                     args = "" +
                         " -f rawvideo -s " + settings.width + "x" + settings.height +
-                        " -pix_fmt rgb24 -r " + settings.fps + " -i -" +
+                        " -pix_fmt rgb32 -r " + settings.fps + " -i -" +
                         " -itsoffset " + offset.ToString().Replace(",", ".") + " -i \"" + settings.audioPath + "\"" +
                         " -vf vflip -vcodec libx264 -pix_fmt yuv420p -acodec aac";
                 }
@@ -163,7 +162,7 @@ void main()
                     args = "" +
                         " -f rawvideo -s " + settings.width + "x" + settings.height +
                         " -strict -2" +
-                        " -pix_fmt rgb24 -r " + settings.fps + " -i -" +
+                        " -pix_fmt rgb32 -r " + settings.fps + " -i -" +
                         " -vf vflip -vcodec libx264 -pix_fmt yuv420p";
                 }
                 if (settings.useBitrate)
@@ -216,17 +215,6 @@ void main()
                     MessageBox.Show("There was an error starting the ffmpeg process\nNo video will be written\n(Is ffmpeg.exe in the same folder as this program?)\n\n\"" + ex.Message + "\"");
                     settings.ffRender = false;
                 }
-            }
-            else if (settings.imgRender)
-            {
-                if (!Directory.Exists(settings.imgPath))
-                {
-                    Directory.CreateDirectory(settings.imgPath);
-                }
-            }
-            else
-            {
-                if (!settings.vsync) VSync = VSyncMode.Off;
             }
 
             finalCompositeBuff = new GLPostbuffer(settings);
@@ -393,26 +381,11 @@ void main()
                 {
                     finalCompositeBuff.BindBuffer();
                     IntPtr unmanagedPointer = Marshal.AllocHGlobal(pixels.Length);
-                    GL.ReadPixels(0, 0, settings.width, settings.height, PixelFormat.Rgb, PixelType.UnsignedByte, unmanagedPointer);
+                    GL.ReadPixels(0, 0, settings.width, settings.height, PixelFormat.Rgba, PixelType.UnsignedByte, unmanagedPointer);
                     Marshal.Copy(unmanagedPointer, pixels, 0, pixels.Length);
                     if (lastRenderPush != null) lastRenderPush.GetAwaiter().GetResult();
                     lastRenderPush = Task.Run(() => ffmpeg.StandardInput.BaseStream.Write(pixels, 0, pixels.Length));
                     Marshal.FreeHGlobal(unmanagedPointer);
-                }
-                if (settings.imgRender)
-                {
-                    finalCompositeBuff.BindBuffer();
-                    IntPtr unmanagedPointer = Marshal.AllocHGlobal(pixels.Length);
-                    GL.ReadPixels(0, 0, settings.width, settings.height, PixelFormat.Bgra, PixelType.UnsignedByte, unmanagedPointer);
-                    if (lastRenderPush != null) lastRenderPush.GetAwaiter().GetResult();
-                    lastRenderPush = Task.Run(() =>
-                    {
-                        Bitmap output = new Bitmap(settings.width, settings.height, settings.width * 4, System.Drawing.Imaging.PixelFormat.Format32bppArgb, unmanagedPointer);
-                        output.RotateFlip(RotateFlipType.RotateNoneFlipY);
-                        output.Save(settings.imgPath + "\\img_" + imgnumber++ + ".png");
-                        output.Dispose();
-                        Marshal.FreeHGlobal(unmanagedPointer);
-                    });
                 }
 
                 GL.UseProgram(postShader);

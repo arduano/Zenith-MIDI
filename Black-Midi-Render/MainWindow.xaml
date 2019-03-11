@@ -90,14 +90,24 @@
                         </Button.IsEnabled>
                     </Button>
                     <Label Content="Width" HorizontalAlignment="Left" Margin="10,96,0,0" VerticalAlignment="Top" Width="42"/>
-                    <xctk:DecimalUpDown x:Name="viewWidth" FormatString="F0" Value="1" Increment="1"  Maximum="7680" Minimum="1" Margin="57,96,0,0" HorizontalAlignment="Left" Width="118" Height="26" VerticalAlignment="Top" IsEnabled="{Binding ElementName=notPreviewingOrRendering, Path=IsEnabled}"  />
+                    <xctk:DecimalUpDown x:Name="viewWidth" FormatString="F0" Value="1" Increment="1"  Maximum="122880" Minimum="1" Margin="57,96,0,0" HorizontalAlignment="Left" Width="118" Height="26" VerticalAlignment="Top" IsEnabled="{Binding ElementName=notPreviewingOrRendering, Path=IsEnabled}"  />
                     <Label Content="Height" HorizontalAlignment="Left" Margin="180,96,0,0" VerticalAlignment="Top" Width="46"/>
-                    <xctk:DecimalUpDown x:Name="viewHeight" FormatString="F0" Value="1" Increment="1"  Maximum="4320" Minimum="1" Margin="231,96,0,0" HorizontalAlignment="Left" Width="118" Height="26" VerticalAlignment="Top" IsEnabled="{Binding ElementName=notPreviewingOrRendering, Path=IsEnabled}"  />
+                    <xctk:DecimalUpDown x:Name="viewHeight" FormatString="F0" Value="1" Increment="1"  Maximum="69120" Minimum="1" Margin="231,96,0,0" HorizontalAlignment="Left" Width="118" Height="26" VerticalAlignment="Top" IsEnabled="{Binding ElementName=notPreviewingOrRendering, Path=IsEnabled}"  />
                     <Label Content="FPS" HorizontalAlignment="Left" Margin="354,96,0,0" VerticalAlignment="Top" Width="30"/>
                     <xctk:DecimalUpDown x:Name="viewFps" FormatString="F0" Value="1" Increment="1"  Maximum="1000" Minimum="1" Margin="389,96,0,0" HorizontalAlignment="Left" Width="77" Height="26" VerticalAlignment="Top" IsEnabled="{Binding ElementName=notPreviewingOrRendering, Path=IsEnabled}"  />
-                    <Label Content="Warning: BMR Preview renders in the resolution above, then downscales to the window size" HorizontalAlignment="Left" Margin="10,127,0,0" VerticalAlignment="Top"/>
+                    <Label Content="Warning: BMR Preview renders in the resolution above, then downscales to the window size" HorizontalAlignment="Left" Margin="10,158,0,0" VerticalAlignment="Top"/>
                     <Button Content="Start Preview" HorizontalAlignment="Left" Margin="10,0,0,10" Width="98" IsEnabled="{Binding ElementName=previewStartEnabled, Path=IsEnabled}" Height="20" VerticalAlignment="Bottom" Click="StartButton_Click" />
                     <Button Content="Stop" HorizontalAlignment="Left" Margin="113,0,0,10" Width="75" IsEnabled="{Binding ElementName=stopEnabled, Path=IsEnabled}" Height="20" VerticalAlignment="Bottom" Click="StopButton_Click" />
+                    <Label Content="Presets:" HorizontalAlignment="Left" Margin="10,127,0,0" VerticalAlignment="Top"/>
+                    <ComboBox IsEnabled="{Binding ElementName=notPreviewingOrRendering, Path=IsEnabled}" x:Name="resolutionPreset" HorizontalAlignment="Left" Margin="65,127,0,0" VerticalAlignment="Top" Width="110" Height="26" SelectionChanged="ResolutionPreset_SelectionChanged">
+                        <ComboBoxItem Content="720p"/>
+                        <ComboBoxItem Content="1080p"/>
+                        <ComboBoxItem Content="1440p"/>
+                        <ComboBoxItem Content="4k"/>
+                        <ComboBoxItem Content="5k"/>
+                        <ComboBoxItem Content="8k"/>
+                        <ComboBoxItem Content="16k"/>
+                    </ComboBox>
                 </Grid>
             </TabItem>
             <TabItem Header="Plugins" IsEnabled="{DynamicResource notRendering}">

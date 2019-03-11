@@ -37,7 +37,7 @@ namespace MidiUtils
                 stream.Position = pos + streamstart;
                 stream.Read(buffer, 0, buffersize);
             }
-            maxbufferpos = (int)Math.Min(streamlen - pos, buffersize);
+            maxbufferpos = (int)Math.Min(streamlen - pos + 1, buffersize);
         }
 
         public long Location => pos;
