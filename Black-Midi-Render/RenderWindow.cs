@@ -61,6 +61,41 @@ void main()
     color = texture2D( myTextureSampler, UV );
 }
 ";
+        string postShaderFragAlphaMask = @"#version 330 compatibility
+
+in vec2 UV;
+
+out vec4 color;
+
+uniform sampler2D myTextureSampler;
+
+void main()
+{
+    color = texture2D( myTextureSampler, UV );
+    color.x = color.w;
+    color.y = color.w;
+    color.z = color.w;
+    color.w = 1;
+}
+";
+        string postShaderFragAlphaMaskColor = @"#version 330 compatibility
+
+in vec2 UV;
+
+out vec4 color;
+
+uniform sampler2D myTextureSampler;
+
+void main()
+{
+    color = texture2D( myTextureSampler, UV );
+    color.x /= color.w;
+    color.y /= color.w;
+    color.z /= color.w;
+    color.w = 1;
+}
+";
+
 
         int MakeShader(string vert, string frag)
         {
@@ -99,13 +134,17 @@ void main()
         public double midiTime = 0;
         public double tempoFrameStep = 10;
 
-        Process ffmpeg = new Process();
-        long imgnumber = 0;
+        Process ffmpegvideo = new Process();
+        Process ffmpegmask = new Process();
         Task lastRenderPush = null;
+        Task lastRenderPushMask = null;
 
         GLPostbuffer finalCompositeBuff;
+        GLPostbuffer ffmpegOutputBuff;
 
         int postShader;
+        int postShaderMask;
+        int postShaderMaskColor;
 
         int screenQuadBuffer;
         int screenQuadIndexBuffer;
@@ -113,6 +152,83 @@ void main()
         int[] screenQuadArrayIndex = new int[] { 0, 1, 2, 3 };
 
         byte[] pixels;
+        byte[] pixelsmask;
+
+        Process startNewFF(string path)
+        {
+            Process ffmpeg = new Process();
+            string args = "-hide_banner";
+            if (settings.includeAudio)
+            {
+                double fstep = ((double)midi.division / lastTempo) * (1000000 / settings.fps);
+                double offset = -midiTime / fstep / settings.fps;
+                offset = Math.Round(offset * 100) / 100;
+                args = "" +
+                    " -f rawvideo -s " + settings.width + "x" + settings.height +
+                    " -pix_fmt rgb32 -r " + settings.fps + " -i -" +
+                    " -itsoffset " + offset.ToString().Replace(",", ".") + " -i \"" + settings.audioPath + "\"" +
+                    " -vf vflip -vcodec libx264 -pix_fmt yuv420p -acodec aac";
+            }
+            else
+            {
+                args = "" +
+                    " -f rawvideo -s " + settings.width + "x" + settings.height +
+                    " -strict -2" +
+                    " -pix_fmt rgb32 -r " + settings.fps + " -i -" +
+                    " -vf vflip -vcodec libx264 -pix_fmt yuv420p";
+            }
+            if (settings.useBitrate)
+            {
+                args += " -b:v " + settings.bitrate + "k" +
+                    " -maxrate " + settings.bitrate + "k" +
+                    " -minrate " + settings.bitrate + "k";
+            }
+            else
+            {
+                args += " -preset " + settings.crfPreset + " -crf " + settings.crf;
+            }
+            args += " -y \"" + path + "\"";
+            ffmpeg.StartInfo = new ProcessStartInfo("ffmpeg", args);
+            ffmpeg.StartInfo.RedirectStandardInput = true;
+            ffmpeg.StartInfo.UseShellExecute = false;
+            ffmpeg.StartInfo.RedirectStandardError = !settings.ffmpegDebug;
+            try
+            {
+                ffmpeg.Start();
+                if (!settings.ffmpegDebug)
+                {
+                    Console.OpenStandardOutput();
+                    Regex messageMatch = new Regex("\\[.*@.*\\]");
+                    ffmpeg.ErrorDataReceived += (s, e) =>
+                    {
+                        if (e.Data == null) return;
+                        if (e.Data.Contains("frame="))
+                        {
+                            Console.Write(e.Data);
+                            Console.SetCursorPosition(0, Console.CursorTop);
+                        }
+                        if (e.Data.Contains("Conversion failed!"))
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("An error occured in FFMPEG, closing!");
+                            Console.ResetColor();
+                            settings.running = false;
+                        }
+                        if (messageMatch.IsMatch(e.Data))
+                        {
+                            Console.WriteLine(e.Data);
+                        }
+                    };
+                    ffmpeg.BeginErrorReadLine();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("There was an error starting the ffmpeg process\nNo video will be written\n(Is ffmpeg.exe in the same folder as this program?)\n\n\"" + ex.Message + "\"");
+                settings.ffRender = false;
+            }
+            return ffmpeg;
+        }
 
         protected override void OnResize(EventArgs e)
         {
@@ -135,9 +251,9 @@ void main()
                 render.renderer.LastMidiTimePerTick = (double)midi.zerothTempo / midi.division;
                 midiTime = -render.renderer.NoteScreenTime;
                 tempoFrameStep = ((double)midi.division / lastTempo) * (1000000 / settings.fps);
-                midiTime -= tempoFrameStep * settings.renderSecondsDelay  *settings.fps;
+                midiTime -= tempoFrameStep * settings.renderSecondsDelay * settings.fps;
             }
-            //WindowBorder = WindowBorder.Hidden;
+
             globalDisplayNotes = midi.globalDisplayNotes;
             globalTempoEvents = midi.globalTempoEvents;
             globalColorEvents = midi.globalColorEvents;
@@ -145,79 +261,16 @@ void main()
             if (settings.ffRender)
             {
                 pixels = new byte[settings.width * settings.height * 4];
-                string args = "-hide_banner";
-                if (settings.includeAudio)
+                ffmpegvideo = startNewFF(settings.ffPath);
+                if (settings.ffRenderMask)
                 {
-                    double fstep = ((double)midi.division / lastTempo) * (1000000 / settings.fps);
-                    double offset = -midiTime / fstep / settings.fps;
-                    offset = Math.Round(offset * 100) / 100;
-                    args = "" +
-                        " -f rawvideo -s " + settings.width + "x" + settings.height +
-                        " -pix_fmt rgb32 -r " + settings.fps + " -i -" +
-                        " -itsoffset " + offset.ToString().Replace(",", ".") + " -i \"" + settings.audioPath + "\"" +
-                        " -vf vflip -vcodec libx264 -pix_fmt yuv420p -acodec aac";
-                }
-                else
-                {
-                    args = "" +
-                        " -f rawvideo -s " + settings.width + "x" + settings.height +
-                        " -strict -2" +
-                        " -pix_fmt rgb32 -r " + settings.fps + " -i -" +
-                        " -vf vflip -vcodec libx264 -pix_fmt yuv420p";
-                }
-                if (settings.useBitrate)
-                {
-                    args += " -b:v " + settings.bitrate + "k" +
-                        " -maxrate " + settings.bitrate + "k" +
-                        " -minrate " + settings.bitrate + "k";
-                }
-                else
-                {
-                    args += " -preset " + settings.crfPreset + " -crf " + settings.crf;
-                }
-                args += " -y \"" + settings.ffPath + "\"";
-                ffmpeg.StartInfo = new ProcessStartInfo("ffmpeg", args);
-                ffmpeg.StartInfo.RedirectStandardInput = true;
-                ffmpeg.StartInfo.UseShellExecute = false;
-                ffmpeg.StartInfo.RedirectStandardError = !settings.ffmpegDebug;
-                try
-                {
-                    ffmpeg.Start();
-                    if (!settings.ffmpegDebug)
-                    {
-                        Console.OpenStandardOutput();
-                        Regex messageMatch = new Regex("\\[.*@.*\\]");
-                        ffmpeg.ErrorDataReceived += (s, e) =>
-                        {
-                            if (e.Data == null) return;
-                            if (e.Data.Contains("frame="))
-                            {
-                                Console.Write(e.Data);
-                                Console.SetCursorPosition(0, Console.CursorTop);
-                            }
-                            if (e.Data.Contains("Conversion failed!"))
-                            {
-                                Console.ForegroundColor = ConsoleColor.Red;
-                                Console.WriteLine("An error occured in FFMPEG, closing!");
-                                Console.ResetColor();
-                                settings.running = false;
-                            }
-                            if (messageMatch.IsMatch(e.Data))
-                            {
-                                Console.WriteLine(e.Data);
-                            }
-                        };
-                        ffmpeg.BeginErrorReadLine();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("There was an error starting the ffmpeg process\nNo video will be written\n(Is ffmpeg.exe in the same folder as this program?)\n\n\"" + ex.Message + "\"");
-                    settings.ffRender = false;
+                    pixelsmask = new byte[settings.width * settings.height * 4];
+                    ffmpegmask = startNewFF(settings.ffMaskPath);
                 }
             }
 
             finalCompositeBuff = new GLPostbuffer(settings);
+            ffmpegOutputBuff = new GLPostbuffer(settings);
 
             GL.GenBuffers(1, out screenQuadBuffer);
             GL.GenBuffers(1, out screenQuadIndexBuffer);
@@ -228,7 +281,7 @@ void main()
                 (IntPtr)(screenQuadArray.Length * 8),
                 screenQuadArray,
                 BufferUsageHint.StaticDraw);
-            
+
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, screenQuadIndexBuffer);
             GL.BufferData(
                 BufferTarget.ElementArrayBuffer,
@@ -237,6 +290,8 @@ void main()
                 BufferUsageHint.StaticDraw);
 
             postShader = MakeShader(postShaderVert, postShaderFrag);
+            postShaderMask = MakeShader(postShaderVert, postShaderFragAlphaMask);
+            postShaderMaskColor = MakeShader(postShaderVert, postShaderFragAlphaMaskColor);
         }
 
         void RenderAllText(long lastNC)
@@ -379,13 +434,48 @@ void main()
 
                 if (settings.ffRender)
                 {
-                    finalCompositeBuff.BindBuffer();
+                    if (!settings.ffRenderMask)
+                        GL.UseProgram(postShader);
+                    else
+                        GL.UseProgram(postShaderMaskColor);
+                    finalCompositeBuff.BindTexture();
+                    ffmpegOutputBuff.BindBuffer();
+                    GL.Clear(ClearBufferMask.ColorBufferBit);
+                    GL.Viewport(0, 0, settings.width, settings.height);
+                    finalCompositeBuff.BindTexture();
+                    DrawScreenQuad();
                     IntPtr unmanagedPointer = Marshal.AllocHGlobal(pixels.Length);
                     GL.ReadPixels(0, 0, settings.width, settings.height, PixelFormat.Rgba, PixelType.UnsignedByte, unmanagedPointer);
                     Marshal.Copy(unmanagedPointer, pixels, 0, pixels.Length);
+
                     if (lastRenderPush != null) lastRenderPush.GetAwaiter().GetResult();
-                    lastRenderPush = Task.Run(() => ffmpeg.StandardInput.BaseStream.Write(pixels, 0, pixels.Length));
+                    lastRenderPush = Task.Run(() =>
+                    {
+                        ffmpegvideo.StandardInput.BaseStream.Write(pixels, 0, pixels.Length);
+                    });
                     Marshal.FreeHGlobal(unmanagedPointer);
+
+                    if (settings.ffRenderMask)
+                    {
+                        if (lastRenderPushMask != null) lastRenderPushMask.GetAwaiter().GetResult();
+                        GL.UseProgram(postShaderMask);
+                        finalCompositeBuff.BindTexture();
+                        ffmpegOutputBuff.BindBuffer();
+                        GL.Clear(ClearBufferMask.ColorBufferBit);
+                        GL.Viewport(0, 0, settings.width, settings.height);
+                        finalCompositeBuff.BindTexture();
+                        DrawScreenQuad();
+                        unmanagedPointer = Marshal.AllocHGlobal(pixelsmask.Length);
+                        GL.ReadPixels(0, 0, settings.width, settings.height, PixelFormat.Rgba, PixelType.UnsignedByte, unmanagedPointer);
+                        Marshal.Copy(unmanagedPointer, pixelsmask, 0, pixelsmask.Length);
+
+                        if (lastRenderPush != null) lastRenderPush.GetAwaiter().GetResult();
+                        lastRenderPush = Task.Run(() =>
+                        {
+                            ffmpegmask.StandardInput.BaseStream.Write(pixelsmask, 0, pixelsmask.Length);
+                        });
+                        Marshal.FreeHGlobal(unmanagedPointer);
+                    }
                 }
 
                 GL.UseProgram(postShader);
@@ -416,8 +506,14 @@ void main()
             if (settings.ffRender)
             {
                 if (lastRenderPush != null) lastRenderPush.GetAwaiter().GetResult();
-                ffmpeg.StandardInput.Close();
-                ffmpeg.Close();
+                ffmpegvideo.StandardInput.Close();
+                ffmpegvideo.Close();
+                if (settings.ffRenderMask)
+                {
+                    if (lastRenderPushMask != null) lastRenderPushMask.GetAwaiter().GetResult();
+                    ffmpegmask.StandardInput.Close();
+                    ffmpegmask.Close();
+                }
             }
             try
             {

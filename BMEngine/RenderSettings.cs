@@ -28,7 +28,9 @@ namespace BMEngine
         public int height = 1080;
 
         public bool ffRender = false;
-        public string ffPath = "out.mp4";
+        public string ffPath = "";
+        public bool ffRenderMask = false;
+        public string ffMaskPath = "";
         public bool vsync = true;
         public double renderSecondsDelay = 0;
 

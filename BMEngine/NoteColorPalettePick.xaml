@@ -1,0 +1,16 @@
+﻿<UserControl x:Class="BMEngine.NoteColorPalettePick"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:BMEngine"
+             mc:Ignorable="d">
+    <Grid>
+        <Label Content="Note: Restart preview to update &#xD;&#xA;color palette" HorizontalAlignment="Left" VerticalAlignment="Top" Width="202"/>
+        <Button x:Name="reloadButton" Content="Reload" Margin="0,42,0,0" VerticalAlignment="Top" Click="ReloadButton_Click"/>
+        <ListBox x:Name="paletteList" Margin="0,67,0,94" SelectionChanged="PaletteList_SelectionChanged"/>
+        <TextBlock Margin="0,0,0,-2" TextWrapping="Wrap" Text="Image needs to be a 16 (or 32 for gradients) pixels wide png. Transparency is supported." Height="51" VerticalAlignment="Bottom"/>
+        <TextBlock x:Name="pathLabel" Margin="0,0,0,54" TextWrapping="Wrap" Text="TextBlock" Height="35" VerticalAlignment="Bottom"/>
+
+    </Grid>
+</UserControl>

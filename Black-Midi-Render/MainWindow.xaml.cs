@@ -43,7 +43,7 @@ namespace Black_Midi_Render
             InitializeComponent();
             settings = new RenderSettings();
             InitialiseSettingsValues();
-            creditText.Text = "Video was rendered by Zenith\nhttps://arduano.github.io/Zenith-MIDI/start";
+            creditText.Text = "Video was rendered with Zenith\nhttps://arduano.github.io/Zenith-MIDI/start";
         }
 
         void InitialiseSettingsValues()
@@ -371,6 +371,8 @@ namespace Black_Midi_Render
 
             settings.includeAudio = (bool)includeAudio.IsChecked;
             settings.audioPath = audioPath.Text;
+            settings.ffRenderMask = (bool)includeAlpha.IsChecked;
+            settings.ffMaskPath = alphaPath.Text;
             renderThread = Task.Factory.StartNew(RunRenderWindow);
             Resources["notPreviewing"] = false;
             Resources["notRendering"] = false;
@@ -394,6 +396,17 @@ namespace Black_Midi_Render
             if ((bool)audio.ShowDialog())
             {
                 audioPath.Text = audio.FileName;
+            }
+        }
+
+        private void BrowseAlphaButton_Click(object sender, RoutedEventArgs e)
+        {
+            var save = new SaveFileDialog();
+            save.OverwritePrompt = true;
+            save.Filter = "H.264 video (*.mp4)|*.mp4";
+            if ((bool)save.ShowDialog())
+            {
+                alphaPath.Text = save.FileName;
             }
         }
 

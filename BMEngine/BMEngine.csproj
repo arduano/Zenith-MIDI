@@ -92,6 +92,9 @@
     <Compile Include="IPluginRender.cs" />
     <Compile Include="MidiFile.cs" />
     <Compile Include="MidiTrack.cs" />
+    <Compile Include="NoteColorPalettePick.xaml.cs">
+      <DependentUpon>NoteColorPalettePick.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenderSettings.cs" />
   </ItemGroup>
@@ -104,6 +107,12 @@
   <ItemGroup>
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="NoteColorPalettePick.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

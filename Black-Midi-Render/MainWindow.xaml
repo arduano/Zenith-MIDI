@@ -90,9 +90,9 @@
                         </Button.IsEnabled>
                     </Button>
                     <Label Content="Width" HorizontalAlignment="Left" Margin="10,96,0,0" VerticalAlignment="Top" Width="42"/>
-                    <xctk:DecimalUpDown x:Name="viewWidth" FormatString="F0" Value="1" Increment="1"  Maximum="122880" Minimum="1" Margin="57,96,0,0" HorizontalAlignment="Left" Width="118" Height="26" VerticalAlignment="Top" IsEnabled="{Binding ElementName=notPreviewingOrRendering, Path=IsEnabled}"  />
+                    <xctk:DecimalUpDown x:Name="viewWidth" FormatString="F0" Value="1" Increment="1"  Maximum="15360" Minimum="1" Margin="57,96,0,0" HorizontalAlignment="Left" Width="118" Height="26" VerticalAlignment="Top" IsEnabled="{Binding ElementName=notPreviewingOrRendering, Path=IsEnabled}"  />
                     <Label Content="Height" HorizontalAlignment="Left" Margin="180,96,0,0" VerticalAlignment="Top" Width="46"/>
-                    <xctk:DecimalUpDown x:Name="viewHeight" FormatString="F0" Value="1" Increment="1"  Maximum="69120" Minimum="1" Margin="231,96,0,0" HorizontalAlignment="Left" Width="118" Height="26" VerticalAlignment="Top" IsEnabled="{Binding ElementName=notPreviewingOrRendering, Path=IsEnabled}"  />
+                    <xctk:DecimalUpDown x:Name="viewHeight" FormatString="F0" Value="1" Increment="1"  Maximum="8640" Minimum="1" Margin="231,96,0,0" HorizontalAlignment="Left" Width="118" Height="26" VerticalAlignment="Top" IsEnabled="{Binding ElementName=notPreviewingOrRendering, Path=IsEnabled}"  />
                     <Label Content="FPS" HorizontalAlignment="Left" Margin="354,96,0,0" VerticalAlignment="Top" Width="30"/>
                     <xctk:DecimalUpDown x:Name="viewFps" FormatString="F0" Value="1" Increment="1"  Maximum="1000" Minimum="1" Margin="389,96,0,0" HorizontalAlignment="Left" Width="77" Height="26" VerticalAlignment="Top" IsEnabled="{Binding ElementName=notPreviewingOrRendering, Path=IsEnabled}"  />
                     <Label Content="Warning: BMR Preview renders in the resolution above, then downscales to the window size" HorizontalAlignment="Left" Margin="10,158,0,0" VerticalAlignment="Top"/>
@@ -158,8 +158,8 @@
                 <Grid Background="#FFE5E5E5">
                     <Button x:Name="browseVideoSaveButton" Content="Browse" HorizontalAlignment="Left" Margin="78,13,0,0" VerticalAlignment="Top" Width="74" IsEnabled="{DynamicResource notRendering}" Click="BrowseVideoSaveButton_Click"/>
                     <Label Content="Save Path" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
-                    <TextBox x:Name="videoPath" Height="18" Margin="158,15,8,0" IsEnabled="False" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
-                    <CheckBox x:Name="includeAudio" Content="Include Audio" HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top" IsEnabled="{DynamicResource notRendering}"/>
+                    <TextBox x:Name="videoPath" Height="20" Margin="158,13,8,0" IsEnabled="False" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+                    <CheckBox x:Name="includeAudio" Content="Include Audio" HorizontalAlignment="Left" Margin="10,42,0,0" VerticalAlignment="Top" IsEnabled="{DynamicResource notRendering}"/>
                     <Button x:Name="browseAudioButton" Content="Browse" HorizontalAlignment="Left" Margin="110,39,0,0" VerticalAlignment="Top" Width="74" Click="BrowseAudioButton_Click" >
                         <Button.IsEnabled>
                             <MultiBinding Converter="{StaticResource AndValueConverter}">
@@ -168,11 +168,11 @@
                             </MultiBinding>
                         </Button.IsEnabled>
                     </Button>
-                    <TextBox x:Name="audioPath" Height="18" Margin="190,39,8,0" IsEnabled="False" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
-                    <Button x:Name="startRenderButton" Content="Start Render" HorizontalAlignment="Left" Margin="10,181,0,0" VerticalAlignment="Top" Width="94" Click="StartRenderButton_Click"  IsEnabled="{Binding IsEnabled, ElementName=previewStartEnabled}"/>
-                    <RadioButton x:Name="bitrateOption" Content="Bitrate" HorizontalAlignment="Left" Margin="10,69,0,0" VerticalAlignment="Top" IsChecked="True"/>
-                    <RadioButton x:Name="crfOption" Content="crf" HorizontalAlignment="Left" Margin="10,101,0,0" VerticalAlignment="Top"/>
-                    <xctk:DecimalUpDown x:Name="bitrate" FormatString="F0" Value="20000" Increment="1"  Maximum="1000000" Minimum="1" Margin="70,63,0,0" HorizontalAlignment="Left" Width="118" Height="26" VerticalAlignment="Top" >
+                    <TextBox x:Name="audioPath" Height="20" Margin="190,39,8,0" IsEnabled="False" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+                    <Button x:Name="startRenderButton" Content="Start Render" HorizontalAlignment="Left" Margin="10,205,0,0" VerticalAlignment="Top" Width="94" Click="StartRenderButton_Click"  IsEnabled="{Binding IsEnabled, ElementName=previewStartEnabled}"/>
+                    <RadioButton IsEnabled="{DynamicResource notRendering}" x:Name="bitrateOption" Content="Bitrate" HorizontalAlignment="Left" Margin="10,93,0,0" VerticalAlignment="Top" IsChecked="True"/>
+                    <RadioButton IsEnabled="{DynamicResource notRendering}" x:Name="crfOption" Content="crf" HorizontalAlignment="Left" Margin="10,125,0,0" VerticalAlignment="Top"/>
+                    <xctk:DecimalUpDown x:Name="bitrate" FormatString="F0" Value="20000" Increment="1"  Maximum="1000000" Minimum="1" Margin="70,87,0,0" HorizontalAlignment="Left" Width="118" Height="26" VerticalAlignment="Top" >
                         <xctk:DecimalUpDown.IsEnabled>
                             <MultiBinding Converter="{StaticResource AndValueConverter}">
                                 <Binding ElementName="bitrateOption" Path="IsChecked" />
@@ -180,7 +180,7 @@
                             </MultiBinding>
                         </xctk:DecimalUpDown.IsEnabled>
                     </xctk:DecimalUpDown>
-                    <xctk:DecimalUpDown x:Name="crfFactor" FormatString="F0" Value="17" Increment="1"  Maximum="51" Minimum="0" Margin="48,95,0,0" HorizontalAlignment="Left" Width="64" Height="26" VerticalAlignment="Top" >
+                    <xctk:DecimalUpDown x:Name="crfFactor" FormatString="F0" Value="17" Increment="1"  Maximum="51" Minimum="0" Margin="48,119,0,0" HorizontalAlignment="Left" Width="64" Height="26" VerticalAlignment="Top" >
                         <xctk:DecimalUpDown.IsEnabled>
                             <MultiBinding Converter="{StaticResource AndValueConverter}">
                                 <Binding ElementName="crfOption" Path="IsChecked" />
@@ -188,7 +188,7 @@
                             </MultiBinding>
                         </xctk:DecimalUpDown.IsEnabled>
                     </xctk:DecimalUpDown>
-                    <ComboBox x:Name="crfPreset" HorizontalAlignment="Left" Margin="118,95,0,0" VerticalAlignment="Top" Width="122" Height="26" SelectedIndex="5">
+                    <ComboBox x:Name="crfPreset" HorizontalAlignment="Left" Margin="118,119,0,0" VerticalAlignment="Top" Width="122" Height="26" SelectedIndex="5">
                         <ComboBox.IsEnabled>
                             <MultiBinding Converter="{StaticResource AndValueConverter}">
                                 <Binding ElementName="crfOption" Path="IsChecked" />
@@ -205,14 +205,24 @@
                         <ComboBoxItem Content="slower"/>
                         <ComboBoxItem Content="veryslow"/>
                     </ComboBox>
-                    <Label Content="FFMPEG crf: 0 = lossless, 51 = worst quality possible" HorizontalAlignment="Left" Margin="244,95,0,0" VerticalAlignment="Top"/>
-                    <Label Content="kbps" HorizontalAlignment="Left" Margin="192,63,0,0" VerticalAlignment="Top"/>
-                    <Button Content="Stop" HorizontalAlignment="Left" Margin="109,181,0,0" Width="75" IsEnabled="{Binding IsEnabled, ElementName=stopEnabled}" Click="StopButton_Click" Height="20" VerticalAlignment="Top" />
-                    <xctk:DecimalUpDown x:Name="secondsDelay" FormatString="F1" Value="0" Increment="0.5"  Maximum="10" Minimum="0" Margin="135,126,0,0" HorizontalAlignment="Left" Width="82" Height="26" VerticalAlignment="Top" IsEnabled="{Binding ElementName=notRendering, Path=IsEnabled}" />
-                    <Label Content="Delay start (seconds)" HorizontalAlignment="Left" Margin="10,126,0,0" VerticalAlignment="Top"/>
-                    <TextBox x:Name="creditText" AcceptsReturn="True" IsReadOnly="True" HorizontalAlignment="Left" Height="37" Margin="10,328,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="281"/>
-                    <Label Content="If uploading the video online, please credit the program" HorizontalAlignment="Left" Margin="10,302,0,0" VerticalAlignment="Top"/>
-                    <CheckBox x:Name="ffdebug" Content="ffmpeg debug" HorizontalAlignment="Left" Margin="189,184,0,0" VerticalAlignment="Top"/>
+                    <Label Content="FFMPEG crf: 0 = lossless, 51 = worst quality possible" HorizontalAlignment="Left" Margin="244,119,0,0" VerticalAlignment="Top"/>
+                    <Label Content="kbps" HorizontalAlignment="Left" Margin="192,87,0,0" VerticalAlignment="Top"/>
+                    <Button Content="Stop" HorizontalAlignment="Left" Margin="109,205,0,0" Width="75" IsEnabled="{Binding IsEnabled, ElementName=stopEnabled}" Click="StopButton_Click" Height="20" VerticalAlignment="Top" />
+                    <xctk:DecimalUpDown x:Name="secondsDelay" FormatString="F1" Value="0" Increment="0.5"  Maximum="10" Minimum="0" Margin="135,150,0,0" HorizontalAlignment="Left" Width="82" Height="26" VerticalAlignment="Top" IsEnabled="{Binding ElementName=notRendering, Path=IsEnabled}" />
+                    <Label Content="Delay start (seconds)" HorizontalAlignment="Left" Margin="10,150,0,0" VerticalAlignment="Top"/>
+                    <TextBox x:Name="creditText" AcceptsReturn="True" IsReadOnly="True" HorizontalAlignment="Left" Margin="10,0,0,10" TextWrapping="Wrap" Width="281" Height="37" VerticalAlignment="Bottom"/>
+                    <Label Content="If uploading the video online, please credit the program" HorizontalAlignment="Left" Margin="10,0,0,47" Height="26" VerticalAlignment="Bottom"/>
+                    <CheckBox IsEnabled="{DynamicResource notRendering}" x:Name="ffdebug" Content="ffmpeg debug" HorizontalAlignment="Left" Margin="189,208,0,0" VerticalAlignment="Top"/>
+                    <CheckBox x:Name="includeAlpha" Content="Render Transparency Mask" HorizontalAlignment="Left" Margin="10,65,0,0" VerticalAlignment="Top" IsEnabled="{DynamicResource notRendering}"/>
+                    <Button x:Name="browseAlphaButton" Content="Browse" HorizontalAlignment="Left" Margin="176,62,0,0" VerticalAlignment="Top" Width="74" Click="BrowseAlphaButton_Click" >
+                        <Button.IsEnabled>
+                            <MultiBinding Converter="{StaticResource AndValueConverter}">
+                                <Binding ElementName="includeAlpha" Path="IsChecked" />
+                                <Binding ElementName="notRendering" Path="IsEnabled"/>
+                            </MultiBinding>
+                        </Button.IsEnabled>
+                    </Button>
+                    <TextBox x:Name="alphaPath" Height="20" Margin="255,62,8,0" IsEnabled="False" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
                 </Grid>
             </TabItem>
         </TabControl>
