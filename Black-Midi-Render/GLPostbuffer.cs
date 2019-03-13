@@ -13,10 +13,10 @@ namespace Black_Midi_Render
         public int BufferID { get; private set; }
         public int TextureID { get; private set; }
 
-        public GLPostbuffer(RenderSettings settings)
+        public GLPostbuffer(int width, int height)
         {
             int b, t;
-            GLUtils.GenFrameBufferTexture(settings.width, settings.height, out b, out t);
+            GLUtils.GenFrameBufferTexture(width, height, out b, out t);
             BufferID = b;
             TextureID = t;
         }

@@ -154,15 +154,6 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
-    <None Include="Shaders\notes_flat.frag" />
-    <None Include="Shaders\notes_flat.vert" />
-    <None Include="Shaders\notes.frag" />
-    <None Include="Shaders\notes.vert" />
-    <None Include="Shaders\default.frag" />
-    <None Include="Shaders\default.vert" />
-    <None Include="Shaders\Post\glow.frag" />
-    <None Include="Shaders\Post\post.frag" />
-    <None Include="Shaders\Post\post.vert" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -197,6 +188,36 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Languages\en\window.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Languages\zh_cn\classic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Languages\zh_cn\flat.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Languages\zh_cn\miditrail.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Languages\zh_cn\pfa.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Languages\zh_cn\window.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -244,7 +265,9 @@
 del Plugins\Newtonsoft.Json.dll
 del Plugins\OpenTK.dll
 del Plugins\Xceed.Wpf.Toolkit.dll
-del Plugins\ZenithEngine.dll</PostBuildEvent>
+del Plugins\ZenithEngine.dll
+del Plugins\Languages /s /q
+FOR /D %25%25p IN ("Plugins\Languages") DO rmdir "%25%25p" /s /q</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>

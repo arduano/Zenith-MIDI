@@ -61,6 +61,30 @@ void main()
     color = texture2D( myTextureSampler, UV );
 }
 ";
+        string postShaderFragDownscale = @"#version 330 compatibility
+
+in vec2 UV;
+
+out vec4 color;
+
+uniform sampler2D TextureSampler;
+uniform vec2 res;
+uniform int factor;
+
+void main()
+{
+    color = vec4(0, 0, 0, 0);
+    float stepX = 1 / res.x / factor;
+    float stepY = 1 / res.y / factor;
+    for(int i = 0; i < factor; i += 1){
+        for(int j = 0; j < factor; j += 1){
+            color += texture2D(TextureSampler, UV + vec2(i * stepX, j * stepY));
+        }
+    }
+    color /= factor * factor;
+}
+";
+
         string postShaderFragAlphaMask = @"#version 330 compatibility
 
 in vec2 UV;
@@ -140,11 +164,16 @@ void main()
         Task lastRenderPushMask = null;
 
         GLPostbuffer finalCompositeBuff;
+        GLPostbuffer downscaleBuff;
         GLPostbuffer ffmpegOutputBuff;
 
         int postShader;
+        int postShaderDownscale;
         int postShaderMask;
         int postShaderMaskColor;
+
+        int uDownscaleRes;
+        int uDownscaleFac;
 
         int screenQuadBuffer;
         int screenQuadIndexBuffer;
@@ -269,8 +298,9 @@ void main()
                 }
             }
 
-            finalCompositeBuff = new GLPostbuffer(settings);
-            ffmpegOutputBuff = new GLPostbuffer(settings);
+            finalCompositeBuff = new GLPostbuffer(settings.width, settings.height);
+            ffmpegOutputBuff = new GLPostbuffer(settings.height / settings.downscale, settings.height / settings.downscale);
+            downscaleBuff = new GLPostbuffer(settings.height / settings.downscale, settings.height / settings.downscale);
 
             GL.GenBuffers(1, out screenQuadBuffer);
             GL.GenBuffers(1, out screenQuadIndexBuffer);
@@ -292,6 +322,10 @@ void main()
             postShader = MakeShader(postShaderVert, postShaderFrag);
             postShaderMask = MakeShader(postShaderVert, postShaderFragAlphaMask);
             postShaderMaskColor = MakeShader(postShaderVert, postShaderFragAlphaMaskColor);
+            postShaderDownscale = MakeShader(postShaderVert, postShaderFragDownscale);
+
+            uDownscaleRes = GL.GetUniformLocation(postShaderDownscale, "res");
+            uDownscaleFac = GL.GetUniformLocation(postShaderDownscale, "factor");
         }
 
         void RenderAllText(long lastNC)
@@ -432,6 +466,19 @@ void main()
                     }
                 }
 
+                if (settings.downscale > 1)
+                {
+                    GL.UseProgram(postShaderDownscale);
+                    GL.Uniform1(uDownscaleFac, (int)settings.downscale);
+                    GL.Uniform2(uDownscaleRes, new Vector2(settings.height / settings.downscale, settings.height / settings.downscale));
+                }
+                else GL.UseProgram(postShader);
+                downscaleBuff.BindBuffer();
+                GL.Clear(ClearBufferMask.ColorBufferBit);
+                GL.Viewport(0, 0, settings.height / settings.downscale, settings.height / settings.downscale);
+                finalCompositeBuff.BindTexture();
+                DrawScreenQuad();
+
                 if (settings.ffRender)
                 {
                     if (!settings.ffRenderMask)
@@ -445,7 +492,7 @@ void main()
                     finalCompositeBuff.BindTexture();
                     DrawScreenQuad();
                     IntPtr unmanagedPointer = Marshal.AllocHGlobal(pixels.Length);
-                    GL.ReadPixels(0, 0, settings.width, settings.height, PixelFormat.Rgba, PixelType.UnsignedByte, unmanagedPointer);
+                    GL.ReadPixels(0, 0, settings.width, settings.height, PixelFormat.Bgra, PixelType.UnsignedByte, unmanagedPointer);
                     Marshal.Copy(unmanagedPointer, pixels, 0, pixels.Length);
 
                     if (lastRenderPush != null) lastRenderPush.GetAwaiter().GetResult();
@@ -459,14 +506,14 @@ void main()
                     {
                         if (lastRenderPushMask != null) lastRenderPushMask.GetAwaiter().GetResult();
                         GL.UseProgram(postShaderMask);
-                        finalCompositeBuff.BindTexture();
+                        downscaleBuff.BindTexture();
                         ffmpegOutputBuff.BindBuffer();
                         GL.Clear(ClearBufferMask.ColorBufferBit);
                         GL.Viewport(0, 0, settings.width, settings.height);
-                        finalCompositeBuff.BindTexture();
+                        downscaleBuff.BindTexture();
                         DrawScreenQuad();
                         unmanagedPointer = Marshal.AllocHGlobal(pixelsmask.Length);
-                        GL.ReadPixels(0, 0, settings.width, settings.height, PixelFormat.Rgba, PixelType.UnsignedByte, unmanagedPointer);
+                        GL.ReadPixels(0, 0, settings.width, settings.height, PixelFormat.Bgra, PixelType.UnsignedByte, unmanagedPointer);
                         Marshal.Copy(unmanagedPointer, pixelsmask, 0, pixelsmask.Length);
 
                         if (lastRenderPush != null) lastRenderPush.GetAwaiter().GetResult();
@@ -482,7 +529,7 @@ void main()
                 GLPostbuffer.UnbindBuffers();
                 GL.Clear(ClearBufferMask.ColorBufferBit);
                 GL.Viewport(0, 0, Width, Height);
-                finalCompositeBuff.BindTexture();
+                downscaleBuff.BindTexture();
                 DrawScreenQuad();
                 GLPostbuffer.UnbindTextures();
                 if (settings.ffRender) VSync = VSyncMode.Off;

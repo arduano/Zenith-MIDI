@@ -6,11 +6,14 @@
              xmlns:local="clr-namespace:BMEngine"
              mc:Ignorable="d">
     <Grid>
-        <Label Content="Note: Restart preview to update &#xD;&#xA;color palette" HorizontalAlignment="Left" VerticalAlignment="Top" Width="202"/>
-        <Button x:Name="reloadButton" Content="Reload" Margin="0,42,0,0" VerticalAlignment="Top" Click="ReloadButton_Click"/>
-        <ListBox x:Name="paletteList" Margin="0,67,0,94" SelectionChanged="PaletteList_SelectionChanged"/>
-        <TextBlock Margin="0,0,0,-2" TextWrapping="Wrap" Text="Image needs to be a 16 (or 32 for gradients) pixels wide png. Transparency is supported." Height="51" VerticalAlignment="Bottom"/>
-        <TextBlock x:Name="pathLabel" Margin="0,0,0,54" TextWrapping="Wrap" Text="TextBlock" Height="35" VerticalAlignment="Bottom"/>
+        <DockPanel HorizontalAlignment="Left" LastChildFill="True">
+            <TextBlock DockPanel.Dock="Top" TextWrapping="Wrap" Text="{DynamicResource palettes_restartNote}" VerticalAlignment="Top"/>
+            <Button DockPanel.Dock="Top" x:Name="reloadButton" Content="{DynamicResource palettes_reload}" Margin="0,10,0,6" VerticalAlignment="Top" Click="ReloadButton_Click"/>
+            <TextBlock DockPanel.Dock="Bottom" Margin="0" TextWrapping="Wrap" Text="{DynamicResource palettes_imageNote}" VerticalAlignment="Bottom"/>
+            <TextBlock DockPanel.Dock="Bottom" x:Name="pathLabel" Margin="0,10" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Bottom"/>
+            <CheckBox Name="randomiseOrder" DockPanel.Dock="Bottom" Content="{DynamicResource palettes_randomise}" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" Checked="RandomiseOrder_Checked" Unchecked="RandomiseOrder_Checked" IsChecked="True"/>
+            <ListBox x:Name="paletteList" Margin="0" SelectionChanged="PaletteList_SelectionChanged"/>
+</DockPanel>
 
     </Grid>
 </UserControl>

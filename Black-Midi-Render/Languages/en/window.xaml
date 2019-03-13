@@ -1,0 +1,53 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MSDNSample"
+    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <system:String x:Key="LanguageName">English</system:String>
+    
+    <!--Tab Names-->
+    <system:String x:Key="midiTab">Load Midi</system:String>
+    <system:String x:Key="pluginsTab">Plugins</system:String>
+    <system:String x:Key="pluginSettingsTab">Plugin Settings</system:String>
+    <system:String x:Key="previewTab">Preview</system:String>
+    <system:String x:Key="renderTab">Render</system:String>
+
+    <!--Main Page-->
+    <system:String x:Key="load">Load</system:String>
+    <system:String x:Key="unload">Unload</system:String>
+    <system:String x:Key="browse">Browse</system:String>
+    <system:String x:Key="maxTrackBuffSize">Maximum track buffer size (bytes)</system:String>
+    <system:String x:Key="width">Width</system:String>
+    <system:String x:Key="height">Height</system:String>
+    <system:String x:Key="fps">FPS</system:String>
+    <system:String x:Key="presets">Presets</system:String>
+    <system:String x:Key="zenithRenderWarning">Warning: Zenith Preview renders in the resolution above, then downscales to the window size</system:String>
+    <system:String x:Key="superRes">SSAA</system:String>
+    <system:String x:Key="superResWarning">Increasing SSAA can greatly increase the smoothness of the pixels but takes much more performance</system:String>
+    <system:String x:Key="language">Language</system:String>
+    
+    <!--Plugins Page-->
+    <system:String x:Key="reload">Reload</system:String>
+    <system:String x:Key="pluginWarning">WARNING: Only use plugins from trusted sources. It is possible to hide a virus inside a plugin</system:String>
+    <system:String x:Key="startPreview">Start Preview</system:String>
+    <system:String x:Key="stop">Stop</system:String>
+
+    <!--Preview Page-->
+    <system:String x:Key="vsync">V-Sync Enabled</system:String>
+    <system:String x:Key="tempo">Tempo Multiplier</system:String>
+    <system:String x:Key="pauseHint">ReloRight click slider or press space to toggle pausead</system:String>
+    <system:String x:Key="paused">Preview Paused</system:String>
+    <system:String x:Key="forceRender">Force re-render each frame</system:String>
+
+    <!--Render Page-->
+    <system:String x:Key="savePath">Save Path</system:String>
+    <system:String x:Key="includeAudio">Include Audio</system:String>
+    <system:String x:Key="renderMask">Render Transparency Mask</system:String>
+    <system:String x:Key="bitrate">Bitrate</system:String>
+    <system:String x:Key="crfHint">FFMPEG crf: 0 = lossless, 51 = worst quality possible</system:String>
+    <system:String x:Key="delatStart">Delay start (seconds)</system:String>
+    <system:String x:Key="ffmpegDebug">ffmpeg debug</system:String>
+    <system:String x:Key="startRender">Start Render</system:String>
+    <system:String x:Key="ifUploading">If uploading the video online, please credit the program</system:String>
+</ResourceDictionary>

@@ -19,6 +19,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Path = System.IO.Path;
 
 namespace Black_Midi_Render
 {
@@ -34,9 +35,13 @@ namespace Black_Midi_Render
         MidiFile midifile = null;
         string midipath = "";
 
+        Control pluginControl = null;
+
         List<IPluginRender> RenderPlugins = new List<IPluginRender>();
 
         CurrentRendererPointer renderer = new CurrentRendererPointer();
+
+        List<ResourceDictionary> Languages = new List<ResourceDictionary>();
 
         public MainWindow()
         {
@@ -44,6 +49,35 @@ namespace Black_Midi_Render
             settings = new RenderSettings();
             InitialiseSettingsValues();
             creditText.Text = "Video was rendered with Zenith\nhttps://arduano.github.io/Zenith-MIDI/start";
+
+            var languagePacks = Directory.GetDirectories("Languages");
+            foreach (var language in languagePacks)
+            {
+                var resources = Directory.GetFiles(language).Where((l) => l.EndsWith(".xaml")).ToList();
+                if (resources.Count == 0) continue;
+
+                ResourceDictionary fullDict = new ResourceDictionary();
+                foreach (var r in resources)
+                {
+                    ResourceDictionary file = new ResourceDictionary();
+                    file.Source = new Uri(Path.GetFullPath(r), UriKind.RelativeOrAbsolute);
+                    fullDict.MergedDictionaries.Add(file);
+                }
+                if (fullDict.Contains("LanguageName") && fullDict["LanguageName"].GetType() == typeof(string))
+                    Languages.Add(fullDict);
+            }
+            Languages.Sort(new Comparison<ResourceDictionary>((d1, d2) =>
+            {
+                if ((string)d1["LanguageName"] == "English") return -1;
+                if ((string)d2["LanguageName"] == "English") return 1;
+                else return 0;
+            }));
+            foreach (var lang in Languages)
+            {
+                var item = new ComboBoxItem() { Content = lang["LanguageName"] };
+                languageSelect.Items.Add(item);
+            }
+            languageSelect.SelectedIndex = 0;
         }
 
         void InitialiseSettingsValues()
@@ -54,24 +88,7 @@ namespace Black_Midi_Render
             viewFps.Value = settings.fps;
             vsyncEnabled.IsChecked = settings.vsync;
             tempoSlider.Value = Math.Log(settings.tempoMultiplier, 2);
-            //fontSizePicker.Value = settings.fontSize;
-            //showNoteCount.IsChecked = settings.showNoteCount;
-            //showNoteScreenCount.IsChecked = settings.showNotesRendered;
-            //var fonts = Fonts.GetFontFamilies("C:\\Windows\\Fonts");
-            //fontPicker.Items.Clear();
-            //foreach (var f in fonts)
-            //{
-            //    try
-            //    {
-            //        foreach (var k in f.FamilyNames.Keys.Where((a) => a.IetfLanguageTag.Contains("en")))
-            //        {
-            //            var item = new ComboBoxItem() { Content = f.FamilyNames[k] };
-            //            fontPicker.Items.Add(item);
-            //            if (settings.font == f.FamilyNames[k]) fontPicker.SelectedItem = item;
-            //        }
-            //    }
-            //    catch { }
-            //}
+
             ReloadPlugins();
         }
 
@@ -236,6 +253,7 @@ namespace Black_Midi_Render
         void SelectRenderer(int id)
         {
             (pluginsSettings as Panel).Children.Clear();
+            pluginControl = null;
             if (id == -1)
             {
                 renderer.renderer = null;
@@ -256,6 +274,9 @@ namespace Black_Midi_Render
             c.Width = double.NaN;
             c.Height = double.NaN;
             c.Margin = new Thickness(0);
+            pluginControl = c;
+            if (languageSelect.SelectedIndex != -1)
+            c.Resources.MergedDictionaries.Add(Languages[languageSelect.SelectedIndex]);
         }
 
         private void BrowseMidiButton_Click(object sender, RoutedEventArgs e)
@@ -318,8 +339,8 @@ namespace Black_Midi_Render
             }
 
             settings.running = true;
-            settings.width = (int)viewWidth.Value;
-            settings.height = (int)viewHeight.Value;
+            settings.width = (int)viewWidth.Value * (int)SSAAFactor.Value;
+            settings.height = (int)viewHeight.Value * (int)SSAAFactor.Value;
             settings.fps = (int)viewFps.Value;
             settings.ffRender = false;
             settings.renderSecondsDelay = 0;
@@ -347,8 +368,8 @@ namespace Black_Midi_Render
             }
 
             settings.running = true;
-            settings.width = (int)viewWidth.Value;
-            settings.height = (int)viewHeight.Value;
+            settings.width = (int)viewWidth.Value * (int)SSAAFactor.Value;
+            settings.height = (int)viewHeight.Value * (int)SSAAFactor.Value;
             settings.fps = (int)viewFps.Value;
             settings.ffRender = true;
             settings.ffPath = videoPath.Text;
@@ -506,6 +527,24 @@ namespace Black_Midi_Render
                 default:
                     break;
             }
+        }
+
+        private void LanguageSelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(pluginControl != null)
+                
+                ((UserControl)pluginControl).Resources.MergedDictionaries.Add(Languages[languageSelect.SelectedIndex]);
+            Resources.MergedDictionaries.Add(Languages[languageSelect.SelectedIndex]);
+        }
+
+        private void RadioChecked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                RadioButton[] buttons = new RadioButton[] { bitrateOption, crfOption };
+                foreach (var b in buttons) if (b != sender) b.IsChecked = false;
+            }
+            catch { }
         }
 
         //private void ShowNoteScreenCount_Checked(object sender, RoutedEventArgs e)

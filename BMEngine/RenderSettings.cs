@@ -26,6 +26,7 @@ namespace BMEngine
 
         public int width = 1920;
         public int height = 1080;
+        public int downscale = 1;
 
         public bool ffRender = false;
         public string ffPath = "";
@@ -53,10 +54,6 @@ namespace BMEngine
         public bool showNotesRendered = false;
         public int fontSize = 50;
         public string font = "Arial";
-
-
-        public KeyboardRenderers kbrender = KeyboardRenderers.New;
-        public NoteRenderers ntrender = NoteRenderers.Shaded;
 
         public bool running = false;
         

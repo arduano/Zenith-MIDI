@@ -28,6 +28,7 @@ namespace BMEngine
     {
         string searchPath = "";
         public string SelectedImage { get; private set; } = "";
+        bool randomise = true;
         int selectedIndex = -1;
         List<Bitmap> images = new List<Bitmap>();
 
@@ -37,7 +38,7 @@ namespace BMEngine
             InitializeComponent();
         }
 
-        public void SetPath (string path, float defS = 1, float defV = 1)
+        public void SetPath(string path, float defS = 1, float defV = 1)
         {
             this.defS = defS;
             this.defV = defV;
@@ -82,7 +83,8 @@ namespace BMEngine
             foreach (var i in images) i.Dispose();
             images.Clear();
 
-            Array.Sort(imagePaths, new Comparison<string>((s1, s2) => {
+            Array.Sort(imagePaths, new Comparison<string>((s1, s2) =>
+            {
                 if (s1.Contains("Random.png")) return -1;
                 if (s2.Contains("Random.png")) return 1;
                 else return 0;
@@ -96,13 +98,10 @@ namespace BMEngine
                     {
                         Bitmap img = new Bitmap(fs);
                         if (!(img.Width == 16 || img.Width == 32) || img.Width < 1) continue;
-                        if (((int)img.PixelFormat & (int)System.Drawing.Imaging.PixelFormat.Alpha) > 0)
-                        {
-                            images.Add(img);
-                            var item = new ListBoxItem() { Content = Path.GetFileNameWithoutExtension(i) };
-                            if (img.Width == 32) item.Foreground = Brushes.Blue;
-                            paletteList.Items.Add(item);
-                        }
+                        images.Add(img);
+                        var item = new ListBoxItem() { Content = Path.GetFileNameWithoutExtension(i) };
+                        if (img.Width == 32) item.Foreground = Brushes.Blue;
+                        paletteList.Items.Add(item);
                     }
                 }
                 catch
@@ -133,21 +132,37 @@ namespace BMEngine
 
         public Color4[] GetColors(int tracks)
         {
+            Random r = new Random(0);
+            double[] order = new double[tracks * 16];
+            int[] coords = new int[tracks * 16];
+            for (int i = 0; i < order.Length; i++)
+            {
+                order[i] = r.NextDouble();
+                coords[i] = i;
+            }
+            if (randomise)
+            {
+                Array.Sort(order, coords);
+            }
             List<Color4> cols = new List<Color4>();
             var img = images[selectedIndex];
             for (int i = 0; i < tracks; i++)
             {
                 for (int j = 0; j < 16; j++)
                 {
-                    if(img.Width == 16)
+                    int y = coords[i * 16 + j];
+                    int x = y % 16;
+                    y = y - x;
+                    y /= 16;
+                    if (img.Width == 16)
                     {
-                        cols.Add(img.GetPixel(j, i % img.Height));
-                        cols.Add(img.GetPixel(j, i % img.Height));
+                        cols.Add(img.GetPixel(x, y % img.Height));
+                        cols.Add(img.GetPixel(x, y % img.Height));
                     }
                     else
                     {
-                        cols.Add(img.GetPixel(j * 2, i % img.Height));
-                        cols.Add(img.GetPixel(j * 2 + 1, i % img.Height));
+                        cols.Add(img.GetPixel(x * 2, y % img.Height));
+                        cols.Add(img.GetPixel(x * 2 + 1, y % img.Height));
                     }
                 }
             }
@@ -159,6 +174,11 @@ namespace BMEngine
             Reload();
         }
 
+        private void RandomiseOrder_Checked(object sender, RoutedEventArgs e)
+        {
+            randomise = (bool)randomiseOrder.IsChecked;
+        }
+
         private void PaletteList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (paletteList.SelectedItem == null) return;
@@ -166,10 +186,10 @@ namespace BMEngine
             {
                 SelectedImage = (string)((ListBoxItem)paletteList.SelectedItem).Content;
                 selectedIndex = paletteList.SelectedIndex;
-                
+
             }
             catch
-            {}
+            { }
         }
     }
 }

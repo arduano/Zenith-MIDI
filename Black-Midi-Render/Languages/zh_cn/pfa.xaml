@@ -1,0 +1,32 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MSDNSample"
+    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <!--Palette picker-->
+    <system:String x:Key="palettes_reload">重新加载</system:String>
+    <system:String x:Key="palettes_restartNote">注意：重新启动预览以更新调色板</system:String>
+    <system:String x:Key="palettes_imageNote">图像需要是16（或32）像素宽的PNG和任何高度。支持透明度。</system:String>
+    <system:String x:Key="palettes_randomise">随机颜色顺序</system:String>
+
+    <!--Other settings-->
+    <system:String x:Key="firstNote">第一个音符</system:String>
+    <system:String x:Key="lastNote">最后一个音符</system:String>
+    <system:String x:Key="pianoHeight">钢琴高度%</system:String>
+    <system:String x:Key="noteScreenTime">音符屏幕时间</system:String>
+    <system:String x:Key="noteTempo">音符节奏</system:String>
+    <system:String x:Key="changeSpeed">改变速度</system:String>
+    <system:String x:Key="changeSize">改变大小</system:String>
+    <system:String x:Key="sameWidthNotes">同宽音符</system:String>
+    <system:String x:Key="save">保存</system:String>
+    <system:String x:Key="loadSaved">加载已保存</system:String>
+    <system:String x:Key="setDefaults">默认</system:String>
+
+    <system:String x:Key="middleCSquare">中间的C正方形</system:String>
+    <system:String x:Key="blackNotesAbove">在上面画黑色的音符（警告：慢一点！！）</system:String>
+    <system:String x:Key="topColor">顶部颜色</system:String>
+    <system:String x:Key="colorRed">红</system:String>
+    <system:String x:Key="colorGreen">绿</system:String>
+    <system:String x:Key="colorBlue">蓝</system:String>
+</ResourceDictionary>
