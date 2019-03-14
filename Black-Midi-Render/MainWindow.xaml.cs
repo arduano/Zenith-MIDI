@@ -176,6 +176,10 @@ namespace Black_Midi_Render
             winthread.GetAwaiter().GetResult();
             settings.running = false;
             midifile.Reset();
+            win.Dispose();
+            win = null;
+            GC.Collect();
+            GC.WaitForFullGCComplete();
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine(
                     "Finished render\nRAM usage (Private bytes)\nPeak: " + Math.Round((double)maxRam / 1000 / 1000 / 1000 * 100) / 100 +

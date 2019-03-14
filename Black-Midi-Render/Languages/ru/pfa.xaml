@@ -5,26 +5,26 @@
     xmlns:system="clr-namespace:System;assembly=mscorlib">
 
     <!--Palette picker-->
-    <system:String x:Key="palettes_reload">Обновить список</system:String>
-    <system:String x:Key="palettes_restartNote">Замечание: Требуется перезапуск превью для обновления палитры цветов</system:String>
-    <system:String x:Key="palettes_imageNote">Картинка должна быть 16 (или 32 для градиентов) пикселей в ширину. Высота не ограничена. Прозрачность поддерживается.</system:String>
-    <system:String x:Key="palettes_randomise">Перемешать порядок цветов</system:String>
-
+    <system:String x:Key="palettes_reload">Перезагрузить</system:String>
+    <system:String x:Key="palettes_restartNote">: Перезапустите предпросмотр, чтобы обновить цветовую палитру</system:String>
+    <system:String x:Key="palettes_imageNote">Изображение должно быть шириной в 16 (или 32 для градиентов) пикселей и любой высотой в формате PNG. Поддерживается прозрачность.</system:String>
+    <system:String x:Key="palettes_randomise">Рандомизировать порядок цветов</system:String>
+    
     <!--Other settings-->
-    <system:String x:Key="firstNote">Первая нота (номер)</system:String>
-    <system:String x:Key="lastNote">Последняя нота (номер)</system:String>
+    <system:String x:Key="firstNote">Первая нота</system:String>
+    <system:String x:Key="lastNote">Последняя нота</system:String>
     <system:String x:Key="pianoHeight">Высота клавиатуры в процентах</system:String>
     <system:String x:Key="noteScreenTime">Время нахождения ноты в кадре</system:String>
     <system:String x:Key="noteTempo">Скорость нот</system:String>
-    <system:String x:Key="changeSpeed">Изменить скорость</system:String>
+    <system:String x:Key="changeSpeed">Скорость</system:String>
     <system:String x:Key="changeSize">Изменить размер</system:String>
     <system:String x:Key="sameWidthNotes">Одинаковая ширина нот</system:String>
     <system:String x:Key="save">Сохранить</system:String>
     <system:String x:Key="loadSaved">Загрузить сохранённое</system:String>
     <system:String x:Key="setDefaults">По умолчанию</system:String>
 
-    <system:String x:Key="middleCSquare">Квадратик на центральной "ДО"</system:String>
-    <system:String x:Key="blackNotesAbove">Чёрные клавиши поверх белых. (Замедляет рендер)</system:String>
+    <system:String x:Key="middleCSquare">Квадратик на центральной "До"</system:String>
+    <system:String x:Key="blackNotesAbove">Чёрные клавиши поверх белых (Замедляет рендер!)</system:String>
     <system:String x:Key="topColor">Цвет полосы</system:String>
     <system:String x:Key="colorRed">Красный</system:String>
     <system:String x:Key="colorGreen">Зелёный</system:String>

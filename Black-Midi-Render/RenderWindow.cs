@@ -271,7 +271,7 @@ void main()
             Width = (int)(DisplayDevice.Default.Width / 1.5);
             Height = (int)((double)Width / settings.width * settings.height);
             Location = new Point((DisplayDevice.Default.Width - Width) / 2, (DisplayDevice.Default.Height - Height) / 2);
-            textEngine = new GLTextEngine();
+            //textEngine = new GLTextEngine();
             render = renderer;
             this.settings = settings;
             lastTempo = midi.zerothTempo;
@@ -578,12 +578,44 @@ void main()
                 render.renderer.Dispose();
             }
             catch { }
+
+            globalDisplayNotes = null;
+            globalTempoEvents = null;
+            globalColorEvents = null;
+            pixels = null;
+            pixelsmask = null;
+            if (settings.ffRender)
+            {
+                ffmpegvideo.Dispose();
+                if (settings.ffRenderMask) ffmpegmask.Dispose();
+            }
+            ffmpegvideo = null;
+            ffmpegmask = null;
+
+            finalCompositeBuff.Dispose();
+            ffmpegOutputBuff.Dispose();
+            downscaleBuff.Dispose();
+            finalCompositeBuff = null;
+            ffmpegOutputBuff = null;
+            downscaleBuff = null;
+
+            GL.DeleteBuffers(2, new int[] { screenQuadBuffer, screenQuadIndexBuffer });
+
+            GL.DeleteProgram(postShader);
+            GL.DeleteProgram(postShaderMask);
+            GL.DeleteProgram(postShaderMaskColor);
+            GL.DeleteProgram(postShaderDownscale);
+
+            midi = null;
+            render = null;
+
             this.Close();
         }
 
         protected override void OnClosing(CancelEventArgs e)
         {
             base.OnClosing(e);
+
             settings.running = false;
         }
 

@@ -7,9 +7,9 @@
     <system:String x:Key="LanguageName">Русский</system:String>
     
     <!--Tab Names-->
-    <system:String x:Key="midiTab">Загрузить МИДИ</system:String>
+    <system:String x:Key="midiTab">Загрузить MIDI</system:String>
     <system:String x:Key="pluginsTab">Плагины</system:String>
-    <system:String x:Key="pluginSettingsTab">Настройки плагинов</system:String>
+    <system:String x:Key="pluginSettingsTab">Настройки плагина</system:String>
     <system:String x:Key="previewTab">Настройки предпросмотра</system:String>
     <system:String x:Key="renderTab">Настройки рендера</system:String>
 
@@ -25,19 +25,19 @@
     <system:String x:Key="zenithRenderWarning">Предупреждение: Картинка в окне предпросмотра вырисовывается в вышеуказанном разрешении,
     а затем масштабируется в соответствии с размером окна.</system:String>
     <system:String x:Key="superRes">SSAA</system:String>
-    <system:String x:Key="superResWarning">Увеличение SSAA сильно увеличевает как "гладкость" пикселей, так и время прорисовки одного кадра</system:String>
+    <system:String x:Key="superResWarning">Увеличение SSAA сильно увеличивает как "гладкость" пикселей, так и время прорисовки одного кадра</system:String>
     <system:String x:Key="language">Язык</system:String>
     
     <!--Plugins Page-->
     <system:String x:Key="reload">Обновить список</system:String>
-    <system:String x:Key="pluginWarning">ПРЕДУПРЕЖДЕНИЕ: Используйте плагины только из проверенных источников. Внутри плагина возможно пронести вирус.</system:String>
+    <system:String x:Key="pluginWarning">ПРЕДУПРЕЖДЕНИЕ: Используйте плагины только из проверенных источников. Внутри плагина возможно пронести вирус!</system:String>
     <system:String x:Key="startPreview">Запустить предпросмотр</system:String>
-    <system:String x:Key="stop">Остановит</system:String>
+    <system:String x:Key="stop">Остановить</system:String>
 
     <!--Preview Page-->
     <system:String x:Key="vsync">Включена V-Sync</system:String>
     <system:String x:Key="tempo">Множитель темпа</system:String>
-    <system:String x:Key="pauseHint">Кликните правой кнопкой мыши или пробелом что бы остановить или снять с паузы</system:String>
+    <system:String x:Key="pauseHint">Кликните правой кнопкой мыши или Пробел, чтобы остановить или снять с паузы</system:String>
     <system:String x:Key="paused">Превью изначально на паузе</system:String>
     <system:String x:Key="forceRender">Форсировать перерисовку каждого кадра</system:String>
 
@@ -49,6 +49,6 @@
     <system:String x:Key="crfHint">FFMPEG crf: 0 - видеоряд без потерь, 51 - худшее качество.</system:String>
     <system:String x:Key="delatStart">Задержка перед стартом (в секундах)</system:String>
     <system:String x:Key="ffmpegDebug">Отладка FFMPEG</system:String>
-    <system:String x:Key="startRender">Запустить рендер</system:String>
-    <system:String x:Key="ifUploading">Если вы собираетесь загрузить видео в интернет, упомяните, что видео было создано с использованием Zenith</system:String>
+    <system:String x:Key="startRender">Начать рендер</system:String>
+    <system:String x:Key="ifUploading">Если вы собираетесь загрузить видео в интернет, упомяните, что видео было создано с использованием Zenith.</system:String>
 </ResourceDictionary>

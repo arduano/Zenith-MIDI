@@ -6,14 +6,14 @@
 
     <!--Palette picker-->
     <system:String x:Key="palettes_reload">Обновить список</system:String>
-    <system:String x:Key="palettes_restartNote">Замечание: Требуется перезапуск превью для обновления палитры цветов</system:String>
-    <system:String x:Key="palettes_imageNote">Картинка должна быть 16 (или 32 для градиентов) пикселей в ширину. Высота не ограничена. Прозрачность поддерживается.</system:String>
+    <system:String x:Key="palettes_restartNote">Внимание: Требуется перезапуск предпросмотра для обновления палитры цветов</system:String>
+    <system:String x:Key="palettes_imageNote">Изображение должно быть шириной в 16 (или 32 для градиентов) пикселей и любой высотой в формате PNG. Поддерживается прозрачность.</system:String>
     <system:String x:Key="palettes_randomise">Перемешать порядок цветов</system:String>
 
     <!--Shared-->
     <system:String x:Key="delete">Удалить</system:String>
     <system:String x:Key="saveNew">Сохранить новый</system:String>
-    <system:String x:Key="loadDefault">По умалчанию</system:String>
+    <system:String x:Key="loadDefault">По умолчанию</system:String>
 
     <!--Tab Names-->
     <system:String x:Key="visualsTab">Настройки графики</system:String>
@@ -22,15 +22,15 @@
 
 
     <!--Visuals-->
-    <system:String x:Key="firstNote">Первая нота (номер)</system:String>
-    <system:String x:Key="lastNote">Последняя нота (номер)</system:String>
+    <system:String x:Key="firstNote">Первая нота</system:String>
+    <system:String x:Key="lastNote">Последняя нота</system:String>
     <system:String x:Key="keyDownSpeed">Скорость нажатия клавиши</system:String>
     <system:String x:Key="keyUpSpeed">Скорость отжатия клавиши</system:String>
     <system:String x:Key="tiltKeys">Повернуть клавиши</system:String>
-    <system:String x:Key="3dNotes">Трёхмерные ноты (замедляет рендер)</system:String>
+    <system:String x:Key="3dNotes">3D ноты (замедляет рендер!)</system:String>
     <system:String x:Key="lightShade">Световая тень</system:String>
     <system:String x:Key="noteSpeed">Скорость нот</system:String>
-    <system:String x:Key="velocityStrength">Сила нажатия клавиш зависит от величины громкости</system:String>
+    <system:String x:Key="velocityStrength">Сила нажатия клавиш в зависимости от громкости</system:String>
     <system:String x:Key="keyboardClip">Ноты не проходят за клавиатуру</system:String>
     <system:String x:Key="sameWidthNotes">Ноты одинаковой ширины</system:String>
     <system:String x:Key="onNoteHit">По достижению нотой клавиши:</system:String>
@@ -38,27 +38,27 @@
     <system:String x:Key="changeTint">Изменить оттенок</system:String>
 
     <!--Camera-->
-    <system:String x:Key="speedWarning">Внимание: Этот плагин кушает процессор и память больше всех прочих, ввиду большего числа видимых нот.
-    Больше нот видно - дольше прориовка одного кадра!</system:String>
+    <system:String x:Key="speedWarning">ПРЕДУПРЕЖДЕНИЕ: Этот плагин использует гораздо больше оперативной памяти и мощности процессора из-за большего времени прорисовки нот на экране. 
+Чем больше нот будет видно, тем медленнее будет рендеринг!</system:String>
 
-    <system:String x:Key="cameraPreset">Преднастройки:</system:String>
+    <system:String x:Key="cameraPreset">Предустановки:</system:String>
     <system:String x:Key="farPreset">Далеко</system:String>
     <system:String x:Key="mediumPreset">Средне</system:String>
-    <system:String x:Key="closerPreset">Близко</system:String>
-    <system:String x:Key="closePreset">Для кротов</system:String>
+    <system:String x:Key="closerPreset">Ближе</system:String>
+    <system:String x:Key="closePreset">Близко</system:String>
 
     <system:String x:Key="FOV">FOV</system:String>
     <system:String x:Key="viewAngle">Угол обзора</system:String>
     <system:String x:Key="renderDistF">Дистанция начала прорисовки нот</system:String>
     <system:String x:Key="renderDistB">Дистанция конца прорисовки нот</system:String>
     <system:String x:Key="camOffsets">Сдвиги камеры</system:String>
-    <system:String x:Key="horizontal">Вдоль нот:</system:String>
-    <system:String x:Key="vertical">По вертикали:</system:String>
+    <system:String x:Key="horizontal">По горизонтали</system:String>
+    <system:String x:Key="vertical">По вертикали</system:String>
     
     <!--Aura-->
-    <system:String x:Key="imageHint">Картинка должна быть квадратной и иметь прозрачность (желательно).</system:String>
+    <system:String x:Key="imageHint">Картинка должна быть квадратной и желательно с прозрачностью.</system:String>
     <system:String x:Key="auraEnabled">Аура включена</system:String>
-    <system:String x:Key="reload">Обновить список</system:String>
-    <system:String x:Key="auraStrength">Сила аура:</system:String>
-    <system:String x:Key="auraLocation">Изображения для создания ауры расположены в: Plugins\Assets\MidiTrail\Aura</system:String>
+    <system:String x:Key="reload">Перезагрузить</system:String>
+    <system:String x:Key="auraStrength">Сила ауры:</system:String>
+    <system:String x:Key="auraLocation">Изображения расположены в: Plugins\Assets\MidiTrail\Aura</system:String>
 </ResourceDictionary>

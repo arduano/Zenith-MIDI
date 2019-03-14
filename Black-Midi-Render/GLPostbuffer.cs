@@ -8,7 +8,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace Black_Midi_Render
 {
-    class GLPostbuffer
+    class GLPostbuffer: IDisposable
     {
         public int BufferID { get; private set; }
         public int TextureID { get; private set; }
@@ -39,6 +39,12 @@ namespace Black_Midi_Render
         public static void UnbindTextures()
         {
             GL.BindTexture(TextureTarget.Texture2D, 0);
+        }
+
+        public void Dispose()
+        {
+            GL.DeleteFramebuffer(BufferID);
+            GL.DeleteTexture(TextureID);
         }
     }
 }
