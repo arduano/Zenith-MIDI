@@ -91,7 +91,6 @@
                             </MultiBinding>
                         </Button.IsEnabled>
                     </Button>
-                    <Label Content="{DynamicResource zenithRenderWarning}" HorizontalAlignment="Left" Margin="10,158,0,0" VerticalAlignment="Top"/>
                     <Button Content="{DynamicResource startPreview}" HorizontalAlignment="Left" Margin="10,0,0,10" Width="118" IsEnabled="{Binding ElementName=previewStartEnabled, Path=IsEnabled}" Height="20" VerticalAlignment="Bottom" Click="StartButton_Click" />
                     <Button Content="{DynamicResource stop}" HorizontalAlignment="Left" Margin="133,0,0,10" Width="75" IsEnabled="{Binding ElementName=stopEnabled, Path=IsEnabled}" Height="20" VerticalAlignment="Bottom" Click="StopButton_Click" />
                     <DockPanel Height="26" LastChildFill="False" Margin="10,96,10,0" VerticalAlignment="Top">
@@ -118,10 +117,13 @@
                         <ComboBox Name="languageSelect" DockPanel.Dock="Right" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Top" Width="120" Height="26" SelectionChanged="LanguageSelect_SelectionChanged"/>
                         <Label DockPanel.Dock="Right" Content="{DynamicResource language}" VerticalAlignment="Top"/>
                     </DockPanel>
-                    <Label Content="{DynamicResource superResWarning}" HorizontalAlignment="Left" Margin="10,220,0,0" VerticalAlignment="Top"/>
-                    <DockPanel HorizontalAlignment="Left" LastChildFill="False" Margin="10,189,0,0" VerticalAlignment="Top">
-                        <Label Content="{DynamicResource superRes}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left"/>
-                        <xctk:DecimalUpDown  DockPanel.Dock="Left" x:Name="SSAAFactor" FormatString="F0" Value="1" Increment="1"  Maximum="4" Minimum="1" HorizontalAlignment="Left" Width="118" Height="26" VerticalAlignment="Top" IsEnabled="{Binding IsEnabled, ElementName=notPreviewingOrRendering}" Margin="5,0,0,0"  />
+                    <DockPanel Height="100" LastChildFill="False" Margin="10,158,10,0" VerticalAlignment="Top">
+                        <TextBlock DockPanel.Dock="Top" TextWrapping="Wrap" Text="{DynamicResource zenithRenderWarning}" VerticalAlignment="Top" Margin="5,5,0,5"/>
+                        <DockPanel DockPanel.Dock="Top" HorizontalAlignment="Left" LastChildFill="False" Margin="0,5" VerticalAlignment="Top">
+                            <Label Content="{DynamicResource superRes}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left"/>
+                            <xctk:DecimalUpDown  DockPanel.Dock="Left" x:Name="SSAAFactor" FormatString="F0" Value="1" Increment="1"  Maximum="4" Minimum="1" HorizontalAlignment="Left" Width="118" Height="26" VerticalAlignment="Top" IsEnabled="{Binding IsEnabled, ElementName=notPreviewingOrRendering}" Margin="5,0,0,0"  />
+                        </DockPanel>
+                        <TextBlock DockPanel.Dock="Top" TextWrapping="Wrap" Text="{DynamicResource superResWarning}" VerticalAlignment="Top" Margin="5,5,0,5"/>
                     </DockPanel>
                 </Grid>
             </TabItem>
@@ -135,7 +137,7 @@
                     <Button Name="reloadButton" Content="{DynamicResource reload}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="174" Height="20" Click="ReloadButton_Click"/>
                     <Image Name="previewImage" Margin="189,10,0,10" Stretch="Uniform"/>
                     <TextBox Name="pluginDescription" Margin="189,0,10,10" Grid.Row="1" TextWrapping="Wrap" IsEnabled="False"/>
-                    <TextBlock HorizontalAlignment="Left" Margin="10,5,0,0" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Top" Height="80" Width="174"><Run Foreground="Blue" FontSize="12.6666666666667" FontFamily="Consolas" Text="{DynamicResource pluginWarning}"/><Run Foreground="Blue" FontSize="12.6666666666667" FontFamily="Consolas" Text="!"/></TextBlock>
+                    <TextBlock Margin="10,5,582,10" Grid.Row="1" TextWrapping="Wrap"><Run Foreground="Blue" FontSize="12.6666666666667" FontFamily="Consolas" Text="{DynamicResource pluginWarning}"/><Run Foreground="Blue" FontSize="12.6666666666667" FontFamily="Consolas" Text="!"/></TextBlock>
 
                 </Grid>
             </TabItem>

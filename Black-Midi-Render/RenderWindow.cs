@@ -54,11 +54,11 @@ in vec2 UV;
 
 out vec4 color;
 
-uniform sampler2D myTextureSampler;
+uniform sampler2D TextureSampler;
 
 void main()
 {
-    color = texture2D( myTextureSampler, UV );
+    color = texture2D( TextureSampler, UV );
 }
 ";
         string postShaderFragDownscale = @"#version 330 compatibility
@@ -193,7 +193,7 @@ void main()
                 double offset = -midiTime / fstep / settings.fps;
                 offset = Math.Round(offset * 100) / 100;
                 args = "" +
-                    " -f rawvideo -s " + settings.width + "x" + settings.height +
+                    " -f rawvideo -s " + settings.width / settings.downscale + "x" + settings.height / settings.downscale +
                     " -pix_fmt rgb32 -r " + settings.fps + " -i -" +
                     " -itsoffset " + offset.ToString().Replace(",", ".") + " -i \"" + settings.audioPath + "\"" +
                     " -vf vflip -vcodec libx264 -pix_fmt yuv420p -acodec aac";
@@ -201,7 +201,7 @@ void main()
             else
             {
                 args = "" +
-                    " -f rawvideo -s " + settings.width + "x" + settings.height +
+                    " -f rawvideo -s " + settings.width / settings.downscale + "x" + settings.height / settings.downscale +
                     " -strict -2" +
                     " -pix_fmt rgb32 -r " + settings.fps + " -i -" +
                     " -vf vflip -vcodec libx264 -pix_fmt yuv420p";
@@ -289,18 +289,18 @@ void main()
             this.midi = midi;
             if (settings.ffRender)
             {
-                pixels = new byte[settings.width * settings.height * 4];
+                pixels = new byte[settings.width * settings.height * 4 / settings.downscale / settings.downscale];
                 ffmpegvideo = startNewFF(settings.ffPath);
                 if (settings.ffRenderMask)
                 {
-                    pixelsmask = new byte[settings.width * settings.height * 4];
+                    pixelsmask = new byte[settings.width * settings.height * 4 / settings.downscale / settings.downscale];
                     ffmpegmask = startNewFF(settings.ffMaskPath);
                 }
             }
 
             finalCompositeBuff = new GLPostbuffer(settings.width, settings.height);
-            ffmpegOutputBuff = new GLPostbuffer(settings.height / settings.downscale, settings.height / settings.downscale);
-            downscaleBuff = new GLPostbuffer(settings.height / settings.downscale, settings.height / settings.downscale);
+            ffmpegOutputBuff = new GLPostbuffer(settings.width / settings.downscale, settings.height / settings.downscale);
+            downscaleBuff = new GLPostbuffer(settings.width / settings.downscale, settings.height / settings.downscale);
 
             GL.GenBuffers(1, out screenQuadBuffer);
             GL.GenBuffers(1, out screenQuadIndexBuffer);
@@ -470,12 +470,15 @@ void main()
                 {
                     GL.UseProgram(postShaderDownscale);
                     GL.Uniform1(uDownscaleFac, (int)settings.downscale);
-                    GL.Uniform2(uDownscaleRes, new Vector2(settings.height / settings.downscale, settings.height / settings.downscale));
+                    GL.Uniform2(uDownscaleRes, new Vector2(settings.width / settings.downscale, settings.height / settings.downscale));
                 }
-                else GL.UseProgram(postShader);
+                else
+                {
+                    GL.UseProgram(postShader);
+                }
                 downscaleBuff.BindBuffer();
                 GL.Clear(ClearBufferMask.ColorBufferBit);
-                GL.Viewport(0, 0, settings.height / settings.downscale, settings.height / settings.downscale);
+                GL.Viewport(0, 0, settings.width / settings.downscale, settings.height / settings.downscale);
                 finalCompositeBuff.BindTexture();
                 DrawScreenQuad();
 
@@ -488,11 +491,11 @@ void main()
                     finalCompositeBuff.BindTexture();
                     ffmpegOutputBuff.BindBuffer();
                     GL.Clear(ClearBufferMask.ColorBufferBit);
-                    GL.Viewport(0, 0, settings.width, settings.height);
-                    finalCompositeBuff.BindTexture();
+                    GL.Viewport(0, 0, settings.width / settings.downscale, settings.height / settings.downscale);
+                    downscaleBuff.BindTexture();
                     DrawScreenQuad();
                     IntPtr unmanagedPointer = Marshal.AllocHGlobal(pixels.Length);
-                    GL.ReadPixels(0, 0, settings.width, settings.height, PixelFormat.Bgra, PixelType.UnsignedByte, unmanagedPointer);
+                    GL.ReadPixels(0, 0, settings.width / settings.downscale, settings.height / settings.downscale, PixelFormat.Bgra, PixelType.UnsignedByte, unmanagedPointer);
                     Marshal.Copy(unmanagedPointer, pixels, 0, pixels.Length);
 
                     if (lastRenderPush != null) lastRenderPush.GetAwaiter().GetResult();
@@ -506,14 +509,13 @@ void main()
                     {
                         if (lastRenderPushMask != null) lastRenderPushMask.GetAwaiter().GetResult();
                         GL.UseProgram(postShaderMask);
-                        downscaleBuff.BindTexture();
                         ffmpegOutputBuff.BindBuffer();
                         GL.Clear(ClearBufferMask.ColorBufferBit);
-                        GL.Viewport(0, 0, settings.width, settings.height);
+                        GL.Viewport(0, 0, settings.width / settings.downscale, settings.height / settings.downscale);
                         downscaleBuff.BindTexture();
                         DrawScreenQuad();
                         unmanagedPointer = Marshal.AllocHGlobal(pixelsmask.Length);
-                        GL.ReadPixels(0, 0, settings.width, settings.height, PixelFormat.Bgra, PixelType.UnsignedByte, unmanagedPointer);
+                        GL.ReadPixels(0, 0, settings.width / settings.downscale, settings.height / settings.downscale, PixelFormat.Bgra, PixelType.UnsignedByte, unmanagedPointer);
                         Marshal.Copy(unmanagedPointer, pixelsmask, 0, pixelsmask.Length);
 
                         if (lastRenderPush != null) lastRenderPush.GetAwaiter().GetResult();

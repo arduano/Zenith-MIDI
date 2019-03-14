@@ -1,0 +1,63 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MSDNSample"
+    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <!--Palette picker-->
+    <system:String x:Key="palettes_reload">重新讀取</system:String>
+    <system:String x:Key="palettes_restartNote">注意: 重設預覽以更新調色</system:String>
+    <system:String x:Key="palettes_imageNote">圖片至少需要16(或32位元)像素寬png檔案, 和任何高度.支援透明.</system:String>
+
+    <!--Shared-->
+    <system:String x:Key="delete">刪除</system:String>
+    <system:String x:Key="saveNew">現在儲存</system:String>
+    <system:String x:Key="loadDefault">預設</system:String>
+
+    <!--Tab Names-->
+    <system:String x:Key="visualsTab">視覺效果</system:String>
+    <system:String x:Key="cameraTab">相機</system:String>
+    <system:String x:Key="auraTab">光影</system:String>
+
+
+    <!--Visuals-->
+    <system:String x:Key="firstNote">第一個音符</system:String>
+    <system:String x:Key="lastNote">最後一個音符</system:String>
+    <system:String x:Key="keyDownSpeed">按鍵下降速度</system:String>
+    <system:String x:Key="keyUpSpeed">按鍵上升速度</system:String>
+    <system:String x:Key="tiltKeys">傾斜鍵</system:String>
+    <system:String x:Key="3dNotes">3D 音符 (很慢!)</system:String>
+    <system:String x:Key="lightShade">光影</system:String>
+    <system:String x:Key="noteSpeed">音符速度</system:String>
+    <system:String x:Key="velocityStrength">音符速度强度</system:String>
+    <system:String x:Key="keyboardClip">琴鍵剪輯音符</system:String>
+    <system:String x:Key="sameWidthNotes">相同音符寬度</system:String>
+    <system:String x:Key="onNoteHit">音符擊中時:</system:String>
+    <system:String x:Key="changeSize">更改大小</system:String>
+    <system:String x:Key="changeTint">更改色彩</system:String>
+
+    <!--Camera-->
+    <system:String x:Key="speedWarning">警告: 由於螢幕上的音符時間較長，此插件可以使用更多的記憶體和處理器. 可見的註釋越多, 輸出速度越慢!</system:String>
+
+    <system:String x:Key="cameraPreset">設定檔:</system:String>
+    <system:String x:Key="farPreset">遠</system:String>
+    <system:String x:Key="mediumPreset">中間</system:String>
+    <system:String x:Key="closerPreset">接近</system:String>
+    <system:String x:Key="closePreset">關閉</system:String>
+
+    <system:String x:Key="FOV">視野</system:String>
+    <system:String x:Key="viewAngle">視角</system:String>
+    <system:String x:Key="renderDistF">音符輸出距離. 向前</system:String>
+    <system:String x:Key="renderDistB">音符輸出距離. 向後</system:String>
+    <system:String x:Key="camOffsets">相機偏移</system:String>
+    <system:String x:Key="horizontal">橫</system:String>
+    <system:String x:Key="vertical">垂直</system:String>
+    
+    <!--Aura-->
+    <system:String x:Key="imageHint">圖片需要正方形png, 並且只考慮透明度</system:String>
+    <system:String x:Key="auraEnabled">音符光環啟動</system:String>
+    <system:String x:Key="reload">重新讀取</system:String>
+    <system:String x:Key="auraStrength">強度:</system:String>
+    <system:String x:Key="auraLocation">圖片位置於: Plugins\Assets\MidiTrail\Aura</system:String>
+	<system:String x:Key="palettes_randomise">隨機顏色順序</system:String>
+</ResourceDictionary>

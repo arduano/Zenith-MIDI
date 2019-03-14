@@ -341,6 +341,7 @@ namespace Black_Midi_Render
             settings.running = true;
             settings.width = (int)viewWidth.Value * (int)SSAAFactor.Value;
             settings.height = (int)viewHeight.Value * (int)SSAAFactor.Value;
+            settings.downscale = (int)SSAAFactor.Value;
             settings.fps = (int)viewFps.Value;
             settings.ffRender = false;
             settings.renderSecondsDelay = 0;
@@ -370,6 +371,7 @@ namespace Black_Midi_Render
             settings.running = true;
             settings.width = (int)viewWidth.Value * (int)SSAAFactor.Value;
             settings.height = (int)viewHeight.Value * (int)SSAAFactor.Value;
+            settings.downscale = (int)SSAAFactor.Value;
             settings.fps = (int)viewFps.Value;
             settings.ffRender = true;
             settings.ffPath = videoPath.Text;
@@ -532,7 +534,6 @@ namespace Black_Midi_Render
         private void LanguageSelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if(pluginControl != null)
-                
                 ((UserControl)pluginControl).Resources.MergedDictionaries.Add(Languages[languageSelect.SelectedIndex]);
             Resources.MergedDictionaries.Add(Languages[languageSelect.SelectedIndex]);
         }

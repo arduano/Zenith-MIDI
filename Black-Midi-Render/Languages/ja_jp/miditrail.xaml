@@ -1,0 +1,65 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MSDNSample"
+    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <!--Palette picker-->
+    <system:String x:Key="palettes_reload">リロード</system:String>
+    <system:String x:Key="palettes_restartNote">カラーパレットの変更を適用するにはプレビューし直してください</system:String>
+    <system:String x:Key="palettes_imageNote">画像は、幅16px(グラデーション使用は32px)と任意の高さのPNGでなくてはなりません。透明使えます。</system:String>
+    <system:String x:Key="palettes_randomise">色の順番をシャッフル</system:String>
+
+    <!--Shared-->
+    <system:String x:Key="delete">設定を削除</system:String>
+    <system:String x:Key="saveNew">設定を保存</system:String>
+    <system:String x:Key="loadDefault">デフォルト設定</system:String>
+
+    <!--Tab Names-->
+    <system:String x:Key="visualsTab">ビジュアル</system:String>
+    <system:String x:Key="cameraTab">カメラ</system:String>
+    <system:String x:Key="auraTab">波紋</system:String>
+    <!-- It is ccalled "Ripple" (波紋) in MIDITrail. Translation for "Aura" is "オーラ". -->
+
+
+    <!--Visuals-->
+    <system:String x:Key="firstNote">最初のノート</system:String>
+    <system:String x:Key="lastNote">最後のノート</system:String>
+    <system:String x:Key="keyDownSpeed">鍵を押す速度</system:String>
+    <system:String x:Key="keyUpSpeed">鍵を離す速度</system:String>
+    <system:String x:Key="tiltKeys">押している鍵を傾ける</system:String>
+    <system:String x:Key="3dNotes">3Dノート (重いよ!)</system:String>
+    <system:String x:Key="lightShade">ノートを少し明るくする</system:String>
+    <system:String x:Key="noteSpeed">ノート速度</system:String>
+    <system:String x:Key="velocityStrength">ノートベロシティで鍵を押す強さを変える</system:String>
+    <system:String x:Key="keyboardClip">鍵盤でノートをクリップ</system:String>
+    <system:String x:Key="sameWidthNotes">全ノート同じ幅</system:String>
+    <system:String x:Key="onNoteHit">ノートオンでノートの</system:String>
+    <system:String x:Key="changeSize">大きさを変える</system:String>
+    <system:String x:Key="changeTint">明るさを変える</system:String>
+
+    <!--Camera-->
+    <system:String x:Key="speedWarning">注意: このプラグインはより多くのノートを一度に映すため、CPUもメモリもかなり使います。</system:String>
+
+    <system:String x:Key="cameraPreset">プリセット</system:String>
+    <system:String x:Key="farPreset">遠い</system:String>
+    <system:String x:Key="mediumPreset">普通</system:String>
+    <system:String x:Key="closerPreset">やや短い</system:String>
+    <system:String x:Key="closePreset">短い</system:String>
+
+    <system:String x:Key="FOV">視野</system:String>
+    <system:String x:Key="viewAngle">角度</system:String>
+    <system:String x:Key="renderDistF">描画範囲 (前)</system:String>
+    <system:String x:Key="renderDistB">描画範囲 (後ろ)</system:String>
+    <system:String x:Key="camOffsets">位置</system:String>
+    <system:String x:Key="horizontal">前後</system:String>
+    <system:String x:Key="vertical">上下</system:String>
+    
+    <!--Aura-->
+    <system:String x:Key="imageHint">画像は幅と高さが同じPNGでなくてはなりません。透明度のみが使用されます。</system:String>
+    <system:String x:Key="auraEnabled">波紋を使う</system:String>
+    <!-- Again, replace with "オーラを使う" if you want direct translation of "Aura". -->
+    <system:String x:Key="reload">リロード</system:String>
+    <system:String x:Key="auraStrength">強さ:</system:String>
+    <system:String x:Key="auraLocation">画像の場所: Plugins\Assets\MidiTrail\Aura</system:String>
+</ResourceDictionary>

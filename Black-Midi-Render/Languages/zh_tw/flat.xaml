@@ -1,0 +1,25 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MSDNSample"
+    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <!--Palette picker-->
+  <system:String x:Key="palettes_reload">重新載入</system:String>
+    <system:String x:Key="palettes_restartNote">注意: 重設預覽以更新調色</system:String>
+    <system:String x:Key="palettes_imageNote">圖片至少需要16(或32位元)像素寬png檔案, 和任何高度.支援透明.</system:String>
+
+    <!--Other settings-->
+    <system:String x:Key="firstNote">第一個音符</system:String>
+    <system:String x:Key="lastNote">最後一個音符</system:String>
+    <system:String x:Key="pianoHeight">鋼琴高度 %</system:String>
+    <system:String x:Key="noteScreenTime">音符螢幕時間</system:String>
+    <system:String x:Key="noteTempo">音符速度</system:String>
+    <system:String x:Key="changeSpeed">更改速度</system:String>
+    <system:String x:Key="changeSize">更改大小</system:String>
+    <system:String x:Key="sameWidthNotes">相同音符高度</system:String>
+    <system:String x:Key="save">儲存</system:String>
+    <system:String x:Key="loadSaved">載入已儲存</system:String>
+    <system:String x:Key="setDefaults">預設</system:String>
+
+</ResourceDictionary>

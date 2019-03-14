@@ -1,0 +1,26 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MSDNSample"
+    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <!--Palette picker-->
+    <system:String x:Key="palettes_reload">Обновить список</system:String>
+    <system:String x:Key="palettes_restartNote">Замечание: Требуется перезапуск превью для обновления палитры цветов</system:String>
+    <system:String x:Key="palettes_imageNote">Картинка должна быть 16 (или 32 для градиентов) пикселей в ширину. Высота не ограничена. Прозрачность поддерживается.</system:String>
+    <system:String x:Key="palettes_randomise">Перемешать порядок цветов</system:String>
+
+    <!--Other settings-->
+    <system:String x:Key="firstNote">Первая нота (номер)</system:String>
+    <system:String x:Key="lastNote">Последняя нота (номер)</system:String>
+    <system:String x:Key="pianoHeight">Высота клавиатуры в процентах</system:String>
+    <system:String x:Key="noteScreenTime">Время нахождения ноты в кадре</system:String>
+    <system:String x:Key="noteTempo">Скорость нот</system:String>
+    <system:String x:Key="changeSpeed">Изменить скорость</system:String>
+    <system:String x:Key="changeSize">Изменить размер</system:String>
+    <system:String x:Key="sameWidthNotes">Одинаковая ширина нот</system:String>
+    <system:String x:Key="save">Сохранить</system:String>
+    <system:String x:Key="loadSaved">Загрузить сохранённое</system:String>
+    <system:String x:Key="setDefaults">По умолчанию</system:String>
+
+</ResourceDictionary>

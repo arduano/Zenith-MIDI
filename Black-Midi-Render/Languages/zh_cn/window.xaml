@@ -4,7 +4,7 @@
     xmlns:local="using:MSDNSample"
     xmlns:system="clr-namespace:System;assembly=mscorlib">
 
-    <system:String x:Key="LanguageName">zh_cn</system:String>
+    <system:String x:Key="LanguageName">简体中文</system:String>
 
     <!--Tab Names-->
     <system:String x:Key="midiTab">加载MIDI</system:String>

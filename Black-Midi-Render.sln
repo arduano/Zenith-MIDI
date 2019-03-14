@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.329
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Black-Midi-Render", "Black-Midi-Render\Black-Midi-Render.csproj", "{273DA7BD-C89A-4574-97DE-AF425529FAAE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenith", "Black-Midi-Render\Zenith.csproj", "{273DA7BD-C89A-4574-97DE-AF425529FAAE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MidiUtils", "MidiUtils\MidiUtils.csproj", "{1A849712-B3E2-4AC5-B899-3A5AA3018F7A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BMEngine", "BMEngine\BMEngine.csproj", "{60F2212A-D56C-4776-836F-6A49453CDBC4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenithEngine", "BMEngine\ZenithEngine.csproj", "{60F2212A-D56C-4776-836F-6A49453CDBC4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{D60FA663-FD18-4342-A8C7-CD072DA1E4A0}"
 EndProject
