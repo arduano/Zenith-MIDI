@@ -28,7 +28,8 @@ export class MainComponent implements OnInit {
   public links:any[] = [
     {name:'Start', url:'start'},
     {name:'Benchmarks', url:'benchmarks'},
-    {name:'Plugins', url:'plugins'}
+    {name:'Plugins', url:'plugins'},
+    {name:'Credit', url:'credit'}
   ]
 
   toggleMenu(){

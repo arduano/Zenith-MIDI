@@ -1,3 +1,4 @@
+import { CreditPageComponent } from './pages/credit-page/credit-page.component';
 import { MainComponent } from './core/main/main.component';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule, ActivatedRouteSnapshot, DetachedRouteHandle, RouteReuseStrategy } from '@angular/router';
@@ -14,6 +15,7 @@ const routes: Routes = [
       { path: 'start', component: StartPageComponent },
       { path: 'benchmarks', component: BenchmarksPageComponent},
       { path: 'plugins', component: PluginsPageComponent},
+      { path: 'credit', component: CreditPageComponent},
     ]
   }
 ];

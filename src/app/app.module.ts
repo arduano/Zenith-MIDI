@@ -17,6 +17,8 @@ import { BenchmarksPageComponent } from './pages/benchmarks-page/benchmarks-page
 import { BenchmarkComponent } from './misc/benchmark/benchmark.component';
 import { PluginsPageComponent } from './pages/plugins-page/plugins-page.component';
 import { PluginComponent } from './misc/plugin/plugin.component';
+import { CreditPageComponent } from './pages/credit-page/credit-page.component';
+import { DiscordUserComponent } from './misc/discord-user/discord-user.component';
 
 
 @NgModule({
@@ -30,6 +32,8 @@ import { PluginComponent } from './misc/plugin/plugin.component';
     BenchmarkComponent,
     PluginsPageComponent,
     PluginComponent,
+    CreditPageComponent,
+    DiscordUserComponent,
   ],
   imports: [
     BrowserModule,
