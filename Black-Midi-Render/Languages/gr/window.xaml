@@ -1,0 +1,53 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MSDNSample"
+    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <system:String x:Key="LanguageName">Ελληνικά</system:String>
+    
+    <!--Tab Names-->
+    <system:String x:Key="midiTab">Άνοιγμα αρχείου MIDI</system:String>
+    <system:String x:Key="pluginsTab">Πρόσθετα</system:String>
+    <system:String x:Key="pluginSettingsTab">Ρυθμίσεις προσθέτων</system:String>
+    <system:String x:Key="previewTab">Προεπισκόπηση</system:String>
+    <system:String x:Key="renderTab">Μετατροπή</system:String>
+
+    <!--Main Page-->
+    <system:String x:Key="load">Φόρτωση</system:String>
+    <system:String x:Key="unload">Ακύρωση Φόρτωσης</system:String>
+    <system:String x:Key="browse">Περιήγηση</system:String>
+    <system:String x:Key="maxTrackBuffSize">Μέγιστο μέγεθος buffer</system:String>
+    <system:String x:Key="width">Πλάτος</system:String>
+    <system:String x:Key="height">Ύψος</system:String>
+    <system:String x:Key="fps">FPS</system:String>
+    <system:String x:Key="presets">Προεπιλογές</system:String>
+    <system:String x:Key="zenithRenderWarning">Προσοχή: Η προεπισκόπιση μετατρέπει με την παραπάνω ανάλυση, τότε την μειώνει στην ανάλυση του παραθύρου της προεπισκόπησης.</system:String>
+    <system:String x:Key="superRes">SSAA</system:String>
+    <system:String x:Key="superResWarning">Η αύξηση της τιμής του SSAA μπορεί να εξομαλύνει τα εικονοστοιχεία, αλλα απαιτεί περισσότερη ισχύς εκτέλεσης.</system:String>
+    <system:String x:Key="language">Γλώσσα</system:String>
+    
+    <!--Plugins Page-->
+    <system:String x:Key="reload">Επαναφόρτωση</system:String>
+    <system:String x:Key="pluginWarning">ΠΡΟΣΟΧΗ: Να Χρησιμοποιείται πρόσθετα μόνο από έμπιστες πηγές. Υπάρχει περίπτωση να βρίσκεται κρυμμένος ιός.</system:String>
+    <system:String x:Key="startPreview">Έναρξη προεπισκόπισης</system:String>
+    <system:String x:Key="stop">Παύση</system:String>
+
+    <!--Preview Page-->
+    <system:String x:Key="vsync">Ενεργοποίηση λειτουργίας V-Sync</system:String>
+    <system:String x:Key="tempo">Πολλαπλασιασμός ταχύτητας ρυθμού</system:String>
+    <system:String x:Key="pauseHint">Κάντε δεξί κλικ στο slider ή πατήστε space για να θέσετε σε λειτουργία το κουμπί της παύσης</system:String>
+    <system:String x:Key="paused">Η προεπισκόπηση έχει σταματήσει</system:String>
+    <system:String x:Key="forceRender">Εξαναγκασμός επαναμετατροπής κάθε καρέ</system:String>
+
+    <!--Render Page-->
+    <system:String x:Key="savePath">Επιλογή τοποθεσίας μετατροπής</system:String>
+    <system:String x:Key="includeAudio">Περίληψη αρχείου ήχου</system:String>
+    <system:String x:Key="renderMask">Αποθήκευση μάσκας διαφάνειας</system:String>
+    <system:String x:Key="bitrate">Αριθμός bits ανα δευτερόλεπτο</system:String>
+    <system:String x:Key="crfHint">FFMPEG crf: 0 = άπταιστο, 51 = χείριστη ποιότητα</system:String>
+    <system:String x:Key="delatStart">Καθυστέρηση έναρξης (δευτερόλεπτα)</system:String>
+    <system:String x:Key="ffmpegDebug">Παρακολούθηση προόδου FFMPEG</system:String>
+    <system:String x:Key="startRender">Έναρξη μετατροπής</system:String>
+    <system:String x:Key="ifUploading">Αν ανεβάσετε βίντεο στο διαδίκτυο, να πιστώσετε κατάλληλα το πρόγραμμα.</system:String>
+</ResourceDictionary>

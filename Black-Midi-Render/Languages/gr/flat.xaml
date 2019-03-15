@@ -1,0 +1,26 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MSDNSample"
+    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <!--Palette picker-->
+    <system:String x:Key="palettes_reload">Επαναφόρτωση</system:String>
+    <system:String x:Key="palettes_restartNote">Σημείωση: Επανεκκινήστε την προεπισκόπιση για να ενημερωθεί η παλέτα χρωμάτων</system:String>
+    <system:String x:Key="palettes_imageNote">Η εικόνα πρέπει να είναι αρχειο png με 16 (ή 32 για κλίσεις) οριζόντια εικονοστοιχεία, με οποιοδήποτε ύψος. Οι διαφανείς εικόνες δεν υποστηρίζονται.</system:String>
+    <system:String x:Key="palettes_randomise">Τυχαία σειρά χρωμάτων</system:String>
+
+    <!--Other settings-->
+    <system:String x:Key="firstNote">Πρώτη νότα</system:String>
+    <system:String x:Key="lastNote">Τελευταία νότα</system:String>
+    <system:String x:Key="pianoHeight">Ύψος πιάνου %</system:String>
+    <system:String x:Key="noteScreenTime">Διάρκεια νότας στην οθόνη</system:String>
+    <system:String x:Key="noteTempo">Ταχύτητα ρυθμού νοτών</system:String>
+    <system:String x:Key="changeSpeed">Αλλαγή ταχύτητας</system:String>
+    <system:String x:Key="changeSize">Αλλαγή μεγέθους</system:String>
+    <system:String x:Key="sameWidthNotes">Νότες ίδιου πλάτους</system:String>
+    <system:String x:Key="save">Αποθήκευση</system:String>
+    <system:String x:Key="loadSaved">Φόρτωση αποθηκευμένου προτύπου</system:String>
+    <system:String x:Key="setDefaults">Προεπιλογές</system:String>
+
+</ResourceDictionary>

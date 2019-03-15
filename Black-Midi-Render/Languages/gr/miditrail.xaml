@@ -1,0 +1,63 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MSDNSample"
+    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <!--Palette picker-->
+    <system:String x:Key="palettes_reload">Επαναφόρτωση</system:String>
+    <system:String x:Key="palettes_restartNote">Σημειωση: Επαννεκινήστε την προεπισκόπιση για να ενημερωθεί η παλέτα χρωμάτων</system:String>
+    <system:String x:Key="palettes_imageNote">Η εικόνα πρέπει να είναι αρχειο png με 16 (ή 32 για κλίσεις) οριζόντια εικονοστοιχεία, με οποιοδήποτε ύψος. Οι διαφανείς εικόνες δεν υποστηρίζονται.</system:String>
+    <system:String x:Key="palettes_randomise">Τυχαία σειρά χρωμάτων</system:String>
+
+    <!--Shared-->
+    <system:String x:Key="delete">Διαγραφή</system:String>
+    <system:String x:Key="saveNew">Αποθήκευση ως νέο</system:String>
+    <system:String x:Key="loadDefault">Προεπιλογές</system:String>
+
+    <!--Tab Names-->
+    <system:String x:Key="visualsTab">Οπτικά</system:String>
+    <system:String x:Key="cameraTab">Θέση κάμερας</system:String>
+    <system:String x:Key="auraTab">Εφέ</system:String>
+
+
+    <!--Visuals-->
+    <system:String x:Key="firstNote">Πρώτη νότα</system:String>
+    <system:String x:Key="lastNote">Τελευταία νότα</system:String>
+    <system:String x:Key="keyDownSpeed">Διάρκεια κίνησης πλήκρου</system:String>
+    <system:String x:Key="keyUpSpeed">Διάρκεια επαναφοράς πλήκτρου</system:String>
+    <system:String x:Key="tiltKeys">Κλίση πλήκτρων</system:String>
+    <system:String x:Key="3dNotes">Τρισδιάστατες νότες</system:String>
+    <system:String x:Key="lightShade">Σκιά φωτός</system:String>
+    <system:String x:Key="noteSpeed">Ταχύτητα νοτών</system:String>
+    <system:String x:Key="velocityStrength">Ορισμός δύναμης πίεσης πλήκτρου από την ένταση της νότας</system:String>
+    <system:String x:Key="keyboardClip">Απόκρυψη νοτών αφού ακουμπήσουν το πιάνο</system:String>
+    <system:String x:Key="sameWidthNotes">Νότες ίδιου πλάτους</system:String>
+    <system:String x:Key="onNoteHit">Όταν πατηθεί μια νότα:</system:String>
+    <system:String x:Key="changeSize">Μεγέθυνση της νότας</system:String>
+    <system:String x:Key="changeTint">Φώτιση νότας</system:String>
+
+    <!--Camera-->
+    <system:String x:Key="speedWarning">ΠΡΟΣΟΧΗ: Το συγκεκριμένο πρόσθετο μπορεί να χρησιμοποιήσει περισσότερη μνήμη και επεξεργαστή λόγω της περισσότερης ώρας που μένουν οι νότες στην οθόνη. Όσο περισσότερες νότες υπάρχουν, τόσο πιο αργή θα είναι η μετατροπή.</system:String>
+
+    <system:String x:Key="cameraPreset">Προεπιλογές:</system:String>
+    <system:String x:Key="farPreset">Μακριά</system:String>
+    <system:String x:Key="mediumPreset">Κανονικό</system:String>
+    <system:String x:Key="closerPreset">Κοντά</system:String>
+    <system:String x:Key="closePreset">Πολύ κοντά</system:String>
+
+    <system:String x:Key="FOV">FOV</system:String>
+    <system:String x:Key="viewAngle">Γωνία παρακολούθησης</system:String>
+    <system:String x:Key="renderDistF">Απόσταση θέας νοτών (πάνω από το πιάνο)</system:String>
+    <system:String x:Key="renderDistB">Απόσταση θέας νοτών (κάτω από το πιάνο)</system:String>
+    <system:String x:Key="camOffsets">Αντιστάθμισμα κάμερας</system:String>
+    <system:String x:Key="horizontal">Οριζόντια</system:String>
+    <system:String x:Key="vertical">Κάθετα</system:String>
+    
+    <!--Aura-->
+    <system:String x:Key="imageHint">Η εικόνα πρέπεΙ να είναι μία τετράγωνη PNG και λαμβάνεται υπ'όψιν μόνο το κανάλι alpha.</system:String>
+    <system:String x:Key="auraEnabled">Ενεργοποίηση εφέ νοτών</system:String>
+    <system:String x:Key="reload">Επαναφόρτωση</system:String>
+    <system:String x:Key="auraStrength">Δύναμη εφέ:</system:String>
+    <system:String x:Key="auraLocation">Οι εικόνες εφέ βρίσκονται στον φάκελο: Plugins\Assets\MidiTrail\Aura</system:String>
+</ResourceDictionary>
