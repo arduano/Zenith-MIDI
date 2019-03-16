@@ -183,6 +183,7 @@ namespace BMEngine
         public void Dispose()
         {
             foreach (var t in tracks) t.Dispose();
+            MidiFileReader.Dispose();
         }
     }
 }

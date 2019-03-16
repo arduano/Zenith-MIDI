@@ -355,6 +355,12 @@ namespace Black_Midi_Render
 
         private void StopButton_Click(object sender, RoutedEventArgs e)
         {
+            if(settings.running == false)
+            {
+                Resources["notRendering"] = true;
+                Resources["notPreviewing"] = true;
+            }
+            else
             settings.running = false;
         }
 

@@ -120,27 +120,33 @@ namespace BMEngine
 
         public void Step(long time)
         {
-
-            if (time >= trackTime)
+            try
             {
-                if (readDelta)
+                if (time >= trackTime)
                 {
-                    long d = trackTime;
-                    do
+                    if (readDelta)
                     {
-                        ParseNextEvent();
+                        long d = trackTime;
+                        do
+                        {
+                            ParseNextEvent();
+                            if (trackEnded) return;
+                            trackTime += ReadVariableLen();
+                            readDelta = true;
+                        }
+                        while (trackTime == d);
+                    }
+                    else
+                    {
                         if (trackEnded) return;
                         trackTime += ReadVariableLen();
                         readDelta = true;
                     }
-                    while (trackTime == d);
                 }
-                else
-                {
-                    if (trackEnded) return;
-                    trackTime += ReadVariableLen();
-                    readDelta = true;
-                }
+            }
+            catch (IndexOutOfRangeException)
+            {
+                EndTrack();
             }
         }
 
@@ -239,12 +245,6 @@ namespace BMEngine
                     int channel = command & 0b00001111;
                     byte note = reader.Read();
                     byte vel = reader.Read();
-                }
-                else if (comm == 0b10100000)
-                {
-                    int channel = command & 0b00001111;
-                    byte number = reader.Read();
-                    byte value = reader.Read();
                 }
                 else if (comm == 0b11000000)
                 {
@@ -562,11 +562,6 @@ namespace BMEngine
                     noteCount++;
                 }
                 else if (comm == 0b10000000)
-                {
-                    int channel = command & 0b00001111;
-                    reader.Skip(2);
-                }
-                else if (comm == 0b10100000)
                 {
                     int channel = command & 0b00001111;
                     reader.Skip(2);
