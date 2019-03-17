@@ -143,7 +143,7 @@
                     <Button Name="reloadButton" Content="{DynamicResource reload}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="174" Height="20" Click="ReloadButton_Click"/>
                     <Image Name="previewImage" Margin="189,10,0,10" Stretch="Uniform"/>
                     <TextBox Name="pluginDescription" Margin="189,0,10,10" Grid.Row="1" TextWrapping="Wrap" IsEnabled="False"/>
-                    <TextBlock Margin="10,5,582,10" Grid.Row="1" TextWrapping="Wrap"><Run Foreground="Blue" FontSize="12.6666666666667" FontFamily="Consolas" Text="{DynamicResource pluginWarning}"/><Run Foreground="Blue" FontSize="12.6666666666667" FontFamily="Consolas" Text="!"/></TextBlock>
+                    <TextBlock Margin="10,5,0,10" Grid.Row="1" TextWrapping="Wrap" HorizontalAlignment="Left" Width="174"><Run Foreground="Blue" FontSize="12.6666666666667" FontFamily="Consolas" Text="{DynamicResource pluginWarning}"/><Run Foreground="Blue" FontSize="12.6666666666667" FontFamily="Consolas" Text="!"/></TextBlock>
 
                 </Grid>
             </TabItem>

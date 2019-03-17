@@ -6,39 +6,39 @@
 
     <!--Palette picker-->
     <system:String x:Key="palettes_reload">重新加载</system:String>
-    <system:String x:Key="palettes_restartNote">注意：重新启动预览以更新调色板</system:String>
-    <system:String x:Key="palettes_imageNote">图像需要是16（或32）像素宽的PNG和任何高度。支持透明度。</system:String>
+    <system:String x:Key="palettes_restartNote">注意：重新加载预览以更新色彩范围</system:String>
+    <system:String x:Key="palettes_imageNote">图像要求是宽度为16或32像素、高度为无限制的PNG文件。支持透明文件。</system:String>
     <system:String x:Key="palettes_randomise">随机颜色顺序</system:String>
 
     <!--Shared-->
     <system:String x:Key="delete">删除</system:String>
-    <system:String x:Key="saveNew">保存新的</system:String>
+    <system:String x:Key="saveNew">保存新的配置</system:String>
     <system:String x:Key="loadDefault">默认</system:String>
 
     <!--Tab Names-->
     <system:String x:Key="visualsTab">视觉效果</system:String>
-    <system:String x:Key="cameraTab">照相机</system:String>
+    <system:String x:Key="cameraTab">相机位置</system:String>
     <system:String x:Key="auraTab">光环</system:String>
 
 
     <!--Visuals-->
     <system:String x:Key="firstNote">第一个音符</system:String>
     <system:String x:Key="lastNote">最后一个音符</system:String>
-    <system:String x:Key="keyDownSpeed">按键下落速度</system:String>
-    <system:String x:Key="keyUpSpeed">按键加快速度</system:String>
-    <system:String x:Key="tiltKeys">倾斜键</system:String>
-    <system:String x:Key="3dNotes">3D音符（慢一点！）</system:String>
-    <system:String x:Key="lightShade">浅色</system:String>
+    <system:String x:Key="keyDownSpeed">钢琴键按下速度</system:String>
+    <system:String x:Key="keyUpSpeed">钢琴键上弹速度</system:String>
+    <system:String x:Key="tiltKeys">倾斜钢琴键（效果未知）</system:String>
+    <system:String x:Key="3dNotes">3D的音符（渲染更慢）</system:String>
+    <system:String x:Key="lightShade">更浅的颜色</system:String>
     <system:String x:Key="noteSpeed">音符速度</system:String>
-    <system:String x:Key="velocityStrength">音符速度的强度</system:String>
-    <system:String x:Key="keyboardClip">键盘剪辑音符</system:String>
-    <system:String x:Key="sameWidthNotes">同宽音符</system:String>
-    <system:String x:Key="onNoteHit">音符击中时:</system:String>
-    <system:String x:Key="changeSize">改变大小</system:String>
+    <system:String x:Key="velocityStrength">音符速度的强度（效果未知）</system:String>
+    <system:String x:Key="keyboardClip">不在钢琴键后方显示音符</system:String>
+    <system:String x:Key="sameWidthNotes">音符宽度一致</system:String>
+    <system:String x:Key="onNoteHit">当一个音符按下时:</system:String>
+    <system:String x:Key="changeSize">改变音符大小</system:String>
     <system:String x:Key="changeTint">改变色调</system:String>
 
     <!--Camera-->
-    <system:String x:Key="speedWarning">警告：由于屏幕上的音符时间较长，此插件会使用更多的RAM和CPU。 可见的音符越多，渲染速度越慢！</system:String>
+    <system:String x:Key="speedWarning">警告：由于屏幕上的音符显示时间较长，此样式会使用更多的RAM和CPU。可见的音符越多，渲染速度越慢！</system:String>
 
     <system:String x:Key="cameraPreset">预置:</system:String>
     <system:String x:Key="farPreset">远</system:String>
@@ -46,18 +46,18 @@
     <system:String x:Key="closerPreset">更近</system:String>
     <system:String x:Key="closePreset">关闭</system:String>
 
-    <system:String x:Key="FOV">视野(FOV)</system:String>
-    <system:String x:Key="viewAngle">视角</system:String>
-    <system:String x:Key="renderDistF">音符渲染区域。前方</system:String>
-    <system:String x:Key="renderDistB">注意渲染区域。 背后</system:String>
+    <system:String x:Key="FOV">视角大小(FOV)</system:String>
+    <system:String x:Key="viewAngle">倾斜角度</system:String>
+    <system:String x:Key="renderDistF">前方音符区域大小</system:String>
+    <system:String x:Key="renderDistB">后方音符区域大小</system:String>
     <system:String x:Key="camOffsets">相机偏移</system:String>
-    <system:String x:Key="horizontal">水平的</system:String>
-    <system:String x:Key="vertical">垂直的</system:String>
+    <system:String x:Key="horizontal">水平</system:String>
+    <system:String x:Key="vertical">垂直</system:String>
     
     <!--Aura-->
-    <system:String x:Key="imageHint">图像需要是方形png，并且只考虑透明度</system:String>
-    <system:String x:Key="auraEnabled">音符光环启用</system:String>
+    <system:String x:Key="imageHint">图像只能是方形png文件，并且只包含透明度</system:String>
+    <system:String x:Key="auraEnabled">启用光环</system:String>
     <system:String x:Key="reload">重新加载</system:String>
-    <system:String x:Key="auraStrength">加强:</system:String>
+    <system:String x:Key="auraStrength">渐变强度:</system:String>
     <system:String x:Key="auraLocation">图像位于: Plugins\Assets\MidiTrail\Aura</system:String>
 </ResourceDictionary>

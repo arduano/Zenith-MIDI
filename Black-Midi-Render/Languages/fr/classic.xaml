@@ -1,0 +1,26 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MSDNSample"
+    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <!--Palette picker-->
+    <system:String x:Key="palettes_reload">Recharger</system:String>
+    <system:String x:Key="palettes_restartNote">Note: Redemmare la prévisualisation pour mettre à jour les couleurs</system:String>
+    <system:String x:Key="palettes_imageNote">L'image doit être en .png de 16 (ou 32 pour les dégradés) pixels de large et de n'importe quelle hauteur. La transparence est prise en charge.</system:String>
+    <system:String x:Key="palettes_randomise">Couleurs aléatoires</system:String>
+    
+    <!--Other settings-->
+    <system:String x:Key="firstNote">Première note</system:String>
+    <system:String x:Key="lastNote">Dernière note</system:String>
+    <system:String x:Key="pianoHeight">Taille du piano en %</system:String>
+    <system:String x:Key="noteScreenTime">Taille des notes</system:String>
+    <system:String x:Key="noteTempo">Note par rapport au tempo</system:String>
+    <system:String x:Key="changeSpeed">Changer la vitesse de lacture</system:String>
+    <system:String x:Key="changeSize">Changer la taille des notes</system:String>
+    <system:String x:Key="sameWidthNotes">Notes de même largeur</system:String>
+    <system:String x:Key="save">Enregistrer</system:String>
+    <system:String x:Key="loadSaved">Charger la sauvegarde</system:String>
+    <system:String x:Key="setDefaults">Paramètres par défats</system:String>
+
+</ResourceDictionary>

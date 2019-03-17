@@ -1,0 +1,54 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MSDNSample"
+    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <system:String x:Key="LanguageName">Español</system:String>
+
+    <!--Tab Names-->
+    <system:String x:Key="midiTab">Cargar MIDI</system:String>
+    <system:String x:Key="pluginsTab">Plugins</system:String>
+    <system:String x:Key="pluginSettingsTab">Configuracion de Plugin</system:String>
+    <system:String x:Key="previewTab">Muestra</system:String>
+    <system:String x:Key="renderTab">Render</system:String>
+    
+    
+    <!--Main Page-->
+    <system:String x:Key="load">Cargar</system:String>
+    <system:String x:Key="unload">Descargar</system:String>
+    <system:String x:Key="browse">Buscar</system:String>
+    <system:String x:Key="maxTrackBuffSize">Tamaño máximo del buffer de pista (en bytes)</system:String>
+    <system:String x:Key="width">Ancho</system:String>
+    <system:String x:Key="height">Alto</system:String>
+    <system:String x:Key="fps">FPS</system:String>
+    <system:String x:Key="presets">Presets</system:String>
+    <system:String x:Key="zenithRenderWarning">Aviso: La vista previa de Zenith se renderiza en la resolución anterior, luego se reduce al tamaño de la ventana</system:String>
+    <system:String x:Key="superRes">SSAA</system:String>
+    <system:String x:Key="superResWarning">Incrementando el SSAA Puede mejorar la calidad de los pixeles, pero requiere mejor desempeño</system:String>
+    <system:String x:Key="language">Idioma</system:String>
+    
+    <!--Plugins Page-->
+    <system:String x:Key="reload">Recargar</system:String>
+    <system:String x:Key="pluginWarning">AVISO: Solo descarga plugins de fuentes conocidas. Es posible esconder un virus dentro de un plugin</system:String>
+    <system:String x:Key="startPreview">Iniciar Vista previa</system:String>
+    <system:String x:Key="stop">Detener</system:String>
+
+    <!--Preview Page-->
+    <system:String x:Key="vsync">V-Sync Habilitado</system:String>
+    <system:String x:Key="tempo">Multiplicador de Tempo</system:String>
+    <system:String x:Key="pauseHint">ReloRight Haga click en el control deslizante o presione la barra espaciadora para alternar pausar</system:String>
+    <system:String x:Key="paused">Vista previa pausada</system:String>
+    <system:String x:Key="forceRender">Forzar re-render en cada cuadro</system:String>
+	
+    <!--Render Page-->
+    <system:String x:Key="savePath">Direccion de guardado</system:String>
+    <system:String x:Key="includeAudio">Incluir Audio</system:String>
+    <system:String x:Key="renderMask">Mascara de transparencia de render</system:String>
+    <system:String x:Key="bitrate">Bitrate</system:String>
+    <system:String x:Key="crfHint">FFMPEG crf: 0 = lossless, 51 = Peor calidad posible</system:String>
+    <system:String x:Key="delatStart">Delay de inicio(segundos)</system:String>
+    <system:String x:Key="ffmpegDebug">ffmpeg debug</system:String>
+    <system:String x:Key="startRender">Iniciar Render</system:String>
+    <system:String x:Key="ifUploading">Si sube el video en linea, por favor dar credito al programa.</system:String>
+</ResourceDictionary>

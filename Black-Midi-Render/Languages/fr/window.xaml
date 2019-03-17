@@ -1,0 +1,53 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MSDNSample"
+    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <system:String x:Key="LanguageName">Français</system:String>
+    
+    <!--Tab Names-->
+    <system:String x:Key="midiTab">Charger un ficher</system:String>
+    <system:String x:Key="pluginsTab">Plugin(s)</system:String>
+    <system:String x:Key="pluginSettingsTab">Paramètre de(s) plugin(s)</system:String>
+    <system:String x:Key="previewTab">Prévisualisation</system:String>
+    <system:String x:Key="renderTab">Rendu</system:String>
+
+    <!--Main Page-->
+    <system:String x:Key="load">Charger</system:String>
+    <system:String x:Key="unload">Décharger</system:String>
+    <system:String x:Key="browse">Explorer</system:String>
+    <system:String x:Key="maxTrackBuffSize">Taille maximum de la mémoire tampon (en bytes)</system:String>
+    <system:String x:Key="width">Largeur</system:String>
+    <system:String x:Key="height">Hauteur</system:String>
+    <system:String x:Key="fps">FPS</system:String>
+    <system:String x:Key="presets">Préréglages</system:String>
+    <system:String x:Key="zenithRenderWarning">Attention: La prévisualisation des rendus dans la résolution ci-dessus, puis réduction d'échelle à la taille de la fenêtre</system:String>
+    <system:String x:Key="superRes">SSAA (Super Sampling Anti Aliasing)</system:String>
+    <system:String x:Key="superResWarning">Augmenter la qualité SSAA augmente considérablement la fluidité des pixels mais demande beaucoup de performance!</system:String>
+    <system:String x:Key="language">Langage</system:String>
+    
+    <!--Plugins Page-->
+    <system:String x:Key="reload">Recharger</system:String>
+    <system:String x:Key="pluginWarning">ATTENTION : N'utilisez que des plugins provenant de sources fiables. Il est possible qu'il virus dans un plugin!</system:String>
+    <system:String x:Key="startPreview">Démarrer la prévisualisation</system:String>
+    <system:String x:Key="stop">Stop</system:String>
+
+    <!--Preview Page-->
+    <system:String x:Key="vsync">V-Sync Activé</system:String>
+    <system:String x:Key="tempo">Multiplicateur de tempo</system:String>
+    <system:String x:Key="pauseHint">Cliquez avec le bouton droit de la souris ou appuyez sur l'espace pour mettre en pause.</system:String>
+    <system:String x:Key="paused">Prévisualisation en pause</system:String>
+    <system:String x:Key="forceRender">Forcer le rerendement de chaque images</system:String>
+
+    <!--Render Page-->
+    <system:String x:Key="savePath">Enregistrer sous</system:String>
+    <system:String x:Key="includeAudio">Inclure l'audio</system:String>
+    <system:String x:Key="renderMask">Rendre le masque de transparence sous</system:String>
+    <system:String x:Key="bitrate">Bitrate</system:String>
+    <system:String x:Key="crfHint">FFMPEG crf: 0 = lossless, 51 = la pire qualité possible</system:String>
+    <system:String x:Key="delatStart">Délai de rendu (secondes)</system:String>
+    <system:String x:Key="ffmpegDebug">ffmpeg debug</system:String>
+    <system:String x:Key="startRender">Lancer le rendu</system:String>
+    <system:String x:Key="ifUploading">Si tu postes cette vidéo, crédite ce logiciel! :3</system:String>
+</ResourceDictionary>

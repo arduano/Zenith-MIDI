@@ -17,13 +17,13 @@
     <system:String x:Key="noteTempo">音符節奏</system:String>
     <system:String x:Key="changeSpeed">更改速度</system:String>
     <system:String x:Key="changeSize">更改大小</system:String>
-    <system:String x:Key="sameWidthNotes">相同因幅寬度</system:String>
+    <system:String x:Key="sameWidthNotes">相同音符寬度</system:String>
     <system:String x:Key="save">儲存</system:String>
     <system:String x:Key="loadSaved">載入已儲存</system:String>
     <system:String x:Key="setDefaults">預設</system:String>
 
     <system:String x:Key="middleCSquare">中間C正方形方塊</system:String>
-    <system:String x:Key="blackNotesAbove">上面畫黑色音符 (Warning: 很慢!!)</system:String>
+    <system:String x:Key="blackNotesAbove">上面畫黑色音符 (警告: 很慢!!)</system:String>
     <system:String x:Key="topColor">頂部顏色</system:String>
     <system:String x:Key="colorRed">紅</system:String>
     <system:String x:Key="colorGreen">綠</system:String>

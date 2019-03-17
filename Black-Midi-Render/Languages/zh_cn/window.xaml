@@ -7,9 +7,9 @@
     <system:String x:Key="LanguageName">简体中文</system:String>
 
     <!--Tab Names-->
-    <system:String x:Key="midiTab">加载MIDI</system:String>
-    <system:String x:Key="pluginsTab">插件</system:String>
-    <system:String x:Key="pluginSettingsTab">插件设置</system:String>
+    <system:String x:Key="midiTab">选择MIDI</system:String>
+    <system:String x:Key="pluginsTab">样式</system:String>
+    <system:String x:Key="pluginSettingsTab">样式设置</system:String>
     <system:String x:Key="previewTab">预览</system:String>
     <system:String x:Key="renderTab">渲染</system:String>
     
@@ -18,26 +18,26 @@
     <system:String x:Key="load">加载</system:String>
     <system:String x:Key="unload">关闭</system:String>
     <system:String x:Key="browse">浏览</system:String>
-    <system:String x:Key="maxTrackBuffSize">最大轨道缓冲区大小 (字节)</system:String>
+    <system:String x:Key="maxTrackBuffSize">最大音轨缓冲大小 (bytes)</system:String>
     <system:String x:Key="width">宽度</system:String>
     <system:String x:Key="height">高度</system:String>
     <system:String x:Key="fps">帧率</system:String>
-    <system:String x:Key="presets">预置</system:String>
-    <system:String x:Key="zenithRenderWarning">警告: Zenith预览以上述分辨率渲染，然后缩小到窗口大小</system:String>
-    <system:String x:Key="superRes">超级样本抗锯齿(SSAA)</system:String>
-    <system:String x:Key="superResWarning">增加超级样本抗锯齿(SSAA)可以大大提高像素的平滑度，但需要更多的性能</system:String>
+    <system:String x:Key="presets">预设分辨率</system:String>
+    <system:String x:Key="zenithRenderWarning">警告: Zenith将使用上面选择的分辨率进行预览，但是会缩小到窗口大小</system:String>
+    <system:String x:Key="superRes">抗锯齿(SSAA)</system:String>
+    <system:String x:Key="superResWarning">启用抗锯齿(SSAA)可以大大提高画面的平滑度，但消耗更多的性能（可能渲染得更慢）</system:String>
     <system:String x:Key="language">语言</system:String>
     
     <!--Plugins Page-->
     <system:String x:Key="reload">重新加载</system:String>
-    <system:String x:Key="pluginWarning">警告：仅使用来自可信来源的插件。 可能在插件中隐藏病毒</system:String>
+    <system:String x:Key="pluginWarning">警告：因为样式的文件中可能会隐藏病毒，所以只能使用经过授权的样式</system:String>
     <system:String x:Key="startPreview">开始预览</system:String>
     <system:String x:Key="stop">停止</system:String>
 
     <!--Preview Page-->
-    <system:String x:Key="vsync">启用V-Sync</system:String>
+    <system:String x:Key="vsync">启用垂直同步</system:String>
     <system:String x:Key="tempo">速度倍增器</system:String>
-    <system:String x:Key="pauseHint">重新定位右键单击滑块或按空格键切换暂停</system:String>
+    <system:String x:Key="pauseHint">在滑块处单击右键或者按空格键来暂停/继续</system:String>
     <system:String x:Key="paused">暂停预览</system:String>
     <system:String x:Key="forceRender">强制重新渲染每个帧</system:String>
 
@@ -45,9 +45,9 @@
     <system:String x:Key="savePath">保存路径</system:String>
     <system:String x:Key="includeAudio">包含音频</system:String>
     <system:String x:Key="renderMask">渲染透明度遮罩</system:String>
-    <system:String x:Key="bitrate">比特率</system:String>
-    <system:String x:Key="crfHint">FFMPEG crf:0=无损，51=可能的最差质量</system:String>
-    <system:String x:Key="delatStart">延时启动 (秒)</system:String>
+    <system:String x:Key="bitrate">码率</system:String>
+    <system:String x:Key="crfHint">FFMPEG crf:0=无损，51=最差</system:String>
+    <system:String x:Key="delatStart">启动延时 (秒)</system:String>
     <system:String x:Key="ffmpegDebug">ffmpeg 调试</system:String>
     <system:String x:Key="startRender">开始渲染</system:String>
     <system:String x:Key="ifUploading">如果在线上传视频，请信任此程序</system:String>
