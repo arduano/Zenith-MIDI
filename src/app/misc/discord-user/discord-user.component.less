@@ -1,11 +1,11 @@
-.user-base{
+.user-base {
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  font-family: 'Roboto';
+  font-family: "Roboto";
   font-size: 20px;
-  color: #7289da;
+  color: #656c85;
   margin: 0 15px;
   white-space: nowrap;
   cursor: default;
@@ -15,7 +15,7 @@
   margin-bottom: 15px;
 }
 
-img{
+img {
   max-width: 70px;
   max-height: 70px;
   border-radius: 50px;
@@ -23,7 +23,35 @@ img{
   box-shadow: 0px 0px 20px black;
 }
 
-.username{
+.text {
   margin-left: 10px;
   user-select: none;
+}
+
+.username {
+  margin-bottom: -5px;
+}
+
+.other {
+  font-size: 16px;
+  color: rgb(150, 150, 150);
+  font-family: 'Roboto';
+  font-weight: bold;
+}
+
+.link {
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-transition: all 0.1s ease;
+  -moz-transition: all 0.1s ease;
+  -o-transition: all 0.1s ease;
+  transition: all 0.1s ease;
+}
+
+.link:hover{
+  transform: translate(0, -3px);
+}
+
+.link .username{
+  color: #7289da;
 }

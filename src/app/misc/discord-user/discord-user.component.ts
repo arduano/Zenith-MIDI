@@ -8,6 +8,8 @@ import { Component, OnInit, Input } from '@angular/core';
 export class DiscordUserComponent implements OnInit {
   @Input() pfpURL = "";
   @Input() username = "";
+  @Input() detail = "";
+  @Input() link = "";
 
   constructor() { }
 
