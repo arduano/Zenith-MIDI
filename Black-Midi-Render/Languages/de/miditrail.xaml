@@ -1,0 +1,63 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MSDNSample"
+    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <!--Palette picker-->
+    <system:String x:Key="palettes_reload">Neu laden</system:String>
+    <system:String x:Key="palettes_restartNote">Beachten: Starten Sie neu die Vorschau die Farbpalette aktualisieren.</system:String>
+    <system:String x:Key="palettes_imageNote">Das Bild müsst ein 16 (oder 32 für Gradienten) die Pixel weit ".png" sein, und alle Höhe.  Transparenz ist akzeptabel.</system:String>
+    <system:String x:Key="palettes_randomise">Randomisieren Farbreihenfolge</system:String>
+
+    <!--Shared-->
+    <system:String x:Key="delete">Entfernen</system:String>
+    <system:String x:Key="saveNew">Speichern Neu</system:String>
+    <system:String x:Key="loadDefault">Voreinstellungen</system:String>
+
+    <!--Tab Names-->
+    <system:String x:Key="visualsTab">Visuales</system:String>
+    <system:String x:Key="cameraTab">Kamera</system:String>
+    <system:String x:Key="auraTab">Aura</system:String>
+
+
+    <!--Visuals-->
+    <system:String x:Key="firstNote">Zuerest Anmerkung</system:String>
+    <system:String x:Key="lastNote">Zuletzt Anmerkung</system:String>
+    <system:String x:Key="keyDownSpeed">Taste Unterdrückung Geschwindigkeit</system:String>
+    <system:String x:Key="keyUpSpeed">Taste Verdrängung Geschwindigkeit</system:String>
+    <system:String x:Key="tiltKeys">Neigung Tasten</system:String>
+    <system:String x:Key="3dNotes">3D Anmerkungen (LANGSAMER!)</system:String>
+    <system:String x:Key="lightShade">Licht Schatten</system:String>
+    <system:String x:Key="noteSpeed">Anmerkung Geschwindigkeit</system:String>
+    <system:String x:Key="velocityStrength">Stärke von Anmerkung Geschwindigkeit</system:String>
+    <system:String x:Key="keyboardClip">Klaviatur Clips Anmerkungen</system:String>
+    <system:String x:Key="sameWidthNotes">Gleich Weite Anmerkungen</system:String>
+    <system:String x:Key="onNoteHit">Auf Anmerkung Schlag:</system:String>
+    <system:String x:Key="changeSize">Wechseln Größe</system:String>
+    <system:String x:Key="changeTint">Wechseln Farbton</system:String>
+
+    <!--Camera-->
+    <system:String x:Key="speedWarning">WARNUNG: Dieses Plug-In kann aufgrund der höheren Notenzeit auf dem Bildschirm viel mehr RAM und CPU verwenden. Die mehr Noten sind sichtbar, langsamer wird das Rendern!</system:String>
+
+    <system:String x:Key="cameraPreset">Voreinstellungen:</system:String>
+    <system:String x:Key="farPreset">Distanziert</system:String>
+    <system:String x:Key="mediumPreset">Mitte</system:String>
+    <system:String x:Key="closerPreset">Näher</system:String>
+    <system:String x:Key="closePreset">Nahe</system:String>
+
+    <system:String x:Key="FOV">FVA (Feld von Aussicht)</system:String>
+    <system:String x:Key="viewAngle">Ausblick Winkel</system:String>
+    <system:String x:Key="renderDistF">Anmerkung Anzeige Entfernung vorwärts</system:String>
+    <system:String x:Key="renderDistB">Anmerkung Anzeige Entfernung rückwärts</system:String>
+    <system:String x:Key="camOffsets">Kamera Offsetdrucken</system:String>
+    <system:String x:Key="horizontal">Horizontal</system:String>
+    <system:String x:Key="vertical">Vertikale</system:String>
+    
+    <!--Aura-->
+    <system:String x:Key="imageHint">Das Bild müsst Quadrat ".png" sein, und nur Alpha ist zu berücksichtigen</system:String>
+    <system:String x:Key="auraEnabled">Anmerkung Aura aktiviert</system:String>
+    <system:String x:Key="reload">Neu Starten</system:String>
+    <system:String x:Key="auraStrength">Stärke:</system:String>
+    <system:String x:Key="auraLocation">Bilder gelegen im: Plugins\Assets\MidiTrail\Aura</system:String>
+</ResourceDictionary>
