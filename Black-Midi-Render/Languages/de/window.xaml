@@ -36,7 +36,7 @@
     <!--Preview Page-->
     <system:String x:Key="vsync">V-Sync Aktiviert</system:String>
     <system:String x:Key="tempo">Tempo Multiplikator</system:String>
-    <system:String x:Key="pauseHint">Right click slider or press space to toggle pause</system:String>
+    <system:String x:Key="pauseHint">Klicken Sie mit der rechten Maustaste oder drücken Sie die Leertaste, um die Pause umzuschalten</system:String>
     <system:String x:Key="paused">Vorschau pausierte</system:String>
     <system:String x:Key="forceRender">Zwingen wieder jedes Bild anzeigen</system:String>
 
