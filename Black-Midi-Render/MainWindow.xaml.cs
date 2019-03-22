@@ -280,7 +280,7 @@ namespace Black_Midi_Render
             c.Margin = new Thickness(0);
             pluginControl = c;
             if (languageSelect.SelectedIndex != -1)
-            c.Resources.MergedDictionaries.Add(Languages[languageSelect.SelectedIndex]);
+                c.Resources.MergedDictionaries.Add(Languages[languageSelect.SelectedIndex]);
         }
 
         private void BrowseMidiButton_Click(object sender, RoutedEventArgs e)
@@ -301,26 +301,22 @@ namespace Black_Midi_Render
                 MessageBox.Show("Midi file doesn't exist");
                 return;
             }
-#if !DEBUG_LOAD
             try
             {
-#endif
-            settings.maxTrackBufferSize = (int)maxBufferSize.Value;
+                settings.maxTrackBufferSize = (int)maxBufferSize.Value;
 
-            if (midifile != null) midifile.Dispose();
-            midifile = null;
-            GC.Collect();
-            GC.WaitForFullGCComplete();
-            midifile = new MidiFile(midipath, settings);
-            Resources["midiLoaded"] = true;
-#if !DEBUG_LOAD
+                if (midifile != null) midifile.Dispose();
+                midifile = null;
+                GC.Collect();
+                GC.WaitForFullGCComplete();
+                midifile = new MidiFile(midipath, settings);
+                Resources["midiLoaded"] = true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message + "\n" + ex.StackTrace);
                 MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
             }
-#endif
         }
 
         private void UnloadButton_Click(object sender, RoutedEventArgs e)
@@ -355,13 +351,13 @@ namespace Black_Midi_Render
 
         private void StopButton_Click(object sender, RoutedEventArgs e)
         {
-            if(settings.running == false)
+            if (settings.running == false)
             {
                 Resources["notRendering"] = true;
                 Resources["notPreviewing"] = true;
             }
             else
-            settings.running = false;
+                settings.running = false;
         }
 
         private void StartRenderButton_Click(object sender, RoutedEventArgs e)
@@ -543,7 +539,7 @@ namespace Black_Midi_Render
 
         private void LanguageSelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if(pluginControl != null)
+            if (pluginControl != null)
                 ((UserControl)pluginControl).Resources.MergedDictionaries.Add(Languages[languageSelect.SelectedIndex]);
             Resources.MergedDictionaries.Add(Languages[languageSelect.SelectedIndex]);
         }
