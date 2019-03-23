@@ -31,6 +31,7 @@ namespace BMEngine
         public FastList<Note> globalDisplayNotes = new FastList<Note>();
         public FastList<Tempo> globalTempoEvents = new FastList<Tempo>();
         public FastList<ColorChange> globalColorEvents = new FastList<ColorChange>();
+        public FastList<PlaybackEvent> globalPlaybackEvents = new FastList<PlaybackEvent>();
 
         public int unendedTracks = 0;
 
@@ -175,6 +176,7 @@ namespace BMEngine
             globalDisplayNotes.Unlink();
             globalTempoEvents.Unlink();
             globalColorEvents.Unlink();
+            globalPlaybackEvents.Unlink();
             currentSyncTime = 0;
             unendedTracks = trackcount;
             foreach (var t in tracks) t.Reset();

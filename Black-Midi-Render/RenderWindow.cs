@@ -151,11 +151,13 @@ void main()
         FastList<Note> globalDisplayNotes;
         FastList<Tempo> globalTempoEvents;
         FastList<ColorChange> globalColorEvents;
+        FastList<PlaybackEvent> globalPlaybackEvents;
         MidiFile midi;
 
         RenderSettings settings;
 
         public double midiTime = 0;
+        public long frameStartTime = 0;
         public double tempoFrameStep = 10;
 
         Process ffmpegvideo = new Process();
@@ -286,6 +288,7 @@ void main()
             globalDisplayNotes = midi.globalDisplayNotes;
             globalTempoEvents = midi.globalTempoEvents;
             globalColorEvents = midi.globalColorEvents;
+            globalPlaybackEvents = midi.globalPlaybackEvents;
             this.midi = midi;
             if (settings.ffRender)
             {
@@ -364,19 +367,61 @@ void main()
             }
         }
 
+        long microsecondsPerTick = 0;
+        bool playbackLoopStarted = false;
+        void PlaybackLoop()
+        {
+            PlaybackEvent pe;
+            int timeJump;
+            long now;
+            KDMAPI.ResetKDMAPIStream();
+            KDMAPI.SendDirectData(0x0);
+            playbackLoopStarted = true;
+            while (settings.running)
+            {
+                if (settings.paused)
+                {
+                    SpinWait.SpinUntil(() => !settings.paused);
+                }
+                try
+                {
+                    pe = globalPlaybackEvents.Pop();
+                    if (pe == null) continue;
+                    now = DateTime.Now.Ticks;
+                    if(now - 10000000 > frameStartTime)
+                    {
+                        SpinWait.SpinUntil(() => now - 10000000 < frameStartTime);
+                    }
+                    timeJump = (int)(((pe.pos - midiTime) * microsecondsPerTick - now + frameStartTime) / 10000);
+                    if (timeJump < -1000)
+                        continue;
+                    if (timeJump > 0)
+                        Thread.Sleep(timeJump);
+                    if (settings.playSound)
+                        KDMAPI.SendDirectData((uint)pe.val);
+                }
+                catch { continue; }
+            }
+        }
+
         double lastTempo;
         public double lastDeltaTimeOnScreen = 0;
+        public double lastMV = 1;
         protected override void OnRenderFrame(FrameEventArgs e)
         {
+            Task.Factory.StartNew(() => PlaybackLoop(), TaskCreationOptions.LongRunning);
+            SpinWait.SpinUntil(() => playbackLoopStarted);
             Stopwatch watch = new Stopwatch();
             watch.Start();
-            tempoFrameStep = ((double)midi.division / lastTempo) * (1000000 / settings.fps);
+            tempoFrameStep = ((double)midi.division / lastTempo) * (1000000.0 / settings.fps);
             lock (render)
             {
                 lastDeltaTimeOnScreen = render.renderer.NoteScreenTime;
             }
             int noNoteFrames = 0;
             long lastNC = 0;
+            frameStartTime = DateTime.Now.Ticks;
+            microsecondsPerTick = (long)((double)lastTempo / midi.division * 10);
             while (settings.running && noNoteFrames < settings.fps * 5 || midi.unendedTracks != 0)
             {
                 if (!settings.paused || settings.forceReRender)
@@ -430,6 +475,13 @@ void main()
                     }
                 }
                 double mv = 1;
+                if (settings.realtimePlayback)
+                {
+                    mv = (DateTime.Now.Ticks - frameStartTime) / microsecondsPerTick / tempoFrameStep;
+                    if (mv > settings.fps / 4)
+                        mv = settings.fps / 4;
+                }
+                lastMV = mv;
                 lock (globalTempoEvents)
                 {
                     while (globalTempoEvents.First != null && midiTime + (tempoFrameStep * mv * settings.tempoMultiplier) > globalTempoEvents.First.pos)
@@ -446,6 +498,8 @@ void main()
                 {
                     midiTime += mv * tempoFrameStep * settings.tempoMultiplier;
                 }
+                frameStartTime = DateTime.Now.Ticks;
+                microsecondsPerTick = (long)((double)lastTempo / midi.division * 10);
 
                 while (globalColorEvents.First != null && globalColorEvents.First.pos < midiTime)
                 {
@@ -551,6 +605,7 @@ void main()
                 watch.Reset();
                 watch.Start();
             }
+            KDMAPI.ResetKDMAPIStream();
             settings.running = false;
             if (settings.ffRender)
             {

@@ -43,9 +43,29 @@ namespace Black_Midi_Render
 
         List<ResourceDictionary> Languages = new List<ResourceDictionary>();
 
+        bool foundOmniMIDI = true;
+
         public MainWindow()
         {
             InitializeComponent();
+            if (foundOmniMIDI)
+            {
+                try
+                {
+                    KDMAPI.InitializeKDMAPIStream();
+                }
+                catch
+                {
+                    foundOmniMIDI = false;
+                }
+            }
+            if (!foundOmniMIDI)
+            {
+                useOmniMidi.IsChecked = false;
+                useOmniMidi.IsEnabled = false;
+                muteAudio.IsChecked = false;
+                muteAudio.IsEnabled = false;
+            }
             settings = new RenderSettings();
             InitialiseSettingsValues();
             creditText.Text = "Video was rendered with Zenith\nhttps://arduano.github.io/Zenith-MIDI/start";
@@ -114,9 +134,10 @@ namespace Black_Midi_Render
             timewatch.Start();
             try
             {
-                while ((midifile.ParseUpTo(time += (long)(win.tempoFrameStep * 10)) || nc != 0) && settings.running)
+                while ((midifile.ParseUpTo((long)(win.midiTime + win.lastDeltaTimeOnScreen + (win.tempoFrameStep * 20 * settings.tempoMultiplier * win.lastMV))) || nc != 0) && settings.running)
                 {
-                    SpinWait.SpinUntil(() => midifile.currentSyncTime < win.midiTime + win.lastDeltaTimeOnScreen + (long)(win.tempoFrameStep * 10) || !settings.running);
+                    //SpinWait.SpinUntil(() => midifile.currentSyncTime < win.midiTime + win.lastDeltaTimeOnScreen + (long)(win.tempoFrameStep * 10) || !settings.running);
+                    Thread.Sleep(1000 / settings.fps * 10);
                     if (!settings.running) break;
                     Note n;
                     double cutoffTime = (long)win.midiTime;
@@ -154,7 +175,7 @@ namespace Black_Midi_Render
                     try
                     {
                         Console.WriteLine(
-                            Math.Round((double)time / midifile.maxTrackTime * 10000) / 100 +
+                            Math.Round(win.midiTime / midifile.maxTrackTime * 10000) / 100 +
                             "\tNotes drawn: " + renderer.renderer.LastNoteCount +
                             "\tRender FPS: " + Math.Round(settings.liveFps) + "        "
                             );
@@ -338,6 +359,12 @@ namespace Black_Midi_Render
                 return;
             }
 
+            windowTabs.SelectedIndex = 3;
+
+            settings.realtimePlayback = (bool)realtimePlayback.IsChecked;
+            settings.playbackEnabled = (bool)useOmniMidi.IsChecked;
+            settings.playSound = !(bool)muteAudio.IsChecked;
+
             settings.running = true;
             settings.width = (int)viewWidth.Value * (int)SSAAFactor.Value;
             settings.height = (int)viewHeight.Value * (int)SSAAFactor.Value;
@@ -373,6 +400,10 @@ namespace Black_Midi_Render
                 MessageBox.Show("No renderer is selected");
                 return;
             }
+
+            settings.realtimePlayback = false;
+            settings.playbackEnabled = false;
+            settings.playSound = true;
 
             settings.running = true;
             settings.width = (int)viewWidth.Value * (int)SSAAFactor.Value;
@@ -550,6 +581,27 @@ namespace Black_Midi_Render
             {
                 RadioButton[] buttons = new RadioButton[] { bitrateOption, crfOption };
                 foreach (var b in buttons) if (b != sender) b.IsChecked = false;
+            }
+            catch { }
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (foundOmniMIDI)
+                KDMAPI.TerminateKDMAPIStream();
+        }
+
+        private void Checkbox_Checked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (sender == useOmniMidi)
+                {
+                    settings.playbackEnabled = (bool)useOmniMidi.IsChecked;
+                    if (!settings.playbackEnabled) midifile.globalPlaybackEvents.Unlink();
+                }
+                if (sender == muteAudio) settings.playSound = !(bool)muteAudio.IsChecked;
+                if (sender == realtimePlayback) settings.realtimePlayback = (bool)realtimePlayback.IsChecked;
             }
             catch { }
         }

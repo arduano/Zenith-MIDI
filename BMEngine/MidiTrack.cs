@@ -21,6 +21,12 @@ namespace BMEngine
         public MidiTrack track;
     }
 
+    public class PlaybackEvent
+    {
+        public long pos;
+        public int val;
+    }
+
     public class Tempo
     {
         public long pos;
@@ -55,6 +61,7 @@ namespace BMEngine
         FastList<Note> globalDisplayNotes;
         FastList<Tempo> globalTempoEvents;
         FastList<ColorChange> globalColorEvents;
+        FastList<PlaybackEvent> globalPlaybackEvents;
 
         public Color4[] trkColor;
 
@@ -93,6 +100,7 @@ namespace BMEngine
             globalDisplayNotes = file.globalDisplayNotes;
             globalTempoEvents = file.globalTempoEvents;
             globalColorEvents = file.globalColorEvents;
+            globalPlaybackEvents = file.globalPlaybackEvents;
             this.reader = reader;
             trackID = id;
             ResetColors();
@@ -191,9 +199,18 @@ namespace BMEngine
                     byte channel = (byte)(command & 0b00001111);
                     byte note = reader.Read();
                     byte vel = reader.Read();
+                    if (settings.playbackEnabled && vel > 10)
+                    {
+                        globalPlaybackEvents.Add(new PlaybackEvent()
+                        {
+                            pos = trackTime,
+                            val = command | (note << 8) | (vel << 16)
+                        });
+                    }
                     if (vel == 0)
                     {
                         if (!readOnly)
+                        {
                             try
                             {
                                 Note n = UnendedNotes[note << 4 | channel].Pop();
@@ -201,6 +218,7 @@ namespace BMEngine
                                 n.hasEnded = true;
                             }
                             catch { }
+                        }
                     }
                     else
                     {
@@ -230,44 +248,94 @@ namespace BMEngine
                     int channel = command & 0b00001111;
                     byte note = reader.Read();
                     byte vel = reader.Read();
+                    try {
+                        Note n = UnendedNotes[note << 4 | channel].Pop();
 
-                    if (!readOnly)
-                        try
+                        if (settings.playbackEnabled && n.vel > 10)
                         {
-                            Note n = UnendedNotes[note << 4 | channel].Pop();
+                            globalPlaybackEvents.Add(new PlaybackEvent()
+                            {
+                                pos = trackTime,
+                                val = command | (note << 8) | (vel << 16)
+                            });
+                        }
+
+                        if (!readOnly)
+                        {
                             n.end = trackTime;
                             n.hasEnded = true;
                         }
-                        catch { }
+                    }
+                    catch { }
                 }
                 else if (comm == 0b10100000)
                 {
                     int channel = command & 0b00001111;
                     byte note = reader.Read();
                     byte vel = reader.Read();
+                    if (settings.playbackEnabled)
+                    {
+                        globalPlaybackEvents.Add(new PlaybackEvent()
+                        {
+                            pos = trackTime,
+                            val = command | (note << 8) | (vel << 16)
+                        });
+                    }
                 }
                 else if (comm == 0b11000000)
                 {
                     int channel = command & 0b00001111;
                     byte program = reader.Read();
+                    if (settings.playbackEnabled)
+                    {
+                        globalPlaybackEvents.Add(new PlaybackEvent()
+                        {
+                            pos = trackTime,
+                            val = command | (program << 8)
+                        });
+                    }
                 }
                 else if (comm == 0b11010000)
                 {
 
                     int channel = command & 0b00001111;
                     byte pressure = reader.Read();
+                    if (settings.playbackEnabled)
+                    {
+                        globalPlaybackEvents.Add(new PlaybackEvent()
+                        {
+                            pos = trackTime,
+                            val = command | (pressure << 8)
+                        });
+                    }
                 }
                 else if (comm == 0b11100000)
                 {
                     int channel = command & 0b00001111;
                     byte l = reader.Read();
                     byte m = reader.Read();
+                    if (settings.playbackEnabled)
+                    {
+                        globalPlaybackEvents.Add(new PlaybackEvent()
+                        {
+                            pos = trackTime,
+                            val = command | (l << 8) | (m << 16)
+                        });
+                    }
                 }
                 else if (comm == 0b10110000)
                 {
                     int channel = command & 0b00001111;
                     byte cc = reader.Read();
                     byte vv = reader.Read();
+                    if (settings.playbackEnabled)
+                    {
+                        globalPlaybackEvents.Add(new PlaybackEvent()
+                        {
+                            pos = trackTime,
+                            val = command | (cc << 8) | (vv << 16)
+                        });
+                    }
                 }
                 else if (command == 0b11110000)
                 {

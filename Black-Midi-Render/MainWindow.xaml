@@ -7,7 +7,7 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:local="clr-namespace:Black_Midi_Render"
         mc:Ignorable="d"
-        Title="Zenith" Height="549.889" Width="779.556" MinWidth="779.556" MinHeight="549.889">
+        Title="Zenith" Height="549.889" Width="779.556" MinWidth="779.556" MinHeight="549.889" Closing="Window_Closing">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -72,7 +72,7 @@
                 </MultiBinding>
             </Grid.IsEnabled>
         </Grid>
-        <TabControl>
+        <TabControl x:Name="windowTabs">
             <TabItem Header="{DynamicResource midiTab}" IsEnabled="{DynamicResource notRendering}">
                 <Grid Background="#FFE5E5E5">
                     <Grid.ColumnDefinitions>
@@ -166,19 +166,22 @@
             </TabItem>-->
             <TabItem Header="{DynamicResource previewTab}" IsEnabled="{DynamicResource notRendering}">
                 <Grid Background="#FFE5E5E5" KeyDown="Grid_KeyDown">
-                    <CheckBox x:Name="vsyncEnabled" Content="{DynamicResource vsync}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Checked="VsyncEnabled_Checked" Unchecked="VsyncEnabled_Checked" Focusable="False"/>
-                    <CheckBox x:Name="previewPaused" Content="{DynamicResource paused}" HorizontalAlignment="Left" Margin="10,87,0,0" VerticalAlignment="Top" Checked="Paused_Checked" Unchecked="Paused_Checked"/>
+                    <CheckBox x:Name="vsyncEnabled" Content="{DynamicResource vsync}" HorizontalAlignment="Left" Margin="10,175,0,0" VerticalAlignment="Top" Checked="VsyncEnabled_Checked" Unchecked="VsyncEnabled_Checked" Focusable="False"/>
+                    <CheckBox x:Name="previewPaused" Content="{DynamicResource paused}" HorizontalAlignment="Left" Margin="10,135,0,0" VerticalAlignment="Top" Checked="Paused_Checked" Unchecked="Paused_Checked"/>
                     <DockPanel HorizontalAlignment="Left" LastChildFill="False" Margin="10,0,0,10" Height="20" VerticalAlignment="Bottom">
                         <Button Content="{DynamicResource startPreview}" HorizontalAlignment="Left" Margin="0,0,0,0" Padding="20,0,20,0" IsEnabled="{Binding IsEnabled, ElementName=previewStartEnabled}" Height="20" VerticalAlignment="Bottom" Click="StartButton_Click" DockPanel.Dock="Left" />
                         <Button Content="{DynamicResource stop}" HorizontalAlignment="Left" Margin="10,0,0,0" Padding="20,0,20,0" IsEnabled="{Binding IsEnabled, ElementName=stopEnabled}" Height="20" VerticalAlignment="Bottom" Click="StopButton_Click" DockPanel.Dock="Left" />
                     </DockPanel>
-                    <CheckBox x:Name="forceReRender" Content="{DynamicResource forceRender}" HorizontalAlignment="Left" Margin="10,108,0,0" VerticalAlignment="Top" Checked="ForceReRender_Checked" Unchecked="ForceReRender_Checked" IsEnabled="{Binding ElementName=previewPaused, Path=IsChecked}"/>
-                    <Label Content="{DynamicResource pauseHint}" HorizontalAlignment="Left" Margin="10,56,0,0" VerticalAlignment="Top"/>
-                    <DockPanel Height="26" LastChildFill="False" Margin="10,30,10,0" VerticalAlignment="Top">
+                    <CheckBox x:Name="forceReRender" Content="{DynamicResource forceRender}" HorizontalAlignment="Left" Margin="10,155,0,0" VerticalAlignment="Top" Checked="ForceReRender_Checked" Unchecked="ForceReRender_Checked" IsEnabled="{Binding ElementName=previewPaused, Path=IsChecked}"/>
+                    <Label Content="{DynamicResource pauseHint}" HorizontalAlignment="Left" Margin="9,104,0,0" VerticalAlignment="Top"/>
+                    <DockPanel Height="26" LastChildFill="False" Margin="9,78,11,0" VerticalAlignment="Top">
                         <Label Content="{DynamicResource tempo}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left"/>
                         <Slider x:Name="tempoSlider" HorizontalAlignment="Left" VerticalAlignment="Top" Width="337" Height="21" ValueChanged="TempoSlider_ValueChanged" Maximum="6" TickPlacement="BottomRight" LargeChange="0" SmallChange="0.2" TickFrequency="0.2" Minimum="-6" IsSnapToTickEnabled="True" MouseDown="TempoSlider_MouseDown" DockPanel.Dock="Left" Margin="0,5.1,0,0"/>
                         <Label x:Name="tempoValue" Content="1" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left"/>
                     </DockPanel>
+                    <CheckBox Content="{DynamicResource realtimePlayback}" Name="realtimePlayback" HorizontalAlignment="Left" Margin="10,12,0,0" VerticalAlignment="Top" Checked="Checkbox_Checked" Unchecked="Checkbox_Checked" IsChecked="True"/>
+                    <CheckBox Content="{DynamicResource useOmniMidi}" Name="useOmniMidi" HorizontalAlignment="Left" Margin="10,32,0,0" VerticalAlignment="Top" Unchecked="Checkbox_Checked" Checked="Checkbox_Checked" IsChecked="True"/>
+                    <CheckBox Content="{DynamicResource muteAudio}" Name="muteAudio" HorizontalAlignment="Left" Margin="10,52,0,0" VerticalAlignment="Top" Checked="Checkbox_Checked" Unchecked="Checkbox_Checked"/>
                 </Grid>
             </TabItem>
             <TabItem Header="{DynamicResource renderTab}">

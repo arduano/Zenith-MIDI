@@ -134,6 +134,7 @@
   <ItemGroup>
     <Compile Include="GLPostbuffer.cs" />
     <Compile Include="GLUtils.cs" />
+    <Compile Include="KDMAPI.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>

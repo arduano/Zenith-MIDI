@@ -56,7 +56,12 @@ namespace BMEngine
         public string font = "Arial";
 
         public bool running = false;
-        
+
+        public bool playSound = true;
+        public bool playbackEnabled = true;
+
+        public bool realtimePlayback = true;
+
         public double liveFps = 0;
     }
 }
