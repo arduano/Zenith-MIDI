@@ -10,3 +10,6 @@
 [submodule "MidiTrailRender"]
 	path = MidiTrailRender
 	url = https://github.com/arduano/Zenith-MidiTrail-Render.git
+[submodule "NoteCountRender"]
+	path = NoteCountRender
+	url = https://github.com/arduano/Zenith-Note-Count-Render.git
