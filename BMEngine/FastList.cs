@@ -59,7 +59,7 @@ namespace BMEngine
 
             public void Remove()
             {
-                //if (_ilist.last == curr) _ilist.last = prev;
+                if (_ilist.last == curr) _ilist.last = prev;
                 prev.Next = curr.Next;
             }
 
@@ -108,6 +108,8 @@ namespace BMEngine
 
             last = li;
         }
+
+        public bool ZeroLen => root.Next == null;
 
         public T Pop()
         {

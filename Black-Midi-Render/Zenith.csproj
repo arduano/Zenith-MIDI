@@ -183,6 +183,10 @@
       <Project>{1a849712-b3e2-4ac5-b899-3a5aa3018f7a}</Project>
       <Name>MidiUtils</Name>
     </ProjectReference>
+    <ProjectReference Include="..\NoteCountRender\NoteCountRender.csproj">
+      <Project>{5f30ba79-d86b-4fc6-ba76-7cbb9ebba721}</Project>
+      <Name>NoteCountRender</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PFARender\PFARender.csproj">
       <Project>{84e13869-0d33-4a56-a1a8-0b6f12c76081}</Project>
       <Name>PFARender</Name>

@@ -19,6 +19,7 @@ namespace BMEngine
         int NoteCollectorOffset { get; }
 
         double LastMidiTimePerTick { get; set; }
+        MidiFile CurrentMidi { set; }
 
         double NoteScreenTime { get; }
         long LastNoteCount { get; }

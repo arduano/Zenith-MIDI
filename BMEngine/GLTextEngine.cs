@@ -246,6 +246,7 @@ void main()
             Vector2 curpos = new Vector2(0, 0);
             int rows = 1;
             float maxWidth = 0;
+                float padding = mapCharSize.Width / 8f;
             foreach (char c in text)
             {
                 if (c == '\n')
@@ -260,13 +261,12 @@ void main()
                 double charwidth = 1.0 / Characters.Length;
                 double s = charwidth * chari;
                 double e = s + charSizes[chari].Width / mapCharSize.Width * charwidth;
-                float padding = mapCharSize.Width / 8f;
                 sz.Width -= padding * 2;
                 Vector2 endpos = curpos + new Vector2(sz.Width, sz.Height);
                 curpos.X += sz.Width;
                 if (curpos.X > maxWidth) maxWidth = curpos.X;
             }
-            return new SizeF(maxWidth, mapCharSize.Height * rows);
+            return new SizeF(maxWidth + padding * 2, mapCharSize.Height * rows);
         }
 
         void FlushQuadBuffer(bool check = true)

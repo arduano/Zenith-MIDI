@@ -21,7 +21,7 @@ namespace BMEngine
         public MidiTrack track;
     }
 
-    public class PlaybackEvent
+    public struct PlaybackEvent
     {
         public long pos;
         public int val;
@@ -177,7 +177,7 @@ namespace BMEngine
         }
 
         byte prevCommand = 0;
-        public void ParseNextEvent(bool readOnly = false)
+        public void ParseNextEvent()
         {
             try
             {
@@ -199,6 +199,7 @@ namespace BMEngine
                     byte channel = (byte)(command & 0b00001111);
                     byte note = reader.Read();
                     byte vel = reader.Read();
+
                     if (settings.playbackEnabled && vel > 10)
                     {
                         globalPlaybackEvents.Add(new PlaybackEvent()
@@ -207,17 +208,15 @@ namespace BMEngine
                             val = command | (note << 8) | (vel << 16)
                         });
                     }
+
                     if (vel == 0)
                     {
-                        if (!readOnly)
+                        var l = UnendedNotes[note << 4 | channel];
+                        if (!l.ZeroLen)
                         {
-                            try
-                            {
-                                Note n = UnendedNotes[note << 4 | channel].Pop();
-                                n.end = trackTime;
-                                n.hasEnded = true;
-                            }
-                            catch { }
+                            Note n = l.Pop();
+                            n.end = trackTime;
+                            n.hasEnded = true;
                         }
                     }
                     else
@@ -228,19 +227,16 @@ namespace BMEngine
                         n.track = this;
                         n.channel = channel;
                         n.vel = vel;
-                        if (!readOnly)
+                        if (UnendedNotes == null)
                         {
-                            if (UnendedNotes == null)
+                            UnendedNotes = new FastList<Note>[256 * 16];
+                            for (int i = 0; i < 256 * 16; i++)
                             {
-                                UnendedNotes = new FastList<Note>[256 * 16];
-                                for (int i = 0; i < 256 * 16; i++)
-                                {
-                                    UnendedNotes[i] = new FastList<Note>();
-                                }
+                                UnendedNotes[i] = new FastList<Note>();
                             }
-                            UnendedNotes[note << 4 | channel].Add(n);
-                            globalDisplayNotes.Add(n);
                         }
+                        UnendedNotes[note << 4 | channel].Add(n);
+                        globalDisplayNotes.Add(n);
                     }
                 }
                 else if (comm == 0b10000000)
@@ -248,25 +244,27 @@ namespace BMEngine
                     int channel = command & 0b00001111;
                     byte note = reader.Read();
                     byte vel = reader.Read();
-                    try {
-                        Note n = UnendedNotes[note << 4 | channel].Pop();
-
-                        if (settings.playbackEnabled && n.vel > 10)
+                    var l = UnendedNotes[note << 4 | channel];
+                    if (!l.ZeroLen)
+                    {
+                        try
                         {
-                            globalPlaybackEvents.Add(new PlaybackEvent()
+                            Note n = l.Pop();
+
+                            if (settings.playbackEnabled && n.vel > 10)
                             {
-                                pos = trackTime,
-                                val = command | (note << 8) | (vel << 16)
-                            });
-                        }
-
-                        if (!readOnly)
-                        {
+                                globalPlaybackEvents.Add(new PlaybackEvent()
+                                {
+                                    pos = trackTime,
+                                    val = command | (note << 8) | (vel << 16)
+                                });
+                            }
                             n.end = trackTime;
                             n.hasEnded = true;
                         }
+                        catch
+                        { }
                     }
-                    catch { }
                 }
                 else if (comm == 0b10100000)
                 {
@@ -542,15 +540,9 @@ namespace BMEngine
                         t.pos = trackTime;
                         t.tempo = btempo;
 
-                        //if (trackID <= 1)
+                        lock (globalTempoEvents)
                         {
-                            if (!readOnly)
-                            {
-                                lock (globalTempoEvents)
-                                {
-                                    globalTempoEvents.Add(t);
-                                }
-                            }
+                            globalTempoEvents.Add(t);
                         }
                     }
                     else if (command == 0x54)
@@ -604,7 +596,8 @@ namespace BMEngine
             {
                 EndTrack();
             }
-            catch { }
+            catch
+            { }
         }
 
         public void ParseNextEventFast()
@@ -626,8 +619,9 @@ namespace BMEngine
                 if (comm == 0b10010000)
                 {
                     byte channel = (byte)(command & 0b00001111);
-                    reader.Skip(2);
-                    noteCount++;
+                    reader.Skip(1);
+                    byte vel = reader.Read();
+                    if(vel != 0) noteCount++;
                 }
                 else if (comm == 0b10000000)
                 {
@@ -802,7 +796,8 @@ namespace BMEngine
             {
                 EndTrack();
             }
-            catch { }
+            catch
+            { }
         }
 
         public void Dispose()

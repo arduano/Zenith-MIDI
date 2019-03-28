@@ -44,23 +44,29 @@ namespace Black_Midi_Render
         List<ResourceDictionary> Languages = new List<ResourceDictionary>();
 
         bool foundOmniMIDI = true;
+        bool OmniMIDIDisabled = false;
 
         public MainWindow()
         {
             InitializeComponent();
+            //foundOmniMIDI = false;
             if (foundOmniMIDI)
             {
                 try
                 {
+                    Console.WriteLine("Loading KDMAPI...");
                     KDMAPI.InitializeKDMAPIStream();
+                    Console.WriteLine("Loaded KDMAPI!");
                 }
                 catch
                 {
+                    Console.WriteLine("Failed to load KDMAPI, disabling");
                     foundOmniMIDI = false;
                 }
             }
             if (!foundOmniMIDI)
             {
+                disableKDMAPI.IsEnabled = false;
                 useOmniMidi.IsChecked = false;
                 useOmniMidi.IsEnabled = false;
                 muteAudio.IsChecked = false;
@@ -132,12 +138,18 @@ namespace Black_Midi_Render
             long ramSample = 0;
             Stopwatch timewatch = new Stopwatch();
             timewatch.Start();
+            IPluginRender render = null;
+            double lastWinTime = double.NaN;
             try
             {
                 while ((midifile.ParseUpTo((long)(win.midiTime + win.lastDeltaTimeOnScreen + (win.tempoFrameStep * 20 * settings.tempoMultiplier * win.lastMV))) || nc != 0) && settings.running)
                 {
                     //SpinWait.SpinUntil(() => midifile.currentSyncTime < win.midiTime + win.lastDeltaTimeOnScreen + (long)(win.tempoFrameStep * 10) || !settings.running);
-                    Thread.Sleep(1000 / settings.fps * 10);
+                    //Stopwatch s = new Stopwatch();
+                    //s.Start();
+                    //SpinWait.SpinUntil(() => s.ElapsedMilliseconds > 1000 / settings.fps * 10 || );
+                    Thread.Sleep((int)(1000.0 / settings.fps * 10));
+                    SpinWait.SpinUntil(() => lastWinTime != win.midiTime || render != renderer.renderer || !settings.running);
                     if (!settings.running) break;
                     Note n;
                     double cutoffTime = (long)win.midiTime;
@@ -147,12 +159,13 @@ namespace Black_Midi_Render
                     while (!receivedInfo)
                         try
                         {
-                            manualDelete = renderer.renderer.ManualNoteDelete;
-                            noteCollectorOffset = renderer.renderer.NoteCollectorOffset;
+                            render = renderer.renderer;
                             receivedInfo = true;
                         }
                         catch
                         { }
+                    manualDelete = render.ManualNoteDelete;
+                    noteCollectorOffset = render.NoteCollectorOffset;
                     cutoffTime += noteCollectorOffset;
                     lock (midifile.globalDisplayNotes)
                     {
@@ -162,7 +175,8 @@ namespace Black_Midi_Render
                             {
                                 if (n.delete)
                                     i.Remove();
-                                else nc++;
+                                else
+                                    nc++;
                             }
                         else
                             while (i.MoveNext(out n))
@@ -187,6 +201,7 @@ namespace Black_Midi_Render
                     if (maxRam < ram) maxRam = ram;
                     avgRam = (long)((double)avgRam * ramSample + ram) / (ramSample + 1);
                     ramSample++;
+                    lastWinTime = win.midiTime;
                 }
             }
             catch (Exception ex)
@@ -285,7 +300,10 @@ namespace Black_Midi_Render
                 return;
             }
             pluginsList.SelectedIndex = id;
-            renderer.renderer = RenderPlugins[id];
+            lock (renderer)
+            {
+                renderer.renderer = RenderPlugins[id];
+            }
             previewImage.Source = renderer.renderer.PreviewImage;
             pluginDescription.Text = renderer.renderer.Description;
 
@@ -606,29 +624,40 @@ namespace Black_Midi_Render
             catch { }
         }
 
-        //private void ShowNoteScreenCount_Checked(object sender, RoutedEventArgs e)
-        //{
-        //    settings.showNotesRendered = (bool)showNoteScreenCount.IsChecked;
-        //}
-
-        //private void ShowNoteCount_Checked(object sender, RoutedEventArgs e)
-        //{
-        //    settings.showNoteCount = (bool)showNoteCount.IsChecked;
-        //}
-
-        //private void FontSizePicker_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        //{
-        //    try
-        //    {
-        //        settings.fontSize = (int)fontSizePicker.Value;
-        //    }
-        //    catch { }
-        //}
-
-        //private void FontPicker_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        //{
-        //    settings.font = (string)((ComboBoxItem)fontPicker.SelectedItem).Content;
-        //}
+        private void DisableKDMAPI_Click(object sender, RoutedEventArgs e)
+        {
+            if (OmniMIDIDisabled)
+            {
+                disableKDMAPI.Content = "Disable KDMAPI";
+                OmniMIDIDisabled = false;
+                useOmniMidi.IsEnabled = true;
+                useOmniMidi.IsChecked = true;
+                muteAudio.IsEnabled = true;
+                muteAudio.IsChecked = false;
+                try
+                {
+                    Console.WriteLine("Loading KDMAPI...");
+                    KDMAPI.InitializeKDMAPIStream();
+                    Console.WriteLine("Loaded!");
+                }
+                catch { }
+            }
+            else
+            {
+                disableKDMAPI.Content = "Enable KDMAPI";
+                OmniMIDIDisabled = true;
+                useOmniMidi.IsChecked = false;
+                useOmniMidi.IsEnabled = false;
+                muteAudio.IsChecked = false;
+                muteAudio.IsEnabled = false;
+                try
+                {
+                    Console.WriteLine("Unloading KDMAPI");
+                    KDMAPI.TerminateKDMAPIStream();
+                }
+                catch { }
+            }
+        }
     }
 
     public class AndValueConverter : IMultiValueConverter

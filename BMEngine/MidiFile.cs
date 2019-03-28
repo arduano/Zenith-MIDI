@@ -24,7 +24,7 @@ namespace BMEngine
         public MidiTrack[] tracks;
 
         public long maxTrackTime;
-        long noteCount = 0;
+        public long noteCount = 0;
 
         public long currentSyncTime = 0;
 
@@ -108,22 +108,25 @@ namespace BMEngine
 
         public bool ParseUpTo(long targetTime)
         {
-            for (; currentSyncTime <= targetTime; currentSyncTime++)
+            lock (globalDisplayNotes)
             {
-                int ut = 0;
-                for (int trk = 0; trk < trackcount; trk++)
+                for (; currentSyncTime <= targetTime; currentSyncTime++)
                 {
-                    var t = tracks[trk];
-                    if (!t.trackEnded) ut++;
-                    t.Step(currentSyncTime);
+                    int ut = 0;
+                    for (int trk = 0; trk < trackcount; trk++)
+                    {
+                        var t = tracks[trk];
+                        if (!t.trackEnded) ut++;
+                        t.Step(currentSyncTime);
+                    }
+                    unendedTracks = ut;
                 }
-                unendedTracks = ut;
+                foreach (var t in tracks)
+                {
+                    if (!t.trackEnded) return true;
+                }
+                return false;
             }
-            foreach (var t in tracks)
-            {
-                if (!t.trackEnded) return true;
-            }
-            return false;
         }
 
         public void LoadAndParseAll(bool useBufferStream = false)

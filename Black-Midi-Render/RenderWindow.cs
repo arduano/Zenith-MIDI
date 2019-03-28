@@ -367,26 +367,29 @@ void main()
             }
         }
 
-        long microsecondsPerTick = 0;
+        double microsecondsPerTick = 0;
         bool playbackLoopStarted = false;
         void PlaybackLoop()
         {
             PlaybackEvent pe;
             int timeJump;
             long now;
+            playbackLoopStarted = true;
+            if (settings.paused || !settings.playbackEnabled)
+            {
+                SpinWait.SpinUntil(() => !(settings.paused || !settings.playbackEnabled));
+            }
             KDMAPI.ResetKDMAPIStream();
             KDMAPI.SendDirectData(0x0);
-            playbackLoopStarted = true;
             while (settings.running)
             {
-                if (settings.paused)
+                if (settings.paused || !settings.playbackEnabled)
                 {
-                    SpinWait.SpinUntil(() => !settings.paused);
+                    SpinWait.SpinUntil(() => !(settings.paused || !settings.playbackEnabled));
                 }
                 try
                 {
                     pe = globalPlaybackEvents.Pop();
-                    if (pe == null) continue;
                     now = DateTime.Now.Ticks;
                     if(now - 10000000 > frameStartTime)
                     {
@@ -417,6 +420,7 @@ void main()
             lock (render)
             {
                 lastDeltaTimeOnScreen = render.renderer.NoteScreenTime;
+                render.renderer.CurrentMidi = midi;
             }
             int noNoteFrames = 0;
             long lastNC = 0;
@@ -448,6 +452,7 @@ void main()
                                 List<Color4[]> trkcolors = new List<Color4[]>();
                                 foreach (var t in midi.tracks) trkcolors.Add(t.trkColor);
                                 render.renderer.SetTrackColors(trkcolors.ToArray());
+                                render.renderer.CurrentMidi = midi;
                                 lock (globalDisplayNotes)
                                 {
                                     foreach (Note n in globalDisplayNotes)
@@ -487,6 +492,11 @@ void main()
                     while (globalTempoEvents.First != null && midiTime + (tempoFrameStep * mv * settings.tempoMultiplier) > globalTempoEvents.First.pos)
                     {
                         var t = globalTempoEvents.Pop();
+                        if (t.tempo == 0)
+                        {
+                            Console.WriteLine("Zero tempo event encountered, ignoring");
+                            continue;
+                        }
                         var _t = ((t.pos) - midiTime) / (tempoFrameStep * mv * settings.tempoMultiplier);
                         mv *= 1 - _t;
                         tempoFrameStep = ((double)midi.division / t.tempo) * (1000000.0 / settings.fps);

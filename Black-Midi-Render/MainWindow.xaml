@@ -131,6 +131,7 @@
                         <Button Content="{DynamicResource browse}" Height="20" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="30,0,30,0" x:Name="browseMidiButton" Click="BrowseMidiButton_Click" IsEnabled="{Binding IsEnabled, ElementName=notPreviewingOrRendering}" DockPanel.Dock="Left"/>
                         <TextBox Height="20" TextWrapping="Wrap" Text="" VerticalAlignment="Top" x:Name="midiPath" IsEnabled="False" DockPanel.Dock="Left" Margin="9,0,0,0"/>
                     </DockPanel>
+                    <Button x:Name="disableKDMAPI" Content="{DynamicResource disableKDMAPI}" HorizontalAlignment="Left" Margin="10,284,0,0" VerticalAlignment="Top" Padding="20,2,20,2" Click="DisableKDMAPI_Click" />
                 </Grid>
             </TabItem>
             <TabItem Header="{DynamicResource pluginsTab}" IsEnabled="{DynamicResource notRendering}">
