@@ -18,7 +18,13 @@ namespace BMEngine
         public byte vel;
         public bool delete = false;
         public object meta = null;
-        public MidiTrack track;
+        public NoteColor color;
+    }
+
+    public class NoteColor
+    {
+        public Color4 left;
+        public Color4 right;
     }
 
     public struct PlaybackEvent
@@ -63,7 +69,7 @@ namespace BMEngine
         FastList<ColorChange> globalColorEvents;
         FastList<PlaybackEvent> globalPlaybackEvents;
 
-        public Color4[] trkColor;
+        public NoteColor[] trkColors;
 
         bool readDelta = false;
 
@@ -85,11 +91,10 @@ namespace BMEngine
 
         public void ResetColors()
         {
-            trkColor = new Color4[32];
+            trkColors = new NoteColor[16];
             for (int i = 0; i < 16; i++)
             {
-                trkColor[i * 2] = Color4.Gray;//Color4.FromHsv(new OpenTK.Vector4((trackID * 16 + i) * 1.36271f % 1, 1.0f, 1, 1f));
-                trkColor[i * 2 + 1] = Color4.Gray;//Color4.FromHsv(new OpenTK.Vector4((trackID * 16 + i) * 1.36271f % 1, 1.0f, 1, 1f));
+                trkColors[i] = new NoteColor() { left = Color4.Gray, right = Color4.Gray };
             }
         }
 
@@ -224,7 +229,7 @@ namespace BMEngine
                         Note n = new Note();
                         n.start = trackTime;
                         n.note = note;
-                        n.track = this;
+                        n.color = trkColors[channel];
                         n.channel = channel;
                         n.vel = vel;
                         if (UnendedNotes == null)

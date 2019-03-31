@@ -13,7 +13,7 @@ namespace BMEngine
     {
         Stream MidiFileReader;
         public ushort division;
-        public ushort trackcount;
+        public int trackcount;
         public ushort format;
 
         public int zerothTempo = 500000;
@@ -22,6 +22,8 @@ namespace BMEngine
         List<uint> trackLengths = new List<uint>();
 
         public MidiTrack[] tracks;
+
+        public MidiInfo info;
 
         public long maxTrackTime;
         public long noteCount = 0;
@@ -53,6 +55,14 @@ namespace BMEngine
             Console.WriteLine("Loaded!");
             Console.WriteLine("Note count: " + noteCount);
             unendedTracks = trackcount;
+            info = new MidiInfo()
+            {
+                division = division,
+                firstTempo = zerothTempo,
+                noteCount = noteCount,
+                tickLength = maxTrackTime,
+                trackCount = trackcount
+            };
         }
 
         void AssertText(string text)

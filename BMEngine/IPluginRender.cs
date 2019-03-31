@@ -19,7 +19,7 @@ namespace BMEngine
         int NoteCollectorOffset { get; }
 
         double LastMidiTimePerTick { get; set; }
-        MidiFile CurrentMidi { set; }
+        MidiInfo CurrentMidi { set; }
 
         double NoteScreenTime { get; }
         long LastNoteCount { get; }
@@ -27,6 +27,6 @@ namespace BMEngine
 
         void Init();
         void RenderFrame(FastList<Note> notes, double midiTime, int finalCompositeBuff);
-        void SetTrackColors(Color4[][] trakcs);
+        void SetTrackColors(NoteColor[][] trakcs);
     }
 }

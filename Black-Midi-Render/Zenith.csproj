@@ -191,6 +191,10 @@
       <Project>{84e13869-0d33-4a56-a1a8-0b6f12c76081}</Project>
       <Name>PFARender</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TexturedRender\TexturedRender.csproj">
+      <Project>{ecf72523-79ae-4dd1-9421-60b1d8bccb9e}</Project>
+      <Name>TexturedRender</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Languages\en\window.xaml">

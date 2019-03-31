@@ -91,6 +91,7 @@
     <Compile Include="GLUtils.cs" />
     <Compile Include="IPluginRender.cs" />
     <Compile Include="MidiFile.cs" />
+    <Compile Include="MidiInfo.cs" />
     <Compile Include="MidiTrack.cs" />
     <Compile Include="NoteColorPalettePick.xaml.cs">
       <DependentUpon>NoteColorPalettePick.xaml</DependentUpon>

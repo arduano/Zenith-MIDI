@@ -144,11 +144,6 @@ namespace Black_Midi_Render
             {
                 while ((midifile.ParseUpTo((long)(win.midiTime + win.lastDeltaTimeOnScreen + (win.tempoFrameStep * 20 * settings.tempoMultiplier * win.lastMV))) || nc != 0) && settings.running)
                 {
-                    //SpinWait.SpinUntil(() => midifile.currentSyncTime < win.midiTime + win.lastDeltaTimeOnScreen + (long)(win.tempoFrameStep * 10) || !settings.running);
-                    //Stopwatch s = new Stopwatch();
-                    //s.Start();
-                    //SpinWait.SpinUntil(() => s.ElapsedMilliseconds > 1000 / settings.fps * 10 || );
-                    Thread.Sleep((int)(1000.0 / settings.fps * 10));
                     SpinWait.SpinUntil(() => lastWinTime != win.midiTime || render != renderer.renderer || !settings.running);
                     if (!settings.running) break;
                     Note n;
@@ -185,6 +180,7 @@ namespace Black_Midi_Render
                                     i.Remove();
                                 if (n.start > cutoffTime) break;
                             }
+                        GC.Collect();
                     }
                     try
                     {
@@ -202,6 +198,9 @@ namespace Black_Midi_Render
                     avgRam = (long)((double)avgRam * ramSample + ram) / (ramSample + 1);
                     ramSample++;
                     lastWinTime = win.midiTime;
+                    Stopwatch s = new Stopwatch();
+                    s.Start();
+                    SpinWait.SpinUntil(() => s.ElapsedMilliseconds > 1000.0 / settings.fps * 10 || win.midiTime + win.lastDeltaTimeOnScreen + (win.tempoFrameStep * 10 * settings.tempoMultiplier * win.lastMV) > midifile.currentSyncTime);
                 }
             }
             catch (Exception ex)

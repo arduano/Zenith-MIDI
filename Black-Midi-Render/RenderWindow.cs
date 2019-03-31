@@ -420,7 +420,7 @@ void main()
             lock (render)
             {
                 lastDeltaTimeOnScreen = render.renderer.NoteScreenTime;
-                render.renderer.CurrentMidi = midi;
+                render.renderer.CurrentMidi = midi.info;
             }
             int noNoteFrames = 0;
             long lastNC = 0;
@@ -441,18 +441,24 @@ void main()
                                     {
                                         var r = render.disposeQueue.Dequeue();
                                         if (r.Initialized)
-                                            try { r.Dispose(); }
+                                        {
+                                            try
+                                            {
+                                                r.Dispose();
+                                            }
                                             catch { }
+                                            GC.Collect();
+                                        }
                                     }
                                 }
                                 catch (InvalidOperationException) { }
                             if (!render.renderer.Initialized)
                             {
                                 render.renderer.Init();
-                                List<Color4[]> trkcolors = new List<Color4[]>();
-                                foreach (var t in midi.tracks) trkcolors.Add(t.trkColor);
+                                List<NoteColor[]> trkcolors = new List<NoteColor[]>();
+                                foreach (var t in midi.tracks) trkcolors.Add(t.trkColors);
                                 render.renderer.SetTrackColors(trkcolors.ToArray());
-                                render.renderer.CurrentMidi = midi;
+                                render.renderer.CurrentMidi = midi.info;
                                 lock (globalDisplayNotes)
                                 {
                                     foreach (Note n in globalDisplayNotes)
@@ -519,14 +525,14 @@ void main()
                     {
                         for (int i = 0; i < 16; i++)
                         {
-                            c.track.trkColor[i * 2] = c.col1;
-                            c.track.trkColor[i * 2 + 1] = c.col2;
+                            c.track.trkColors[i].left = c.col1;
+                            c.track.trkColors[i].right = c.col2;
                         }
                     }
                     else
                     {
-                        c.track.trkColor[c.channel * 2] = c.col1;
-                        c.track.trkColor[c.channel * 2 + 1] = c.col2;
+                        c.track.trkColors[c.channel].left = c.col1;
+                        c.track.trkColors[c.channel].right = c.col2;
                     }
                 }
 
