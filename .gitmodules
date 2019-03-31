@@ -13,3 +13,6 @@
 [submodule "NoteCountRender"]
 	path = NoteCountRender
 	url = https://github.com/arduano/Zenith-Note-Count-Render.git
+[submodule "TexturedRender"]
+	path = TexturedRender
+	url = https://github.com/arduano/Zenith-Texture-Render.git
