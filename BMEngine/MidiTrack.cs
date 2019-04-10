@@ -75,6 +75,8 @@ namespace BMEngine
 
         IByteReader reader;
 
+        byte noteVelThresh = 0;
+
         public void Reset()
         {
             if (UnendedNotes != null) foreach (var un in UnendedNotes) un.Unlink();

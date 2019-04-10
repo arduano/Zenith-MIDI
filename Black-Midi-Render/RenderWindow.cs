@@ -265,7 +265,7 @@ void main()
         {
             base.OnResize(e);
         }
-
+        
         CurrentRendererPointer render;
         GLTextEngine textEngine;
         public RenderWindow(CurrentRendererPointer renderer, MidiFile midi, RenderSettings settings) : base(16, 9, new GraphicsMode(new ColorFormat(8, 8, 8, 8)), "Render", GameWindowFlags.Default, DisplayDevice.Default)

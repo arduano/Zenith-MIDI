@@ -51,17 +51,17 @@ namespace BMEngine
         {
             float mult = 0.12345f;
             if (!Directory.Exists(searchPath)) Directory.CreateDirectory(searchPath);
-            using (Bitmap palette = new Bitmap(16, 64))
+            using (Bitmap palette = new Bitmap(16, 8))
             {
-                for (int i = 0; i < 16 * 64; i++)
+                for (int i = 0; i < 16 * 8; i++)
                 {
                     palette.SetPixel(i % 16, (i - i % 16) / 16, (Color)Color4.FromHsv(new OpenTK.Vector4(i * mult % 1, defS, defV, 1)));
                 }
                 palette.Save(Path.Combine(searchPath, "Random.png"));
             }
-            using (Bitmap palette = new Bitmap(32, 64))
+            using (Bitmap palette = new Bitmap(32, 8))
             {
-                for (int i = 0; i < 32 * 64; i++)
+                for (int i = 0; i < 32 * 8; i++)
                 {
                     palette.SetPixel(i % 32, (i - i % 32) / 32, (Color)Color4.FromHsv(new OpenTK.Vector4(i * mult % 1, defS, defV, 1)));
                     i++;
@@ -69,9 +69,9 @@ namespace BMEngine
                 }
                 palette.Save(Path.Combine(searchPath, "Random Gradients.png"));
             }
-            using (Bitmap palette = new Bitmap(16, 64))
+            using (Bitmap palette = new Bitmap(16, 8))
             {
-                for (int i = 0; i < 16 * 64; i++)
+                for (int i = 0; i < 16 * 8; i++)
                 {
                     palette.SetPixel(i % 16, (i - i % 16) / 16, (Color)Color4.FromHsv(new OpenTK.Vector4(i * mult % 1, defS, defV, 0.8f)));
                 }
