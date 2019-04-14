@@ -61,6 +61,8 @@ namespace BMEngine
 
         byte channelPrefix = 0;
 
+        MidiFile midi;
+
         public FastList<Note>[] UnendedNotes = null;
         public LinkedList<Tempo> Tempos = new LinkedList<Tempo>();
 
@@ -88,6 +90,7 @@ namespace BMEngine
             readDelta = false;
             channelPrefix = 0;
             noteCount = 0;
+            pushback = 0;
             UnendedNotes = null;
         }
 
@@ -101,6 +104,7 @@ namespace BMEngine
         }
 
         RenderSettings settings;
+        long buferTrackStart;
         public MidiTrack(int id, IByteReader reader, MidiFile file, RenderSettings settings)
         {
             this.settings = settings;
@@ -108,6 +112,7 @@ namespace BMEngine
             globalTempoEvents = file.globalTempoEvents;
             globalColorEvents = file.globalColorEvents;
             globalPlaybackEvents = file.globalPlaybackEvents;
+            midi = file;
             this.reader = reader;
             trackID = id;
             ResetColors();
@@ -183,6 +188,16 @@ namespace BMEngine
             UnendedNotes = null;
         }
 
+        int ReadNext()
+        {
+            if (pushback == -1)
+                return reader.Read();
+            int v = pushback;
+            pushback = -1;
+            return v;
+        }
+
+        int pushback = -1;
         byte prevCommand = 0;
         public void ParseNextEvent()
         {
@@ -193,6 +208,11 @@ namespace BMEngine
                     trackTime += ReadVariableLen();
                 }
                 readDelta = false;
+
+                var time = trackTime;
+                if (settings.timeBasedNotes)
+                    time = (long)((time - midi.lastTempoTick) / midi.tempoTickMultiplier + midi.lastTempoTime);
+
                 byte command = reader.Read();
                 if (command < 0x80)
                 {
@@ -211,25 +231,24 @@ namespace BMEngine
                     {
                         globalPlaybackEvents.Add(new PlaybackEvent()
                         {
-                            pos = trackTime,
+                            pos = time,
                             val = command | (note << 8) | (vel << 16)
                         });
                     }
-
                     if (vel == 0)
                     {
                         var l = UnendedNotes[note << 4 | channel];
                         if (!l.ZeroLen)
                         {
                             Note n = l.Pop();
-                            n.end = trackTime;
+                            n.end = time;
                             n.hasEnded = true;
                         }
                     }
                     else
                     {
                         Note n = new Note();
-                        n.start = trackTime;
+                        n.start = time;
                         n.note = note;
                         n.color = trkColors[channel];
                         n.channel = channel;
@@ -262,11 +281,11 @@ namespace BMEngine
                             {
                                 globalPlaybackEvents.Add(new PlaybackEvent()
                                 {
-                                    pos = trackTime,
+                                    pos = time,
                                     val = command | (note << 8) | (vel << 16)
                                 });
                             }
-                            n.end = trackTime;
+                            n.end = time;
                             n.hasEnded = true;
                         }
                         catch
@@ -282,7 +301,7 @@ namespace BMEngine
                     {
                         globalPlaybackEvents.Add(new PlaybackEvent()
                         {
-                            pos = trackTime,
+                            pos = time,
                             val = command | (note << 8) | (vel << 16)
                         });
                     }
@@ -295,7 +314,7 @@ namespace BMEngine
                     {
                         globalPlaybackEvents.Add(new PlaybackEvent()
                         {
-                            pos = trackTime,
+                            pos = time,
                             val = command | (program << 8)
                         });
                     }
@@ -309,7 +328,7 @@ namespace BMEngine
                     {
                         globalPlaybackEvents.Add(new PlaybackEvent()
                         {
-                            pos = trackTime,
+                            pos = time,
                             val = command | (pressure << 8)
                         });
                     }
@@ -323,7 +342,7 @@ namespace BMEngine
                     {
                         globalPlaybackEvents.Add(new PlaybackEvent()
                         {
-                            pos = trackTime,
+                            pos = time,
                             val = command | (l << 8) | (m << 16)
                         });
                     }
@@ -337,7 +356,7 @@ namespace BMEngine
                     {
                         globalPlaybackEvents.Add(new PlaybackEvent()
                         {
-                            pos = trackTime,
+                            pos = time,
                             val = command | (cc << 8) | (vv << 16)
                         });
                     }
@@ -499,7 +518,7 @@ namespace BMEngine
                                 else col2 = col1;
                                 if (data[2] < 0x10 || data[2] == 0x7F)
                                 {
-                                    var c = new ColorChange() { pos = trackTime, col1 = col1, col2 = col2, channel = data[2], track = this };
+                                    var c = new ColorChange() { pos = time, col1 = col1, col2 = col2, channel = data[2], track = this };
                                     globalColorEvents.Add(c);
                                 }
                             }
@@ -544,13 +563,17 @@ namespace BMEngine
                         for (int i = 0; i != 3; i++)
                             btempo = (int)((btempo << 8) | reader.Read());
                         Tempo t = new Tempo();
-                        t.pos = trackTime;
+                        t.pos = time;
                         t.tempo = btempo;
 
                         lock (globalTempoEvents)
                         {
                             globalTempoEvents.Add(t);
                         }
+
+                        midi.lastTempoTick = trackTime;
+                        midi.lastTempoTime = time;
+                        midi.tempoTickMultiplier = ((double)midi.division / btempo) * 1000;
                     }
                     else if (command == 0x54)
                     {
@@ -628,7 +651,7 @@ namespace BMEngine
                     byte channel = (byte)(command & 0b00001111);
                     reader.Skip(1);
                     byte vel = reader.Read();
-                    if(vel != 0) noteCount++;
+                    if (vel != 0) noteCount++;
                 }
                 else if (comm == 0b10000000)
                 {

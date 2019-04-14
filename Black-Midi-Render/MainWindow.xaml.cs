@@ -4,6 +4,7 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -144,7 +145,7 @@ namespace Black_Midi_Render
             {
                 while ((midifile.ParseUpTo((long)(win.midiTime + win.lastDeltaTimeOnScreen + (win.tempoFrameStep * 20 * settings.tempoMultiplier * win.lastMV))) || nc != 0) && settings.running)
                 {
-                    SpinWait.SpinUntil(() => lastWinTime != win.midiTime || render != renderer.renderer || !settings.running);
+                    //SpinWait.SpinUntil(() => lastWinTime != win.midiTime || render != renderer.renderer || !settings.running);
                     if (!settings.running) break;
                     Note n;
                     double cutoffTime = (long)win.midiTime;
@@ -200,7 +201,11 @@ namespace Black_Midi_Render
                     lastWinTime = win.midiTime;
                     Stopwatch s = new Stopwatch();
                     s.Start();
-                    SpinWait.SpinUntil(() => s.ElapsedMilliseconds > 1000.0 / settings.fps * 10 || win.midiTime + win.lastDeltaTimeOnScreen + (win.tempoFrameStep * 10 * settings.tempoMultiplier * win.lastMV) > midifile.currentSyncTime);
+                    SpinWait.SpinUntil(() =>
+                        s.ElapsedMilliseconds > 1000.0 / settings.fps * 10 ||
+                        win.midiTime + win.lastDeltaTimeOnScreen + (win.tempoFrameStep * 10 * settings.tempoMultiplier * win.lastMV) > midifile.currentSyncTime ||
+                        lastWinTime != win.midiTime || render != renderer.renderer || !settings.running
+                    );
                 }
             }
             catch (Exception ex)
@@ -376,7 +381,7 @@ namespace Black_Midi_Render
                 return;
             }
 
-            windowTabs.SelectedIndex = 3;
+            windowTabs.SelectedIndex = 4;
 
             settings.realtimePlayback = (bool)realtimePlayback.IsChecked;
             settings.playbackEnabled = (bool)useOmniMidi.IsChecked;
@@ -494,7 +499,11 @@ namespace Black_Midi_Render
 
         private void VsyncEnabled_Checked(object sender, RoutedEventArgs e)
         {
-            settings.vsync = (bool)vsyncEnabled.IsChecked;
+            try
+            {
+                settings.vsync = (bool)vsyncEnabled.IsChecked;
+            }
+            catch { }
         }
 
         private void TempoSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -512,7 +521,11 @@ namespace Black_Midi_Render
 
         private void ForceReRender_Checked(object sender, RoutedEventArgs e)
         {
-            settings.forceReRender = (bool)forceReRender.IsChecked;
+            try
+            {
+                settings.forceReRender = (bool)forceReRender.IsChecked;
+            }
+            catch { }
         }
 
         private void TempoSlider_MouseDown(object sender, MouseButtonEventArgs e)
@@ -627,7 +640,7 @@ namespace Black_Midi_Render
         {
             if (OmniMIDIDisabled)
             {
-                disableKDMAPI.Content = "Disable KDMAPI";
+                disableKDMAPI.Content = Resources["disableKDMAPI"];
                 OmniMIDIDisabled = false;
                 useOmniMidi.IsEnabled = true;
                 useOmniMidi.IsChecked = true;
@@ -643,7 +656,7 @@ namespace Black_Midi_Render
             }
             else
             {
-                disableKDMAPI.Content = "Enable KDMAPI";
+                disableKDMAPI.Content = Resources["enableKDMAPI"];
                 OmniMIDIDisabled = true;
                 useOmniMidi.IsChecked = false;
                 useOmniMidi.IsEnabled = false;
@@ -655,6 +668,71 @@ namespace Black_Midi_Render
                     KDMAPI.TerminateKDMAPIStream();
                 }
                 catch { }
+            }
+        }
+
+        private void NoteSizeStyle_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                if (noteSizeStyle.SelectedIndex == 0) settings.timeBasedNotes = false;
+                if (noteSizeStyle.SelectedIndex == 1) settings.timeBasedNotes = true;
+            }
+            catch { }
+        }
+
+        private void IgnoreColorEvents_Checked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                settings.ignoreColorEvents = (bool)ignoreColorEvents.IsChecked;
+            }
+            catch { }
+        }
+
+        private void UseBGImage_Checked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                settings.lastyBGChangeTime = DateTime.Now.Ticks;
+                if ((bool)useBGImage.IsChecked)
+                {
+                    try
+                    {
+                        settings.BGImage = new Bitmap(bgImagePath.Text);
+                    }
+                    catch
+                    {
+                        settings.BGImage = null;
+                        if (bgImagePath.Text != "")
+                            MessageBox.Show("Couldn't load image");
+                    }
+                }
+                else
+                {
+                    settings.BGImage = null;
+                }
+            }
+            catch { }
+        }
+
+        private void BrowseBG_Click(object sender, RoutedEventArgs e)
+        {
+            var open = new OpenFileDialog();
+            open.Filter = "Image files |*.png;*.bmp;*.jpg;*.jpeg";
+            if ((bool)open.ShowDialog())
+            {
+                bgImagePath.Text = open.FileName;
+                try
+                {
+                    settings.BGImage = new Bitmap(bgImagePath.Text);
+                }
+                catch
+                {
+                    settings.BGImage = null;
+                    if (bgImagePath.Text != "")
+                        MessageBox.Show("Couldn't load image");
+                }
             }
         }
     }

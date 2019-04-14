@@ -20,6 +20,8 @@ using OpenTK.Input;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.Text.RegularExpressions;
+using System.Drawing.Imaging;
+using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
 
 namespace Black_Midi_Render
 {
@@ -44,6 +46,18 @@ out vec2 UV;
 void main()
 {
     gl_Position = vec4(position.x * 2 - 1, position.y * 2 - 1, position.z * 2 - 1, 1.0f);
+	//color = glColor;
+    UV = vec2(position.x, position.y);
+}
+";
+        string postShaderFlipVert = @"#version 330 compatibility
+
+in vec3 position;
+out vec2 UV;
+
+void main()
+{
+    gl_Position = vec4(position.x * 2 - 1, -(position.y * 2 - 1), position.z * 2 - 1, 1.0f);
 	//color = glColor;
     UV = vec2(position.x, position.y);
 }
@@ -148,6 +162,39 @@ void main()
         }
         #endregion
 
+        void loadImage(Bitmap image, int texID, bool loop, bool linear)
+        {
+            GL.BindTexture(TextureTarget.Texture2D, texID);
+            BitmapData data = image.LockBits(new System.Drawing.Rectangle(0, 0, image.Width, image.Height),
+                ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0,
+                OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
+
+            if (linear)
+            {
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            }
+            else
+            {
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+            }
+            if (loop)
+            {
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+            }
+            else
+            {
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+            }
+
+            image.UnlockBits(data);
+        }
+
         FastList<Note> globalDisplayNotes;
         FastList<Tempo> globalTempoEvents;
         FastList<ColorChange> globalColorEvents;
@@ -170,6 +217,7 @@ void main()
         GLPostbuffer ffmpegOutputBuff;
 
         int postShader;
+        int postShaderFlip;
         int postShaderDownscale;
         int postShaderMask;
         int postShaderMaskColor;
@@ -265,7 +313,7 @@ void main()
         {
             base.OnResize(e);
         }
-        
+
         CurrentRendererPointer render;
         GLTextEngine textEngine;
         public RenderWindow(CurrentRendererPointer renderer, MidiFile midi, RenderSettings settings) : base(16, 9, new GraphicsMode(new ColorFormat(8, 8, 8, 8)), "Render", GameWindowFlags.Default, DisplayDevice.Default)
@@ -281,7 +329,8 @@ void main()
             {
                 render.renderer.LastMidiTimePerTick = (double)midi.zerothTempo / midi.division;
                 midiTime = -render.renderer.NoteScreenTime;
-                tempoFrameStep = ((double)midi.division / lastTempo) * (1000000 / settings.fps);
+                if (settings.timeBasedNotes) tempoFrameStep = 1000.0 / settings.fps;
+                else tempoFrameStep = ((double)midi.division / lastTempo) * (1000000 / settings.fps);
                 midiTime -= tempoFrameStep * settings.renderSecondsDelay * settings.fps;
             }
 
@@ -323,48 +372,13 @@ void main()
                 BufferUsageHint.StaticDraw);
 
             postShader = MakeShader(postShaderVert, postShaderFrag);
+            postShaderFlip = MakeShader(postShaderFlipVert, postShaderFrag);
             postShaderMask = MakeShader(postShaderVert, postShaderFragAlphaMask);
             postShaderMaskColor = MakeShader(postShaderVert, postShaderFragAlphaMaskColor);
             postShaderDownscale = MakeShader(postShaderVert, postShaderFragDownscale);
 
             uDownscaleRes = GL.GetUniformLocation(postShaderDownscale, "res");
             uDownscaleFac = GL.GetUniformLocation(postShaderDownscale, "factor");
-        }
-
-        void RenderAllText(long lastNC)
-        {
-            if (settings.showNoteCount || settings.showNotesRendered)
-                if (textEngine.Font != settings.font || textEngine.FontSize != settings.fontSize)
-                {
-                    textEngine.SetFont(settings.font, settings.fontSize);
-                }
-            finalCompositeBuff.BindBuffer();
-
-            float offset = 0;
-            if (settings.showNotesRendered)
-            {
-                string text = "Rendering: " + lastNC;
-                var size = textEngine.GetBoundBox(text);
-                Matrix4 transform = Matrix4.Identity;
-                transform = Matrix4.Mult(transform, Matrix4.CreateTranslation(-settings.width / 2, -settings.height / 2 + offset, 0));
-                transform = Matrix4.Mult(transform, Matrix4.CreateRotationZ(0));
-                transform = Matrix4.Mult(transform, Matrix4.CreateScale(1.0f / 1920.0f * 2, -1.0f / 1080.0f * 2, 1.0f));
-
-                textEngine.Render(text, transform, Color4.White);
-
-                offset += size.Height;
-            }
-            if (settings.showNoteCount)
-            {
-                string text = "asdfsfdb\n34kh5bk234jhhjbgfvd";
-                var size = textEngine.GetBoundBox(text);
-                Matrix4 transform = Matrix4.Identity;
-                transform = Matrix4.Mult(transform, Matrix4.CreateTranslation(-settings.width / 2, -settings.height / 2 + offset, 0));
-                transform = Matrix4.Mult(transform, Matrix4.CreateRotationZ(0));
-                transform = Matrix4.Mult(transform, Matrix4.CreateScale(1.0f / 1920.0f * 2, -1.0f / 1080.0f * 2, 1.0f));
-
-                textEngine.Render(text, transform, Color4.White);
-            }
         }
 
         double microsecondsPerTick = 0;
@@ -391,7 +405,7 @@ void main()
                 {
                     pe = globalPlaybackEvents.Pop();
                     now = DateTime.Now.Ticks;
-                    if(now - 10000000 > frameStartTime)
+                    if (now - 10000000 > frameStartTime)
                     {
                         SpinWait.SpinUntil(() => now - 10000000 < frameStartTime);
                     }
@@ -410,13 +424,16 @@ void main()
         double lastTempo;
         public double lastDeltaTimeOnScreen = 0;
         public double lastMV = 1;
+
+        int bgTexID = -1;
+        long lastBGChangeTime = -1;
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             Task.Factory.StartNew(() => PlaybackLoop(), TaskCreationOptions.LongRunning);
             SpinWait.SpinUntil(() => playbackLoopStarted);
             Stopwatch watch = new Stopwatch();
             watch.Start();
-            tempoFrameStep = ((double)midi.division / lastTempo) * (1000000.0 / settings.fps);
+            if (!settings.timeBasedNotes) tempoFrameStep = ((double)midi.division / lastTempo) * (1000000.0 / settings.fps);
             lock (render)
             {
                 lastDeltaTimeOnScreen = render.renderer.NoteScreenTime;
@@ -425,11 +442,26 @@ void main()
             int noNoteFrames = 0;
             long lastNC = 0;
             frameStartTime = DateTime.Now.Ticks;
-            microsecondsPerTick = (long)((double)lastTempo / midi.division * 10);
+            if (settings.timeBasedNotes) microsecondsPerTick = 10000;
+            else microsecondsPerTick = (long)((double)lastTempo / midi.division * 10);
             while (settings.running && noNoteFrames < settings.fps * 5 || midi.unendedTracks != 0)
             {
                 if (!settings.paused || settings.forceReRender)
                 {
+                    if (settings.lastyBGChangeTime != lastBGChangeTime)
+                    {
+                        if (settings.BGImage == null)
+                        {
+                            if (bgTexID != -1) GL.DeleteTexture(bgTexID);
+                            bgTexID = -1;
+                        }
+                        else
+                        {
+                            if (bgTexID == -1) bgTexID = GL.GenTexture();
+                            loadImage(settings.BGImage, bgTexID, false, true);
+                        }
+                    }
+
                     lock (render)
                     {
                         try
@@ -469,12 +501,14 @@ void main()
                             }
                             render.renderer.LastMidiTimePerTick = lastTempo / midi.division;
                             lastDeltaTimeOnScreen = render.renderer.NoteScreenTime;
-                            SpinWait.SpinUntil(() => midi.currentSyncTime > midiTime + lastDeltaTimeOnScreen + tempoFrameStep || midi.unendedTracks == 0 || !settings.running);
+                            if (settings.timeBasedNotes)
+                                SpinWait.SpinUntil(() => (long)((midi.currentSyncTime - midi.lastTempoTick) / midi.tempoTickMultiplier + midi.lastTempoTime) > midiTime + lastDeltaTimeOnScreen + tempoFrameStep || midi.unendedTracks == 0 || !settings.running);
+                            else
+                                SpinWait.SpinUntil(() => midi.currentSyncTime > midiTime + lastDeltaTimeOnScreen + tempoFrameStep || midi.unendedTracks == 0 || !settings.running);
                             if (!settings.running) break;
 
                             render.renderer.RenderFrame(globalDisplayNotes, midiTime, finalCompositeBuff.BufferID);
                             lastNC = render.renderer.LastNoteCount;
-                            RenderAllText(lastNC);
                             if (lastNC == 0 && midi.unendedTracks == 0) noNoteFrames++;
                             else noNoteFrames = 0;
                         }
@@ -505,7 +539,7 @@ void main()
                         }
                         var _t = ((t.pos) - midiTime) / (tempoFrameStep * mv * settings.tempoMultiplier);
                         mv *= 1 - _t;
-                        tempoFrameStep = ((double)midi.division / t.tempo) * (1000000.0 / settings.fps);
+                        if (settings.timeBasedNotes) tempoFrameStep = ((double)midi.division / t.tempo) * (1000000.0 / settings.fps);
                         lastTempo = t.tempo;
                         midiTime = t.pos;
                     }
@@ -515,24 +549,28 @@ void main()
                     midiTime += mv * tempoFrameStep * settings.tempoMultiplier;
                 }
                 frameStartTime = DateTime.Now.Ticks;
-                microsecondsPerTick = (long)((double)lastTempo / midi.division * 10);
+                if (settings.timeBasedNotes) microsecondsPerTick = 10000;
+                else microsecondsPerTick = (long)((double)lastTempo / midi.division * 10);
 
                 while (globalColorEvents.First != null && globalColorEvents.First.pos < midiTime)
                 {
                     var c = globalColorEvents.Pop();
                     var track = c.track;
-                    if (c.channel == 0x7F)
+                    if (!settings.ignoreColorEvents)
                     {
-                        for (int i = 0; i < 16; i++)
+                        if (c.channel == 0x7F)
                         {
-                            c.track.trkColors[i].left = c.col1;
-                            c.track.trkColors[i].right = c.col2;
+                            for (int i = 0; i < 16; i++)
+                            {
+                                c.track.trkColors[i].left = c.col1;
+                                c.track.trkColors[i].right = c.col2;
+                            }
                         }
-                    }
-                    else
-                    {
-                        c.track.trkColors[c.channel].left = c.col1;
-                        c.track.trkColors[c.channel].right = c.col2;
+                        else
+                        {
+                            c.track.trkColors[c.channel].left = c.col1;
+                            c.track.trkColors[c.channel].right = c.col2;
+                        }
                     }
                 }
 
@@ -549,6 +587,13 @@ void main()
                 downscaleBuff.BindBuffer();
                 GL.Clear(ClearBufferMask.ColorBufferBit);
                 GL.Viewport(0, 0, settings.width / settings.downscale, settings.height / settings.downscale);
+                if (bgTexID != -1)
+                {
+                    GL.UseProgram(postShaderFlip);
+                    GL.BindTexture(TextureTarget.Texture2D, bgTexID);
+                    DrawScreenQuad();
+                }
+                GL.UseProgram(postShader);
                 finalCompositeBuff.BindTexture();
                 DrawScreenQuad();
 

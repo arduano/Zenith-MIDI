@@ -56,4 +56,11 @@
     <system:String x:Key="useOmniMidi">OmniMIDI Enabled (More memory usage)</system:String>
     <system:String x:Key="muteAudio">Mute Audio</system:String>
     <system:String x:Key="disableKDMAPI">Disable KDMAPI</system:String>
+    <system:String x:Key="enableKDMAPI">Enable KDMAPI</system:String>
+    <system:String x:Key="settingsTab">Settings</system:String>
+    <system:String x:Key="noteSize">Note Size</system:String>
+    <system:String x:Key="tickBased">Tick Based</system:String>
+    <system:String x:Key="timeBased">Time Based</system:String>
+    <system:String x:Key="ignoreColorEvents">Ignore Color Events</system:String>
+    <system:String x:Key="useBackgroundImage">Use Background</system:String>
 </ResourceDictionary>

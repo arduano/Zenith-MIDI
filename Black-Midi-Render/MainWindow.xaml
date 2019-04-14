@@ -134,6 +134,27 @@
                     <Button x:Name="disableKDMAPI" Content="{DynamicResource disableKDMAPI}" HorizontalAlignment="Left" Margin="10,284,0,0" VerticalAlignment="Top" Padding="20,2,20,2" Click="DisableKDMAPI_Click" />
                 </Grid>
             </TabItem>
+            <TabItem Header="{DynamicResource settingsTab}" IsEnabled="{DynamicResource notRendering}">
+                <Grid Background="#FFE5E5E5">
+                    <DockPanel HorizontalAlignment="Left" LastChildFill="False" Margin="10,10,0,0" VerticalAlignment="Top" >
+                        <Label Content="{DynamicResource noteSize}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left"/>
+                        <ComboBox x:Name="noteSizeStyle" IsEnabled="{Binding ElementName=notPreviewingOrRendering, Path=IsEnabled}" DockPanel.Dock="Left" Padding="7,4,10,4" HorizontalAlignment="Left" Margin="5,0,0,0" VerticalAlignment="Top" Height="26" SelectedIndex="0" SelectionChanged="NoteSizeStyle_SelectionChanged">
+                            <ComboBoxItem Content="{DynamicResource tickBased}"/>
+                            <ComboBoxItem Content="{DynamicResource timeBased}"/>
+                        </ComboBox>
+                    </DockPanel>
+                    <CheckBox x:Name="ignoreColorEvents" Content="{DynamicResource ignoreColorEvents}" HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top" Checked="IgnoreColorEvents_Checked" Unchecked="IgnoreColorEvents_Checked"/>
+                    <DockPanel HorizontalAlignment="Left" LastChildFill="False" Margin="10,0,0,10" Height="20" VerticalAlignment="Bottom">
+                        <Button Content="{DynamicResource startPreview}" HorizontalAlignment="Left" Margin="0,0,0,0" Padding="20,0,20,0" IsEnabled="{Binding IsEnabled, ElementName=previewStartEnabled}" Height="20" VerticalAlignment="Bottom" Click="StartButton_Click" DockPanel.Dock="Left" />
+                        <Button Content="{DynamicResource stop}" HorizontalAlignment="Left" Margin="10,0,0,0" Padding="20,0,20,0" IsEnabled="{Binding IsEnabled, ElementName=stopEnabled}" Height="20" VerticalAlignment="Bottom" Click="StopButton_Click" DockPanel.Dock="Left" />
+                    </DockPanel>
+                    <DockPanel LastChildFill="True" Margin="10,61,10,0" VerticalAlignment="Top">
+                        <CheckBox x:Name="useBGImage" Content="{DynamicResource useBackgroundImage}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left" Margin="0,3,0,0" Checked="UseBGImage_Checked" Unchecked="UseBGImage_Checked"/>
+                        <Button x:Name="browseBG" IsEnabled="{Binding ElementName=useBGImage, Path=IsChecked}" Content="{DynamicResource browse}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" DockPanel.Dock="Left" Margin="5,0,0,0" Click="BrowseBG_Click"/>
+                        <TextBox x:Name="bgImagePath" DockPanel.Dock="Right" Height="20" TextWrapping="Wrap" VerticalAlignment="Top" Margin="5,0,0,0" IsEnabled="False"/>
+                    </DockPanel>
+                </Grid>
+            </TabItem>
             <TabItem Header="{DynamicResource pluginsTab}" IsEnabled="{DynamicResource notRendering}">
                 <Grid Background="#FFE5E5E5">
                     <Grid.RowDefinitions>
@@ -153,27 +174,15 @@
 
                 </Grid>
             </TabItem>
-            <!--<TabItem Header="Note Counter" IsEnabled="{DynamicResource notRendering}">
-                <Grid Background="#FFE5E5E5">
-                    <Label Content="Font Size" HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top"/>
-                    <xctk:DecimalUpDown x:Name="fontSizePicker" FormatString="F0" Value="1" Increment="1"  Maximum="500" Minimum="1" Margin="73,41,0,0" HorizontalAlignment="Left" Width="108" Height="26" VerticalAlignment="Top" ValueChanged="FontSizePicker_ValueChanged"  />
-                    <ComboBox x:Name="fontPicker" HorizontalAlignment="Left" Margin="49,72,0,0" VerticalAlignment="Top" Width="169" Height="26" SelectionChanged="FontPicker_SelectionChanged"/>
-                    <Label Content="Font" HorizontalAlignment="Left" Margin="10,72,0,0" VerticalAlignment="Top"/>
-                    <CheckBox x:Name="showNoteScreenCount" Content="Show on screen note count" HorizontalAlignment="Left" Margin="10,103,0,0" VerticalAlignment="Top" Checked="ShowNoteScreenCount_Checked"/>
-                    <CheckBox x:Name="showNoteCount" Content="Show total note count" HorizontalAlignment="Left" Margin="10,123,0,0" VerticalAlignment="Top" Checked="ShowNoteCount_Checked"/>
-                    <Label Content="You guys wanted a note counter, so here's a note counter" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
-
-                </Grid>
-            </TabItem>-->
             <TabItem Header="{DynamicResource previewTab}" IsEnabled="{DynamicResource notRendering}">
                 <Grid Background="#FFE5E5E5" KeyDown="Grid_KeyDown">
-                    <CheckBox x:Name="vsyncEnabled" Content="{DynamicResource vsync}" HorizontalAlignment="Left" Margin="10,175,0,0" VerticalAlignment="Top" Checked="VsyncEnabled_Checked" Unchecked="VsyncEnabled_Checked" Focusable="False"/>
+                    <CheckBox x:Name="vsyncEnabled" Content="{DynamicResource vsync}" HorizontalAlignment="Left" Margin="10,175,0,0" VerticalAlignment="Top" Checked="VsyncEnabled_Checked" Unchecked="VsyncEnabled_Checked" Focusable="False" IsChecked="True"/>
                     <CheckBox x:Name="previewPaused" Content="{DynamicResource paused}" HorizontalAlignment="Left" Margin="10,135,0,0" VerticalAlignment="Top" Checked="Paused_Checked" Unchecked="Paused_Checked"/>
                     <DockPanel HorizontalAlignment="Left" LastChildFill="False" Margin="10,0,0,10" Height="20" VerticalAlignment="Bottom">
                         <Button Content="{DynamicResource startPreview}" HorizontalAlignment="Left" Margin="0,0,0,0" Padding="20,0,20,0" IsEnabled="{Binding IsEnabled, ElementName=previewStartEnabled}" Height="20" VerticalAlignment="Bottom" Click="StartButton_Click" DockPanel.Dock="Left" />
                         <Button Content="{DynamicResource stop}" HorizontalAlignment="Left" Margin="10,0,0,0" Padding="20,0,20,0" IsEnabled="{Binding IsEnabled, ElementName=stopEnabled}" Height="20" VerticalAlignment="Bottom" Click="StopButton_Click" DockPanel.Dock="Left" />
                     </DockPanel>
-                    <CheckBox x:Name="forceReRender" Content="{DynamicResource forceRender}" HorizontalAlignment="Left" Margin="10,155,0,0" VerticalAlignment="Top" Checked="ForceReRender_Checked" Unchecked="ForceReRender_Checked" IsEnabled="{Binding ElementName=previewPaused, Path=IsChecked}"/>
+                    <CheckBox x:Name="forceReRender" Content="{DynamicResource forceRender}" HorizontalAlignment="Left" Margin="10,155,0,0" VerticalAlignment="Top" Checked="ForceReRender_Checked" Unchecked="ForceReRender_Checked" IsEnabled="{Binding ElementName=previewPaused, Path=IsChecked}" IsChecked="True"/>
                     <Label Content="{DynamicResource pauseHint}" HorizontalAlignment="Left" Margin="9,104,0,0" VerticalAlignment="Top"/>
                     <DockPanel Height="26" LastChildFill="False" Margin="9,78,11,0" VerticalAlignment="Top">
                         <Label Content="{DynamicResource tempo}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left"/>

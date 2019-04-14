@@ -1,6 +1,7 @@
 ﻿using OpenTK.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -63,5 +64,12 @@ namespace BMEngine
         public bool realtimePlayback = true;
 
         public double liveFps = 0;
+
+        public bool timeBasedNotes = false;
+
+        public bool ignoreColorEvents = false;
+
+        public long lastyBGChangeTime = -1;
+        public Bitmap BGImage = null;
     }
 }

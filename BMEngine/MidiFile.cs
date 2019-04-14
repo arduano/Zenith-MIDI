@@ -35,6 +35,10 @@ namespace BMEngine
         public FastList<ColorChange> globalColorEvents = new FastList<ColorChange>();
         public FastList<PlaybackEvent> globalPlaybackEvents = new FastList<PlaybackEvent>();
 
+        public long lastTempoTick = 0;
+        public double lastTempoTime = 0;
+        public double tempoTickMultiplier = 0;
+
         public int unendedTracks = 0;
 
         RenderSettings settings;
@@ -63,6 +67,9 @@ namespace BMEngine
                 tickLength = maxTrackTime,
                 trackCount = trackcount
             };
+            lastTempoTick = 0;
+            lastTempoTime = 0;
+            tempoTickMultiplier = (double)division / 500000 * 1000;
         }
 
         void AssertText(string text)
@@ -118,6 +125,7 @@ namespace BMEngine
 
         public bool ParseUpTo(long targetTime)
         {
+            if(settings.timeBasedNotes) targetTime = (long)((targetTime - lastTempoTime) * tempoTickMultiplier + lastTempoTick);
             lock (globalDisplayNotes)
             {
                 for (; currentSyncTime <= targetTime; currentSyncTime++)
@@ -192,6 +200,9 @@ namespace BMEngine
             globalPlaybackEvents.Unlink();
             currentSyncTime = 0;
             unendedTracks = trackcount;
+            lastTempoTick = 0;
+            lastTempoTime = 0;
+            tempoTickMultiplier = (double)division / 500000 * 1000;
             foreach (var t in tracks) t.Reset();
         }
 
