@@ -419,6 +419,7 @@ void main()
                 }
                 catch { continue; }
             }
+            KDMAPI.ResetKDMAPIStream();
         }
 
         double lastTempo;

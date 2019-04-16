@@ -163,6 +163,7 @@ namespace Black_Midi_Render
                     manualDelete = render.ManualNoteDelete;
                     noteCollectorOffset = render.NoteCollectorOffset;
                     cutoffTime += noteCollectorOffset;
+                    if (!settings.running) break;
                     lock (midifile.globalDisplayNotes)
                     {
                         var i = midifile.globalDisplayNotes.Iterate();

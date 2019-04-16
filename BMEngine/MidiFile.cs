@@ -128,7 +128,7 @@ namespace BMEngine
             if(settings.timeBasedNotes) targetTime = (long)((targetTime - lastTempoTime) * tempoTickMultiplier + lastTempoTick);
             lock (globalDisplayNotes)
             {
-                for (; currentSyncTime <= targetTime; currentSyncTime++)
+                for (; currentSyncTime <= targetTime && settings.running; currentSyncTime++)
                 {
                     int ut = 0;
                     for (int trk = 0; trk < trackcount; trk++)
@@ -153,13 +153,8 @@ namespace BMEngine
             int p = 0;
             Parallel.For(0, tracks.Length, (i) =>
             {
-                byte[] trackbytes = new byte[trackLengths[i]];
-                lock (MidiFileReader)
-                {
-                    MidiFileReader.Position = trackBeginnings[i];
-                    MidiFileReader.Read(trackbytes, 0, (int)trackLengths[i]);
-                }
-                tracks[i] = new MidiTrack(i, new MemoryByteReader(trackbytes), this, settings);
+                var reader = new BufferByteReader(MidiFileReader, 1<<20, trackBeginnings[i], trackLengths[i]);
+                tracks[i] = new MidiTrack(i, reader, this, settings);
                 var t = tracks[i];
                 while (!t.trackEnded)
                 {
@@ -187,6 +182,7 @@ namespace BMEngine
                 }
                 else t.Reset();
                 Console.WriteLine("Loaded track " + p++ + "/" + tracks.Length);
+                GC.Collect();
             });
             maxTrackTime = tracklens.Max();
             unendedTracks = trackcount;

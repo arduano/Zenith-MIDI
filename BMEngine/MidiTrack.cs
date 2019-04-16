@@ -104,7 +104,6 @@ namespace BMEngine
         }
 
         RenderSettings settings;
-        long buferTrackStart;
         public MidiTrack(int id, IByteReader reader, MidiFile file, RenderSettings settings)
         {
             this.settings = settings;
