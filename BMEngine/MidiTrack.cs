@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MidiUtils;
 
 namespace BMEngine
 {
@@ -75,7 +74,7 @@ namespace BMEngine
 
         bool readDelta = false;
 
-        IByteReader reader;
+        BufferByteReader reader;
 
         byte noteVelThresh = 0;
 
@@ -90,7 +89,6 @@ namespace BMEngine
             readDelta = false;
             channelPrefix = 0;
             noteCount = 0;
-            pushback = 0;
             UnendedNotes = null;
         }
 
@@ -104,7 +102,7 @@ namespace BMEngine
         }
 
         RenderSettings settings;
-        public MidiTrack(int id, IByteReader reader, MidiFile file, RenderSettings settings)
+        public MidiTrack(int id, BufferByteReader reader, MidiFile file, RenderSettings settings)
         {
             this.settings = settings;
             globalDisplayNotes = file.globalDisplayNotes;
@@ -123,7 +121,7 @@ namespace BMEngine
             int val = 0;
             for (int i = 0; i < 4; i++)
             {
-                c = reader.Read();
+                c = reader.ReadFast();
                 if (c > 0x7F)
                 {
                     val = (val << 7) | (c & 0x7F);
@@ -139,6 +137,7 @@ namespace BMEngine
 
         public void Step(long time)
         {
+            timebase = settings.timeBasedNotes;
             try
             {
                 if (time >= trackTime)
@@ -186,18 +185,9 @@ namespace BMEngine
                 }
             UnendedNotes = null;
         }
-
-        int ReadNext()
-        {
-            if (pushback == -1)
-                return reader.Read();
-            int v = pushback;
-            pushback = -1;
-            return v;
-        }
-
-        int pushback = -1;
+        
         byte prevCommand = 0;
+        bool timebase = false;
         public void ParseNextEvent()
         {
             try
@@ -209,10 +199,10 @@ namespace BMEngine
                 readDelta = false;
 
                 var time = trackTime;
-                if (settings.timeBasedNotes)
+                if (timebase)
                     time = (long)((time - midi.lastTempoTick) / midi.tempoTickMultiplier + midi.lastTempoTime);
 
-                byte command = reader.Read();
+                byte command = reader.ReadFast();
                 if (command < 0x80)
                 {
                     reader.Pushback = command;
@@ -224,7 +214,7 @@ namespace BMEngine
                 {
                     byte channel = (byte)(command & 0b00001111);
                     byte note = reader.Read();
-                    byte vel = reader.Read();
+                    byte vel = reader.ReadFast();
 
                     if (settings.playbackEnabled && vel > 10)
                     {
@@ -268,7 +258,7 @@ namespace BMEngine
                 {
                     int channel = command & 0b00001111;
                     byte note = reader.Read();
-                    byte vel = reader.Read();
+                    byte vel = reader.ReadFast();
                     var l = UnendedNotes[note << 4 | channel];
                     if (!l.ZeroLen)
                     {

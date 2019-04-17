@@ -409,7 +409,7 @@ void main()
                     {
                         SpinWait.SpinUntil(() => now - 10000000 < frameStartTime);
                     }
-                    timeJump = (int)(((pe.pos - midiTime) * microsecondsPerTick - now + frameStartTime) / 10000);
+                    timeJump = (int)(((pe.pos - midiTime) * microsecondsPerTick / settings.tempoMultiplier - now + frameStartTime) / 10000);
                     if (timeJump < -1000)
                         continue;
                     if (timeJump > 0)
@@ -420,6 +420,7 @@ void main()
                 catch { continue; }
             }
             KDMAPI.ResetKDMAPIStream();
+            KDMAPI.SendDirectData(0x0);
         }
 
         double lastTempo;

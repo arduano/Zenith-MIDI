@@ -143,7 +143,13 @@ namespace Black_Midi_Render
             double lastWinTime = double.NaN;
             try
             {
-                while ((midifile.ParseUpTo((long)(win.midiTime + win.lastDeltaTimeOnScreen + (win.tempoFrameStep * 20 * settings.tempoMultiplier * win.lastMV))) || nc != 0) && settings.running)
+                while (
+                    (midifile.ParseUpTo((long)(
+                    win.midiTime + win.lastDeltaTimeOnScreen + 
+                    (win.tempoFrameStep * 20 * settings.tempoMultiplier * (win.lastMV > 1 ? win.lastMV : 1))
+                    
+                    ))
+                    || nc != 0) && settings.running)
                 {
                     //SpinWait.SpinUntil(() => lastWinTime != win.midiTime || render != renderer.renderer || !settings.running);
                     if (!settings.running) break;

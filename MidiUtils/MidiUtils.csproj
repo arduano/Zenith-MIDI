@@ -80,10 +80,7 @@
     <Compile Include="BufferByteReader.cs" />
     <Compile Include="Interfaces\IByteReader.cs" />
     <Compile Include="MemoryByteReader.cs" />
-    <Compile Include="MidiFileInfo.cs" />
-    <Compile Include="MidiWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TrackFilter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
