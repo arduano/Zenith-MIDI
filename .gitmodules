@@ -16,3 +16,6 @@
 [submodule "TexturedRender"]
 	path = TexturedRender
 	url = https://github.com/arduano/Zenith-Texture-Render.git
+[submodule "PianoFallRender"]
+	path = PianoFallRender
+	url = https://github.com/arduano/Zenith-PianoFall-Render.git
