@@ -15,9 +15,6 @@
     <system:String x:Key="lastNote">Dernière note</system:String>
     <system:String x:Key="pianoHeight">Taille du piano en %</system:String>
     <system:String x:Key="noteScreenTime">Taille des notes</system:String>
-    <system:String x:Key="noteTempo">Note par rapport au tempo</system:String>
-    <system:String x:Key="changeSpeed">Changer la vitesse de lacture</system:String>
-    <system:String x:Key="changeSize">Changer la taille des notes</system:String>
     <system:String x:Key="sameWidthNotes">Notes de même largeur</system:String>
     <system:String x:Key="save">Enregistrer</system:String>
     <system:String x:Key="loadSaved">Charger la sauvegarde</system:String>

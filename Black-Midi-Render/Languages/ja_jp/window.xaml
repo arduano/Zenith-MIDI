@@ -52,4 +52,20 @@
     <system:String x:Key="ifUploading">動画をネットに上げるときはプログラムのクレジットをお願いします</system:String>
     <!-- If credit is absolutely necessary, use this instead: -->
     <!-- <system:String x:Key="ifUploading">動画をネットに上げるときは必ずプログラムのクレジットをお願いします</system:String> -->
+    
+    <!--New in 1.5-->
+    <system:String x:Key="realtimePlayback">リアルタイム再生</system:String>
+    <system:String x:Key="useOmniMidi">OmniMIDIを使用 (メモリを多く使います)</system:String>
+    <system:String x:Key="muteAudio">音をミュート</system:String>
+    <system:String x:Key="disableKDMAPI">KDMAPIを無効化</system:String>
+    <system:String x:Key="enableKDMAPI">KDMAPIを有効化</system:String>
+    <system:String x:Key="settingsTab">設定</system:String>
+    <system:String x:Key="noteSize">ノートサイズ</system:String>
+    <system:String x:Key="tickBased">Tickベース</system:String>
+    <system:String x:Key="timeBased">時間ベース</system:String>
+    <system:String x:Key="ignoreColorEvents">ノート色イベントを無視</system:String>
+    <system:String x:Key="useBackgroundImage">背景を使用</system:String>
+
+    <!-- New in 1.5 -->
+    <system:String x:Key="borderWidth">枠の太さ</system:String>
 </ResourceDictionary>

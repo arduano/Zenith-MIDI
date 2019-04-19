@@ -15,9 +15,6 @@
     <system:String x:Key="lastNote">最後のノート</system:String>
     <system:String x:Key="pianoHeight">鍵盤の高さ (%)</system:String>
     <system:String x:Key="noteScreenTime">ノート速度(速←→遅)</system:String>
-    <system:String x:Key="noteTempo">テンポは画面内ノートの</system:String>
-    <system:String x:Key="changeSpeed">速度を変える</system:String>
-    <system:String x:Key="changeSize">サイズを変える</system:String>
     <system:String x:Key="sameWidthNotes">全ノート同じ幅</system:String>
     <system:String x:Key="save">設定を保存</system:String>
     <system:String x:Key="loadSaved">保存した設定</system:String>

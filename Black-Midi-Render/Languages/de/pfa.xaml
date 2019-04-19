@@ -15,9 +15,6 @@
     <system:String x:Key="lastNote">Zuletzt Anmerkung</system:String>
     <system:String x:Key="pianoHeight">Klavierhöhe %</system:String>
     <system:String x:Key="noteScreenTime">Anmerkung Bildschrimzeit</system:String>
-    <system:String x:Key="noteTempo">Anmerkung Tempo</system:String>
-    <system:String x:Key="changeSpeed">Wechseln Sie Geschwindigkeit</system:String>
-    <system:String x:Key="changeSize">Wechseln Sie Größe</system:String>
     <system:String x:Key="sameWidthNotes">Gleich Weite Anmerkungen</system:String>
     <system:String x:Key="save">Speichern</system:String>
     <system:String x:Key="loadSaved">Öffnen</system:String>
@@ -29,4 +26,6 @@
     <system:String x:Key="colorRed">Rot</system:String>
     <system:String x:Key="colorGreen">Grün</system:String>
     <system:String x:Key="colorBlue">Blau</system:String>
+	
+	<system:String x:Key="borderWidth">Rahmenbreite</system:String>
 </ResourceDictionary>

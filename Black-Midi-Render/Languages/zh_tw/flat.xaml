@@ -14,9 +14,6 @@
     <system:String x:Key="lastNote">最後一個音符</system:String>
     <system:String x:Key="pianoHeight">鋼琴高度 %</system:String>
     <system:String x:Key="noteScreenTime">音符螢幕時間</system:String>
-    <system:String x:Key="noteTempo">音符速度</system:String>
-    <system:String x:Key="changeSpeed">更改速度</system:String>
-    <system:String x:Key="changeSize">更改大小</system:String>
     <system:String x:Key="sameWidthNotes">相同音符高度</system:String>
     <system:String x:Key="save">儲存</system:String>
     <system:String x:Key="loadSaved">載入已儲存</system:String>

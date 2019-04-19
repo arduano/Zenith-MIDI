@@ -15,9 +15,6 @@
     <system:String x:Key="lastNote">Τελευταία νότα</system:String>
     <system:String x:Key="pianoHeight">Ύψος πιάνου %</system:String>
     <system:String x:Key="noteScreenTime">Διάρκεια νότας στην οθόνη</system:String>
-    <system:String x:Key="noteTempo">Ταχύτητα ρυθμού νοτών</system:String>
-    <system:String x:Key="changeSpeed">Αλλαγή ταχύτητας</system:String>
-    <system:String x:Key="changeSize">Αλλαγή μεγέθους</system:String>
     <system:String x:Key="sameWidthNotes">Νότες ίδιου πλάτους</system:String>
     <system:String x:Key="save">Αποθήκευση</system:String>
     <system:String x:Key="loadSaved">Φόρτωση αποθηκευμένου προτύπου</system:String>
@@ -29,4 +26,6 @@
     <system:String x:Key="colorRed">Κόκκινο</system:String>
     <system:String x:Key="colorGreen">Πράσινο</system:String>
     <system:String x:Key="colorBlue">Μπλέ</system:String>
+
+    <system:String x:Key="borderWidth">Μέγεθος περιγράμματος νότας</system:String> <!--NEW-->
 </ResourceDictionary>

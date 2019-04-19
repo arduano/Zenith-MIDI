@@ -53,7 +53,15 @@
     <system:String x:Key="camOffsets">Αντιστάθμισμα κάμερας</system:String>
     <system:String x:Key="horizontal">Οριζόντια</system:String>
     <system:String x:Key="vertical">Κάθετα</system:String>
-    
+
+    <system:String x:Key="viewTilt">Κλίση κάμερας</system:String> <!--NEW-->
+    <system:String x:Key="viewTurn">Στροφή κάμερας</system:String> <!--NEW-->
+    <system:String x:Key="offsetX">X</system:String> <!--NEW-->
+    <system:String x:Key="offsetY">Y</system:String> <!--NEW-->
+    <system:String x:Key="offsetZ">Z</system:String> <!--NEW-->
+    <system:String x:Key="topPreset">Κορυφή</system:String> <!--NEW-->
+    <system:String x:Key="perspectivePreset">Γωνία</system:String> <!--NEW-->
+
     <!--Aura-->
     <system:String x:Key="imageHint">Η εικόνα πρέπεΙ να είναι μία τετράγωνη PNG και λαμβάνεται υπ'όψιν μόνο το κανάλι alpha.</system:String>
     <system:String x:Key="auraEnabled">Ενεργοποίηση εφέ νοτών</system:String>

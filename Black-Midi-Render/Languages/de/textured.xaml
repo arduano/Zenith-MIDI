@@ -5,19 +5,24 @@
     xmlns:system="clr-namespace:System;assembly=mscorlib">
 
     <!--Palette picker-->
-    <system:String x:Key="palettes_reload">Neu laden</system:String>
+     <system:String x:Key="palettes_reload">Neu laden</system:String>
     <system:String x:Key="palettes_restartNote">Beachten: Starten Sie neu die Vorschau die Farbpalette aktualisieren.</system:String>
     <system:String x:Key="palettes_imageNote">Das Bild müsst ein 16 (oder 32 für Gradienten) die Pixel weit ".png" sein, und alle Höhe.  Transparenz ist akzeptabel.</system:String>
     <system:String x:Key="palettes_randomise">Randomisieren Farbreihenfolge</system:String>
-    
+
+    <!--Tab Names-->
+    <system:String x:Key="resourcesTab">Ressourcen</system:String>
+    <system:String x:Key="miscTab">Verschiedenes</system:String>
+
+    <!--Resources-->
+    <system:String x:Key="resourcePath">Ressource Packungen Pfad:</system:String>
+    <system:String x:Key="resourcePathDir">Plugins\Aktiva\Texturiert\Ressourcen</system:String>
+    <system:String x:Key="reload">Neu laden</system:String>
+
     <!--Other settings-->
     <system:String x:Key="firstNote">Zuerest Anmerkung</system:String>
     <system:String x:Key="lastNote">Zuletzt Anmerkung</system:String>
     <system:String x:Key="pianoHeight">Klavierhöhe %</system:String>
     <system:String x:Key="noteScreenTime">Anmerkung Bildschrimzeit</system:String>
-    <system:String x:Key="sameWidthNotes">Gleich Weite Anmerkungen</system:String>
-    <system:String x:Key="save">Speichern</system:String>
-    <system:String x:Key="loadSaved">Öffnen</system:String>
-    <system:String x:Key="setDefaults">Voreinstellungen</system:String>
-
+    <system:String x:Key="blackNotesAbove">Zeichnen schwarzen Anmerkungen über (Warning: LANGSAMER!!)</system:String>
 </ResourceDictionary>

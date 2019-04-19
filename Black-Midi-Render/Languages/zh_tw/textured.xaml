@@ -5,18 +5,24 @@
     xmlns:system="clr-namespace:System;assembly=mscorlib">
 
     <!--Palette picker-->
-    <system:String x:Key="palettes_reload">重新載入</system:String>
+    <system:String x:Key="palettes_reload">重新讀取</system:String>
     <system:String x:Key="palettes_restartNote">注意: 重設預覽以更新調色</system:String>
     <system:String x:Key="palettes_imageNote">圖片至少需要16(或32位元)像素寬png檔案, 和任何高度.支援透明.</system:String>
+    <system:String x:Key="palettes_randomise">隨機顏色順序</system:String>
+
+    <!--Tab Names-->
+    <system:String x:Key="resourcesTab">材質</system:String>
+    <system:String x:Key="miscTab">其它</system:String>
+
+    <!--Resources-->
+    <system:String x:Key="resourcePath">材質包路徑:</system:String>
+    <system:String x:Key="resourcePathDir">Plugins\Assets\Textured\Resources</system:String>
+    <system:String x:Key="reload">重新讀取</system:String>
 
     <!--Other settings-->
     <system:String x:Key="firstNote">第一個音符</system:String>
     <system:String x:Key="lastNote">最後一個音符</system:String>
     <system:String x:Key="pianoHeight">鋼琴高度 %</system:String>
     <system:String x:Key="noteScreenTime">音符螢幕時間</system:String>
-    <system:String x:Key="sameWidthNotes">相同音符高度</system:String>
-    <system:String x:Key="save">儲存</system:String>
-    <system:String x:Key="loadSaved">載入已儲存</system:String>
-    <system:String x:Key="setDefaults">預設</system:String>
-
+    <system:String x:Key="blackNotesAbove">上面畫黑色音符 (警告: 很慢!!)</system:String>
 </ResourceDictionary>

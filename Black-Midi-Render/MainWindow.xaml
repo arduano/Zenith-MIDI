@@ -150,7 +150,7 @@
                     </DockPanel>
                     <DockPanel LastChildFill="True" Margin="10,61,10,0" VerticalAlignment="Top">
                         <CheckBox x:Name="useBGImage" Content="{DynamicResource useBackgroundImage}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left" Margin="0,3,0,0" Checked="UseBGImage_Checked" Unchecked="UseBGImage_Checked"/>
-                        <Button x:Name="browseBG" IsEnabled="{Binding ElementName=useBGImage, Path=IsChecked}" Content="{DynamicResource browse}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" DockPanel.Dock="Left" Margin="5,0,0,0" Click="BrowseBG_Click"/>
+                        <Button x:Name="browseBG" IsEnabled="{Binding ElementName=useBGImage, Path=IsChecked}" Content="{DynamicResource browse}" Padding="10,1,10,1" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left" Margin="5,0,0,0" Click="BrowseBG_Click"/>
                         <TextBox x:Name="bgImagePath" DockPanel.Dock="Right" Height="20" TextWrapping="Wrap" VerticalAlignment="Top" Margin="5,0,0,0" IsEnabled="False"/>
                     </DockPanel>
                 </Grid>

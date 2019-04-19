@@ -1,0 +1,20 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MSDNSample"
+    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <system:String x:Key="alignments">Τοποθεσίες</system:String>
+    <system:String x:Key="alTopLeft">Πάνω Αριστερά</system:String>
+    <system:String x:Key="alTopRight">Πάνω Δεξιά</system:String>
+    <system:String x:Key="alBottomLeft">Κάτω Αριστερά</system:String>
+    <system:String x:Key="alBottomRight">Κάτω Δεξιά</system:String>
+    <system:String x:Key="alTopSpread">Πάνω διάδοση</system:String>
+    <system:String x:Key="alBottomSpread">Κάτω διάδοση</system:String>
+
+    <system:String x:Key="fontSize">Μέγεθος γραμματοσειράς</system:String>
+    <system:String x:Key="font">Γραμματοσειρά</system:String>
+
+    <system:String x:Key="reload">Επαναφόρτωση</system:String>
+    <system:String x:Key="noteTextPath">Τοποθεσία: Plugins/Assets/NoteCounter/Templates</system:String>
+</ResourceDictionary>

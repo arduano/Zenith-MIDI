@@ -50,4 +50,16 @@
     <system:String x:Key="ffmpegDebug">ffmpeg debuggen</system:String>
     <system:String x:Key="startRender">Starten Anzeigen</system:String>
     <system:String x:Key="ifUploading">Danken Sie das Programm bitte, ob Sie hochladen das Video online.</system:String>
+	
+	<system:String x:Key="realtimePlayback">Echtzeitwiedergabe</system:String>
+    <system:String x:Key="useOmniMidi">OmniMIDI aktivert (mehr Speicherauslastung)</system:String>
+    <system:String x:Key="muteAudio">Dämpfen Audio</system:String>
+    <system:String x:Key="disableKDMAPI">Deaktivieren KDMAPI</system:String>
+    <system:String x:Key="enableKDMAPI">Aktiviert KDMAPI</system:String>
+    <system:String x:Key="settingsTab">Einstellungen</system:String>
+    <system:String x:Key="noteSize">Anmerkung größ</system:String>
+    <system:String x:Key="tickBased">Augenblick basierend</system:String>
+    <system:String x:Key="timeBased">Zeit basierend</system:String>
+    <system:String x:Key="ignoreColorEvents">Ignorieren Farbe Veranstaltungen</system:String>
+    <system:String x:Key="useBackgroundImage">Benutzen Hintergrund</system:String>
 </ResourceDictionary>

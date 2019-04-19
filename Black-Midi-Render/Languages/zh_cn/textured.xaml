@@ -10,20 +10,19 @@
     <system:String x:Key="palettes_imageNote">图像要求是宽度为16或32像素、高度为无限制的PNG文件。支持透明文件。</system:String>
     <system:String x:Key="palettes_randomise">随机颜色顺序</system:String>
 
+    <!--Tab Names-->
+    <system:String x:Key="resourcesTab">资源</system:String>
+    <system:String x:Key="miscTab">杂项</system:String>
+
+    <!--Resources-->
+    <system:String x:Key="resourcePath">资源包路径：</system:String>
+    <system:String x:Key="resourcePathDir">Plugins\Assets\Textured\Resources</system:String>
+    <system:String x:Key="reload">重新加载</system:String>
+
     <!--Other settings-->
     <system:String x:Key="firstNote">第一个音符</system:String>
     <system:String x:Key="lastNote">最后一个音符</system:String>
     <system:String x:Key="pianoHeight">钢琴高度</system:String>
     <system:String x:Key="noteScreenTime">音符在屏幕上的时间</system:String>
-    <system:String x:Key="sameWidthNotes">音符宽度一致</system:String>
-    <system:String x:Key="save">保存</system:String>
-    <system:String x:Key="loadSaved">加载已保存的配置</system:String>
-    <system:String x:Key="setDefaults">默认</system:String>
-
-    <system:String x:Key="middleCSquare">在中间的C键处显示小正方形</system:String>
     <system:String x:Key="blackNotesAbove">显示黑色的音符轮廓（渲染得更慢）</system:String>
-    <system:String x:Key="topColor">钢琴键顶部的颜色</system:String>
-    <system:String x:Key="colorRed">红</system:String>
-    <system:String x:Key="colorGreen">绿</system:String>
-    <system:String x:Key="colorBlue">蓝</system:String>
 </ResourceDictionary>

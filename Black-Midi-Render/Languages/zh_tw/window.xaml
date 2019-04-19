@@ -51,4 +51,17 @@
     <system:String x:Key="ffmpegDebug">ffmpeg 除錯</system:String>
     <system:String x:Key="startRender">開始輸出</system:String>
     <system:String x:Key="ifUploading">如果要上傳影片到網站, 請在影片資訊註明由Zenith輸出</system:String>
+	
+	<!--NEW-->
+    <system:String x:Key="realtimePlayback">實際播放</system:String>
+    <system:String x:Key="useOmniMidi">OmniMIDI 開啟 (更多記憶體使用率)</system:String>
+    <system:String x:Key="muteAudio">靜音聲音</system:String>
+    <system:String x:Key="disableKDMAPI">關閉 KDMAPI</system:String>
+    <system:String x:Key="enableKDMAPI">開啟 KDMAPI</system:String>
+    <system:String x:Key="settingsTab">設定</system:String>
+    <system:String x:Key="noteSize">音符大小</system:String>
+    <system:String x:Key="tickBased">基於時刻</system:String>
+    <system:String x:Key="timeBased">基於時間</system:String>
+    <system:String x:Key="ignoreColorEvents">忽略顏色活動</system:String>
+    <system:String x:Key="useBackgroundImage">使用背景</system:String>
 </ResourceDictionary>

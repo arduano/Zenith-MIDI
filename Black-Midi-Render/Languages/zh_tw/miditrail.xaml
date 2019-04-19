@@ -52,6 +52,14 @@
     <system:String x:Key="camOffsets">相機偏移</system:String>
     <system:String x:Key="horizontal">橫</system:String>
     <system:String x:Key="vertical">垂直</system:String>
+	
+	<system:String x:Key="viewTilt">相機傾斜</system:String> <!--NEW-->
+    <system:String x:Key="viewTurn">相機轉向</system:String> <!--NEW-->
+    <system:String x:Key="offsetX">X</system:String> <!--NEW-->
+    <system:String x:Key="offsetY">Y</system:String> <!--NEW-->
+    <system:String x:Key="offsetZ">Z</system:String> <!--NEW-->
+    <system:String x:Key="topPreset">上</system:String> <!--NEW-->
+    <system:String x:Key="perspectivePreset">透視</system:String> <!--NEW-->
     
     <!--Aura-->
     <system:String x:Key="imageHint">圖片需要正方形png, 並且只考慮透明度</system:String>

@@ -541,7 +541,7 @@ void main()
                         }
                         var _t = ((t.pos) - midiTime) / (tempoFrameStep * mv * settings.tempoMultiplier);
                         mv *= 1 - _t;
-                        if (settings.timeBasedNotes) tempoFrameStep = ((double)midi.division / t.tempo) * (1000000.0 / settings.fps);
+                        if (!settings.timeBasedNotes) tempoFrameStep = ((double)midi.division / t.tempo) * (1000000.0 / settings.fps);
                         lastTempo = t.tempo;
                         midiTime = t.pos;
                     }
@@ -552,7 +552,7 @@ void main()
                 }
                 frameStartTime = DateTime.Now.Ticks;
                 if (settings.timeBasedNotes) microsecondsPerTick = 10000;
-                else microsecondsPerTick = (long)((double)lastTempo / midi.division * 10);
+                else microsecondsPerTick = (long)(lastTempo / midi.division * 10);
 
                 while (globalColorEvents.First != null && globalColorEvents.First.pos < midiTime)
                 {

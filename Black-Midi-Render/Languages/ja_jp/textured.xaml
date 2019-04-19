@@ -6,18 +6,23 @@
 
     <!--Palette picker-->
     <system:String x:Key="palettes_reload">リロード</system:String>
-    <system:String x:Key="palettes_restartNote">カラーパレットの変更を適用するにはプレビューを開始し直してください</system:String>
+    <system:String x:Key="palettes_restartNote">カラーパレットの変更を適用するにはプレビューし直してください</system:String>
     <system:String x:Key="palettes_imageNote">画像は、幅16px(グラデーション使用は32px)と任意の高さのPNGでなくてはなりません。透明使えます。</system:String>
     <system:String x:Key="palettes_randomise">色の順番をシャッフル</system:String>
+
+    <!--Tab Names-->
+    <system:String x:Key="resourcesTab">リソース</system:String>
+    <system:String x:Key="miscTab">その他</system:String>
+
+    <!--Resources-->
+    <system:String x:Key="resourcePath">リソースパックパス:</system:String>
+    <system:String x:Key="resourcePathDir">Plugins\Assets\Textured\Resources</system:String>
+    <system:String x:Key="reload">リロード</system:String>
 
     <!--Other settings-->
     <system:String x:Key="firstNote">最初のノート</system:String>
     <system:String x:Key="lastNote">最後のノート</system:String>
     <system:String x:Key="pianoHeight">鍵盤の高さ (%)</system:String>
     <system:String x:Key="noteScreenTime">ノート速度(速←→遅)</system:String>
-    <system:String x:Key="sameWidthNotes">全ノート同じ幅</system:String>
-    <system:String x:Key="save">設定を保存</system:String>
-    <system:String x:Key="loadSaved">保存した設定</system:String>
-    <system:String x:Key="setDefaults">デフォルト設定</system:String>
-
+    <system:String x:Key="blackNotesAbove">黒鍵ノートを白鍵ノートのあとにレンダー (重いよ!)</system:String>
 </ResourceDictionary>

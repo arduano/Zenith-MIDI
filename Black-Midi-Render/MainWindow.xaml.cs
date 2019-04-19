@@ -145,9 +145,9 @@ namespace Black_Midi_Render
             {
                 while (
                     (midifile.ParseUpTo((long)(
-                    win.midiTime + win.lastDeltaTimeOnScreen + 
+                    win.midiTime + win.lastDeltaTimeOnScreen +
                     (win.tempoFrameStep * 20 * settings.tempoMultiplier * (win.lastMV > 1 ? win.lastMV : 1))
-                    
+
                     ))
                     || nc != 0) && settings.running)
                 {
@@ -255,38 +255,42 @@ namespace Black_Midi_Render
                 var dlls = files.Where((s) => s.EndsWith(".dll"));
                 foreach (var d in dlls)
                 {
-                    var DLL = Assembly.UnsafeLoadFrom(System.IO.Path.GetFullPath(d));
-                    bool hasClass = false;
-                    var name = System.IO.Path.GetFileName(d);
                     try
                     {
-                        foreach (Type type in DLL.GetExportedTypes())
+                        var DLL = Assembly.UnsafeLoadFrom(System.IO.Path.GetFullPath(d));
+                        bool hasClass = false;
+                        var name = System.IO.Path.GetFileName(d);
+                        try
                         {
-                            if (type.Name == "Render")
+                            foreach (Type type in DLL.GetExportedTypes())
                             {
-                                hasClass = true;
-                                var instance = (IPluginRender)Activator.CreateInstance(type, new object[] { settings });
-                                RenderPlugins.Add(instance);
-                                Console.WriteLine("Loaded " + name);
+                                if (type.Name == "Render")
+                                {
+                                    hasClass = true;
+                                    var instance = (IPluginRender)Activator.CreateInstance(type, new object[] { settings });
+                                    RenderPlugins.Add(instance);
+                                    Console.WriteLine("Loaded " + name);
+                                }
+                            }
+                            if (!hasClass)
+                            {
+                                MessageBox.Show("Could not load " + name + "\nDoesn't have render class");
                             }
                         }
-                        if (!hasClass)
+                        catch (RuntimeBinderException)
                         {
-                            MessageBox.Show("Could not load " + name + "\nDoesn't have render class");
+                            MessageBox.Show("Could not load " + name + "\nA binding error occured");
+                        }
+                        catch (InvalidCastException)
+                        {
+                            MessageBox.Show("Could not load " + name + "\nThe Render class was not a compatible with the interface");
+                        }
+                        catch (Exception e)
+                        {
+                            MessageBox.Show("An error occured while binfing " + name + "\n" + e.Message);
                         }
                     }
-                    catch (RuntimeBinderException)
-                    {
-                        MessageBox.Show("Could not load " + name + "\nA binding error occured");
-                    }
-                    catch (InvalidCastException)
-                    {
-                        MessageBox.Show("Could not load " + name + "\nThe Render class was not a compatible with the interface");
-                    }
-                    catch (Exception e)
-                    {
-                        MessageBox.Show("An error occured while binfing " + name + "\n" + e.Message);
-                    }
+                    catch { }
                 }
 
                 pluginsList.Items.Clear();

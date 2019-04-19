@@ -53,6 +53,14 @@
     <system:String x:Key="camOffsets">Kamera Offsetdrucken</system:String>
     <system:String x:Key="horizontal">Horizontal</system:String>
     <system:String x:Key="vertical">Vertikale</system:String>
+	
+	<system:String x:Key="viewTilt">Kamera neigung</system:String>
+    <system:String x:Key="viewTurn">Kamera wende</system:String>
+    <system:String x:Key="offsetX">X</system:String>
+    <system:String x:Key="offsetY">Y</system:String>
+    <system:String x:Key="offsetZ">Z</system:String>
+    <system:String x:Key="topPreset">Oben</system:String> 
+    <system:String x:Key="perspectivePreset">Perspektive</system:String>
     
     <!--Aura-->
     <system:String x:Key="imageHint">Das Bild müsst Quadrat ".png" sein, und nur Alpha ist zu berücksichtigen</system:String>

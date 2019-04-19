@@ -13,7 +13,6 @@
     <system:String x:Key="previewTab">预览</system:String>
     <system:String x:Key="renderTab">渲染</system:String>
     
-    
     <!--Main Page-->
     <system:String x:Key="load">加载</system:String>
     <system:String x:Key="unload">关闭</system:String>
@@ -51,4 +50,17 @@
     <system:String x:Key="ffmpegDebug">ffmpeg 调试</system:String>
     <system:String x:Key="startRender">开始渲染</system:String>
     <system:String x:Key="ifUploading">如果在线上传视频，请信任此程序</system:String>
+	
+	    <!--NEW-->
+    <system:String x:Key="realtimePlayback">实时播放</system:String>
+    <system:String x:Key="useOmniMidi">OmniMIDI 启用 (需要使用更多内存)</system:String>
+    <system:String x:Key="muteAudio">静音音频</system:String>
+    <system:String x:Key="disableKDMAPI">禁用 KDMAPI</system:String>
+    <system:String x:Key="enableKDMAPI">启用 KDMAPI</system:String>
+    <system:String x:Key="settingsTab">设置</system:String>
+    <system:String x:Key="noteSize">音符大小</system:String>
+    <system:String x:Key="tickBased">基于记号</system:String>
+    <system:String x:Key="timeBased">基于时间</system:String>
+    <system:String x:Key="ignoreColorEvents">忽略颜色事件</system:String>
+    <system:String x:Key="useBackgroundImage">使用背景</system:String>
 </ResourceDictionary>

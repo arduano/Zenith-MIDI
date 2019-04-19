@@ -50,4 +50,17 @@
     <system:String x:Key="ffmpegDebug">Παρακολούθηση προόδου FFMPEG</system:String>
     <system:String x:Key="startRender">Έναρξη μετατροπής</system:String>
     <system:String x:Key="ifUploading">Αν ανεβάσετε βίντεο στο διαδίκτυο, να πιστώσετε κατάλληλα το πρόγραμμα.</system:String>
+
+    <!--NEW-->
+    <system:String x:Key="realtimePlayback">Κανονική αναπαραγωγή</system:String>
+    <system:String x:Key="useOmniMidi">Ενεργοποίηση OmniMIDI (Χρησιμοποιεί περισσότερη μνήμη)</system:String>
+    <system:String x:Key="muteAudio">Παύση ήχου</system:String>
+    <system:String x:Key="disableKDMAPI">Απενεργοποίηση KDMAPI</system:String>
+    <system:String x:Key="enableKDMAPI">Ενεργοποίηση KDMAPI</system:String>
+    <system:String x:Key="settingsTab">Ρυθμίσεις</system:String>
+    <system:String x:Key="noteSize">Μέγεθος νότας</system:String>
+    <system:String x:Key="tickBased">Με βάση την ταχύτητα</system:String>
+    <system:String x:Key="timeBased">Με βάση τον χρόνο</system:String>
+    <system:String x:Key="ignoreColorEvents">Αγνόηση γεγονότων χρωμάτων</system:String>
+    <system:String x:Key="useBackgroundImage">Χρησιμοποίηση φόντου</system:String>
 </ResourceDictionary>
