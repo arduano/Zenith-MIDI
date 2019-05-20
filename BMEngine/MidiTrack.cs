@@ -47,6 +47,12 @@ namespace BMEngine
         public MidiTrack track;
     }
 
+    public class TimeSignature
+    {
+        public int numerator;
+        public int denominator;
+    }
+
     public class MidiTrack : IDisposable
     {
         public int trackID;
@@ -71,6 +77,8 @@ namespace BMEngine
         FastList<PlaybackEvent> globalPlaybackEvents;
 
         public NoteColor[] trkColors;
+
+        public TimeSignature foundTimeSig = null;
 
         bool readDelta = false;
 
@@ -619,6 +627,7 @@ namespace BMEngine
             { }
         }
 
+        public FastList<Tempo> TempoEvents = new FastList<Tempo>();
         public void ParseNextEventFast()
         {
             long _t = 0;
@@ -659,7 +668,6 @@ namespace BMEngine
                 }
                 else if (comm == 0b11010000)
                 {
-
                     int channel = command & 0b00001111;
                     reader.Skip(1);
                 }
@@ -767,6 +775,11 @@ namespace BMEngine
                         {
                             zerothTempo = btempo;
                         }
+
+                        Tempo t = new Tempo();
+                        t.pos = trackTime;
+                        t.tempo = btempo;
+                        TempoEvents.Add(t);
                     }
                     else if (command == 0x54)
                     {
@@ -784,7 +797,11 @@ namespace BMEngine
                         {
                             throw new Exception("Corrupt Track");
                         }
-                        reader.Skip(4);
+                        int nn = reader.ReadFast();
+                        int dd = reader.ReadFast();
+                        dd = (int)Math.Pow(2, dd);
+                        foundTimeSig = new TimeSignature() { numerator = nn, denominator = dd };
+                        reader.Skip(2);
                     }
                     else if (command == 0x59)
                     {

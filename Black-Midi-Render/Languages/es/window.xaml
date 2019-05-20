@@ -13,7 +13,6 @@
     <system:String x:Key="previewTab">Muestra</system:String>
     <system:String x:Key="renderTab">Render</system:String>
     
-    
     <!--Main Page-->
     <system:String x:Key="load">Cargar</system:String>
     <system:String x:Key="unload">Descargar</system:String>
@@ -51,4 +50,17 @@
     <system:String x:Key="ffmpegDebug">ffmpeg debug</system:String>
     <system:String x:Key="startRender">Iniciar Render</system:String>
     <system:String x:Key="ifUploading">Si sube el video en linea, por favor dar credito al programa.</system:String>
+	
+    <!--NEW-->
+    <system:String x:Key="realtimePlayback">Reproduccion en tiempo real</system:String>
+    <system:String x:Key="useOmniMidi">OmniMIDI Activado (Mas uso de memoria)</system:String>
+    <system:String x:Key="muteAudio">Silenciar audio</system:String>
+    <system:String x:Key="disableKDMAPI">Inhabilitar KDMAPI</system:String>
+    <system:String x:Key="enableKDMAPI">Habilitar KDMAPI</system:String>
+    <system:String x:Key="settingsTab">Configuracion</system:String>
+    <system:String x:Key="noteSize">Tamaño de nota</system:String>
+    <system:String x:Key="tickBased">Basado en tick</system:String>
+    <system:String x:Key="timeBased">Basado en tiempo</system:String>
+    <system:String x:Key="ignoreColorEvents">Ignorar eventos de color</system:String>
+    <system:String x:Key="useBackgroundImage">Usar imagen de fondo</system:String>
 </ResourceDictionary>

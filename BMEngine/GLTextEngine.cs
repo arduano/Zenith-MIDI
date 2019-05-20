@@ -145,6 +145,15 @@ void main()
             FontSize = size;
         }
 
+        public void SetFont(string font, System.Drawing.FontStyle fontStyle, int size)
+        {
+            var bitmap = GenerateCharacters(size, font, fontStyle, out mapCharSize, out charSizes);
+            loadImage(bitmap, charMapTex);
+            bitmap.Dispose();
+            Font = font;
+            FontSize = size;
+        }
+
         void loadImage(Bitmap image, int texID)
         {
             GL.BindTexture(TextureTarget.Texture2D, texID);
@@ -190,7 +199,7 @@ void main()
                     curpos.Y += mapCharSize.Height;
                     curpos.X = 0;
                 }
-                if(c == ' ')
+                if (c == ' ')
                 {
                     curpos.X += mapCharSize.Width / 4.0f;
                 }
@@ -246,13 +255,13 @@ void main()
             Vector2 curpos = new Vector2(0, 0);
             int rows = 1;
             float maxWidth = 0;
-                float padding = mapCharSize.Width / 8f;
+            float padding = mapCharSize.Width / 8f;
             foreach (char c in text)
             {
                 if (c == '\n')
                 {
                     curpos.X = 0;
-                    rows ++;
+                    rows++;
                 }
                 if (!Characters.Contains(c)) continue;
                 var chari = Characters.IndexOf(c);
@@ -292,13 +301,18 @@ void main()
             GL.DrawElements(PrimitiveType.Triangles, quadBufferPos * 6, DrawElementsType.UnsignedInt, IntPtr.Zero);
             quadBufferPos = 0;
         }
-        
+
         private const string Characters = @" qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM0123456789µ§½!""#¤%&/()=?^*@£€${[]}\~¨'-_.:,;<>|°©®±¥";
         public Bitmap GenerateCharacters(int fontSize, string fontName, out Size charSize, out SizeF[] charSizes)
         {
+            return GenerateCharacters(fontSize, fontName, System.Drawing.FontStyle.Regular, out charSize, out charSizes);
+        }
+
+        public Bitmap GenerateCharacters(int fontSize, string fontName, System.Drawing.FontStyle fontStyle, out Size charSize, out SizeF[] charSizes)
+        {
             charSizes = new SizeF[Characters.Length];
             var characters = new List<Bitmap>();
-            using (var font = new Font(fontName, fontSize))
+            using (var font = new Font(fontName, fontSize, fontStyle))
             {
                 for (int i = 0; i < Characters.Length; i++)
                 {

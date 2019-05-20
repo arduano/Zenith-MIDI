@@ -24,7 +24,7 @@
     <system:String x:Key="presets">Предустановки</system:String>
     <system:String x:Key="zenithRenderWarning">Предупреждение: Картинка в окне предпросмотра вырисовывается в вышеуказанном разрешении,
     а затем масштабируется в соответствии с размером окна.</system:String>
-    <system:String x:Key="superRes">SSAA</system:String>
+    <system:String x:Key="superRes">SSAA (Супер-разрешение)</system:String>
     <system:String x:Key="superResWarning">Увеличение SSAA сильно увеличивает как "гладкость" пикселей, так и время прорисовки одного кадра</system:String>
     <system:String x:Key="language">Язык</system:String>
     
@@ -46,9 +46,23 @@
     <system:String x:Key="includeAudio">Добавить аудио</system:String>
     <system:String x:Key="renderMask">Дополнительно рендерить альфа маску</system:String>
     <system:String x:Key="bitrate">Битрейт</system:String>
-    <system:String x:Key="crfHint">FFMPEG crf: 0 - видеоряд без потерь, 51 - худшее качество.</system:String>
+    <system:String x:Key="crfHint">FFMPEG crf: 0 - кодирование без потерь, 51 - худшее качество.</system:String>
     <system:String x:Key="delatStart">Задержка перед стартом (в секундах)</system:String>
     <system:String x:Key="ffmpegDebug">Отладка FFMPEG</system:String>
     <system:String x:Key="startRender">Начать рендер</system:String>
     <system:String x:Key="ifUploading">Если вы собираетесь загрузить видео в интернет, упомяните, что видео было создано с использованием Zenith.</system:String>
+    
+    <!--NEW-->
+    <system:String x:Key="realtimePlayback">Воспроизведение в режиме реального времени</system:String>
+    <system:String x:Key="useOmniMidi">Включить OmniMIDI (Использует больше памяти)</system:String>
+    <system:String x:Key="muteAudio">Отключить аудио</system:String>
+    <system:String x:Key="disableKDMAPI">Выключить KDMAPI</system:String>
+    <system:String x:Key="enableKDMAPI">Включить KDMAPI</system:String>
+    <system:String x:Key="settingsTab">Настройки</system:String>
+    <system:String x:Key="noteSize">Размер ноты на основе:</system:String>
+    <system:String x:Key="tickBased">Тиков (как в UMP)</system:String>
+    <system:String x:Key="timeBased">Времени (как в PFA)</system:String>
+    <system:String x:Key="ignoreColorEvents">Игнорировать события изменения цвета</system:String>
+    <system:String x:Key="useBackgroundImage">Использовать фон</system:String>
+
 </ResourceDictionary>

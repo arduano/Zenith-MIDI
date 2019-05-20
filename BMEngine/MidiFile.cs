@@ -54,18 +54,18 @@ namespace BMEngine
             tracks = new MidiTrack[trackcount];
 
             Console.WriteLine("Loading tracks into memory");
+            info = new MidiInfo();
             LoadAndParseAll(true);
             Console.WriteLine("Loaded!");
             Console.WriteLine("Note count: " + noteCount);
             unendedTracks = trackcount;
-            info = new MidiInfo()
-            {
-                division = division,
-                firstTempo = zerothTempo,
-                noteCount = noteCount,
-                tickLength = maxTrackTime,
-                trackCount = trackcount
-            };
+
+            info.division = division;
+            info.firstTempo = zerothTempo;
+            info.noteCount = noteCount;
+            info.tickLength = maxTrackTime;
+            info.trackCount = trackcount;
+
             lastTempoTick = 0;
             lastTempoTime = 0;
             tempoTickMultiplier = (double)division / 500000 * 1000;
@@ -124,7 +124,7 @@ namespace BMEngine
 
         public bool ParseUpTo(long targetTime)
         {
-            if(settings.timeBasedNotes) targetTime = (long)((targetTime - lastTempoTime) * tempoTickMultiplier + lastTempoTick);
+            if (settings.timeBasedNotes) targetTime = (long)((targetTime - lastTempoTime) * tempoTickMultiplier + lastTempoTick);
             lock (globalDisplayNotes)
             {
                 for (; currentSyncTime <= targetTime && settings.running; currentSyncTime++)
@@ -150,9 +150,10 @@ namespace BMEngine
         {
             long[] tracklens = new long[tracks.Length];
             int p = 0;
+            List<FastList<Tempo>> tempos = new List<FastList<Tempo>>();
             Parallel.For(0, tracks.Length, (i) =>
             {
-                var reader = new BufferByteReader(MidiFileReader, 1<<20, trackBeginnings[i], trackLengths[i]);
+                var reader = new BufferByteReader(MidiFileReader, 1 << 20, trackBeginnings[i], trackLengths[i]);
                 tracks[i] = new MidiTrack(i, reader, this, settings);
                 var t = tracks[i];
                 while (!t.trackEnded)
@@ -168,10 +169,13 @@ namespace BMEngine
                 }
                 noteCount += t.noteCount;
                 tracklens[i] = t.trackTime;
+                if (t.foundTimeSig != null)
+                    info.timeSig = t.foundTimeSig;
                 if (t.zerothTempo != -1)
                 {
                     zerothTempo = t.zerothTempo;
                 }
+                lock (tempos) tempos.Add(t.TempoEvents);
                 if (useBufferStream)
                 {
                     t.Dispose();
@@ -183,6 +187,58 @@ namespace BMEngine
                 Console.WriteLine("Loaded track " + p++ + "/" + tracks.Length);
                 GC.Collect();
             });
+            maxTrackTime = tracklens.Max();
+            Console.WriteLine("Processing Tempos");
+            LinkedList<Tempo> Tempos = new LinkedList<Tempo>();
+            var iters = tempos.Select(t => t.GetEnumerator()).ToArray();
+            bool[] unended = new bool[iters.Length];
+            for(int i = 0; i < iters.Length; i++) unended[i] = iters[i].MoveNext();
+            while (true)
+            {
+                long smallest = 0;
+                bool first = true;
+                int id = 0;
+                for (int i = 0; i < iters.Length; i++)
+                {
+                    if (!unended[i]) continue;
+                    if (first)
+                    {
+                        smallest = iters[i].Current.pos;
+                        id = i;
+                        first = false;
+                        continue;
+                    }
+                    if(iters[i].Current.pos < smallest)
+                    {
+                        smallest = iters[i].Current.pos;
+                        id = i;
+                    }
+                }
+                if (first)
+                {
+                    break;
+                }
+                Tempos.AddLast(iters[id].Current);
+                unended[id] = iters[id].MoveNext();
+            }
+
+            double time = 0;
+            long ticks = maxTrackTime;
+            double multiplier = ((double)500000 / division) / 1000000;
+            long lastt = 0;
+            foreach (var t in Tempos)
+            {
+                var offset = t.pos - lastt;
+                time += offset * multiplier;
+                ticks -= offset;
+                lastt = t.pos;
+                multiplier = ((double)t.tempo / division) / 1000000;
+            }
+
+            time += ticks * multiplier;
+
+            info.secondsLength = time;
+
             maxTrackTime = tracklens.Max();
             unendedTracks = trackcount;
         }

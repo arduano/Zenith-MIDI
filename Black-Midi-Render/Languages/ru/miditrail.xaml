@@ -27,7 +27,7 @@
     <system:String x:Key="keyDownSpeed">Скорость нажатия клавиши</system:String>
     <system:String x:Key="keyUpSpeed">Скорость отжатия клавиши</system:String>
     <system:String x:Key="tiltKeys">Повернуть клавиши</system:String>
-    <system:String x:Key="3dNotes">3D ноты (замедляет рендер!)</system:String>
+    <system:String x:Key="3dNotes">3D ноты (Замедляет рендер!)</system:String>
     <system:String x:Key="lightShade">Световая тень</system:String>
     <system:String x:Key="noteSpeed">Скорость нот</system:String>
     <system:String x:Key="velocityStrength">Сила нажатия клавиш в зависимости от громкости</system:String>
@@ -46,15 +46,23 @@
     <system:String x:Key="mediumPreset">Средне</system:String>
     <system:String x:Key="closerPreset">Ближе</system:String>
     <system:String x:Key="closePreset">Близко</system:String>
+    <system:String x:Key="topPreset">Сверху</system:String>
+    <system:String x:Key="perspectivePreset">Перспективный</system:String>
 
-    <system:String x:Key="FOV">FOV</system:String>
-    <system:String x:Key="viewAngle">Угол обзора</system:String>
+    <system:String x:Key="FOV">Угол обзора</system:String>
+    <!--<system:String x:Key="viewAngle">Угол обзора</system:String>-->
     <system:String x:Key="renderDistF">Дистанция начала прорисовки нот</system:String>
     <system:String x:Key="renderDistB">Дистанция конца прорисовки нот</system:String>
     <system:String x:Key="camOffsets">Сдвиги камеры</system:String>
     <system:String x:Key="horizontal">По горизонтали</system:String>
     <system:String x:Key="vertical">По вертикали</system:String>
     
+    <system:String x:Key="viewTilt">Наклон камеры</system:String>
+    <system:String x:Key="viewTurn">Поворот камеры</system:String>
+    <system:String x:Key="offsetX">X</system:String>
+    <system:String x:Key="offsetY">Y</system:String>
+    <system:String x:Key="offsetZ">Z</system:String>
+
     <!--Aura-->
     <system:String x:Key="imageHint">Картинка должна быть квадратной и желательно с прозрачностью.</system:String>
     <system:String x:Key="auraEnabled">Аура включена</system:String>

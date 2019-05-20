@@ -69,6 +69,16 @@ namespace BMEngine
                 }
                 palette.Save(Path.Combine(searchPath, "Random Gradients.png"));
             }
+            using (Bitmap palette = new Bitmap(32, 8))
+            {
+                for (int i = 0; i < 32 * 8; i++)
+                {
+                    palette.SetPixel(i % 32, (i - i % 32) / 32, (Color)Color4.FromHsv(new OpenTK.Vector4(i * mult % 1, defS, defV, 0.8f)));
+                    i++;
+                    palette.SetPixel(i % 32, (i - i % 32) / 32, (Color)Color4.FromHsv(new OpenTK.Vector4(((i - 1) * mult + 0.166f) % 1, defS, defV, 0.8f)));
+                }
+                palette.Save(Path.Combine(searchPath, "Random Alpha Gradients.png"));
+            }
             using (Bitmap palette = new Bitmap(16, 8))
             {
                 for (int i = 0; i < 16 * 8; i++)

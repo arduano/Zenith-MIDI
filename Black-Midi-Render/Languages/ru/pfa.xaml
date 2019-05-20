@@ -15,6 +15,9 @@
     <system:String x:Key="lastNote">Последняя нота</system:String>
     <system:String x:Key="pianoHeight">Высота клавиатуры в процентах</system:String>
     <system:String x:Key="noteScreenTime">Время нахождения ноты в кадре</system:String>
+    <system:String x:Key="noteTempo">Скорость нот</system:String>
+    <system:String x:Key="changeSpeed">Изменить Скорость</system:String>
+    <system:String x:Key="changeSize">Изменить Размер</system:String>
     <system:String x:Key="sameWidthNotes">Одинаковая ширина нот</system:String>
     <system:String x:Key="save">Сохранить</system:String>
     <system:String x:Key="loadSaved">Загрузить сохранённое</system:String>
@@ -26,4 +29,6 @@
     <system:String x:Key="colorRed">Красный</system:String>
     <system:String x:Key="colorGreen">Зелёный</system:String>
     <system:String x:Key="colorBlue">Синий</system:String>
+
+    <system:String x:Key="borderWidth">Толщина нотной каёмки</system:String>
 </ResourceDictionary>

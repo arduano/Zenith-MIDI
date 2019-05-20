@@ -15,6 +15,9 @@
     <system:String x:Key="lastNote">最后一个音符</system:String>
     <system:String x:Key="pianoHeight">钢琴高度</system:String>
     <system:String x:Key="noteScreenTime">音符屏幕时间</system:String>
+    <system:String x:Key="noteTempo">BPM变化时选项</system:String>
+    <system:String x:Key="changeSpeed">改变显示速度</system:String>
+    <system:String x:Key="changeSize">改变音符长度</system:String>
     <system:String x:Key="sameWidthNotes">音符宽度一致</system:String>
     <system:String x:Key="save">保存</system:String>
     <system:String x:Key="loadSaved">加载已保存的配置</system:String>
