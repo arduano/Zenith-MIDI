@@ -51,7 +51,7 @@
     <system:String x:Key="startRender">Start Render</system:String>
     <system:String x:Key="ifUploading">If uploading the video online, please credit the program</system:String>
     
-    <!--NEW-->
+    <!--NEW 1.5-->
     <system:String x:Key="realtimePlayback">Realtime Playback</system:String>
     <system:String x:Key="useOmniMidi">OmniMIDI Enabled (More memory usage)</system:String>
     <system:String x:Key="muteAudio">Mute Audio</system:String>
@@ -63,4 +63,7 @@
     <system:String x:Key="timeBased">Time Based</system:String>
     <system:String x:Key="ignoreColorEvents">Ignore Color Events</system:String>
     <system:String x:Key="useBackgroundImage">Use Background</system:String>
+
+    <!--NEW 1.6-->
+    <system:String x:Key="pauseHintNew">Press space to toggle pause, press enter on the preview window to fullscreen</system:String>
 </ResourceDictionary>

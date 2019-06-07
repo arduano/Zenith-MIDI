@@ -192,6 +192,11 @@ void main()
 
             quadBufferPos = 0;
             Vector2 curpos = new Vector2(0, 0);
+
+            int charImHeight = (Characters.Length - (Characters.Length % charImWidth)) / charImWidth;
+            double charwidth = 1.0 / charImWidth;
+            double charheight = 1.0 / charImHeight;
+
             foreach (char c in text)
             {
                 if (c == '\n')
@@ -206,10 +211,13 @@ void main()
                 if (!Characters.Contains(c)) continue;
                 var chari = Characters.IndexOf(c);
                 var sz = charSizes[chari];
-                sz.Width *= 1.0f;
-                double charwidth = 1.0 / Characters.Length;
-                double s = charwidth * chari;
-                double e = s + charSizes[chari].Width / mapCharSize.Width * charwidth;
+                int charix = chari % charImWidth;
+                int chariy = (chari - charix) / charImWidth;
+                double sx = charwidth * charix;
+                double ex = sx + charSizes[chari].Width / mapCharSize.Width * charwidth;
+                double sy = charheight * chariy;
+                double ey = sy + charSizes[chari].Height / mapCharSize.Height * charheight;
+
                 float padding = mapCharSize.Width / 8f;
                 sz.Width -= padding * 2;
                 Vector2 endpos = curpos + new Vector2(sz.Width, sz.Height);
@@ -227,14 +235,22 @@ void main()
                 curpos.X += sz.Width;
 
                 pos = quadBufferPos * 8;
-                quaduvbuff[pos++] = s;
-                quaduvbuff[pos++] = 0;
-                quaduvbuff[pos++] = s;
-                quaduvbuff[pos++] = 1;
-                quaduvbuff[pos++] = e;
-                quaduvbuff[pos++] = 1;
-                quaduvbuff[pos++] = e;
-                quaduvbuff[pos++] = 0;
+                quaduvbuff[pos++] = sx;
+                quaduvbuff[pos++] = sy;
+                quaduvbuff[pos++] = sx;
+                quaduvbuff[pos++] = ey;
+                quaduvbuff[pos++] = ex;
+                quaduvbuff[pos++] = ey;
+                quaduvbuff[pos++] = ex;
+                quaduvbuff[pos++] = sy;
+                //quaduvbuff[pos++] = 0;
+                //quaduvbuff[pos++] = 0;
+                //quaduvbuff[pos++] = 1;
+                //quaduvbuff[pos++] = 0;
+                //quaduvbuff[pos++] = 1;
+                //quaduvbuff[pos++] = 1;
+                //quaduvbuff[pos++] = 0;
+                //quaduvbuff[pos++] = 1;
                 quadBufferPos++;
                 FlushQuadBuffer();
             }
@@ -266,10 +282,6 @@ void main()
                 if (!Characters.Contains(c)) continue;
                 var chari = Characters.IndexOf(c);
                 var sz = charSizes[chari];
-                sz.Width *= 1.0f;
-                double charwidth = 1.0 / Characters.Length;
-                double s = charwidth * chari;
-                double e = s + charSizes[chari].Width / mapCharSize.Width * charwidth;
                 sz.Width -= padding * 2;
                 Vector2 endpos = curpos + new Vector2(sz.Width, sz.Height);
                 curpos.X += sz.Width;
@@ -303,6 +315,8 @@ void main()
         }
 
         private const string Characters = @" qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM0123456789µ§½!""#¤%&/()=?^*@£€${[]}\~¨'-_.:,;<>|°©®±¥";
+        private const int charImWidth = 20;
+
         public Bitmap GenerateCharacters(int fontSize, string fontName, out Size charSize, out SizeF[] charSizes)
         {
             return GenerateCharacters(fontSize, fontName, System.Drawing.FontStyle.Regular, out charSize, out charSizes);
@@ -321,14 +335,17 @@ void main()
                     characters.Add(charBmp);
                 }
                 charSize = new Size(characters.Max(x => x.Width), characters.Max(x => x.Height));
-                var charMap = new Bitmap(charSize.Width * characters.Count, charSize.Height);
+
+                var charMap = new Bitmap(charSize.Width * charImWidth, charSize.Height * (characters.Count - (characters.Count % charImWidth)) / charImWidth);
                 using (var gfx = Graphics.FromImage(charMap))
                 {
                     gfx.FillRectangle(Brushes.Black, 0, 0, charMap.Width, charMap.Height);
                     for (int i = 0; i < characters.Count; i++)
                     {
                         var c = characters[i];
-                        gfx.DrawImageUnscaled(c, i * charSize.Width, 0);
+                        int x = i % charImWidth;
+                        int y = (i - x) / charImWidth;
+                        gfx.DrawImageUnscaled(c, x * charSize.Width, y * charSize.Height);
 
                         c.Dispose();
                     }

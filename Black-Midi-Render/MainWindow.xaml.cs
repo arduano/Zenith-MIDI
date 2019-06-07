@@ -74,6 +74,7 @@ namespace Black_Midi_Render
                 muteAudio.IsEnabled = false;
             }
             settings = new RenderSettings();
+            settings.PauseToggled += ToggledPause;
             InitialiseSettingsValues();
             creditText.Text = "Video was rendered with Zenith\nhttps://arduano.github.io/Zenith-MIDI/start";
 
@@ -105,6 +106,17 @@ namespace Black_Midi_Render
                 languageSelect.Items.Add(item);
             }
             languageSelect.SelectedIndex = 0;
+        }
+
+        void ToggledPause()
+        {
+            Dispatcher.Invoke(() => {
+                if ((bool)previewPaused.IsChecked ^ settings.Paused)
+                {
+                    previewPaused.IsChecked = settings.Paused;
+                }
+            });
+
         }
 
         void InitialiseSettingsValues()
@@ -222,6 +234,7 @@ namespace Black_Midi_Render
             }
             winthread.GetAwaiter().GetResult();
             settings.running = false;
+            Console.WriteLine("Reset midi file");
             midifile.Reset();
             win.Dispose();
             win = null;
@@ -447,7 +460,7 @@ namespace Black_Midi_Render
             settings.ffPath = videoPath.Text;
             settings.renderSecondsDelay = (double)secondsDelay.Value;
 
-            settings.paused = false;
+            settings.Paused = false;
             previewPaused.IsChecked = false;
             settings.tempoMultiplier = 1;
             tempoSlider.Value = 0;
@@ -505,7 +518,7 @@ namespace Black_Midi_Render
 
         private void Paused_Checked(object sender, RoutedEventArgs e)
         {
-            settings.paused = (bool)previewPaused.IsChecked;
+            settings.Paused = (bool)previewPaused.IsChecked;
         }
 
         private void VsyncEnabled_Checked(object sender, RoutedEventArgs e)
@@ -541,19 +554,19 @@ namespace Black_Midi_Render
 
         private void TempoSlider_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.RightButton == MouseButtonState.Pressed)
-            {
-                previewPaused.IsChecked = !settings.paused;
-                settings.paused = (bool)previewPaused.IsChecked;
-            }
+            //if (e.RightButton == MouseButtonState.Pressed)
+            //{
+            //    previewPaused.IsChecked = !settings.Paused;
+            //    settings.Paused = (bool)previewPaused.IsChecked;
+            //}
         }
 
         private void Grid_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Space)
             {
-                previewPaused.IsChecked = !settings.paused;
-                settings.paused = (bool)previewPaused.IsChecked;
+                previewPaused.IsChecked = !settings.Paused;
+                settings.Paused = (bool)previewPaused.IsChecked;
             }
         }
 
@@ -745,6 +758,11 @@ namespace Black_Midi_Render
                         MessageBox.Show("Couldn't load image");
                 }
             }
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Space) settings.Paused = !settings.Paused;
         }
     }
 

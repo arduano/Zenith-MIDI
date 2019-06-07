@@ -389,17 +389,17 @@ void main()
             int timeJump;
             long now;
             playbackLoopStarted = true;
-            if (settings.paused || !settings.playbackEnabled)
+            if (settings.Paused || !settings.playbackEnabled)
             {
-                SpinWait.SpinUntil(() => !(settings.paused || !settings.playbackEnabled));
+                SpinWait.SpinUntil(() => !(settings.Paused || !settings.playbackEnabled));
             }
             KDMAPI.ResetKDMAPIStream();
             KDMAPI.SendDirectData(0x0);
             while (settings.running)
             {
-                if (settings.paused || !settings.playbackEnabled)
+                if (settings.Paused || !settings.playbackEnabled)
                 {
-                    SpinWait.SpinUntil(() => !(settings.paused || !settings.playbackEnabled));
+                    SpinWait.SpinUntil(() => !(settings.Paused || !settings.playbackEnabled));
                 }
                 try
                 {
@@ -446,9 +446,9 @@ void main()
             frameStartTime = DateTime.Now.Ticks;
             if (settings.timeBasedNotes) microsecondsPerTick = 10000;
             else microsecondsPerTick = (long)((double)lastTempo / midi.division * 10);
-            while (settings.running && noNoteFrames < settings.fps * 5 || midi.unendedTracks != 0)
+            while (settings.running && (noNoteFrames < settings.fps * 5 || midi.unendedTracks != 0))
             {
-                if (!settings.paused || settings.forceReRender)
+                if (!settings.Paused || settings.forceReRender)
                 {
                     if (settings.lastyBGChangeTime != lastBGChangeTime)
                     {
@@ -504,9 +504,9 @@ void main()
                             render.renderer.LastMidiTimePerTick = lastTempo / midi.division;
                             lastDeltaTimeOnScreen = render.renderer.NoteScreenTime;
                             if (settings.timeBasedNotes)
-                                SpinWait.SpinUntil(() => (long)((midi.currentSyncTime - midi.lastTempoTick) / midi.tempoTickMultiplier + midi.lastTempoTime) > midiTime + lastDeltaTimeOnScreen + tempoFrameStep || midi.unendedTracks == 0 || !settings.running);
+                                SpinWait.SpinUntil(() => ((long)((midi.currentSyncTime - midi.lastTempoTick) / midi.tempoTickMultiplier + midi.lastTempoTime) > midiTime + lastDeltaTimeOnScreen + tempoFrameStep || midi.unendedTracks == 0) || !settings.running);
                             else
-                                SpinWait.SpinUntil(() => midi.currentSyncTime > midiTime + lastDeltaTimeOnScreen + tempoFrameStep || midi.unendedTracks == 0 || !settings.running);
+                                SpinWait.SpinUntil(() => (midi.currentSyncTime > midiTime + lastDeltaTimeOnScreen + tempoFrameStep || midi.unendedTracks == 0) || !settings.running);
                             if (!settings.running) break;
 
                             render.renderer.RenderFrame(globalDisplayNotes, midiTime, finalCompositeBuff.BufferID);
@@ -546,7 +546,7 @@ void main()
                         midiTime = t.pos;
                     }
                 }
-                if (!settings.paused)
+                if (!settings.Paused)
                 {
                     midiTime += mv * tempoFrameStep * settings.tempoMultiplier;
                 }
@@ -668,7 +668,7 @@ void main()
                 watch.Reset();
                 watch.Start();
             }
-            KDMAPI.ResetKDMAPIStream();
+            Console.WriteLine("Left render loop");
             settings.running = false;
             if (settings.ffRender)
             {
@@ -682,20 +682,27 @@ void main()
                     ffmpegmask.Close();
                 }
             }
-            try
-            {
-                while (true)
-                {
-                    var r = render.disposeQueue.Dequeue();
-                    if (!r.Initialized) r.Dispose();
-                }
-            }
-            catch (InvalidOperationException) { }
+            Console.WriteLine("Disposing current renderer");
             try
             {
                 render.renderer.Dispose();
             }
             catch { }
+            try
+            {
+                Console.WriteLine("Disposing of other renderers");
+                while (render.disposeQueue.Count != 0)
+                {
+                    var r = render.disposeQueue.Dequeue();
+                    try
+                    {
+                        if (r.Initialized) r.Dispose();
+                    }
+                    catch { }
+                }
+            }
+            catch (InvalidOperationException) { }
+            Console.WriteLine("Disposed of renderers");
 
             globalDisplayNotes = null;
             globalTempoEvents = null;
@@ -709,6 +716,7 @@ void main()
             }
             ffmpegvideo = null;
             ffmpegmask = null;
+
 
             finalCompositeBuff.Dispose();
             ffmpegOutputBuff.Dispose();
@@ -726,8 +734,22 @@ void main()
 
             midi = null;
             render = null;
+            Console.WriteLine("Closing window");
 
             this.Close();
+        }
+
+        protected override void OnKeyDown(KeyboardKeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+            if (e.Key == Key.Space) settings.Paused = !settings.Paused;
+            if(e.Key == Key.Enter)
+            {
+                if (WindowState != WindowState.Fullscreen)
+                    WindowState = WindowState.Fullscreen;
+                else
+                    WindowState = WindowState.Normal;
+            }
         }
 
         protected override void OnClosing(CancelEventArgs e)
@@ -740,6 +762,8 @@ void main()
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
+
+            settings.running = false;
         }
 
         void DrawScreenQuad()

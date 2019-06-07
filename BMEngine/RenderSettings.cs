@@ -36,7 +36,7 @@ namespace BMEngine
         public bool vsync = true;
         public double renderSecondsDelay = 0;
 
-        public bool paused = false;
+        private bool paused = false;
         public bool forceReRender = true;
         public double tempoMultiplier = 1;
 
@@ -71,5 +71,16 @@ namespace BMEngine
 
         public long lastyBGChangeTime = -1;
         public Bitmap BGImage = null;
+
+        public event Action PauseToggled;
+        public bool Paused
+        {
+            get => paused;
+            set
+            {
+                paused = value;
+                PauseToggled();
+            }
+        }
     }
 }

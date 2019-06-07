@@ -7,7 +7,7 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:local="clr-namespace:Black_Midi_Render"
         mc:Ignorable="d"
-        Title="Zenith" Height="549.889" Width="779.556" MinWidth="779.556" MinHeight="549.889" Closing="Window_Closing">
+        Title="Zenith" Height="549.889" Width="779.556" MinWidth="779.556" MinHeight="549.889" Closing="Window_Closing" KeyDown="Window_KeyDown">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -183,7 +183,7 @@
                         <Button Content="{DynamicResource stop}" HorizontalAlignment="Left" Margin="10,0,0,0" Padding="20,0,20,0" IsEnabled="{Binding IsEnabled, ElementName=stopEnabled}" Height="20" VerticalAlignment="Bottom" Click="StopButton_Click" DockPanel.Dock="Left" />
                     </DockPanel>
                     <CheckBox x:Name="forceReRender" Content="{DynamicResource forceRender}" HorizontalAlignment="Left" Margin="10,155,0,0" VerticalAlignment="Top" Checked="ForceReRender_Checked" Unchecked="ForceReRender_Checked" IsEnabled="{Binding ElementName=previewPaused, Path=IsChecked}" IsChecked="True"/>
-                    <Label Content="{DynamicResource pauseHint}" HorizontalAlignment="Left" Margin="9,104,0,0" VerticalAlignment="Top"/>
+                    <Label Content="{DynamicResource pauseHintNew}" HorizontalAlignment="Left" Margin="9,104,0,0" VerticalAlignment="Top"/>
                     <DockPanel Height="26" LastChildFill="False" Margin="9,78,11,0" VerticalAlignment="Top">
                         <Label Content="{DynamicResource tempo}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left"/>
                         <Slider x:Name="tempoSlider" HorizontalAlignment="Left" VerticalAlignment="Top" Width="337" Height="21" ValueChanged="TempoSlider_ValueChanged" Maximum="6" TickPlacement="BottomRight" LargeChange="0" SmallChange="0.2" TickFrequency="0.2" Minimum="-6" IsSnapToTickEnabled="True" MouseDown="TempoSlider_MouseDown" DockPanel.Dock="Left" Margin="0,5.1,0,0"/>
