@@ -221,10 +221,12 @@ namespace Black_Midi_Render
                     Stopwatch s = new Stopwatch();
                     s.Start();
                     SpinWait.SpinUntil(() =>
+                    (
                         s.ElapsedMilliseconds > 1000.0 / settings.fps * 10 ||
                         win.midiTime + win.lastDeltaTimeOnScreen + (win.tempoFrameStep * 10 * settings.tempoMultiplier * win.lastMV) > midifile.currentSyncTime ||
                         lastWinTime != win.midiTime || render != renderer.renderer || !settings.running
-                    );
+                    )
+                    ); ;
                 }
             }
             catch (Exception ex)
@@ -418,7 +420,7 @@ namespace Black_Midi_Render
             settings.fps = (int)viewFps.Value;
             settings.ffRender = false;
             settings.renderSecondsDelay = 0;
-            renderThread = Task.Factory.StartNew(RunRenderWindow);
+            renderThread = Task.Factory.StartNew(RunRenderWindow, TaskCreationOptions.RunContinuationsAsynchronously | TaskCreationOptions.LongRunning);
             Resources["notPreviewing"] = false;
         }
 
@@ -760,7 +762,7 @@ namespace Black_Midi_Render
             }
         }
 
-        private void Window_KeyDown(object sender, KeyEventArgs e)
+        private void Grid_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Space) settings.Paused = !settings.Paused;
         }

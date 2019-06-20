@@ -133,8 +133,11 @@ namespace BMEngine
                     for (int trk = 0; trk < trackcount; trk++)
                     {
                         var t = tracks[trk];
-                        if (!t.trackEnded) ut++;
-                        t.Step(currentSyncTime);
+                        if (!t.trackEnded)
+                        {
+                            ut++;
+                            t.Step(currentSyncTime);
+                        }
                     }
                     unendedTracks = ut;
                 }
@@ -153,7 +156,7 @@ namespace BMEngine
             List<FastList<Tempo>> tempos = new List<FastList<Tempo>>();
             Parallel.For(0, tracks.Length, (i) =>
             {
-                var reader = new BufferByteReader(MidiFileReader, 1 << 20, trackBeginnings[i], trackLengths[i]);
+                var reader = new BufferByteReader(MidiFileReader, settings.maxTrackBufferSize, trackBeginnings[i], trackLengths[i]);
                 tracks[i] = new MidiTrack(i, reader, this, settings);
                 var t = tracks[i];
                 while (!t.trackEnded)
@@ -176,14 +179,7 @@ namespace BMEngine
                     zerothTempo = t.zerothTempo;
                 }
                 lock (tempos) tempos.Add(t.TempoEvents);
-                if (useBufferStream)
-                {
-                    t.Dispose();
-                    tracks[i] = new MidiTrack(i,
-                        new BufferByteReader(MidiFileReader, settings.maxTrackBufferSize, trackBeginnings[i], trackLengths[i]),
-                        this, settings);
-                }
-                else t.Reset();
+                t.Reset();
                 Console.WriteLine("Loaded track " + p++ + "/" + tracks.Length);
                 GC.Collect();
             });
@@ -241,6 +237,11 @@ namespace BMEngine
 
             maxTrackTime = tracklens.Max();
             unendedTracks = trackcount;
+        }
+
+        public void SetZeroColors()
+        {
+            foreach(var t in tracks) t.SetZeroColors();
         }
 
         public void Reset()

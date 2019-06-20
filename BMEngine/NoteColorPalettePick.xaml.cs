@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml;
 using Brushes = System.Windows.Media.Brushes;
 using Color = System.Drawing.Color;
 using Path = System.IO.Path;
@@ -119,7 +120,45 @@ namespace BMEngine
 
                 }
             }
+            ReadPFAConfig();
             SelectImage(SelectedImage);
+        }
+
+        void ReadPFAConfig()
+        {
+            try
+            {
+                var appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                var configPath = Path.Combine(appdata, "Piano From Above/Config.xml");
+                if (File.Exists(configPath))
+                {
+                    var data = File.ReadAllText(configPath);
+                    XmlDocument doc = new XmlDocument();
+                    doc.LoadXml(data);
+                    var colors = doc.GetElementsByTagName("Colors").Item(0);
+                    Bitmap img = new Bitmap(16, 1);
+                    for (int i = 0; i < 16; i++)
+                    {
+                        var c = colors.ChildNodes.Item(i);
+                        int r = -1;
+                        int g = -1;
+                        int b = -1;
+                        for (int j = 0; j < 3; j++)
+                        {
+                            var attrib = c.Attributes.Item(j);
+                            if (attrib.Name == "R") r = Convert.ToInt32(attrib.InnerText);
+                            if (attrib.Name == "G") g = Convert.ToInt32(attrib.InnerText);
+                            if (attrib.Name == "B") b = Convert.ToInt32(attrib.InnerText);
+                        }
+                        img.SetPixel(i, 0, Color.FromArgb(r, g, b));
+                    }
+                    images.Add(img);
+                    var item = new ListBoxItem() { Content = "PFA Config Colors" };
+                    paletteList.Items.Add(item);
+
+                }
+            }
+            catch { }
         }
 
         public void SelectImage(string img)

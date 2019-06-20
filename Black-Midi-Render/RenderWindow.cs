@@ -443,6 +443,7 @@ void main()
             }
             int noNoteFrames = 0;
             long lastNC = 0;
+            bool firstRenderer = true;
             frameStartTime = DateTime.Now.Ticks;
             if (settings.timeBasedNotes) microsecondsPerTick = 10000;
             else microsecondsPerTick = (long)((double)lastTempo / midi.division * 10);
@@ -492,6 +493,11 @@ void main()
                                 List<NoteColor[]> trkcolors = new List<NoteColor[]>();
                                 foreach (var t in midi.tracks) trkcolors.Add(t.trkColors);
                                 render.renderer.SetTrackColors(trkcolors.ToArray());
+                                if(firstRenderer)
+                                {
+                                    firstRenderer = false;
+                                    midi.SetZeroColors();
+                                }
                                 render.renderer.CurrentMidi = midi.info;
                                 lock (globalDisplayNotes)
                                 {
@@ -506,7 +512,7 @@ void main()
                             if (settings.timeBasedNotes)
                                 SpinWait.SpinUntil(() => ((long)((midi.currentSyncTime - midi.lastTempoTick) / midi.tempoTickMultiplier + midi.lastTempoTime) > midiTime + lastDeltaTimeOnScreen + tempoFrameStep || midi.unendedTracks == 0) || !settings.running);
                             else
-                                SpinWait.SpinUntil(() => (midi.currentSyncTime > midiTime + lastDeltaTimeOnScreen + tempoFrameStep || midi.unendedTracks == 0) || !settings.running);
+                                SpinWait.SpinUntil(() => (midi.currentSyncTime > midiTime + lastDeltaTimeOnScreen + tempoFrameStep * settings.tempoMultiplier || midi.unendedTracks == 0) || !settings.running);
                             if (!settings.running) break;
 
                             render.renderer.RenderFrame(globalDisplayNotes, midiTime, finalCompositeBuff.BufferID);

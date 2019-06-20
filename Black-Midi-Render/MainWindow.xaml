@@ -7,7 +7,7 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:local="clr-namespace:Black_Midi_Render"
         mc:Ignorable="d"
-        Title="Zenith" Height="549.889" Width="779.556" MinWidth="779.556" MinHeight="549.889" Closing="Window_Closing" KeyDown="Window_KeyDown">
+        Title="Zenith" Height="549.889" Width="779.556" MinWidth="779.556" MinHeight="549.889" Closing="Window_Closing">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -175,7 +175,7 @@
                 </Grid>
             </TabItem>
             <TabItem Header="{DynamicResource previewTab}" IsEnabled="{DynamicResource notRendering}">
-                <Grid Background="#FFE5E5E5" KeyDown="Grid_KeyDown">
+                <Grid Background="#FFE5E5E5" KeyDown="Grid_KeyDown" PreviewKeyDown="Grid_PreviewKeyDown">
                     <CheckBox x:Name="vsyncEnabled" Content="{DynamicResource vsync}" HorizontalAlignment="Left" Margin="10,175,0,0" VerticalAlignment="Top" Checked="VsyncEnabled_Checked" Unchecked="VsyncEnabled_Checked" Focusable="False" IsChecked="True"/>
                     <CheckBox x:Name="previewPaused" Content="{DynamicResource paused}" HorizontalAlignment="Left" Margin="10,135,0,0" VerticalAlignment="Top" Checked="Paused_Checked" Unchecked="Paused_Checked"/>
                     <DockPanel HorizontalAlignment="Left" LastChildFill="False" Margin="10,0,0,10" Height="20" VerticalAlignment="Bottom">

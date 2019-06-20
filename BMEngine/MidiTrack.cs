@@ -77,6 +77,7 @@ namespace BMEngine
         FastList<PlaybackEvent> globalPlaybackEvents;
 
         public NoteColor[] trkColors;
+        public NoteColor[] zeroTickTrkColors;
 
         public TimeSignature foundTimeSig = null;
 
@@ -109,6 +110,18 @@ namespace BMEngine
             }
         }
 
+        public void SetZeroColors()
+        {
+            for (int i = 0; i < 16; i++)
+            {
+                if (zeroTickTrkColors[i] != null)
+                {
+                    trkColors[i].left = zeroTickTrkColors[i].left;
+                    trkColors[i].right = zeroTickTrkColors[i].right;
+                }
+            }
+        }
+
         RenderSettings settings;
         public MidiTrack(int id, BufferByteReader reader, MidiFile file, RenderSettings settings)
         {
@@ -121,6 +134,9 @@ namespace BMEngine
             this.reader = reader;
             trackID = id;
             ResetColors();
+
+            zeroTickTrkColors = new NoteColor[16];
+            for (int i = 0; i < 16; i++) zeroTickTrkColors[i] = null;
         }
 
         long ReadVariableLen()
@@ -193,7 +209,7 @@ namespace BMEngine
                 }
             UnendedNotes = null;
         }
-        
+
         byte prevCommand = 0;
         bool timebase = false;
         public void ParseNextEvent()
@@ -649,7 +665,8 @@ namespace BMEngine
                     byte channel = (byte)(command & 0b00001111);
                     reader.Skip(1);
                     byte vel = reader.Read();
-                    if (vel != 0) noteCount++;
+                    if (vel != 0)
+                        noteCount++;
                 }
                 else if (comm == 0b10000000)
                 {
@@ -730,8 +747,40 @@ namespace BMEngine
                     else if (command >= 0x01 &&
                             command <= 0x0A)
                     {
-                        int size = (int)ReadVariableLen();
-                        reader.Skip(size);
+                            int size = (int)ReadVariableLen();
+                        if (command != 0x0A || trackTime != 0)
+                        {
+                            reader.Skip(size);
+                        }
+                        else
+                        {
+                            byte[] data = new byte[size];
+                            for (int i = 0; i < size; i++)
+                            {
+                                data[i] = reader.Read();
+                            }
+                            if (data.Length == 8 || data.Length == 12)
+                            {
+                                if (data[0] == 0x00 &&
+                                    data[1] == 0x0F)
+                                {
+                                    Color4 col1 = new Color4(data[4], data[5], data[6], data[7]);
+                                    Color4 col2;
+                                    if (data.Length == 12)
+                                        col2 = new Color4(data[8], data[9], data[10], data[11]);
+                                    else col2 = col1;
+                                    if (data[2] < 0x10)
+                                    {
+                                        zeroTickTrkColors[data[2]] = new NoteColor() { left = col1, right = col2 }; 
+                                    }
+                                    else if(data[2] == 0x7F)
+                                    {
+                                        for(int i = 0; i < 16; i++)
+                                            zeroTickTrkColors[i] = new NoteColor() { left = col1, right = col2 };
+                                    }
+                                }
+                            }
+                        }
                     }
                     else if (command == 0x20)
                     {
