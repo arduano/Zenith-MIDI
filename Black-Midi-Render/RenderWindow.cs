@@ -582,6 +582,16 @@ void main()
                     }
                 }
 
+                downscaleBuff.BindBuffer();
+                GL.Clear(ClearBufferMask.ColorBufferBit);
+                GL.Viewport(0, 0, settings.width / settings.downscale, settings.height / settings.downscale);
+                if (bgTexID != -1)
+                {
+                    GL.UseProgram(postShaderFlip);
+                    GL.BindTexture(TextureTarget.Texture2D, bgTexID);
+                    DrawScreenQuad();
+                }
+
                 if (settings.downscale > 1)
                 {
                     GL.UseProgram(postShaderDownscale);
@@ -592,16 +602,7 @@ void main()
                 {
                     GL.UseProgram(postShader);
                 }
-                downscaleBuff.BindBuffer();
-                GL.Clear(ClearBufferMask.ColorBufferBit);
-                GL.Viewport(0, 0, settings.width / settings.downscale, settings.height / settings.downscale);
-                if (bgTexID != -1)
-                {
-                    GL.UseProgram(postShaderFlip);
-                    GL.BindTexture(TextureTarget.Texture2D, bgTexID);
-                    DrawScreenQuad();
-                }
-                GL.UseProgram(postShader);
+
                 finalCompositeBuff.BindTexture();
                 DrawScreenQuad();
 
