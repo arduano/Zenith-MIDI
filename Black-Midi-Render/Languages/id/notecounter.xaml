@@ -1,0 +1,20 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MSDNSample"
+    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <system:String x:Key="alignments">Posisi</system:String>
+    <system:String x:Key="alTopLeft">Atas Kiri</system:String>
+    <system:String x:Key="alTopRight">Atas Kanan</system:String>
+    <system:String x:Key="alBottomLeft">Bawah Kiri</system:String>
+    <system:String x:Key="alBottomRight">Bawah Kanan</system:String>
+    <system:String x:Key="alTopSpread">Atas Tersebar</system:String>
+    <system:String x:Key="alBottomSpread">Bawah Tersebar</system:String>
+
+    <system:String x:Key="fontSize">Ukuran Font</system:String>
+    <system:String x:Key="font">Font</system:String>
+
+    <system:String x:Key="reload">Muat Ulang</system:String>
+    <system:String x:Key="noteTextPath">Lokasi: Plugins/Assets/NoteCounter/Templates</system:String>
+</ResourceDictionary>
