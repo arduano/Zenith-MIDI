@@ -1,0 +1,72 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MSDNSample"
+    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <!--Palette picker-->
+    <system:String x:Key="palettes_reload">Muat Ulang</system:String>
+    <system:String x:Key="palettes_restartNote">Catatan: Mulai ulang pratayang untuk memperbarui palet warna.</system:String>
+    <system:String x:Key="palettes_imageNote">Gambar harus sebuah .png dengan lebar 16 (32 untuk gradien) piksel dan tinggi yang bebas. Transparansi didukung.</system:String>
+    <system:String x:Key="palettes_randomise">Acak urutan warna</system:String>
+
+    <!--Shared-->
+    <system:String x:Key="delete">Hapus</system:String>
+    <system:String x:Key="saveNew">Simpan Baru</system:String>
+    <system:String x:Key="loadDefault">Pengaturan Awal</system:String>
+
+    <!--Tab Names-->
+    <system:String x:Key="visualsTab">Visual</system:String>
+    <system:String x:Key="cameraTab">Kamera</system:String>
+    <system:String x:Key="auraTab">Aura</system:String>
+
+
+    <!--Visuals-->
+    <system:String x:Key="firstNote">Not Pertama</system:String>
+    <system:String x:Key="lastNote">Not Terakhir</system:String>
+    <system:String x:Key="keyDownSpeed">Cepat Tekanan Tuts</system:String>
+    <system:String x:Key="keyUpSpeed">Cepat Lepasan Tuts</system:String>
+    <system:String x:Key="tiltKeys">Miringkan Tuts</system:String>
+    <system:String x:Key="3dNotes">Not 3D (lebih lambat!)</system:String>
+    <system:String x:Key="lightShade">Bayangan</system:String>
+    <system:String x:Key="noteSpeed">Cepat Not</system:String>
+    <system:String x:Key="velocityStrength">Kuat dari Velositas Not</system:String>
+    <system:String x:Key="keyboardClip">Keyboard Mengklip Not</system:String>
+    <system:String x:Key="sameWidthNotes">Not yang Sama Lebar</system:String>
+    <system:String x:Key="onNoteHit">Saat not dipukul:</system:String>
+    <system:String x:Key="changeSize">Ubah Ukuran</system:String>
+    <system:String x:Key="changeTint">Ubah Warna</system:String>
+
+    <!--Camera-->
+    <system:String x:Key="speedWarning">Perhatian: Plugin ini dapat menggunakan RAM dan CPU lebih dikarenakan lebih lamanya not di layar. Lebih banyak not di layar, lebih lama waktu rendernya!</system:String>
+
+    <system:String x:Key="cameraPreset">Preset:</system:String>
+    <system:String x:Key="farPreset">Jauh</system:String>
+    <system:String x:Key="mediumPreset">Menengah</system:String>
+    <system:String x:Key="closerPreset">Lebih Dekat</system:String>
+    <system:String x:Key="closePreset">Dekat</system:String>
+
+    <system:String x:Key="FOV">Bidang Pandang</system:String>
+    <system:String x:Key="viewAngle">Sudut Pandang</system:String>
+    <system:String x:Key="renderDistF">Jauh Render Not Kedepan</system:String>
+    <system:String x:Key="renderDistB">Jauh Render Not Kebelakang</system:String>
+    <system:String x:Key="camOffsets">Offset Kamera</system:String>
+    <system:String x:Key="horizontal">Horisontal</system:String>
+    <system:String x:Key="vertical">Vertikal</system:String>
+    
+    <!--Aura-->
+    <system:String x:Key="imageHint">Gambar harus berupa png berbentuk kotak dan hanya channel Alpha yang akan digunakan</system:String>
+    <system:String x:Key="auraEnabled">Aura Not Diaktifkan</system:String>
+    <system:String x:Key="reload">Muat Ulang</system:String>
+    <system:String x:Key="auraStrength">Kuat:</system:String>
+    <system:String x:Key="auraLocation">Gambar diletakan di: Plugins\Assets\MidiTrail\Aura</system:String>
+	
+	<!--NEW!-->
+	<system:String x:Key="viewTilt">Kemiringan Camera</system:String>
+    <system:String x:Key="viewTurn">Rotasi Camera</system:String>
+    <system:String x:Key="offsetX">X</system:String>
+    <system:String x:Key="offsetY">Y</system:String>
+    <system:String x:Key="offsetZ">Z</system:String>
+    <system:String x:Key="topPreset">Atas</system:String>
+    <system:String x:Key="perspectivePreset">Perspektif</system:String>
+</ResourceDictionary>

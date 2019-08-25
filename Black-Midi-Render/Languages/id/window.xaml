@@ -1,0 +1,80 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MSDNSample"
+    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+	<!--
+	
+	Translated by Hans5958
+	
+	Last updated: 24/08/2019
+	Works with 1.5.3
+	
+	-->
+
+
+    <system:String x:Key="LanguageName">Bahasa Indonesia</system:String>
+    
+    <!--Tab Names-->
+    <system:String x:Key="midiTab">Muat MIDI</system:String>
+    <system:String x:Key="pluginsTab">Plugin</system:String>
+    <system:String x:Key="pluginSettingsTab">Pengaturan Plugin</system:String>
+    <system:String x:Key="previewTab">Pratayang</system:String>
+    <system:String x:Key="renderTab">Render</system:String>
+
+    <!--Main Page-->
+    <system:String x:Key="load">Muat</system:String>
+    <system:String x:Key="unload">Lepas</system:String>
+    <system:String x:Key="browse">Telusuri</system:String>
+    <system:String x:Key="maxTrackBuffSize">Ukuran maksimum buffer trek (bytes)</system:String>
+    <system:String x:Key="width">Lebar</system:String>
+    <system:String x:Key="height">Tinggi</system:String>
+    <system:String x:Key="fps">FPS</system:String>
+    <system:String x:Key="presets">Preset</system:String>
+    <system:String x:Key="zenithRenderWarning">Perhatian: Pratayang Zenith akan merender dengan resolusi diatas, lalu mengecilkannya ke ukuran window.</system:String>
+    <system:String x:Key="superRes">SSAA</system:String>
+    <system:String x:Key="superResWarning">Menambahkan SSAA dapat menghaluskan gambar secara signifikan tetapi membutuhkan kinerja lebih.</system:String>
+    <system:String x:Key="language">Bahasa</system:String>
+    
+    <!--Plugins Page-->
+    <system:String x:Key="reload">Muat Ulang</system:String>
+    <system:String x:Key="pluginWarning">Perhatian: Hanya gunakan plugin dari sumber terpercaya. Virus dapat disembunyikan di dalam sebuah plugin</system:String>
+    
+	<!--Preview Page-->
+	<system:String x:Key="startPreview">Mulai Pratayang</system:String>
+    <system:String x:Key="stop">Berhenti</system:String>
+    <system:String x:Key="vsync">V-Sync Diaktifkan</system:String>
+    <system:String x:Key="tempo">Pengali Tempo</system:String>
+    <system:String x:Key="pauseHint">Klik kanan slider atau tekan spasi untuk jeda/lanjut</system:String>
+    <system:String x:Key="paused">Jeda Pratayang</system:String>
+    <system:String x:Key="forceRender">Paksa Render Ulang di Setiap Frame</system:String>
+
+    <!--Render Page-->
+    <system:String x:Key="savePath">Folder Simpanan</system:String>
+    <system:String x:Key="includeAudio">Sertakan Suara</system:String>
+    <system:String x:Key="renderMask">Render Mask Transparansi</system:String>
+    <system:String x:Key="bitrate">Bitrate</system:String>
+    <system:String x:Key="crfHint">FFMPEG crf: 0 = sebagus mungkin, 51 = seburuk mungkin</system:String>
+    <system:String x:Key="delatStart">Waktu tunda (detik)</system:String>
+    <system:String x:Key="ffmpegDebug">debug ffmpeg</system:String>
+    <system:String x:Key="startRender">Mulai Render</system:String>
+    <system:String x:Key="startRender">Mulai Render</system:String>
+    <system:String x:Key="ifUploading">Jika ingin mengunggah video, mohon sertakan kredit program ini.</system:String>
+    
+    <!--NEW 1.5-->
+    <system:String x:Key="realtimePlayback">Pemutaran Realtime</system:String>
+    <system:String x:Key="useOmniMidi">OmniMIDI Diaktifkan (lebih banyak menggunakan RAM)</system:String>
+    <system:String x:Key="muteAudio">Bisukan Audio</system:String>
+    <system:String x:Key="disableKDMAPI">Matikan KDMAPI</system:String>
+    <system:String x:Key="enableKDMAPI">Aktifkan KDMAPI</system:String>
+    <system:String x:Key="settingsTab">Pengaturan</system:String>
+    <system:String x:Key="noteSize">Ukuran Not</system:String>
+    <system:String x:Key="tickBased">Berdasarkan Tick</system:String>
+    <system:String x:Key="timeBased">Berdasarkan Waktu</system:String>
+    <system:String x:Key="ignoreColorEvents">Abaikan Event Warna</system:String>
+    <system:String x:Key="useBackgroundImage">Gunakan Background</system:String>
+
+    <!--NEW 1.6-->
+    <system:String x:Key="pauseHintNew">Tekan spasi untuk jeda/lanjut, tekan enter pada jendela pratayang untuk layar penuh</system:String>
+</ResourceDictionary>
