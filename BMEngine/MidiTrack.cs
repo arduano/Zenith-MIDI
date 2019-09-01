@@ -9,8 +9,8 @@ namespace BMEngine
 {
     public class Note
     {
-        public long start;
-        public long end;
+        public double start;
+        public double end;
         public bool hasEnded;
         public byte channel;
         public byte note;
@@ -24,11 +24,12 @@ namespace BMEngine
     {
         public Color4 left;
         public Color4 right;
+        public bool isDefault = true;
     }
 
     public struct PlaybackEvent
     {
-        public long pos;
+        public double pos;
         public int val;
     }
 
@@ -40,7 +41,7 @@ namespace BMEngine
 
     public class ColorChange
     {
-        public long pos;
+        public double pos;
         public Color4 col1;
         public Color4 col2;
         public byte channel;
@@ -60,7 +61,8 @@ namespace BMEngine
         public bool trackEnded = false;
 
         public long trackTime = 0;
-        public long prevTrackTime = 0;
+        public long lastStepTime = 0;
+        public double trackFlexTime = 0;
         public long noteCount = 0;
         public int zerothTempo = -1;
 
@@ -85,15 +87,14 @@ namespace BMEngine
 
         BufferByteReader reader;
 
-        byte noteVelThresh = 0;
-
         public void Reset()
         {
             if (UnendedNotes != null) foreach (var un in UnendedNotes) un.Unlink();
             reader.Reset();
             ResetColors();
             trackTime = 0;
-            prevTrackTime = 0;
+            lastStepTime = 0;
+            trackFlexTime = 0;
             trackEnded = false;
             readDelta = false;
             channelPrefix = 0;
@@ -106,7 +107,7 @@ namespace BMEngine
             trkColors = new NoteColor[16];
             for (int i = 0; i < 16; i++)
             {
-                trkColors[i] = new NoteColor() { left = Color4.Gray, right = Color4.Gray };
+                trkColors[i] = new NoteColor() { left = Color4.Gray, right = Color4.Gray, isDefault = true };
             }
         }
 
@@ -162,6 +163,8 @@ namespace BMEngine
         public void Step(long time)
         {
             timebase = settings.timeBasedNotes;
+            trackFlexTime += (time - lastStepTime) / midi.tempoTickMultiplier;
+            lastStepTime = time;
             try
             {
                 if (time >= trackTime)
@@ -222,9 +225,9 @@ namespace BMEngine
                 }
                 readDelta = false;
 
-                var time = trackTime;
+                double time = trackTime;
                 if (timebase)
-                    time = (long)((time - midi.lastTempoTick) / midi.tempoTickMultiplier + midi.lastTempoTime);
+                    time = trackFlexTime;
 
                 byte command = reader.ReadFast();
                 if (command < 0x80)
@@ -575,17 +578,17 @@ namespace BMEngine
                         int btempo = 0;
                         for (int i = 0; i != 3; i++)
                             btempo = (int)((btempo << 8) | reader.Read());
-                        Tempo t = new Tempo();
-                        t.pos = time;
-                        t.tempo = btempo;
-
-                        lock (globalTempoEvents)
+                        if (!timebase)
                         {
-                            globalTempoEvents.Add(t);
-                        }
+                            Tempo t = new Tempo();
+                            t.pos = trackTime;
+                            t.tempo = btempo;
 
-                        midi.lastTempoTick = trackTime;
-                        midi.lastTempoTime = time;
+                            lock (globalTempoEvents)
+                            {
+                                globalTempoEvents.Add(t);
+                            }
+                        }
                         midi.tempoTickMultiplier = ((double)midi.division / btempo) * 1000;
                     }
                     else if (command == 0x54)
@@ -646,12 +649,9 @@ namespace BMEngine
         public FastList<Tempo> TempoEvents = new FastList<Tempo>();
         public void ParseNextEventFast()
         {
-            long _t = 0;
             try
             {
-                _t = trackTime;
                 trackTime += ReadVariableLen();
-                prevTrackTime = _t;
                 byte command = reader.Read();
                 if (command < 0x80)
                 {
@@ -747,7 +747,7 @@ namespace BMEngine
                     else if (command >= 0x01 &&
                             command <= 0x0A)
                     {
-                            int size = (int)ReadVariableLen();
+                        int size = (int)ReadVariableLen();
                         if (command != 0x0A || trackTime != 0)
                         {
                             reader.Skip(size);
@@ -771,11 +771,11 @@ namespace BMEngine
                                     else col2 = col1;
                                     if (data[2] < 0x10)
                                     {
-                                        zeroTickTrkColors[data[2]] = new NoteColor() { left = col1, right = col2 }; 
+                                        zeroTickTrkColors[data[2]] = new NoteColor() { left = col1, right = col2 };
                                     }
-                                    else if(data[2] == 0x7F)
+                                    else if (data[2] == 0x7F)
                                     {
-                                        for(int i = 0; i < 16; i++)
+                                        for (int i = 0; i < 16; i++)
                                             zeroTickTrkColors[i] = new NoteColor() { left = col1, right = col2 };
                                     }
                                 }

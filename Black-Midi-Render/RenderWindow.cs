@@ -327,7 +327,7 @@ void main()
             lastTempo = midi.zerothTempo;
             lock (render)
             {
-                render.renderer.LastMidiTimePerTick = (double)midi.zerothTempo / midi.division;
+                render.renderer.Tempo = 60000000.0 / midi.zerothTempo;
                 midiTime = -render.renderer.NoteScreenTime;
                 if (settings.timeBasedNotes) tempoFrameStep = 1000.0 / settings.fps;
                 else tempoFrameStep = ((double)midi.division / lastTempo) * (1000000 / settings.fps);
@@ -490,10 +490,9 @@ void main()
                             if (!render.renderer.Initialized)
                             {
                                 render.renderer.Init();
-                                List<NoteColor[]> trkcolors = new List<NoteColor[]>();
-                                foreach (var t in midi.tracks) trkcolors.Add(t.trkColors);
-                                render.renderer.SetTrackColors(trkcolors.ToArray());
-                                if(firstRenderer)
+                                render.renderer.NoteColors = midi.tracks.Select(t => t.trkColors).ToArray();
+                                render.renderer.ReloadTrackColors();
+                                if (firstRenderer)
                                 {
                                     firstRenderer = false;
                                     midi.SetZeroColors();
@@ -507,10 +506,10 @@ void main()
                                     }
                                 }
                             }
-                            render.renderer.LastMidiTimePerTick = lastTempo / midi.division;
+                            render.renderer.Tempo = 60000000.0 / lastTempo;
                             lastDeltaTimeOnScreen = render.renderer.NoteScreenTime;
                             if (settings.timeBasedNotes)
-                                SpinWait.SpinUntil(() => ((long)((midi.currentSyncTime - midi.lastTempoTick) / midi.tempoTickMultiplier + midi.lastTempoTime) > midiTime + lastDeltaTimeOnScreen + tempoFrameStep || midi.unendedTracks == 0) || !settings.running);
+                                SpinWait.SpinUntil(() => (midi.currentFlexSyncTime > midiTime + lastDeltaTimeOnScreen + tempoFrameStep * settings.tempoMultiplier || midi.unendedTracks == 0) || !settings.running);
                             else
                                 SpinWait.SpinUntil(() => (midi.currentSyncTime > midiTime + lastDeltaTimeOnScreen + tempoFrameStep * settings.tempoMultiplier || midi.unendedTracks == 0) || !settings.running);
                             if (!settings.running) break;
@@ -572,12 +571,14 @@ void main()
                             {
                                 c.track.trkColors[i].left = c.col1;
                                 c.track.trkColors[i].right = c.col2;
+                                c.track.trkColors[i].isDefault = false;
                             }
                         }
                         else
                         {
                             c.track.trkColors[c.channel].left = c.col1;
                             c.track.trkColors[c.channel].right = c.col2;
+                            c.track.trkColors[c.channel].isDefault = false;
                         }
                     }
                 }
@@ -749,8 +750,27 @@ void main()
         protected override void OnKeyDown(KeyboardKeyEventArgs e)
         {
             base.OnKeyDown(e);
-            if (e.Key == Key.Space) settings.Paused = !settings.Paused;
-            if(e.Key == Key.Enter)
+            if (e.Key == Key.Space && !settings.ffRender) settings.Paused = !settings.Paused;
+            if (e.Key == Key.Right && !settings.ffRender)
+            {
+                int skip = 5000;
+                if (e.Modifiers == KeyModifiers.Control) skip = 20000;
+                if (e.Modifiers == KeyModifiers.Shift) skip = 60000;
+                if (settings.timeBasedNotes) midiTime += skip;
+                else
+                {
+                    lock (midi)
+                    {
+                        double timeSkipped = 0;
+                        for (; timeSkipped < skip; midiTime++)
+                        {
+                            midi.ParseUpTo(midiTime);
+                            timeSkipped += 1 / midi.tempoTickMultiplier;
+                        }
+                    }
+                }
+            }
+            if (e.Key == Key.Enter)
             {
                 if (WindowState != WindowState.Fullscreen)
                     WindowState = WindowState.Fullscreen;

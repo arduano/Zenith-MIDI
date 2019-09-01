@@ -59,7 +59,6 @@
     <system:String x:Key="delatStart">Waktu tunda (detik)</system:String>
     <system:String x:Key="ffmpegDebug">debug ffmpeg</system:String>
     <system:String x:Key="startRender">Mulai Render</system:String>
-    <system:String x:Key="startRender">Mulai Render</system:String>
     <system:String x:Key="ifUploading">Jika ingin mengunggah video, mohon sertakan kredit program ini.</system:String>
     
     <!--NEW 1.5-->

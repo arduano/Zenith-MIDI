@@ -18,7 +18,9 @@ namespace BMEngine
         bool ManualNoteDelete { get; }
         int NoteCollectorOffset { get; }
 
-        double LastMidiTimePerTick { get; set; }
+        NoteColor[][] NoteColors { set; }
+        double Tempo { set; }
+        
         MidiInfo CurrentMidi { set; }
 
         double NoteScreenTime { get; }
@@ -27,6 +29,6 @@ namespace BMEngine
 
         void Init();
         void RenderFrame(FastList<Note> notes, double midiTime, int finalCompositeBuff);
-        void SetTrackColors(NoteColor[][] trakcs);
+        void ReloadTrackColors();
     }
 }

@@ -33,6 +33,8 @@ namespace BMEngine
         int selectedIndex = -1;
         List<Bitmap> images = new List<Bitmap>();
 
+        public event Action PaletteChanged;
+
         float defS, defV;
         public NoteColorPalettePick()
         {
@@ -177,6 +179,8 @@ namespace BMEngine
             {
                 paletteList.SelectedIndex = 0;
             }
+
+            PaletteChanged?.Invoke();
         }
 
         public Color4[] GetColors(int tracks)
@@ -235,7 +239,7 @@ namespace BMEngine
             {
                 SelectedImage = (string)((ListBoxItem)paletteList.SelectedItem).Content;
                 selectedIndex = paletteList.SelectedIndex;
-
+                PaletteChanged?.Invoke();
             }
             catch
             { }

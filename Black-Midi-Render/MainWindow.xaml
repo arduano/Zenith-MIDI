@@ -194,7 +194,7 @@
                     <CheckBox Content="{DynamicResource muteAudio}" Name="muteAudio" HorizontalAlignment="Left" Margin="10,52,0,0" VerticalAlignment="Top" Checked="Checkbox_Checked" Unchecked="Checkbox_Checked"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="{DynamicResource renderTab}">
+            <TabItem Header="{DynamicResource renderTab}" Height="22" VerticalAlignment="Top">
                 <Grid Background="#FFE5E5E5">
                     <TextBox x:Name="creditText" AcceptsReturn="True" IsReadOnly="True" HorizontalAlignment="Left" Margin="10,0,0,10" TextWrapping="Wrap" Width="281" Height="37" VerticalAlignment="Bottom"/>
                     <Label Content="{DynamicResource ifUploading}" HorizontalAlignment="Left" Margin="10,0,0,47" Height="26" VerticalAlignment="Bottom"/>

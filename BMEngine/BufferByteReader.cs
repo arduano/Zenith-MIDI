@@ -67,7 +67,7 @@ namespace BMEngine
 
         public long Location => pos;
 
-        public int Pushback { get; set; } = -1;
+        public int Pushback = -1;
 
         public byte Read()
         {
@@ -114,6 +114,11 @@ namespace BMEngine
         {
             for (int i = 0; i < count; i++)
             {
+                if(Pushback != -1)
+                {
+                    Pushback = -1;
+                    continue;
+                }
                 bufferpos++;
                 if (bufferpos < maxbufferpos) continue;
                 if (bufferpos >= buffersize)

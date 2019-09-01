@@ -144,7 +144,7 @@ namespace Black_Midi_Render
             });
             winthread.Start();
             SpinWait.SpinUntil(() => winStarted);
-            long time = 0;
+            double time = 0;
             int nc = -1;
             long maxRam = 0;
             long avgRam = 0;
@@ -153,20 +153,23 @@ namespace Black_Midi_Render
             timewatch.Start();
             IPluginRender render = null;
             double lastWinTime = double.NaN;
+            bool tryToParse()
+            {
+                lock (midifile)
+                {
+                    return (midifile.ParseUpTo((win.midiTime + win.lastDeltaTimeOnScreen +
+                        (win.tempoFrameStep * 20 * settings.tempoMultiplier * (win.lastMV > 1 ? win.lastMV : 1))))
+                        || nc != 0) && settings.running;
+                }
+            }
             try
             {
-                while (
-                    (midifile.ParseUpTo((long)(
-                    win.midiTime + win.lastDeltaTimeOnScreen +
-                    (win.tempoFrameStep * 20 * settings.tempoMultiplier * (win.lastMV > 1 ? win.lastMV : 1))
-
-                    ))
-                    || nc != 0) && settings.running)
+                while (tryToParse())
                 {
                     //SpinWait.SpinUntil(() => lastWinTime != win.midiTime || render != renderer.renderer || !settings.running);
                     if (!settings.running) break;
                     Note n;
-                    double cutoffTime = (long)win.midiTime;
+                    double cutoffTime = win.midiTime;
                     bool manualDelete = false;
                     int noteCollectorOffset = 0;
                     bool receivedInfo = false;
@@ -204,8 +207,10 @@ namespace Black_Midi_Render
                     }
                     try
                     {
+                        double progress = win.midiTime / midifile.maxTrackTime;
+                        if (settings.timeBasedNotes) progress = win.midiTime / 1000 / midifile.info.secondsLength;
                         Console.WriteLine(
-                            Math.Round(win.midiTime / midifile.maxTrackTime * 10000) / 100 +
+                            Math.Round(progress * 10000) / 100 +
                             "\tNotes drawn: " + renderer.renderer.LastNoteCount +
                             "\tRender FPS: " + Math.Round(settings.liveFps) + "        "
                             );
@@ -447,6 +452,17 @@ namespace Black_Midi_Render
             {
                 MessageBox.Show("No renderer is selected");
                 return;
+            }
+
+            if (File.Exists(videoPath.Text))
+            {
+                if (MessageBox.Show("Are you sure you want to override " + Path.GetFileName(videoPath.Text), "Override", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                    return;
+            }
+            if (File.Exists(alphaPath.Text))
+            {
+                if (MessageBox.Show("Are you sure you want to override " + Path.GetFileName(alphaPath.Text), "Override", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                    return;
             }
 
             settings.realtimePlayback = false;
