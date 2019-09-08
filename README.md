@@ -36,6 +36,10 @@ It is possible for anyone else who knows C# to make a plugin themselves as well.
   An almost identical visual clone of the original program, with support for some exclusive features, including: same width notes, tick based rendering, and Zenith's classic gradient and transparency support. Original options like same width notes and changing the bar colour are also present. Some extra customisations were also included! *Included with the program*
 - MidiTrail+
  My most ambitious plugin yet. Taking inspiration from the original MidiTrail program, and going far above and beyond, adding support for many requested features, uncluding: Custom ripple (aura) images, 3d box note support and different width notes. This all comes with Zenith's classic support of transparent notes and note gradients. *Included with the program*
+- Note Count Rendr
+ Renders a highly customisable text label for the midi statistics, including properties such as note count, polyphony, tempo, time, ticks, bars and MANY more. Font and font size are also easily customsiable. *Included with the program*
+- Textured
+ If the other plugins aren't enough for you, you can make your own look by using the Textured plugin. Extremely customisable, allowing features such as custom note caps for rounded notes and custom keyboard overlays. *Included with the program*
 
 ## Instalation
 You can download the latest version of Zenith for Windows 32-bit [here](https://github.com/arduano/Zenith-MIDI/releases/latest/download/Zenithx86.zip) and Windows 64-bit [here](https://github.com/arduano/Zenith-MIDI/releases/latest/download/Zenithx64.zip).
