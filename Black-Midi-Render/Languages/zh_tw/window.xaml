@@ -64,4 +64,7 @@
     <system:String x:Key="timeBased">基於時間</system:String>
     <system:String x:Key="ignoreColorEvents">忽略顏色活動</system:String>
     <system:String x:Key="useBackgroundImage">使用背景</system:String>
+	
+	 <!--NEW 1.6-->
+    <system:String x:Key="pauseHintNew">按空白鍵來切換暫停, 按 enter 到預覽視窗至全螢幕</system:String>
 </ResourceDictionary>

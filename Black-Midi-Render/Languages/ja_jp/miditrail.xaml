@@ -6,7 +6,6 @@
 
     <!--Palette picker-->
     <system:String x:Key="palettes_reload">リロード</system:String>
-    <system:String x:Key="palettes_restartNote">カラーパレットの変更を適用するにはプレビューし直してください</system:String>
     <system:String x:Key="palettes_imageNote">画像は、幅16px(グラデーション使用は32px)と任意の高さのPNGでなくてはなりません。透明使えます。</system:String>
     <system:String x:Key="palettes_randomise">色の順番をシャッフル</system:String>
 
@@ -37,6 +36,7 @@
     <system:String x:Key="onNoteHit">ノートオンでノートの</system:String>
     <system:String x:Key="changeSize">大きさを変える</system:String>
     <system:String x:Key="changeTint">明るさを変える</system:String>
+    <system:String x:Key="showKeyboard">キーボードを表示</system:String>
 
     <!--Camera-->
     <system:String x:Key="speedWarning">注意: このプラグインはより多くのノートを一度に映すため、CPUもメモリもかなり使います。</system:String>

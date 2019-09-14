@@ -6,7 +6,6 @@
 
     <!--Palette picker-->
     <system:String x:Key="palettes_reload">リロード</system:String>
-    <system:String x:Key="palettes_restartNote">カラーパレットの変更を適用するにはプレビューを開始し直してください</system:String>
     <system:String x:Key="palettes_imageNote">画像は、幅16px(グラデーション使用は32px)と任意の高さのPNGでなくてはなりません。透明使えます。</system:String>
     <system:String x:Key="palettes_randomise">色の順番をシャッフル</system:String>
 
@@ -26,4 +25,6 @@
     <system:String x:Key="colorRed">赤</system:String>
     <system:String x:Key="colorGreen">緑</system:String>
     <system:String x:Key="colorBlue">青</system:String>
+
+    <system:String x:Key="borderWidth">枠の太さ</system:String>
 </ResourceDictionary>

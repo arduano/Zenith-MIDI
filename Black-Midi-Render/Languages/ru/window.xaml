@@ -52,7 +52,7 @@
     <system:String x:Key="startRender">Начать рендер</system:String>
     <system:String x:Key="ifUploading">Если вы собираетесь загрузить видео в интернет, упомяните, что видео было создано с использованием Zenith.</system:String>
     
-    <!--NEW-->
+    <!--NEW 1.5-->
     <system:String x:Key="realtimePlayback">Воспроизведение в режиме реального времени</system:String>
     <system:String x:Key="useOmniMidi">Включить OmniMIDI (Использует больше памяти)</system:String>
     <system:String x:Key="muteAudio">Отключить аудио</system:String>
@@ -65,4 +65,6 @@
     <system:String x:Key="ignoreColorEvents">Игнорировать события изменения цвета</system:String>
     <system:String x:Key="useBackgroundImage">Использовать фон</system:String>
 
+    <!--NEW 1.6-->
+    <system:String x:Key="pauseHintNew">Нажмите пробел для паузы, ввод для входа в полноэкранный режим</system:String>
 </ResourceDictionary>

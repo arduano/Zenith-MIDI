@@ -7,7 +7,6 @@
              mc:Ignorable="d">
     <Grid>
         <DockPanel LastChildFill="True">
-            <TextBlock DockPanel.Dock="Top" TextWrapping="Wrap" Text="{DynamicResource palettes_restartNote}" VerticalAlignment="Top"/>
             <Button DockPanel.Dock="Top" x:Name="reloadButton" Content="{DynamicResource palettes_reload}" Margin="0,10,0,6" VerticalAlignment="Top" Click="ReloadButton_Click"/>
             <TextBlock DockPanel.Dock="Bottom" Margin="0" TextWrapping="Wrap" Text="{DynamicResource palettes_imageNote}" VerticalAlignment="Bottom"/>
             <TextBlock DockPanel.Dock="Bottom" x:Name="pathLabel" Margin="0,10" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Bottom"/>

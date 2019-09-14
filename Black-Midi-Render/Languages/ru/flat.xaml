@@ -6,7 +6,6 @@
 
     <!--Palette picker-->
     <system:String x:Key="palettes_reload">Перезагрузить</system:String>
-    <system:String x:Key="palettes_restartNote">Внимание: Требуется перезапуск предпросмотра для обновления палитры цветов</system:String>
     <system:String x:Key="palettes_imageNote">Изображение должно быть шириной в 16 (или 32 для градиентов) пикселей и любой высотой в формате PNG. Поддерживается прозрачность.</system:String>
     <system:String x:Key="palettes_randomise">Рандомизировать порядок цветов</system:String>
     
@@ -15,9 +14,6 @@
     <system:String x:Key="lastNote">Последняя нота</system:String>
     <system:String x:Key="pianoHeight">Высота клавиатуры в процентах</system:String>
     <system:String x:Key="noteScreenTime">Время нахождения ноты в кадре</system:String>
-    <system:String x:Key="noteTempo">Скорость нот</system:String>
-    <system:String x:Key="changeSpeed">Изменить Скорость</system:String>
-    <system:String x:Key="changeSize">Изменить размер</system:String>
     <system:String x:Key="sameWidthNotes">Одинаковая ширина нот</system:String>
     <system:String x:Key="save">Сохранить</system:String>
     <system:String x:Key="loadSaved">Загрузить сохранённое</system:String>

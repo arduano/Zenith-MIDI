@@ -6,18 +6,20 @@
 
     <!--Palette picker-->
     <system:String x:Key="palettes_reload">Перезагрузить</system:String>
-    <system:String x:Key="palettes_restartNote">Внимание: Требуется перезапуск предпросмотра для обновления палитры цветов</system:String>
     <system:String x:Key="palettes_imageNote">Изображение должно быть шириной в 16 (или 32 для градиентов) пикселей и любой высотой в формате PNG. Поддерживается прозрачность.</system:String>
     <system:String x:Key="palettes_randomise">Рандомизировать порядок цветов</system:String>
 
     <!--Tab Names-->
     <system:String x:Key="resourcesTab">Ресурсы</system:String>
     <system:String x:Key="miscTab">Разное</system:String>
+    <system:String x:Key="switchesTab">Переключатели</system:String>
+
 
     <!--Resources-->
     <system:String x:Key="resourcePath">Пакеты ресурсов расположены:</system:String>
     <system:String x:Key="resourcePathDir">Plugins\Assets\Textured\Resources</system:String>
-    <system:String x:Key="reload">Перезагрузить</system:String>
+    <system:String x:Key="reloadList">Обновить список</system:String>
+    <system:String x:Key="reloadPack">Перезагрузить пакет</system:String>
 
     <!--Other settings-->
     <system:String x:Key="firstNote">Первая нота</system:String>

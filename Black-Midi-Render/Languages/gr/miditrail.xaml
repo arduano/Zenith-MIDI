@@ -6,7 +6,6 @@
 
     <!--Palette picker-->
     <system:String x:Key="palettes_reload">Επαναφόρτωση</system:String>
-    <system:String x:Key="palettes_restartNote">Σημειωση: Επαννεκινήστε την προεπισκόπιση για να ενημερωθεί η παλέτα χρωμάτων</system:String>
     <system:String x:Key="palettes_imageNote">Η εικόνα πρέπει να είναι αρχειο png με 16 (ή 32 για κλίσεις) οριζόντια εικονοστοιχεία, με οποιοδήποτε ύψος. Οι διαφανείς εικόνες δεν υποστηρίζονται.</system:String>
     <system:String x:Key="palettes_randomise">Τυχαία σειρά χρωμάτων</system:String>
 
@@ -36,6 +35,7 @@
     <system:String x:Key="onNoteHit">Όταν πατηθεί μια νότα:</system:String>
     <system:String x:Key="changeSize">Μεγέθυνση της νότας</system:String>
     <system:String x:Key="changeTint">Φώτιση νότας</system:String>
+	<system:String x:Key="showKeyboard">Εμφάνιση πλήκτρων</system:String>
 
     <!--Camera-->
     <system:String x:Key="speedWarning">ΠΡΟΣΟΧΗ: Το συγκεκριμένο πρόσθετο μπορεί να χρησιμοποιήσει περισσότερη μνήμη και επεξεργαστή λόγω της περισσότερης ώρας που μένουν οι νότες στην οθόνη. Όσο περισσότερες νότες υπάρχουν, τόσο πιο αργή θα είναι η μετατροπή.</system:String>

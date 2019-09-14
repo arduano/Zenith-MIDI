@@ -66,6 +66,5 @@
     <system:String x:Key="ignoreColorEvents">ノート色イベントを無視</system:String>
     <system:String x:Key="useBackgroundImage">背景を使用</system:String>
 
-    <!-- New in 1.5 -->
-    <system:String x:Key="borderWidth">枠の太さ</system:String>
+    <system:String x:Key="pauseHintNew">Spaceで一時停止、プレビューウィンドウでEnterでフルスクリーンを切り替えます</system:String>
 </ResourceDictionary>

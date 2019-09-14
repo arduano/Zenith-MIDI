@@ -6,7 +6,6 @@
 
     <!--Palette picker-->
     <system:String x:Key="palettes_reload">重新讀取</system:String>
-    <system:String x:Key="palettes_restartNote">注意: 重設預覽以更新調色</system:String>
     <system:String x:Key="palettes_imageNote">圖片至少需要16(或32位元)像素寬png檔案, 和任何高度.支援透明.</system:String>
 
     <!--Shared-->
@@ -35,6 +34,7 @@
     <system:String x:Key="onNoteHit">音符擊中時:</system:String>
     <system:String x:Key="changeSize">更改大小</system:String>
     <system:String x:Key="changeTint">更改色彩</system:String>
+	<system:String x:Key="showKeyboard">顯示鍵盤</system:String>
 
     <!--Camera-->
     <system:String x:Key="speedWarning">警告: 由於螢幕上的音符時間較長，此插件可以使用更多的記憶體和處理器. 可見的註釋越多, 輸出速度越慢!</system:String>

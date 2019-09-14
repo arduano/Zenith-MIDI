@@ -6,7 +6,6 @@
 
     <!--Palette picker-->
     <system:String x:Key="palettes_reload">Обновить список</system:String>
-    <system:String x:Key="palettes_restartNote">Внимание: Требуется перезапуск предпросмотра для обновления палитры цветов</system:String>
     <system:String x:Key="palettes_imageNote">Изображение должно быть шириной в 16 (или 32 для градиентов) пикселей и любой высотой в формате PNG. Поддерживается прозрачность.</system:String>
     <system:String x:Key="palettes_randomise">Перемешать порядок цветов</system:String>
 
@@ -36,6 +35,7 @@
     <system:String x:Key="onNoteHit">По достижению нотой клавиши:</system:String>
     <system:String x:Key="changeSize">Изменить размер</system:String>
     <system:String x:Key="changeTint">Изменить оттенок</system:String>
+    <system:String x:Key="showKeyboard">Показать клавиатуру</system:String>
 
     <!--Camera-->
     <system:String x:Key="speedWarning">ПРЕДУПРЕЖДЕНИЕ: Этот плагин использует гораздо больше оперативной памяти и мощности процессора из-за большего времени прорисовки нот на экране. 
@@ -50,7 +50,7 @@
     <system:String x:Key="perspectivePreset">Перспективный</system:String>
 
     <system:String x:Key="FOV">Угол обзора</system:String>
-    <!--<system:String x:Key="viewAngle">Угол обзора</system:String>-->
+    <system:String x:Key="viewAngle">Вертикальный угол</system:String>
     <system:String x:Key="renderDistF">Дистанция начала прорисовки нот</system:String>
     <system:String x:Key="renderDistB">Дистанция конца прорисовки нот</system:String>
     <system:String x:Key="camOffsets">Сдвиги камеры</system:String>

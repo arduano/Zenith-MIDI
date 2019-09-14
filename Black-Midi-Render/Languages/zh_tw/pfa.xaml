@@ -6,8 +6,8 @@
 
     <!--Palette picker-->
     <system:String x:Key="palettes_reload">重新讀取</system:String>
-    <system:String x:Key="palettes_restartNote">注意: 重設預覽以更新調色</system:String>
     <system:String x:Key="palettes_imageNote">圖片至少需要16(或32位元)像素寬png檔案, 和任何高度.支援透明.</system:String>
+	<system:String x:Key="palettes_randomise">隨機顏色順序</system:String>
 
     <!--Other settings-->
     <system:String x:Key="firstNote">第一個音符</system:String>
@@ -25,4 +25,6 @@
     <system:String x:Key="colorRed">紅</system:String>
     <system:String x:Key="colorGreen">綠</system:String>
     <system:String x:Key="colorBlue">藍</system:String>
+	
+	<system:String x:Key="borderWidth">邊框寬度</system:String> <!--NEW-->
 </ResourceDictionary>

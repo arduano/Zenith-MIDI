@@ -6,18 +6,19 @@
 
     <!--Palette picker-->
     <system:String x:Key="palettes_reload">リロード</system:String>
-    <system:String x:Key="palettes_restartNote">カラーパレットの変更を適用するにはプレビューし直してください</system:String>
     <system:String x:Key="palettes_imageNote">画像は、幅16px(グラデーション使用は32px)と任意の高さのPNGでなくてはなりません。透明使えます。</system:String>
     <system:String x:Key="palettes_randomise">色の順番をシャッフル</system:String>
 
     <!--Tab Names-->
     <system:String x:Key="resourcesTab">リソース</system:String>
     <system:String x:Key="miscTab">その他</system:String>
+    <system:String x:Key="switchesTab">機能切り替え</system:String>
 
     <!--Resources-->
     <system:String x:Key="resourcePath">リソースパックパス:</system:String>
     <system:String x:Key="resourcePathDir">Plugins\Assets\Textured\Resources</system:String>
-    <system:String x:Key="reload">リロード</system:String>
+    <system:String x:Key="reloadList">パックリストをリロード</system:String>
+    <system:String x:Key="reloadPack">パックをリロード</system:String>
 
     <!--Other settings-->
     <system:String x:Key="firstNote">最初のノート</system:String>

@@ -51,19 +51,22 @@ namespace Black_Midi_Render
         {
             InitializeComponent();
             //foundOmniMIDI = false;
+            Task omnimidiLoader = null;
             if (foundOmniMIDI)
             {
-                try
+                omnimidiLoader = Task.Run(() =>
                 {
-                    Console.WriteLine("Loading KDMAPI...");
-                    KDMAPI.InitializeKDMAPIStream();
-                    Console.WriteLine("Loaded KDMAPI!");
-                }
-                catch
-                {
-                    Console.WriteLine("Failed to load KDMAPI, disabling");
-                    foundOmniMIDI = false;
-                }
+                    try
+                    {
+                        KDMAPI.InitializeKDMAPIStream();
+                        Console.WriteLine("Loaded KDMAPI!");
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Failed to load KDMAPI, disabling");
+                        foundOmniMIDI = false;
+                    }
+                });
             }
             if (!foundOmniMIDI)
             {
@@ -106,11 +109,14 @@ namespace Black_Midi_Render
                 languageSelect.Items.Add(item);
             }
             languageSelect.SelectedIndex = 0;
+            if (omnimidiLoader != null)
+                omnimidiLoader.GetAwaiter().GetResult();
         }
 
         void ToggledPause()
         {
-            Dispatcher.Invoke(() => {
+            Dispatcher.Invoke(() =>
+            {
                 if ((bool)previewPaused.IsChecked ^ settings.Paused)
                 {
                     previewPaused.IsChecked = settings.Paused;
@@ -171,7 +177,7 @@ namespace Black_Midi_Render
                     Note n;
                     double cutoffTime = win.midiTime;
                     bool manualDelete = false;
-                    int noteCollectorOffset = 0;
+                    double noteCollectorOffset = 0;
                     bool receivedInfo = false;
                     while (!receivedInfo)
                         try
@@ -424,6 +430,7 @@ namespace Black_Midi_Render
             settings.downscale = (int)SSAAFactor.Value;
             settings.fps = (int)viewFps.Value;
             settings.ffRender = false;
+            settings.Paused = false;
             settings.renderSecondsDelay = 0;
             renderThread = Task.Factory.StartNew(RunRenderWindow, TaskCreationOptions.RunContinuationsAsynchronously | TaskCreationOptions.LongRunning);
             Resources["notPreviewing"] = false;

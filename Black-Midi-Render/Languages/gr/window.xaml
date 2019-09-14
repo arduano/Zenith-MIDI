@@ -63,4 +63,7 @@
     <system:String x:Key="timeBased">Με βάση τον χρόνο</system:String>
     <system:String x:Key="ignoreColorEvents">Αγνόηση γεγονότων χρωμάτων</system:String>
     <system:String x:Key="useBackgroundImage">Χρησιμοποίηση φόντου</system:String>
+	
+	<!--NEW 1.6-->
+    <system:String x:Key="pauseHintNew">Πατήστε κενό για να θέσετε την προεπισκόπιση σε παύση, πατήστε enter για να εμφανίζεται η προεπισκόπιση σε όλη την οθόνη.</system:String>
 </ResourceDictionary>

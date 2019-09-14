@@ -16,7 +16,7 @@ namespace BMEngine
         bool Initialized { get; }
         ImageSource PreviewImage { get; }
         bool ManualNoteDelete { get; }
-        int NoteCollectorOffset { get; }
+        double NoteCollectorOffset { get; }
 
         NoteColor[][] NoteColors { set; }
         double Tempo { set; }

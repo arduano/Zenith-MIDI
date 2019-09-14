@@ -6,18 +6,19 @@
 
     <!--Palette picker-->
     <system:String x:Key="palettes_reload">重新讀取</system:String>
-    <system:String x:Key="palettes_restartNote">注意: 重設預覽以更新調色</system:String>
     <system:String x:Key="palettes_imageNote">圖片至少需要16(或32位元)像素寬png檔案, 和任何高度.支援透明.</system:String>
     <system:String x:Key="palettes_randomise">隨機顏色順序</system:String>
 
     <!--Tab Names-->
     <system:String x:Key="resourcesTab">材質</system:String>
     <system:String x:Key="miscTab">其它</system:String>
+	<system:String x:Key="switchesTab">切換</system:String>
 
     <!--Resources-->
     <system:String x:Key="resourcePath">材質包路徑:</system:String>
     <system:String x:Key="resourcePathDir">Plugins\Assets\Textured\Resources</system:String>
-    <system:String x:Key="reload">重新讀取</system:String>
+    <system:String x:Key="reloadList">重新讀取清單</system:String>
+    <system:String x:Key="reloadPack">重新讀取材質包</system:String>
 
     <!--Other settings-->
     <system:String x:Key="firstNote">第一個音符</system:String>
