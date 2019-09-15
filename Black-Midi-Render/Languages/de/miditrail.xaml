@@ -6,7 +6,6 @@
 
     <!--Palette picker-->
     <system:String x:Key="palettes_reload">Neu laden</system:String>
-    <system:String x:Key="palettes_restartNote">Beachten: Starten Sie neu die Vorschau die Farbpalette aktualisieren.</system:String>
     <system:String x:Key="palettes_imageNote">Das Bild müsst ein 16 (oder 32 für Gradienten) die Pixel weit ".png" sein, und alle Höhe.  Transparenz ist akzeptabel.</system:String>
     <system:String x:Key="palettes_randomise">Randomisieren Farbreihenfolge</system:String>
 
@@ -36,6 +35,7 @@
     <system:String x:Key="onNoteHit">Auf Anmerkung Schlag:</system:String>
     <system:String x:Key="changeSize">Wechseln Größe</system:String>
     <system:String x:Key="changeTint">Wechseln Farbton</system:String>
+    <system:String x:Key="showKeyboard">Klaviatur Zeigen</system:String>
 
     <!--Camera-->
     <system:String x:Key="speedWarning">WARNUNG: Dieses Plug-In kann aufgrund der höheren Notenzeit auf dem Bildschirm viel mehr RAM und CPU verwenden. Die mehr Noten sind sichtbar, langsamer wird das Rendern!</system:String>

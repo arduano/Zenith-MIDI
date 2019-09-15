@@ -62,4 +62,6 @@
     <system:String x:Key="timeBased">Zeit basierend</system:String>
     <system:String x:Key="ignoreColorEvents">Ignorieren Farbe Veranstaltungen</system:String>
     <system:String x:Key="useBackgroundImage">Benutzen Hintergrund</system:String>
+
+    <system:String x:Key="pauseHintNew">Drücken Sie space, um die Vorschau anzuhalten, drücken Sie Enter, um Vollbild herzuschalten.</system:String>
 </ResourceDictionary>

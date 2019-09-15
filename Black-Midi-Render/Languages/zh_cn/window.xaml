@@ -5,14 +5,14 @@
     xmlns:system="clr-namespace:System;assembly=mscorlib">
 
     <system:String x:Key="LanguageName">简体中文</system:String>
-
+    
     <!--Tab Names-->
     <system:String x:Key="midiTab">选择MIDI</system:String>
     <system:String x:Key="pluginsTab">样式</system:String>
     <system:String x:Key="pluginSettingsTab">样式设置</system:String>
     <system:String x:Key="previewTab">预览</system:String>
     <system:String x:Key="renderTab">渲染</system:String>
-    
+
     <!--Main Page-->
     <system:String x:Key="load">加载</system:String>
     <system:String x:Key="unload">卸载</system:String>
@@ -50,8 +50,8 @@
     <system:String x:Key="ffmpegDebug">ffmpeg 调试</system:String>
     <system:String x:Key="startRender">开始渲染</system:String>
     <system:String x:Key="ifUploading">如果在线上传视频，请信任此程序</system:String>
-	
-	    <!--NEW-->
+    
+    <!--NEW 1.5-->
     <system:String x:Key="realtimePlayback">实时播放</system:String>
     <system:String x:Key="useOmniMidi">启用 OmniMIDI(需要更多RAM)</system:String>
     <system:String x:Key="muteAudio">静音</system:String>
@@ -63,4 +63,7 @@
     <system:String x:Key="timeBased">基于时间</system:String>
     <system:String x:Key="ignoreColorEvents">忽略可能的颜色错误</system:String>
     <system:String x:Key="useBackgroundImage">添加背景</system:String>
+
+    <!--NEW 1.6-->
+    <system:String x:Key="pauseHintNew">按空格键切换暂停，按预览窗口上的回车键全屏显示</system:String>
 </ResourceDictionary>

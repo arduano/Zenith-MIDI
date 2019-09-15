@@ -6,9 +6,8 @@
 
     <!--Palette picker-->
     <system:String x:Key="palettes_reload">重新加载</system:String>
-    <system:String x:Key="palettes_restartNote">注意：重新加载预览以更新色彩范围</system:String>
     <system:String x:Key="palettes_imageNote">图像要求是宽度为16或32像素、高度为无限制的PNG文件。支持透明文件。</system:String>
-    <system:String x:Key="palettes_randomise">随机颜色顺序</system:String>
+    <system:String x:Key="palettes_randomise">>随机颜色顺序</system:String>
 
     <!--Shared-->
     <system:String x:Key="delete">删除</system:String>
@@ -36,11 +35,12 @@
     <system:String x:Key="onNoteHit">当一个音符按下时:</system:String>
     <system:String x:Key="changeSize">改变音符大小</system:String>
     <system:String x:Key="changeTint">改变色调</system:String>
+    <system:String x:Key="showKeyboard">显示键盘</system:String>
 
     <!--Camera-->
     <system:String x:Key="speedWarning">警告：由于屏幕上的音符显示时间较长，此样式会使用更多的RAM和CPU。可见的音符越多，渲染速度越慢！</system:String>
 
-    <system:String x:Key="cameraPreset">预置:</system:String>
+    <system:String x:Key="cameraPreset">P预置:</system:String>
     <system:String x:Key="farPreset">远</system:String>
     <system:String x:Key="mediumPreset">中等</system:String>
     <system:String x:Key="closerPreset">更近</system:String>
@@ -53,11 +53,19 @@
     <system:String x:Key="camOffsets">相机偏移</system:String>
     <system:String x:Key="horizontal">水平</system:String>
     <system:String x:Key="vertical">垂直</system:String>
-    
+
+    <system:String x:Key="viewTilt">相机倾斜</system:String>
+    <system:String x:Key="viewTurn">相机转弯</system:String>
+    <system:String x:Key="offsetX">X</system:String>
+    <system:String x:Key="offsetY">Y</system:String>
+    <system:String x:Key="offsetZ">Z</system:String>
+    <system:String x:Key="topPreset">顶部</system:String>
+    <system:String x:Key="perspectivePreset">视角</system:String> 
+
     <!--Aura-->
     <system:String x:Key="imageHint">图像只能是方形png文件，并且只包含透明度</system:String>
     <system:String x:Key="auraEnabled">启用光环</system:String>
     <system:String x:Key="reload">重新加载</system:String>
     <system:String x:Key="auraStrength">渐变强度:</system:String>
-    <system:String x:Key="auraLocation">图像位于: Plugins\Assets\MidiTrail\Aura</system:String>
+    <system:String x:Key="auraLocation">图像位于: Plugins\Assets\MIDITrail\Aura</system:String>
 </ResourceDictionary>
