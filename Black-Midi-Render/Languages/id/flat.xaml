@@ -6,7 +6,6 @@
 
     <!--Palette picker-->
     <system:String x:Key="palettes_reload">Muat Ulang</system:String>
-    <system:String x:Key="palettes_restartNote">Catatan: Mulai ulang pratayang untuk memperbarui palet warna.</system:String>
     <system:String x:Key="palettes_imageNote">Gambar harus sebuah .png dengan lebar 16 (32 untuk gradien) piksel dan tinggi yang bebas. Transparansi didukung.</system:String>
     <system:String x:Key="palettes_randomise">Acak urutan warna</system:String>
     
