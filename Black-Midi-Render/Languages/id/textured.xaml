@@ -6,18 +6,20 @@
 
     <!--Palette picker-->
     <system:String x:Key="palettes_reload">Muat Ulang</system:String>
-    <system:String x:Key="palettes_restartNote">Catatan: Mulai ulang pratayang untuk memperbarui palet warna.</system:String>
     <system:String x:Key="palettes_imageNote">Gambar harus sebuah .png dengan lebar 16 (32 untuk gradien) piksel dan tinggi yang bebas. Transparansi didukung.</system:String>
     <system:String x:Key="palettes_randomise">Acak urutan warna</system:String>
 
     <!--Tab Names-->
-    <system:String x:Key="resourcesTab">Resources</system:String>
-    <system:String x:Key="miscTab">Misc</system:String>
+    <system:String x:Key="resourcesTab">Sumber Daya</system:String>
+    <system:String x:Key="miscTab">Lain-Lain</system:String>
+	<system:String x:Key="switchesTab">Switch</system:String>
 
     <!--Resources-->
-    <system:String x:Key="resourcePath">Resource packs path:</system:String>
+    <system:String x:Key="resourcePath">Lokasi sumber daya:</system:String>
     <system:String x:Key="resourcePathDir">Plugins\Assets\Textured\Resources</system:String>
-    <system:String x:Key="reload">Reload</system:String>
+    <system:String x:Key="reloadList">Muat Ulang Daftar</system:String>
+    <system:String x:Key="reloadPack">Muat Ulang Paket</system:String>
+
 
     <!--Other settings-->
     <system:String x:Key="firstNote">Not Pertama</system:String>

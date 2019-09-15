@@ -6,13 +6,13 @@
 
 	<!--
 	
+	Indonesian/Bahasa Indonesia
 	Translated by Hans5958
 	
-	Last updated: 24/08/2019
-	Works with 1.5.3
+	Last updated: 25/09/2019
+	Works with 1.6b
 	
 	-->
-
 
     <system:String x:Key="LanguageName">Bahasa Indonesia</system:String>
     
@@ -58,7 +58,6 @@
     <system:String x:Key="crfHint">FFMPEG crf: 0 = sebagus mungkin, 51 = seburuk mungkin</system:String>
     <system:String x:Key="delatStart">Waktu tunda (detik)</system:String>
     <system:String x:Key="ffmpegDebug">debug ffmpeg</system:String>
-    <system:String x:Key="startRender">Mulai Render</system:String>
     <system:String x:Key="startRender">Mulai Render</system:String>
     <system:String x:Key="ifUploading">Jika ingin mengunggah video, mohon sertakan kredit program ini.</system:String>
     
