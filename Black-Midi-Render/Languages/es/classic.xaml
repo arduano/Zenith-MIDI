@@ -6,20 +6,18 @@
 
     <!--Palette picker-->
     <system:String x:Key="palettes_reload">Recargar</system:String>
-    <system:String x:Key="palettes_restartNote">Nota: Reiniciar vista previa para actualizar colores</system:String>
     <system:String x:Key="palettes_imageNote">La imagen debe ser un PNG de 16 (o 32 para gradientes) de ancho, y cualquier altura. La transparencia de imagen es compatible.</system:String>
+	<system:String x:Key="palettes_randomise">Randomise color order</system:String>
 
     <!--Other settings-->
     <system:String x:Key="firstNote">Primera nota</system:String>
     <system:String x:Key="lastNote">Ultima Nota</system:String>
     <system:String x:Key="pianoHeight">Altura del piano %</system:String>
     <system:String x:Key="noteScreenTime">Tiempo de nota en pantalla</system:String>
-    <system:String x:Key="noteTempo">Tempo de notas</system:String>
-    <system:String x:Key="changeSpeed">Cambiar velocidad</system:String>
-    <system:String x:Key="changeSize">Cambiar Tamaño</system:String>
     <system:String x:Key="sameWidthNotes">Mismo ancho de notas</system:String>
     <system:String x:Key="save">Guardar</system:String>
     <system:String x:Key="loadSaved">Cargar guardado</system:String>
     <system:String x:Key="setDefaults">Restaurar configuraciones predeterminadas</system:String>
+	<system:String x:Key="blackNotesAbove">Dibujar notas negras encima (Aviso: RENDERING LENTO!!)</system:String>
 
 </ResourceDictionary>

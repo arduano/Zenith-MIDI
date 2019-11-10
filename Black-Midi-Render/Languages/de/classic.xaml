@@ -6,18 +6,18 @@
 
     <!--Palette picker-->
     <system:String x:Key="palettes_reload">Neu laden</system:String>
-    <system:String x:Key="palettes_imageNote">Das Bild müsst ein 16 (oder 32 für Gradienten) die Pixel weit ".png" sein, und alle Höhe.  Transparenz ist akzeptabel.</system:String>
-    <system:String x:Key="palettes_randomise">Randomisieren Farbreihenfolge</system:String>
+    <system:String x:Key="palettes_imageNote">Das Bild muss eine 16 (oder 32 für Steigerungen) Pixel breite png sein, und eine beliebige Größe. Transparenz wird unterstützt</system:String>
+    <system:String x:Key="palettes_randomise">Zufällige Farb reihenfolge</system:String>
     
     <!--Other settings-->
-    <system:String x:Key="firstNote">Zuerest Anmerkung</system:String>
-    <system:String x:Key="lastNote">Zuletzt Anmerkung</system:String>
+    <system:String x:Key="firstNote">Erste Taste</system:String>
+    <system:String x:Key="lastNote">Letzte Taste</system:String>
     <system:String x:Key="pianoHeight">Klavierhöhe %</system:String>
-    <system:String x:Key="noteScreenTime">Anmerkung Bildschrimzeit</system:String>
-    <system:String x:Key="sameWidthNotes">Gleich Weite Anmerkungen</system:String>
-    <system:String x:Key="save">Speichern</system:String>
-    <system:String x:Key="loadSaved">Öffnen</system:String>
-    <system:String x:Key="setDefaults">Voreinstellungen</system:String>
-    <system:String x:Key="blackNotesAbove">Zeichnen schwarzen Anmerkungen über (Warning: LANGSAMER!!)</system:String>
+    <system:String x:Key="noteScreenTime">Noten Geschwindigkeit</system:String>
+    <system:String x:Key="sameWidthNotes">Gleich breite Noten</system:String>
+    <system:String x:Key="save">Spreichern</system:String>
+    <system:String x:Key="loadSaved">Gespeichertes laden</system:String>
+    <system:String x:Key="setDefaults">Standarts</system:String>
+    <system:String x:Key="blackNotesAbove">Schwarze Noten zeichnen (Achtung: LANGSAMER!!)</system:String>
 
 </ResourceDictionary>

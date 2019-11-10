@@ -6,8 +6,8 @@
 
     <!--Palette picker-->
     <system:String x:Key="palettes_reload">Recargar</system:String>
-    <system:String x:Key="palettes_restartNote">Note: Reiniciar Vista previa para actualizar la paleta de colores</system:String>
     <system:String x:Key="palettes_imageNote">Imagen nesecita ser png de 16 (o 32 para gradientes) pixeles de ancho, y cualquier altura. Transparencia es compatible.</system:String>
+	<system:String x:Key="palettes_randomise">Randomise color order</system:String>
 
     <!--Shared-->
     <system:String x:Key="delete">Borrar</system:String>
@@ -35,6 +35,7 @@
     <system:String x:Key="onNoteHit">De un golpe:</system:String>
     <system:String x:Key="changeSize">Cambiar tamaño</system:String>
     <system:String x:Key="changeTint">Cambiar tinte</system:String>
+	<system:String x:Key="showKeyboard">Show Keyboard</system:String>
 
     <!--Camera-->
     <system:String x:Key="speedWarning">AVISO: Este plugin utiliza mas uso del CPU por el tiempo de las notas en pantalla. Las mas notas visibles, mas lento el render!</system:String>
@@ -52,6 +53,14 @@
     <system:String x:Key="camOffsets">Offset de camara</system:String>
     <system:String x:Key="horizontal">Horizontal</system:String>
     <system:String x:Key="vertical">Vertical</system:String>
+	
+	<system:String x:Key="viewTilt">Camera Tilt</system:String>
+    <system:String x:Key="viewTurn">Camera Turn</system:String>
+    <system:String x:Key="offsetX">X</system:String>
+    <system:String x:Key="offsetY">Y</system:String>
+    <system:String x:Key="offsetZ">Z</system:String>
+    <system:String x:Key="topPreset">Top</system:String>
+    <system:String x:Key="perspectivePreset">Perspective</system:String> 
     
     <!--Aura-->
     <system:String x:Key="imageHint">Imagen nesecita ser un PNG cuadrado y solo se toma en cuenta el alfa</system:String>

@@ -8,7 +8,7 @@
 
     <!--Tab Names-->
     <system:String x:Key="midiTab">Cargar MIDI</system:String>
-    <system:String x:Key="pluginsTab">Plugins</system:String>
+    <system:String x:Key="pluginsTab">Complementos</system:String>
     <system:String x:Key="pluginSettingsTab">Configuracion de Plugin</system:String>
     <system:String x:Key="previewTab">Muestra</system:String>
     <system:String x:Key="renderTab">Render</system:String>
@@ -63,4 +63,7 @@
     <system:String x:Key="timeBased">Basado en tiempo</system:String>
     <system:String x:Key="ignoreColorEvents">Ignorar eventos de color</system:String>
     <system:String x:Key="useBackgroundImage">Usar imagen de fondo</system:String>
+	
+	<!--NEW 1.6-->
+    <system:String x:Key="pauseHintNew">Presiona la barra espaciadora para pausar/play, Presiona enter en la ventana de la vista previa para ver en pantalla completa</system:String>
 </ResourceDictionary>

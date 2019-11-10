@@ -5,16 +5,16 @@
     xmlns:system="clr-namespace:System;assembly=mscorlib">
 
     <system:String x:Key="alignments">Ausrichtungen</system:String>
-    <system:String x:Key="alTopLeft">Oben Links</system:String>
-    <system:String x:Key="alTopRight">Oben Rechts</system:String>
-    <system:String x:Key="alBottomLeft">Untere Links</system:String>
-    <system:String x:Key="alBottomRight">Untere Rechts</system:String>
-    <system:String x:Key="alTopSpread">Oben Verbreitung</system:String>
-    <system:String x:Key="alBottomSpread">Untere Verbreitung</system:String>
+    <system:String x:Key="alTopLeft">Oben, links</system:String>
+    <system:String x:Key="alTopRight">Oben, rechts</system:String>
+    <system:String x:Key="alBottomLeft">Unten, links</system:String>
+    <system:String x:Key="alBottomRight">Unten, rechts</system:String>
+    <system:String x:Key="alTopSpread">Oben, geteilt</system:String>
+    <system:String x:Key="alBottomSpread">Unten, geteilt</system:String>
 
-    <system:String x:Key="fontSize">Schriftgröß</system:String>
+    <system:String x:Key="fontSize">Schriftart größe</system:String>
     <system:String x:Key="font">Schriftart</system:String>
 
     <system:String x:Key="reload">Neu laden</system:String>
-    <system:String x:Key="noteTextPath">Ortung: Plugins/Aktiva/Anmerkungzähler/Vorlagen</system:String>
+    <system:String x:Key="noteTextPath">Standort: Plugins/Assets/NoteCounter/Templates</system:String>
 </ResourceDictionary>

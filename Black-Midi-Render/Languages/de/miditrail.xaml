@@ -6,66 +6,68 @@
 
     <!--Palette picker-->
     <system:String x:Key="palettes_reload">Neu laden</system:String>
-    <system:String x:Key="palettes_imageNote">Das Bild müsst ein 16 (oder 32 für Gradienten) die Pixel weit ".png" sein, und alle Höhe.  Transparenz ist akzeptabel.</system:String>
-    <system:String x:Key="palettes_randomise">Randomisieren Farbreihenfolge</system:String>
+    <system:String x:Key="palettes_imageNote">Das Bild muss eine 16 (oder 32 für Steigerungen) Pixel breite png sein, und eine beliebige Größe. Transparenz wird unterstützt</system:String>
+    <system:String x:Key="palettes_randomise">Zufällige Farb reihenfolge</system:String>
 
     <!--Shared-->
-    <system:String x:Key="delete">Entfernen</system:String>
-    <system:String x:Key="saveNew">Speichern Neu</system:String>
-    <system:String x:Key="loadDefault">Voreinstellungen</system:String>
+    <system:String x:Key="delete">Löschen</system:String>
+    <system:String x:Key="saveNew">Neues Speichern</system:String>
+    <system:String x:Key="loadDefault">Standarts</system:String>
 
     <!--Tab Names-->
-    <system:String x:Key="visualsTab">Visuales</system:String>
-    <system:String x:Key="cameraTab">Kamera</system:String>
+    <system:String x:Key="visualsTab">Visuelles</system:String>
+    <system:String x:Key="cameraTab">Kannera</system:String>
     <system:String x:Key="auraTab">Aura</system:String>
 
 
     <!--Visuals-->
-    <system:String x:Key="firstNote">Zuerest Anmerkung</system:String>
-    <system:String x:Key="lastNote">Zuletzt Anmerkung</system:String>
-    <system:String x:Key="keyDownSpeed">Taste Unterdrückung Geschwindigkeit</system:String>
-    <system:String x:Key="keyUpSpeed">Taste Verdrängung Geschwindigkeit</system:String>
-    <system:String x:Key="tiltKeys">Neigung Tasten</system:String>
-    <system:String x:Key="3dNotes">3D Anmerkungen (LANGSAMER!)</system:String>
-    <system:String x:Key="lightShade">Licht Schatten</system:String>
-    <system:String x:Key="noteSpeed">Anmerkung Geschwindigkeit</system:String>
-    <system:String x:Key="velocityStrength">Stärke von Anmerkung Geschwindigkeit</system:String>
-    <system:String x:Key="keyboardClip">Klaviatur Clips Anmerkungen</system:String>
-    <system:String x:Key="sameWidthNotes">Gleich Weite Anmerkungen</system:String>
-    <system:String x:Key="onNoteHit">Auf Anmerkung Schlag:</system:String>
-    <system:String x:Key="changeSize">Wechseln Größe</system:String>
-    <system:String x:Key="changeTint">Wechseln Farbton</system:String>
-    <system:String x:Key="showKeyboard">Klaviatur Zeigen</system:String>
+    <system:String x:Key="firstNote">Erste Taste</system:String>
+    <system:String x:Key="lastNote">Letzte Taste</system:String>
+    <system:String x:Key="keyDownSpeed">Geschwindigkeit beim Tastendruck</system:String>
+    <system:String x:Key="keyUpSpeed">Geschwindigkeit beim Loslassen der Taste</system:String>
+    <system:String x:Key="tiltKeys">Gekippte Tasten</system:String>
+    <system:String x:Key="3dNotes">3D Noten (LANGSAMER!)</system:String>
+    <system:String x:Key="lightShade">Licht Schattierung</system:String>
+    <system:String x:Key="noteSpeed">Noten Geschwindigkeit</system:String>
+    <system:String x:Key="velocityStrength">Stärke der Notenlautstärke</system:String>
+    <system:String x:Key="keyboardClip">Keyboard Notenklammern</system:String>
+    <system:String x:Key="sameWidthNotes">Gleich breite Noten</system:String>
+    <system:String x:Key="onNoteHit">Auf Noten Anschlag:</system:String>
+    <system:String x:Key="changeSize">Größe ändern</system:String>
+    <system:String x:Key="changeTint">Farbton ändern</system:String>
+    <system:String x:Key="showKeyboard">Keyboard anzeigen</system:String>
 
     <!--Camera-->
-    <system:String x:Key="speedWarning">WARNUNG: Dieses Plug-In kann aufgrund der höheren Notenzeit auf dem Bildschirm viel mehr RAM und CPU verwenden. Die mehr Noten sind sichtbar, langsamer wird das Rendern!</system:String>
+    <!--<system:String x:Key="speedWarning">WARNING: This plug-in can use much more ram and CPU due to the higher note time on screen. The more notes are visible, the slower the render!</system:String>-->
+    <system:String x:Key="speedWarning">ACHTUNG: Dieses Plug-In kann viel mehr RAM und CPU benutzen, falls die Note länger im Bild bleibt. Die weiteren Noten sind sichtbar, die das Rendern langsamer machen.!</system:String>
 
     <system:String x:Key="cameraPreset">Voreinstellungen:</system:String>
-    <system:String x:Key="farPreset">Distanziert</system:String>
-    <system:String x:Key="mediumPreset">Mitte</system:String>
-    <system:String x:Key="closerPreset">Näher</system:String>
-    <system:String x:Key="closePreset">Nahe</system:String>
+    <system:String x:Key="farPreset">Fern</system:String>
+    <system:String x:Key="mediumPreset">Mittel</system:String>
+    <system:String x:Key="closerPreset">Sehr nah</system:String>
+    <system:String x:Key="closePreset">Nah</system:String>
 
-    <system:String x:Key="FOV">FVA (Feld von Aussicht)</system:String>
-    <system:String x:Key="viewAngle">Ausblick Winkel</system:String>
-    <system:String x:Key="renderDistF">Anmerkung Anzeige Entfernung vorwärts</system:String>
-    <system:String x:Key="renderDistB">Anmerkung Anzeige Entfernung rückwärts</system:String>
-    <system:String x:Key="camOffsets">Kamera Offsetdrucken</system:String>
+    <system:String x:Key="FOV">FOV</system:String>
+    <system:String x:Key="viewAngle">Betrachtungswinkel</system:String>
+    <system:String x:Key="renderDistF">Noten render Dist. Vorwärts</system:String>
+    <system:String x:Key="renderDistB">Noten render Dist. Rückwärts</system:String>
+    <system:String x:Key="camOffsets">Kamera Versetzungen</system:String>
     <system:String x:Key="horizontal">Horizontal</system:String>
-    <system:String x:Key="vertical">Vertikale</system:String>
-	
-	<system:String x:Key="viewTilt">Kamera neigung</system:String>
-    <system:String x:Key="viewTurn">Kamera wende</system:String>
+    <system:String x:Key="vertical">Vertikal</system:String>
+
+    <system:String x:Key="viewTilt">Kamera Neigung</system:String>
+    <system:String x:Key="viewTurn">Kamera Wendung</system:String>
     <system:String x:Key="offsetX">X</system:String>
     <system:String x:Key="offsetY">Y</system:String>
     <system:String x:Key="offsetZ">Z</system:String>
-    <system:String x:Key="topPreset">Oben</system:String> 
-    <system:String x:Key="perspectivePreset">Perspektive</system:String>
-    
+    <system:String x:Key="topPreset">Oben</system:String>
+    <system:String x:Key="perspectivePreset">Perspektive</system:String> 
+
     <!--Aura-->
-    <system:String x:Key="imageHint">Das Bild müsst Quadrat ".png" sein, und nur Alpha ist zu berücksichtigen</system:String>
-    <system:String x:Key="auraEnabled">Anmerkung Aura aktiviert</system:String>
-    <system:String x:Key="reload">Neu Starten</system:String>
+    <!--<system:String x:Key="imageHint">Image needs to be square png and only alpha is taken into account</system:String>-->
+    <system:String x:Key="imageHint">Das Bild sollte eine Quadratische png und eine in den Konto genommene Alpha sein</system:String>
+    <system:String x:Key="auraEnabled">Noten Aura Aktiviert</system:String>
+    <system:String x:Key="reload">Neu laden</system:String>
     <system:String x:Key="auraStrength">Stärke:</system:String>
-    <system:String x:Key="auraLocation">Bilder gelegen im: Plugins\Assets\MidiTrail\Aura</system:String>
+    <system:String x:Key="auraLocation">Das Bild wurde entdeckt in: Plugins\Assets\MIDITrail\Aura</system:String>
 </ResourceDictionary>

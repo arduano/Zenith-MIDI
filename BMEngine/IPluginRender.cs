@@ -23,6 +23,8 @@ namespace BMEngine
         
         MidiInfo CurrentMidi { set; }
 
+        string LanguageDictName { get; }
+
         double NoteScreenTime { get; }
         long LastNoteCount { get; }
         Control SettingsControl { get; }

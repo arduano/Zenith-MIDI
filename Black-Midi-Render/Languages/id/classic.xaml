@@ -19,5 +19,6 @@
     <system:String x:Key="save">Simpan</system:String>
     <system:String x:Key="loadSaved">Muat yang Disimpan</system:String>
     <system:String x:Key="setDefaults">Pengaturan Awal</system:String>
+    <system:String x:Key="blackNotesAbove">Buat not hitam di atas (lebih lama!)</system:String>
 
 </ResourceDictionary>

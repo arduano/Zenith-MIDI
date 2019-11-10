@@ -21,6 +21,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Path = System.IO.Path;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Black_Midi_Render
 {
@@ -42,15 +44,38 @@ namespace Black_Midi_Render
 
         CurrentRendererPointer renderer = new CurrentRendererPointer();
 
-        List<ResourceDictionary> Languages = new List<ResourceDictionary>();
+        List<Dictionary<string, ResourceDictionary>> Languages = new List<Dictionary<string, ResourceDictionary>>();
 
         bool foundOmniMIDI = true;
         bool OmniMIDIDisabled = false;
 
+        string defaultPlugin = "Classic";
+
         public MainWindow()
         {
             InitializeComponent();
-            //foundOmniMIDI = false;
+
+            dynamic sett = JsonConvert.DeserializeObject(File.ReadAllText("settings.json"));
+            if (sett.defaultBackground != "")
+            {
+                try
+                {
+                    bgImagePath.Text = sett.defaultBackground;
+                    settings.BGImage = new Bitmap(bgImagePath.Text);
+                }
+                catch
+                {
+                    settings.BGImage = null;
+                    if (bgImagePath.Text != "")
+                        MessageBox.Show("Couldn't load default background image");
+                }
+            }
+            if ((bool)sett.ignoreKDMAPI) foundOmniMIDI = false;
+            defaultPlugin = (string)sett.defaultPlugin;
+            JArray size = sett.settingsWindowSize;
+            Width = (double)size[0];
+            Height = (double)size[1];
+
             Task omnimidiLoader = null;
             if (foundOmniMIDI)
             {
@@ -87,25 +112,27 @@ namespace Black_Midi_Render
                 var resources = Directory.GetFiles(language).Where((l) => l.EndsWith(".xaml")).ToList();
                 if (resources.Count == 0) continue;
 
-                ResourceDictionary fullDict = new ResourceDictionary();
+                Dictionary<string, ResourceDictionary> fullDict = new Dictionary<string, ResourceDictionary>();
                 foreach (var r in resources)
                 {
                     ResourceDictionary file = new ResourceDictionary();
                     file.Source = new Uri(Path.GetFullPath(r), UriKind.RelativeOrAbsolute);
-                    fullDict.MergedDictionaries.Add(file);
+                    var name = Path.GetFileNameWithoutExtension(r);
+                    fullDict.Add(name, file);
                 }
-                if (fullDict.Contains("LanguageName") && fullDict["LanguageName"].GetType() == typeof(string))
+                if (!fullDict.ContainsKey("window")) continue;
+                if (fullDict["window"].Contains("LanguageName") && fullDict["window"]["LanguageName"].GetType() == typeof(string))
                     Languages.Add(fullDict);
             }
-            Languages.Sort(new Comparison<ResourceDictionary>((d1, d2) =>
+            Languages.Sort(new Comparison<Dictionary<string, ResourceDictionary>>((d1, d2) =>
             {
-                if ((string)d1["LanguageName"] == "English") return -1;
-                if ((string)d2["LanguageName"] == "English") return 1;
+                if ((string)d1["window"]["LanguageName"] == "English") return -1;
+                if ((string)d2["window"]["LanguageName"] == "English") return 1;
                 else return 0;
             }));
             foreach (var lang in Languages)
             {
-                var item = new ComboBoxItem() { Content = lang["LanguageName"] };
+                var item = new ComboBoxItem() { Content = lang["window"]["LanguageName"] };
                 languageSelect.Items.Add(item);
             }
             languageSelect.SelectedIndex = 0;
@@ -360,7 +387,7 @@ namespace Black_Midi_Render
             c.Margin = new Thickness(0);
             pluginControl = c;
             if (languageSelect.SelectedIndex != -1)
-                c.Resources.MergedDictionaries.Add(Languages[languageSelect.SelectedIndex]);
+                c.Resources.MergedDictionaries.Add(Languages[languageSelect.SelectedIndex][RenderPlugins[id].LanguageDictName]);
         }
 
         private void BrowseMidiButton_Click(object sender, RoutedEventArgs e)
@@ -650,8 +677,11 @@ namespace Black_Midi_Render
         private void LanguageSelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (pluginControl != null)
-                ((UserControl)pluginControl).Resources.MergedDictionaries.Add(Languages[languageSelect.SelectedIndex]);
-            Resources.MergedDictionaries.Add(Languages[languageSelect.SelectedIndex]);
+                lock (renderer)
+                {
+                    ((UserControl)pluginControl).Resources.MergedDictionaries.Add(Languages[languageSelect.SelectedIndex][renderer.renderer.LanguageDictName]);
+                }
+            Resources.MergedDictionaries.Add(Languages[languageSelect.SelectedIndex]["window"]);
         }
 
         private void RadioChecked(object sender, RoutedEventArgs e)

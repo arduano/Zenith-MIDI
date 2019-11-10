@@ -7,61 +7,63 @@
     <system:String x:Key="LanguageName">Deutsch</system:String>
     
     <!--Tab Names-->
-    <system:String x:Key="midiTab">Laden MIDI</system:String>
+    <system:String x:Key="midiTab">Midi laden</system:String>
     <system:String x:Key="pluginsTab">Plugins</system:String>
     <system:String x:Key="pluginSettingsTab">Plugin Einstellungen</system:String>
     <system:String x:Key="previewTab">Vorschau</system:String>
-    <system:String x:Key="renderTab">Anzeigen</system:String>
+    <system:String x:Key="renderTab">Render</system:String>
 
     <!--Main Page-->
     <system:String x:Key="load">Laden</system:String>
     <system:String x:Key="unload">Entladen</system:String>
-    <system:String x:Key="browse">Blättern</system:String>
-    <system:String x:Key="maxTrackBuffSize">Maximal Spur Puffer Größe (Bytes)</system:String>
+    <system:String x:Key="browse">Suchen</system:String>
+    <system:String x:Key="maxTrackBuffSize">Maximale Track Puffergröße (Bytes)</system:String>
     <system:String x:Key="width">Breite</system:String>
     <system:String x:Key="height">Höhe</system:String>
-    <system:String x:Key="fps">BPS (Bilder pro Sekunde)</system:String>
+    <system:String x:Key="fps">FPS</system:String>
     <system:String x:Key="presets">Voreinstellungen</system:String>
-    <system:String x:Key="zenithRenderWarning">Warnung: Zenith Vorschau anzeigen in der auflösung über, dann schrumpft ans Fenster Größe</system:String>
+    <system:String x:Key="zenithRenderWarning">Warnung: Zenith rendert die Vorschau in der Auflösung darüber und wird dann auf die Fenstergröße geschrumpft</system:String>
     <system:String x:Key="superRes">SSAA</system:String>
-    <system:String x:Key="superResWarning">Erhönen SSAA kann die Glätte von die Pixel verbessern, aber nehmt mehr Performance</system:String>
+    <system:String x:Key="superResWarning">Erhöhung von SSAA kann die Glätte von den Pixeln ziemlich erhöhen, aber es benötigt dann auch mehr Leistung</system:String>
     <system:String x:Key="language">Sprache</system:String>
     
     <!--Plugins Page-->
-    <system:String x:Key="reload">Neu Laden</system:String>
-    <system:String x:Key="pluginWarning">WARNUNG: Verwenden Sie nur Plugins von vertrauenswürdigen Quellen. Es ist möglich, einen Virus in einem Plugin zu verbergen</system:String>
-    <system:String x:Key="startPreview">Starten Vorschau</system:String>
-    <system:String x:Key="stop">Stoppen</system:String>
+    <system:String x:Key="reload">Erneut laden</system:String>
+    <system:String x:Key="pluginWarning">ACHTUNG: Verwende Plugins nur von vertrauenswürdigen Quellen. Es ist nämlich möglich, einen Virus in einem Plugin zu verstecken</system:String>
+    <system:String x:Key="startPreview">Vorschau starten</system:String>
+    <system:String x:Key="stop">Vorschau stoppen</system:String>
 
     <!--Preview Page-->
-    <system:String x:Key="vsync">V-Sync Aktiviert</system:String>
+    <system:String x:Key="vsync">V-Sync Aktivieren</system:String>
     <system:String x:Key="tempo">Tempo Multiplikator</system:String>
-    <system:String x:Key="pauseHint">Klicken Sie mit der rechten Maustaste oder drücken Sie die Leertaste, um die Pause umzuschalten</system:String>
-    <system:String x:Key="paused">Vorschau pausierte</system:String>
-    <system:String x:Key="forceRender">Zwingen wieder jedes Bild anzeigen</system:String>
+    <system:String x:Key="pauseHint">Rechts Klick am schieber oder drücke Leertaste um die Vorschau zu pausieren.</system:String>
+    <system:String x:Key="paused">Vorschau pausieren</system:String>
+    <system:String x:Key="forceRender">Erneutes Rendern auf jedes Bild erzwingen</system:String>
 
     <!--Render Page-->
-    <system:String x:Key="savePath">Speichern Pfad</system:String>
-    <system:String x:Key="includeAudio">Einschließen Audio</system:String>
-    <system:String x:Key="renderMask">Anzeigen Transparenz Maske</system:String>
+    <system:String x:Key="savePath">Speicherpfad</system:String>
+    <system:String x:Key="includeAudio">Audio einschließen</system:String>
+    <system:String x:Key="renderMask">Transparente Render Maske</system:String>
     <system:String x:Key="bitrate">Bitrate</system:String>
-    <system:String x:Key="crfHint">FFMPEG crf: 0 = lossless, 51 = Am Schlimmsten Qualität möglich</system:String>
-    <system:String x:Key="delatStart">Verzögern start (Sekunden)</system:String>
-    <system:String x:Key="ffmpegDebug">ffmpeg debuggen</system:String>
-    <system:String x:Key="startRender">Starten Anzeigen</system:String>
-    <system:String x:Key="ifUploading">Danken Sie das Programm bitte, ob Sie hochladen das Video online.</system:String>
-	
-	<system:String x:Key="realtimePlayback">Echtzeitwiedergabe</system:String>
-    <system:String x:Key="useOmniMidi">OmniMIDI aktivert (mehr Speicherauslastung)</system:String>
-    <system:String x:Key="muteAudio">Dämpfen Audio</system:String>
-    <system:String x:Key="disableKDMAPI">Deaktivieren KDMAPI</system:String>
-    <system:String x:Key="enableKDMAPI">Aktiviert KDMAPI</system:String>
+    <system:String x:Key="crfHint">FFMPEG crf: 0 = Verlustfrei, 51 = Schlechteste mögliche Qualität</system:String>
+    <system:String x:Key="delatStart">Verzögerter Beginn (Sekunden)</system:String>
+    <system:String x:Key="ffmpegDebug">ffmpeg Debug</system:String>
+    <system:String x:Key="startRender">Rendern</system:String>
+    <system:String x:Key="ifUploading">Falls du das Video online hochladen willst, bitte erwähne dieses Programm</system:String>
+    
+    <!--NEW 1.5-->
+    <system:String x:Key="realtimePlayback">Echtzeit Playback</system:String>
+    <system:String x:Key="useOmniMidi">OmniMIDI aktivieren (Größere RAM auslastung)</system:String>
+    <system:String x:Key="muteAudio">Audio stummschalten</system:String>
+    <system:String x:Key="disableKDMAPI">KDMAPI deaktivieren</system:String>
+    <system:String x:Key="enableKDMAPI">KDMAPI aktivieren</system:String>
     <system:String x:Key="settingsTab">Einstellungen</system:String>
-    <system:String x:Key="noteSize">Anmerkung größ</system:String>
-    <system:String x:Key="tickBased">Augenblick basierend</system:String>
-    <system:String x:Key="timeBased">Zeit basierend</system:String>
-    <system:String x:Key="ignoreColorEvents">Ignorieren Farbe Veranstaltungen</system:String>
-    <system:String x:Key="useBackgroundImage">Benutzen Hintergrund</system:String>
+    <system:String x:Key="noteSize">Notengröße</system:String>
+    <system:String x:Key="tickBased">Tick basiert</system:String>
+    <system:String x:Key="timeBased">Zeit basiert</system:String>
+    <system:String x:Key="ignoreColorEvents">Farbereignis ignorieren</system:String>
+    <system:String x:Key="useBackgroundImage">Hintergrund festlegen</system:String>
 
-    <system:String x:Key="pauseHintNew">Drücken Sie space, um die Vorschau anzuhalten, drücken Sie Enter, um Vollbild herzuschalten.</system:String>
+    <!--NEW 1.6-->
+    <system:String x:Key="pauseHintNew">Drücke die Leertaste, um zu pausieren; drücke Enter auf dem Vorschaufenster, um auf Vollbild zu wechseln.</system:String>
 </ResourceDictionary>

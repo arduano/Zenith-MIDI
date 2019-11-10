@@ -5,26 +5,26 @@
     xmlns:system="clr-namespace:System;assembly=mscorlib">
 
     <!--Palette picker-->
-    <system:String x:Key="palettes_reload">Neu Starten</system:String>
-    <system:String x:Key="palettes_imageNote">Das Bild müsst ein 16 (oder 32 für Gradienten) die Pixel weit ".png" sein, und alle Höhe.  Transparenz ist akzeptabel.</system:String>
-    <system:String x:Key="palettes_randomise">Randomisieren Farbreihenfolge</system:String>
+    <system:String x:Key="palettes_reload">Neu laden</system:String>
+    <system:String x:Key="palettes_imageNote">Das Bild muss eine 16 (oder 32 für Steigerungen) Pixel breite png sein, und eine beliebige Größe. Transparenz wird unterstützt</system:String>
+    <system:String x:Key="palettes_randomise">Zufällige Farb reihenfolge</system:String>
 
     <!--Other settings-->
-    <system:String x:Key="firstNote">Zuerest Anmerkung</system:String>
-    <system:String x:Key="lastNote">Zuletzt Anmerkung</system:String>
+    <system:String x:Key="firstNote">Erste Taste</system:String>
+    <system:String x:Key="lastNote">Letzte Taste</system:String>
     <system:String x:Key="pianoHeight">Klavierhöhe %</system:String>
-    <system:String x:Key="noteScreenTime">Anmerkung Bildschrimzeit</system:String>
-    <system:String x:Key="sameWidthNotes">Gleich Weite Anmerkungen</system:String>
+    <system:String x:Key="noteScreenTime">Notengeschwindigkeit</system:String>
+    <system:String x:Key="sameWidthNotes">Gleich große Noten</system:String>
     <system:String x:Key="save">Speichern</system:String>
-    <system:String x:Key="loadSaved">Öffnen</system:String>
-    <system:String x:Key="setDefaults">Voreinstellungen</system:String>
+    <system:String x:Key="loadSaved">Laden</system:String>
+    <system:String x:Key="setDefaults">Standarts</system:String>
 
-    <system:String x:Key="middleCSquare">Mitte C Quadrat</system:String>
-    <system:String x:Key="blackNotesAbove">Zeichnen schwarzen Anmerkungen über (Warning: LANGSAMER!!)</system:String>
-    <system:String x:Key="topColor">Obere Farbe</system:String>
+    <system:String x:Key="middleCSquare">Mittleres C Quadrat</system:String>
+    <system:String x:Key="blackNotesAbove">Schwarze Noten zeichnen (Achtung: LANGSAMER!!)</system:String>
+    <system:String x:Key="topColor">Oberste Farbe</system:String>
     <system:String x:Key="colorRed">Rot</system:String>
     <system:String x:Key="colorGreen">Grün</system:String>
     <system:String x:Key="colorBlue">Blau</system:String>
-	
-	<system:String x:Key="borderWidth">Rahmenbreite</system:String>
+
+    <system:String x:Key="borderWidth">Randbreite</system:String> <!--NEW-->
 </ResourceDictionary>
