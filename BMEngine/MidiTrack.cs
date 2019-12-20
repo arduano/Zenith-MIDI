@@ -423,6 +423,8 @@ namespace BMEngine
                         {
                             throw new Exception("Corrupt Track");
                         }
+                        reader.Read(); 
+                        reader.Read();
                     }
                     else if (command == 0x01)
                     {

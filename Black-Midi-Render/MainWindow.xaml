@@ -7,7 +7,7 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:local="clr-namespace:Black_Midi_Render"
         mc:Ignorable="d"
-        Title="Zenith 1.6" Height="550" Width="780" MinWidth="780" MinHeight="550" Closing="Window_Closing">
+        Title="Zenith 1.6.2" Height="550" Width="780" MinWidth="780" MinHeight="550" Closing="Window_Closing">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
