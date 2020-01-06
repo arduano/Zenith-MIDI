@@ -1,0 +1,25 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MSDNSample"
+    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <system:String x:Key="alignments">Alignments</system:String>
+    <system:String x:Key="alTopLeft">Top Left</system:String>
+    <system:String x:Key="alTopRight">Top Right</system:String>
+    <system:String x:Key="alBottomLeft">Bottom Left</system:String>
+    <system:String x:Key="alBottomRight">Bottom Right</system:String>
+    <system:String x:Key="alTopSpread">Top Spread</system:String>
+    <system:String x:Key="alBottomSpread">Bottom Spread</system:String>
+
+    <system:String x:Key="fontSize">Font Size</system:String>
+    <system:String x:Key="font">Font</system:String>
+
+    <system:String x:Key="reload">Reload</system:String>
+    <system:String x:Key="noteTextPath">Location: Plugins/Assets/NoteCounter/Templates</system:String>
+
+    <system:String x:Key="savePath">Save Location</system:String>
+    <system:String x:Key="browse">Browse</system:String>
+    <system:String x:Key="saveToFile">Save frame data to .csv file</system:String>
+    <system:String x:Key="formatString">CSV line format</system:String>
+</ResourceDictionary>

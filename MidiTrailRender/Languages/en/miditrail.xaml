@@ -1,0 +1,71 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MSDNSample"
+    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <!--Palette picker-->
+    <system:String x:Key="palettes_reload">Reload</system:String>
+    <system:String x:Key="palettes_imageNote">Image needs to be a 16 (or 32 for gradients) pixels wide png, and any height. Transparency is supported.</system:String>
+    <system:String x:Key="palettes_randomise">Randomise color order</system:String>
+
+    <!--Shared-->
+    <system:String x:Key="delete">Delete</system:String>
+    <system:String x:Key="saveNew">Save New</system:String>
+    <system:String x:Key="loadDefault">Defaults</system:String>
+
+    <!--Tab Names-->
+    <system:String x:Key="visualsTab">Visuals</system:String>
+    <system:String x:Key="cameraTab">Camera</system:String>
+    <system:String x:Key="auraTab">Aura</system:String>
+
+
+    <!--Visuals-->
+    <system:String x:Key="firstNote">First Note</system:String>
+    <system:String x:Key="lastNote">Last Note</system:String>
+    <system:String x:Key="keyDownSpeed">Key Press Speed</system:String>
+    <system:String x:Key="keyUpSpeed">Key Unpress Speed</system:String>
+    <system:String x:Key="tiltKeys">Tilt Keys</system:String>
+    <system:String x:Key="3dNotes">3D Notes (SLOWER!)</system:String>
+    <system:String x:Key="lightShade">Light Shade</system:String>
+    <system:String x:Key="noteSpeed">Note Speed</system:String>
+    <system:String x:Key="velocityStrength">Strength from Note Velocity</system:String>
+    <system:String x:Key="keyboardClip">Keyboard Clips Notes</system:String>
+    <system:String x:Key="sameWidthNotes">Same Width Notes</system:String>
+    <system:String x:Key="onNoteHit">On note hit:</system:String>
+    <system:String x:Key="changeSize">Change Size</system:String>
+    <system:String x:Key="changeTint">Change Tint</system:String>
+    <system:String x:Key="showKeyboard">Show Keyboard</system:String>
+
+    <!--Camera-->
+    <system:String x:Key="speedWarning">WARNING: This plug-in can use much more ram and CPU due to the higher note time on screen. The more notes are visible, the slower the render!</system:String>
+
+    <system:String x:Key="cameraPreset">Presets:</system:String>
+    <system:String x:Key="farPreset">Far</system:String>
+    <system:String x:Key="mediumPreset">Medium</system:String>
+    <system:String x:Key="closerPreset">Closer</system:String>
+    <system:String x:Key="closePreset">Close</system:String>
+
+    <system:String x:Key="FOV">FOV</system:String>
+    <system:String x:Key="viewAngle">View Angle</system:String>
+    <system:String x:Key="renderDistF">Note Render Dist. Forwards</system:String>
+    <system:String x:Key="renderDistB">Note Render Dist. Backwards</system:String>
+    <system:String x:Key="camOffsets">Camera Offsets</system:String>
+    <system:String x:Key="horizontal">Horizontal</system:String>
+    <system:String x:Key="vertical">Vertical</system:String>
+
+    <system:String x:Key="viewTilt">Camera Tilt</system:String>
+    <system:String x:Key="viewTurn">Camera Turn</system:String>
+    <system:String x:Key="offsetX">X</system:String>
+    <system:String x:Key="offsetY">Y</system:String>
+    <system:String x:Key="offsetZ">Z</system:String>
+    <system:String x:Key="topPreset">Top</system:String>
+    <system:String x:Key="perspectivePreset">Perspective</system:String> 
+
+    <!--Aura-->
+    <system:String x:Key="imageHint">Image needs to be square png and only alpha is taken into account</system:String>
+    <system:String x:Key="auraEnabled">Note Aura Enabled</system:String>
+    <system:String x:Key="reload">Reload</system:String>
+    <system:String x:Key="auraStrength">Strength:</system:String>
+    <system:String x:Key="auraLocation">Images located in: Plugins\Assets\MIDITrail\Aura</system:String>
+</ResourceDictionary>

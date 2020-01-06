@@ -1,0 +1,29 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MSDNSample"
+    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <!--Palette picker-->
+    <system:String x:Key="palettes_reload">Reload</system:String>
+    <system:String x:Key="palettes_imageNote">Image needs to be a 16 (or 32 for gradients) pixels wide png, and any height. Transparency is supported.</system:String>
+    <system:String x:Key="palettes_randomise">Randomise color order</system:String>
+
+    <!--Tab Names-->
+    <system:String x:Key="resourcesTab">Resources</system:String>
+    <system:String x:Key="miscTab">Misc</system:String>
+    <system:String x:Key="switchesTab">Switches</system:String>
+
+    <!--Resources-->
+    <system:String x:Key="resourcePath">Resource packs path:</system:String>
+    <system:String x:Key="resourcePathDir">Plugins\Assets\Textured\Resources</system:String>
+    <system:String x:Key="reloadList">Reload List</system:String>
+    <system:String x:Key="reloadPack">Reload Pack</system:String>
+
+    <!--Other settings-->
+    <system:String x:Key="firstNote">First Note</system:String>
+    <system:String x:Key="lastNote">Last Note</system:String>
+    <system:String x:Key="pianoHeight">Piano Height %</system:String>
+    <system:String x:Key="noteScreenTime">Note screen time</system:String>
+    <system:String x:Key="blackNotesAbove">Draw black notes above (Warning: SLOWER!!)</system:String>
+</ResourceDictionary>

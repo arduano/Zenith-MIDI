@@ -1,0 +1,41 @@
+﻿<UserControl
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:FlatRender"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+    xmlns:bme="clr-namespace:BMEngine;assembly=ZenithEngine" x:Class="FlatRender.SettingsCtrl"
+             mc:Ignorable="d" Height="328.9" Width="651.763">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://siteoforigin:,,,/Languages/en/flat.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <DockPanel HorizontalAlignment="Left" LastChildFill="False" Margin="10,126,0,0" VerticalAlignment="Top" >
+            <Button x:Name="saveButton" Content="{DynamicResource save}" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="20,0,20,0" Height="20" Click="SaveButton_Click" DockPanel.Dock="Left" />
+            <Button x:Name="loadButton" Content="{DynamicResource loadSaved}" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="20,0,20,0" Height="20" Click="LoadButton_Click" DockPanel.Dock="Left" Margin="10,0,0,0" />
+            <Button x:Name="defaultsButton" Content="{DynamicResource setDefaults}" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="20,0,20,0" Height="20" Click="DefaultsButton_Click" DockPanel.Dock="Left" Margin="10,0,0,0"/>
+        </DockPanel>
+        <CheckBox x:Name="sameWidth" Content="{DynamicResource sameWidthNotes}" HorizontalAlignment="Left" Margin="10,106,0,0" VerticalAlignment="Top" IsChecked="True" Checked="SameWidth_Checked" Unchecked="SameWidth_Checked" />
+        <bme:NoteColorPalettePick x:FieldModifier="public" x:Name="paletteList" Margin="0,10,10,10" HorizontalAlignment="Right" Width="184"/>
+        <DockPanel HorizontalAlignment="Left" LastChildFill="False" Margin="10,10,0,0" VerticalAlignment="Top">
+            <Label Content="{DynamicResource firstNote}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left"/>
+            <xctk:DecimalUpDown x:Name="firstNote" FormatString="F0" Value="1" Increment="1"  Maximum="254" Minimum="0" Margin="5,0,0,0" HorizontalAlignment="Left" Width="80" Height="26" VerticalAlignment="Top" ValueChanged="Nud_ValueChanged"  />
+            <Label Content="{DynamicResource lastNote}" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top"/>
+            <xctk:DecimalUpDown x:Name="lastNote" FormatString="F0" Value="1" Increment="1"  Maximum="255" Minimum="1" Margin="5,0,0,0" HorizontalAlignment="Left" Width="80" Height="26" VerticalAlignment="Top" ValueChanged="Nud_ValueChanged"  />
+        </DockPanel>
+        <DockPanel HorizontalAlignment="Left" LastChildFill="False" Margin="10,41,0,0" VerticalAlignment="Top">
+            <Label Content="{DynamicResource pianoHeight}" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Top"/>
+            <xctk:DecimalUpDown x:Name="pianoHeight" FormatString="F1" Value="1" Increment="1"  Maximum="100" Minimum="1" Margin="6,0,0,0" HorizontalAlignment="Left" Width="80" Height="26" VerticalAlignment="Top"  ValueChanged="Nud_ValueChanged"  />
+        </DockPanel>
+        <DockPanel HorizontalAlignment="Left" LastChildFill="False" Margin="10,70,0,0" VerticalAlignment="Top" Width="528" >
+            <Label Content="{DynamicResource noteScreenTime}" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top"/>
+            <Slider x:Name="noteDeltaScreenTime" IsSnapToTickEnabled="True" TickPlacement="BottomRight" HorizontalAlignment="Left" Margin="5,5,0,0" VerticalAlignment="Top" Width="236" Maximum="13" Minimum="2" Value="1" TickFrequency="0.2" ValueChanged="NoteDeltaScreenTime_ValueChanged"/>
+            <xctk:DecimalUpDown x:Name="screenTime_nud" FormatString="F2" Value="1" Increment="1"  Maximum="16000" Minimum="1" HorizontalAlignment="Left" Width="80" Height="26" VerticalAlignment="Top" ValueChanged="ScreenTime_nud_ValueChanged"  DockPanel.Dock="Left"  />
+        </DockPanel>
+    </Grid>
+</UserControl>
