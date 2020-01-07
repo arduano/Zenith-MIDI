@@ -1,0 +1,12 @@
+﻿<UserControl x:Class="BMEngine.UI.ValueSlider"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:BMEngine.UI"
+             mc:Ignorable="d">
+    <DockPanel LastChildFill="True">
+        <local:NumberSelect ValueChanged="Updown_ValueChanged" DockPanel.Dock="Right" Width="80" x:Name="updown" Value="0.2" Maximum="1" Minimum="0" Margin="5,0,0,0" HorizontalAlignment="Left" />
+        <local:BetterSlider x:Name="slider" VerticalAlignment="Center" UserValueChanged="Slider_ValueChanged"></local:BetterSlider>
+    </DockPanel>
+</UserControl>

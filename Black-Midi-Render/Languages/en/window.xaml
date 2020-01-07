@@ -16,10 +16,9 @@
     <!--Main Page-->
     <system:String x:Key="load">Load</system:String>
     <system:String x:Key="unload">Unload</system:String>
-    <system:String x:Key="browse">Browse</system:String>
-    <system:String x:Key="maxTrackBuffSize">Maximum track buffer size (bytes)</system:String>
     <system:String x:Key="width">Width</system:String>
     <system:String x:Key="height">Height</system:String>
+    <system:String x:Key="browse">Browse</system:String>
     <system:String x:Key="fps">FPS</system:String>
     <system:String x:Key="presets">Presets</system:String>
     <system:String x:Key="zenithRenderWarning">Warning: Zenith Preview renders in the resolution above, then downscales to the window size</system:String>

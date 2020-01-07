@@ -154,7 +154,6 @@ namespace Black_Midi_Render
 
         void InitialiseSettingsValues()
         {
-            maxBufferSize.Value = settings.maxTrackBufferSize;
             viewWidth.Value = settings.width;
             viewHeight.Value = settings.height;
             viewFps.Value = settings.fps;
@@ -390,19 +389,16 @@ namespace Black_Midi_Render
                 c.Resources.MergedDictionaries.Add(Languages[languageSelect.SelectedIndex][RenderPlugins[id].LanguageDictName]);
         }
 
-        private void BrowseMidiButton_Click(object sender, RoutedEventArgs e)
+        private void LoadButton_Click(object sender, RoutedEventArgs e)
         {
             var open = new OpenFileDialog();
             open.Filter = "Midi files (*.mid)|*.mid";
             if ((bool)open.ShowDialog())
             {
-                midiPath.Text = open.FileName;
                 midipath = open.FileName;
             }
-        }
+            else return;
 
-        private void LoadButton_Click(object sender, RoutedEventArgs e)
-        {
             if (!File.Exists(midipath))
             {
                 MessageBox.Show("Midi file doesn't exist");
@@ -410,8 +406,6 @@ namespace Black_Midi_Render
             }
             try
             {
-                settings.maxTrackBufferSize = (int)maxBufferSize.Value;
-
                 if (midifile != null) midifile.Dispose();
                 midifile = null;
                 GC.Collect();
@@ -679,9 +673,11 @@ namespace Black_Midi_Render
             if (pluginControl != null)
                 lock (renderer)
                 {
-                    ((UserControl)pluginControl).Resources.MergedDictionaries.Add(Languages[languageSelect.SelectedIndex][renderer.renderer.LanguageDictName]);
+                    ((UserControl)pluginControl).Resources.MergedDictionaries[0].MergedDictionaries.Clear();
+                    ((UserControl)pluginControl).Resources.MergedDictionaries[0].MergedDictionaries.Add(Languages[languageSelect.SelectedIndex][renderer.renderer.LanguageDictName]);
                 }
-            Resources.MergedDictionaries.Add(Languages[languageSelect.SelectedIndex]["window"]);
+            Resources.MergedDictionaries[0].MergedDictionaries.Clear();
+            Resources.MergedDictionaries[0].MergedDictionaries.Add(Languages[languageSelect.SelectedIndex]["window"]);
         }
 
         private void RadioChecked(object sender, RoutedEventArgs e)
@@ -818,6 +814,21 @@ namespace Black_Midi_Render
         private void Grid_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Space) settings.Paused = !settings.Paused;
+        }
+
+        private void ExitButton_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void MinimiseButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                WindowStyle = WindowStyle.SingleBorderWindow;
+            }
+            catch { }
+            WindowState = WindowState.Minimized;
         }
     }
 
