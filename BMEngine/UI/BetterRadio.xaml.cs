@@ -110,7 +110,7 @@ namespace BMEngine.UI
 
             var ellipse = new Ellipse()
             {
-                Fill = Brushes.Black,
+                Fill = (Brush)Resources["PrimaryBrush"],
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
                 Opacity = o

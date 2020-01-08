@@ -389,6 +389,7 @@ void main()
             int timeJump;
             long now;
             playbackLoopStarted = true;
+            if (settings.ffRender) return;
             if (settings.Paused || !settings.playbackEnabled)
             {
                 SpinWait.SpinUntil(() => !(settings.Paused || !settings.playbackEnabled));

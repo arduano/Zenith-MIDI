@@ -4,15 +4,15 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:BMEngine"
+             xmlns:ui="clr-namespace:BMEngine.UI"
              mc:Ignorable="d">
-    <Grid>
+    <UserControl.Resources>
+        <ResourceDictionary Source="pack://application:,,,/ZenithEngine;component/UI/Material.xaml"/>
+    </UserControl.Resources>
         <DockPanel LastChildFill="True">
-            <Button DockPanel.Dock="Top" x:Name="reloadButton" Content="{DynamicResource palettes_reload}" Margin="0,10,0,6" VerticalAlignment="Top" Click="ReloadButton_Click"/>
-            <TextBlock DockPanel.Dock="Bottom" Margin="0" TextWrapping="Wrap" Text="{DynamicResource palettes_imageNote}" VerticalAlignment="Bottom"/>
-            <TextBlock DockPanel.Dock="Bottom" x:Name="pathLabel" Margin="0,10" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Bottom"/>
-            <CheckBox Name="randomiseOrder" DockPanel.Dock="Bottom" Content="{DynamicResource palettes_randomise}" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" Checked="RandomiseOrder_Checked" Unchecked="RandomiseOrder_Checked" IsChecked="True"/>
+            <Button DockPanel.Dock="Top" x:Name="reloadButton" Height="26" Content="{DynamicResource palettes_reload}" Margin="0,0,0,6" VerticalAlignment="Top" Click="ReloadButton_Click"/>
+            <Button DockPanel.Dock="Bottom" x:Name="openPaletteFolder" Margin="0,10,0,0" Height="26" Content="{DynamicResource palettes_openFolder}" Click="openPaletteFolder_Click"/>
+            <ui:BetterCheckbox x:Name="randomiseOrder" DockPanel.Dock="Bottom" Text="{DynamicResource palettes_randomise}" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" CheckToggled="randomiseOrder_CheckToggled" IsChecked="True"/>
             <ListBox x:Name="paletteList" Margin="0" SelectionChanged="PaletteList_SelectionChanged"/>
-</DockPanel>
-
-    </Grid>
+        </DockPanel>
 </UserControl>

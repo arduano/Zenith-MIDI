@@ -4,11 +4,6 @@
     xmlns:local="using:MSDNSample"
     xmlns:system="clr-namespace:System;assembly=mscorlib">
 
-    <!--Palette picker-->
-    <system:String x:Key="palettes_reload">Reload</system:String>
-    <system:String x:Key="palettes_imageNote">Image needs to be a 16 (or 32 for gradients) pixels wide png, and any height. Transparency is supported.</system:String>
-    <system:String x:Key="palettes_randomise">Randomise color order</system:String>
-
     <!--Tab Names-->
     <system:String x:Key="resourcesTab">Resources</system:String>
     <system:String x:Key="miscTab">Misc</system:String>

@@ -1,0 +1,67 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:BMEngine.UI"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+                    xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2"
+                    xmlns:media="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Colors.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+    <media:Style TargetType="{x:Type media:ListBox}">
+        <media:Setter Property="BorderThickness" Value="1"/>
+        <media:Setter Property="media:ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+        <media:Setter Property="media:ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+        <media:Setter Property="media:ScrollViewer.CanContentScroll" Value="true"/>
+        <media:Setter Property="media:ScrollViewer.PanningMode" Value="Both"/>
+        <media:Setter Property="media:Stylus.IsFlicksEnabled" Value="False"/>
+        <media:Setter Property="VerticalContentAlignment" Value="Center"/>
+        <media:Setter Property="Template">
+            <media:Setter.Value>
+                <media:ControlTemplate TargetType="{x:Type media:ListBox}">
+                    <media:Border x:Name="Bd" BorderBrush="Black" BorderThickness="1" Background="Transparent" Padding="1" SnapsToDevicePixels="true">
+                        <media:ScrollViewer Focusable="false" Padding="{media:TemplateBinding Padding}">
+                            <media:ItemsPresenter SnapsToDevicePixels="{media:TemplateBinding SnapsToDevicePixels}"/>
+                        </media:ScrollViewer>
+                    </media:Border>
+                </media:ControlTemplate>
+            </media:Setter.Value>
+        </media:Setter>
+    </media:Style>
+    <media:Style TargetType="{x:Type media:ListBoxItem}">
+        <media:Setter Property="SnapsToDevicePixels" Value="True"/>
+        <media:Setter Property="Padding" Value="4,1"/>
+        <media:Setter Property="HorizontalContentAlignment" Value="{media:Binding HorizontalContentAlignment, RelativeSource={media:RelativeSource AncestorType={x:Type media:ItemsControl}}}"/>
+        <media:Setter Property="VerticalContentAlignment" Value="{media:Binding VerticalContentAlignment, RelativeSource={media:RelativeSource AncestorType={x:Type media:ItemsControl}}}"/>
+        <media:Setter Property="Background" Value="Transparent"/>
+        <media:Setter Property="BorderBrush" Value="Transparent"/>
+        <media:Setter Property="BorderThickness" Value="1"/>
+        <media:Setter Property="FontSize" Value="14"/>
+        <media:Setter Property="Foreground" Value="White"/>
+        <media:Setter Property="Padding" Value="5"/>
+        <media:Setter Property="Template">
+            <media:Setter.Value>
+                <media:ControlTemplate TargetType="{x:Type media:ListBoxItem}">
+                    <local:RippleEffectDecorator>
+                        <media:Border x:Name="Bd" Background="{media:TemplateBinding Background}" Padding="{media:TemplateBinding Padding}" SnapsToDevicePixels="true">
+                            <media:ContentPresenter HorizontalAlignment="{media:TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{media:TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{media:TemplateBinding VerticalContentAlignment}"/>
+                        </media:Border>
+                    </local:RippleEffectDecorator>
+                    <media:ControlTemplate.Triggers>
+                        <media:MultiTrigger>
+                            <media:MultiTrigger.Conditions>
+                                <media:Condition Property="IsMouseOver" Value="True"/>
+                            </media:MultiTrigger.Conditions>
+                            <media:Setter Property="Background" TargetName="Bd" Value="#11FFFFFF"/>
+                        </media:MultiTrigger>
+                        <media:MultiTrigger>
+                            <media:MultiTrigger.Conditions>
+                                <media:Condition Property="IsSelected" Value="True"/>
+                            </media:MultiTrigger.Conditions>
+                            <media:Setter Property="Background" TargetName="Bd" Value="#33FFFFFF"/>
+                        </media:MultiTrigger>
+                    </media:ControlTemplate.Triggers>
+                </media:ControlTemplate>
+            </media:Setter.Value>
+        </media:Setter>
+    </media:Style>
+</ResourceDictionary>

@@ -5,10 +5,17 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:BMEngine.UI"
              mc:Ignorable="d" Name="root">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Material.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <DockPanel MouseDown="DockPanel_MouseDown" Background="Transparent">
         <Grid VerticalAlignment="Center">
-            <Border Width="16" Height="16" BorderThickness="2" BorderBrush="Black" Background="Transparent" CornerRadius="10">
-                <Border Name="checkedBox" Margin="2" CornerRadius="10" Background="Black">
+            <Border Width="16" Height="16" BorderThickness="2" BorderBrush="{StaticResource PrimaryBrush}" Background="Transparent" CornerRadius="10">
+                <Border Name="checkedBox" Margin="2" CornerRadius="10" Background="{StaticResource PrimaryBrush}">
                 </Border>
             </Border>
             <Grid Name="rippleBox" Margin="-7">

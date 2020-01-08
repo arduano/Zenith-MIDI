@@ -27,6 +27,25 @@
                      Foreground="White"
                      Text="0"
                      RenderTransformOrigin="0.5,0.5" TextChanged="TextBox_TextChanged" LostFocus="TextBox_LostFocus" TextInput="TextBox_TextInput" FontSize="16" Margin="0,2,0,0">
+                <TextBox.Style>
+                    <Style TargetType="TextBox">
+                        <Setter Property="Background" Value="#666666"/>
+                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                        <Setter Property="Padding" Value="3"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="TextBox">
+                                    <Border Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" 
+                                             SnapsToDevicePixels="true">
+                                        <ScrollViewer Name="PART_ContentHost" 
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </TextBox.Style>
                 <TextBox.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform/>

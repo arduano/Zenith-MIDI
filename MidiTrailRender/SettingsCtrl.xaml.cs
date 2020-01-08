@@ -79,7 +79,7 @@ namespace MIDITrailRender
             ReloadProfiles();
         }
 
-        private void Nud_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        private void Nud_ValueChanged(object sender, RoutedPropertyChangedEventArgs<decimal> e)
         {
             try
             {

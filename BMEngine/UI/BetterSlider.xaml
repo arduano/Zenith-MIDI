@@ -8,19 +8,24 @@
              Name="slider"
              d:DesignHeight="30" d:DesignWidth="800" Focusable="True">
     <UserControl.Resources>
-        <local:DoubleMultiplyConverter x:Key="DoubleMultiplyConverter"/>
-        <local:ThicknessConverter x:Key="ThicknessConverter"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Material.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <local:DoubleMultiplyConverter x:Key="DoubleMultiplyConverter"/>
+            <local:ThicknessConverter x:Key="ThicknessConverter"/>
+        </ResourceDictionary>
     </UserControl.Resources>
     <Grid Height="14" Name="clickerGrid" Background="Transparent" MouseEnter="ClickerGrid_MouseEnter" MouseLeave="ClickerGrid_MouseLeave" MouseDown="ClickerGrid_MouseDown" MouseMove="ClickerGrid_MouseMove" MouseUp="ClickerGrid_MouseUp">
         <Grid Margin="5" VerticalAlignment="Center" Name="barGrid" Height="4" Background="#55000000">
-            <Rectangle HorizontalAlignment="Left" Fill="#AA000000">
+            <Rectangle HorizontalAlignment="Left" Fill="{StaticResource PrimaryBrush}" Opacity="0.8">
                 <Rectangle.Width>
                     <Binding ElementName="slider" Path="ScaledValue"/>
                 </Rectangle.Width>
             </Rectangle>
         </Grid>
         <Grid Name="headGrid" HorizontalAlignment="Left" VerticalAlignment="Center" Height="10" Width="10">
-            <Ellipse Name="trueHead" Width="10" Height="10" HorizontalAlignment="Center" VerticalAlignment="Center" Fill="Black"/>
+            <Ellipse Name="trueHead" Width="10" Height="10" HorizontalAlignment="Center" VerticalAlignment="Center" Fill="{StaticResource PrimaryBrush}"/>
             <Grid Margin="-7" Name="auraGrid">
                 <Ellipse Name="hoverEllipse" Visibility="Hidden" Fill="#44000000"/>
             </Grid>

@@ -17,6 +17,8 @@ using System.Windows.Shapes;
 using Image = System.Drawing.Image;
 using Path = System.IO.Path;
 using Color = System.Drawing.Color;
+using System.Diagnostics;
+using System.Reflection;
 
 namespace MIDITrailRender
 {
@@ -47,6 +49,8 @@ namespace MIDITrailRender
         List<Bitmap> images = new List<Bitmap>();
         int selectedIndex = 0;
         public long lastSetTime = 0;
+
+        string aurasFolder = "Plugins\\Assets\\MIDITrail\\Aura";
 
         public string SelectedImageName => (string)((ListBoxItem)imagesList.SelectedItem).Content;
         public Bitmap SelectedImage
@@ -82,13 +86,13 @@ namespace MIDITrailRender
             foreach (var i in images) i.Dispose();
             images.Clear();
             imagesList.Items.Clear();
-            if (!Directory.Exists("Plugins\\Assets\\MIDITrail\\Aura")) Directory.CreateDirectory("Plugins\\Assets\\MIDITrail\\Aura");
+            if (!Directory.Exists(aurasFolder)) Directory.CreateDirectory(aurasFolder);
             try
             {
-                Properties.Resources.aura_ring.Save("Plugins\\Assets\\MIDITrail\\Aura\\ring.png");
+                Properties.Resources.aura_ring.Save(Path.Combine(aurasFolder, "ring.png"));
             }
             catch { }
-            var imagePaths = Directory.GetFiles("Plugins\\Assets\\MIDITrail\\Aura").Where((p) => p.EndsWith(".png"));
+            var imagePaths = Directory.GetFiles(aurasFolder).Where((p) => p.EndsWith(".png"));
             foreach (var i in imagePaths)
             {
                 try
@@ -157,7 +161,7 @@ namespace MIDITrailRender
             }
         }
 
-        private void AuraStrength_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        private void AuraStrength_ValueChanged(object sender, RoutedPropertyChangedEventArgs<decimal> e)
         {
             try
             {
@@ -173,6 +177,14 @@ namespace MIDITrailRender
                 settings.auraEnabled = (bool)auraEnabled.IsChecked;
             }
             catch { }
+        }
+
+        private void openFolder_Click(object sender, RoutedEventArgs e)
+        {
+            if (!aurasFolder.Contains(":\\") && !aurasFolder.Contains(":/"))
+                Process.Start("explorer.exe", System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), aurasFolder));
+            else
+                Process.Start("explorer.exe", aurasFolder);
         }
     }
 }

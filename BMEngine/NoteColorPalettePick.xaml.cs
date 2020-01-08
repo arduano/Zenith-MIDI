@@ -1,9 +1,11 @@
 ﻿using OpenTK.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -46,7 +48,6 @@ namespace BMEngine
             this.defS = defS;
             this.defV = defV;
             searchPath = path;
-            pathLabel.Text = "Path: " + path;
             Reload();
         }
 
@@ -227,9 +228,17 @@ namespace BMEngine
             Reload();
         }
 
-        private void RandomiseOrder_Checked(object sender, RoutedEventArgs e)
+        private void randomiseOrder_CheckToggled(object sender, RoutedPropertyChangedEventArgs<bool> e)
         {
             randomise = (bool)randomiseOrder.IsChecked;
+        }
+
+        private void openPaletteFolder_Click(object sender, RoutedEventArgs e)
+        {
+            if (!searchPath.Contains(":\\") && !searchPath.Contains(":/"))
+                Process.Start("explorer.exe", System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), searchPath));
+            else
+                Process.Start("explorer.exe", searchPath);
         }
 
         private void PaletteList_SelectionChanged(object sender, SelectionChangedEventArgs e)

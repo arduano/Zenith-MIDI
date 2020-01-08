@@ -35,7 +35,7 @@ namespace FlatRender
             firstNote.Value = settings.firstNote;
             lastNote.Value = settings.lastNote - 1;
             pianoHeight.Value = (int)(settings.pianoHeight * 100);
-            noteDeltaScreenTime.Value = Math.Log(settings.deltaTimeOnScreen, 2);
+            noteDeltaScreenTime.Value = settings.deltaTimeOnScreen;
             sameWidth.IsChecked = settings.sameWidthNotes;
             paletteList.SelectImage(settings.palette);
         }
@@ -43,13 +43,14 @@ namespace FlatRender
         public SettingsCtrl(Settings settings) : base()
         {
             InitializeComponent();
+            noteDeltaScreenTime.nudToSlider = v => Math.Log(v, 2);
+            noteDeltaScreenTime.sliderToNud = v => Math.Pow(2, v);
             this.settings = settings;
             paletteList.SetPath("Plugins\\Assets\\Palettes");
-            LoadSettings(true);
             SetValues();
         }
 
-        private void Nud_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        private void Nud_ValueChanged(object sender, RoutedPropertyChangedEventArgs<decimal> e)
         {
             try
             {
@@ -64,75 +65,7 @@ namespace FlatRender
 
         private void NoteDeltaScreenTime_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            try
-            {
-                if (screenTimeLock) return;
-                screenTimeLock = true;
-                settings.deltaTimeOnScreen = Math.Pow(2, noteDeltaScreenTime.Value);
-                screenTime_nud.Value = (decimal)settings.deltaTimeOnScreen;
-                screenTimeLock = false;
-            }
-            catch (NullReferenceException)
-            {
-                screenTimeLock = false;
-            }
-        }
-
-        private void SaveButton_Click(object sender, RoutedEventArgs e)
-        {
-            settings.palette = paletteList.SelectedImage;
-            try
-            {
-                string s = JsonConvert.SerializeObject(settings, Formatting.Indented);
-                File.WriteAllText("Plugins/FlatRender.json", s);
-                Console.WriteLine("Saved settings to FlatRender.json");
-            }
-            catch
-            {
-                Console.WriteLine("Could not save settings");
-            }
-        }
-
-        void LoadSettings(bool startup = false)
-        {
-            try
-            {
-                string s = File.ReadAllText("Plugins/FlatRender.json");
-                var sett = JsonConvert.DeserializeObject<Settings>(s);
-                injectSettings(sett);
-                Console.WriteLine("Loaded settings from FlatRender.json");
-            }
-            catch
-            {
-                if (!startup)
-                    Console.WriteLine("Could not load saved plugin settings");
-            }
-        }
-
-        private void LoadButton_Click(object sender, RoutedEventArgs e)
-        {
-            LoadSettings();
-        }
-
-        void injectSettings(Settings sett)
-        {
-            var sourceProps = typeof(Settings).GetFields().ToList();
-            var destProps = typeof(Settings).GetFields().ToList();
-
-            foreach (var sourceProp in sourceProps)
-            {
-                if (destProps.Any(x => x.Name == sourceProp.Name))
-                {
-                    var p = destProps.First(x => x.Name == sourceProp.Name);
-                    p.SetValue(settings, sourceProp.GetValue(sett));
-                }
-            }
-            SetValues();
-        }
-
-        private void DefaultsButton_Click(object sender, RoutedEventArgs e)
-        {
-            injectSettings(new Settings());
+            settings.deltaTimeOnScreen = noteDeltaScreenTime.Value;
         }
 
         private void SameWidth_Checked(object sender, RoutedEventArgs e)
@@ -143,23 +76,5 @@ namespace FlatRender
             }
             catch (NullReferenceException) { }
         }
-
-        bool screenTimeLock = false;
-        private void ScreenTime_nud_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            try
-            {
-                if (screenTimeLock) return;
-                screenTimeLock = true;
-                noteDeltaScreenTime.Value = Math.Log((double)screenTime_nud.Value, 2);
-                settings.deltaTimeOnScreen = (double)screenTime_nud.Value;
-                screenTimeLock = false;
-            }
-            catch
-            {
-                screenTimeLock = false;
-            }
-        }
-
     }
 }

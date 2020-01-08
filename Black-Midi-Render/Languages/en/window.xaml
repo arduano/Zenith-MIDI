@@ -7,10 +7,9 @@
     <system:String x:Key="LanguageName">English</system:String>
     
     <!--Tab Names-->
-    <system:String x:Key="midiTab">Load Midi</system:String>
+    <system:String x:Key="generalTab">General</system:String>
     <system:String x:Key="pluginsTab">Plugins</system:String>
     <system:String x:Key="pluginSettingsTab">Plugin Settings</system:String>
-    <system:String x:Key="previewTab">Preview</system:String>
     <system:String x:Key="renderTab">Render</system:String>
 
     <!--Main Page-->
@@ -28,7 +27,6 @@
     
     <!--Plugins Page-->
     <system:String x:Key="reload">Reload</system:String>
-    <system:String x:Key="pluginWarning">WARNING: Only use plugins from trusted sources. It is possible to hide a virus inside a plugin</system:String>
     <system:String x:Key="startPreview">Start Preview</system:String>
     <system:String x:Key="stop">Stop</system:String>
 
@@ -37,7 +35,6 @@
     <system:String x:Key="tempo">Tempo Multiplier</system:String>
     <system:String x:Key="pauseHint">Right click slider or press space to toggle pause</system:String>
     <system:String x:Key="paused">Preview Paused</system:String>
-    <system:String x:Key="forceRender">Force re-render each frame</system:String>
 
     <!--Render Page-->
     <system:String x:Key="savePath">Save Path</system:String>
@@ -52,11 +49,8 @@
     
     <!--NEW 1.5-->
     <system:String x:Key="realtimePlayback">Realtime Playback</system:String>
-    <system:String x:Key="useOmniMidi">OmniMIDI Enabled (More memory usage)</system:String>
-    <system:String x:Key="muteAudio">Mute Audio</system:String>
     <system:String x:Key="disableKDMAPI">Disable KDMAPI</system:String>
     <system:String x:Key="enableKDMAPI">Enable KDMAPI</system:String>
-    <system:String x:Key="settingsTab">Settings</system:String>
     <system:String x:Key="noteSize">Note Size</system:String>
     <system:String x:Key="tickBased">Tick Based</system:String>
     <system:String x:Key="timeBased">Time Based</system:String>
@@ -65,4 +59,9 @@
 
     <!--NEW 1.6-->
     <system:String x:Key="pauseHintNew">Press space to toggle pause, press enter on the preview window to fullscreen</system:String>
+
+    <!--Palette picker-->
+    <system:String x:Key="palettes_reload">Reload</system:String>
+    <system:String x:Key="palettes_randomise">Randomise color order</system:String>
+    <system:String x:Key="palettes_openFolder">Open Palettes Folder</system:String>
 </ResourceDictionary>

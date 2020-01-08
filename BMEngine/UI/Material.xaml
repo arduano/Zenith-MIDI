@@ -5,14 +5,18 @@
                     xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2"
                     xmlns:media="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary>
-            <local:AndValueConverter x:Key="AndValueConverter"/>
-            <local:OrValueConverter x:Key="OrValueConverter"/>
-            <local:NotValueConverter x:Key="NotValueConverter"/>
-            <media:Color x:Key="PrimaryColor" >#2E7D32</media:Color>
-            <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource PrimaryColor}"/>
-        </ResourceDictionary>
+        <ResourceDictionary Source="Scrollbar.xaml"/>
+        <ResourceDictionary Source="Colors.xaml"/>
+        <ResourceDictionary Source="ListBox.xaml"/>
     </ResourceDictionary.MergedDictionaries>
+    <Style TargetType="{x:Type TextBlock}">
+        <Setter Property="Control.Foreground" Value="White"/>
+        <Setter Property="Control.FontSize" Value="14"/>
+    </Style>
+    <Style TargetType="{x:Type Label}">
+        <Setter Property="Control.Foreground" Value="White"/>
+        <Setter Property="Control.FontSize" Value="14"/>
+    </Style>
     <Style x:Key="WindowButton" TargetType="Button">
         <Setter Property="OverridesDefaultStyle" Value="True"/>
         <Setter Property="Focusable" Value="False"/>
@@ -103,9 +107,63 @@
             </Setter.Value>
         </Setter>
     </Style>
+    <Style x:Key="SubTabItems" TargetType="TabItem">
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TabItem">
+                    <Grid Name="Panel" Height="30">
+                        <local:RippleEffectDecorator ExpandTime="0.2" FadeTime="0.2">
+                            <ContentPresenter x:Name="ContentSite"
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Center"
+                                        ContentSource="Header"
+                                        Margin="10,2"/>
+                        </local:RippleEffectDecorator>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="Panel" Property="Background" Value="#33FFFFFF" />
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="False">
+                            <Setter TargetName="Panel" Property="Background" Value="Transparent" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="SubTabs" TargetType="TabControl">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TabControl}">
+                    <DockPanel LastChildFill="True">
+                        <Border Name="titlebar" Grid.Row="0" DockPanel.Dock="Top" Visibility="{Binding ChromeVisibility, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" Background="#11FFFFFF">
+                            <DockPanel>
+                                <TabPanel
+                                    Grid.Row="0"
+                                    Panel.ZIndex="1"
+                                    Margin="0,0,0,0"
+                                    IsItemsHost="True"
+                                    Background="Transparent" />
+                            </DockPanel>
+                        </Border>
+                        <Border Grid.Row="1" CornerRadius="0, 12, 12, 12" >
+                            <ContentPresenter ContentSource="SelectedContent" />
+                        </Border>
+                    </DockPanel>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
     <Style TargetType="Button">
         <Setter Property="OverridesDefaultStyle" Value="True"/>
         <Setter Property="Focusable" Value="False"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Foreground" Value="White"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ContentControl">
@@ -193,7 +251,10 @@
                     <ControlTemplate.Triggers>
                         <DataTrigger Value="True">
                             <DataTrigger.Binding>
-                                <MultiBinding Converter="{StaticResource OrValueConverter}">
+                                <MultiBinding>
+                                    <MultiBinding.Converter>
+                                        <local:OrValueConverter/>
+                                    </MultiBinding.Converter>
                                     <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="IsMouseOver" />
                                 </MultiBinding>
                             </DataTrigger.Binding>
@@ -231,7 +292,7 @@
                             <ColumnDefinition MinWidth="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}" Width="0"/>
                         </Grid.ColumnDefinitions>
                         <Popup x:Name="PART_Popup" AllowsTransparency="true" Grid.ColumnSpan="2" IsOpen="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" Margin="1" PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}" Placement="Bottom">
-                            <Grid MinWidth="{TemplateBinding Width}">
+                            <Grid MinWidth="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ActualWidth}">
                                 <Border Background="Black">
                                     <Border.Effect>
                                         <DropShadowEffect ShadowDepth="0" BlurRadius="5"/>
@@ -292,4 +353,43 @@
             </Setter.Value>
         </Setter>
     </Style>
+    <Style TargetType="{x:Type TextBox}">
+        <Setter Property="Background" Value="#666666"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Padding" Value="3"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Grid>
+                        <Border Background="Black">
+                            <Border.Effect>
+                                <DropShadowEffect ShadowDepth="0" BlurRadius="5"/>
+                            </Border.Effect>
+                        </Border>
+                        <Border Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" 
+                                             Background="{TemplateBinding Background}" 
+                                             SnapsToDevicePixels="true">
+                            <ScrollViewer Name="PART_ContentHost" Background="{TemplateBinding Background}" 
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Value="#333333" Property="Background" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <media:Style x:Key="FocusVisual">
+        <media:Setter Property="media:Control.Template">
+            <media:Setter.Value>
+                <media:ControlTemplate>
+                    <media:Rectangle Margin="2" SnapsToDevicePixels="true" Stroke="{media:DynamicResource {x:Static media:SystemColors.ControlTextBrushKey}}" StrokeThickness="1" StrokeDashArray="1 2"/>
+                </media:ControlTemplate>
+            </media:Setter.Value>
+        </media:Setter>
+    </media:Style>
 </ResourceDictionary>

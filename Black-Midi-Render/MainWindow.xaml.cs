@@ -54,6 +54,8 @@ namespace Black_Midi_Render
         public MainWindow()
         {
             InitializeComponent();
+            tempoMultSlider.nudToSlider = v => Math.Log(v, 2);
+            tempoMultSlider.sliderToNud = v => Math.Pow(2, v);
 
             dynamic sett = JsonConvert.DeserializeObject(File.ReadAllText("settings.json"));
             if (sett.defaultBackground != "")
@@ -96,10 +98,6 @@ namespace Black_Midi_Render
             if (!foundOmniMIDI)
             {
                 disableKDMAPI.IsEnabled = false;
-                useOmniMidi.IsChecked = false;
-                useOmniMidi.IsEnabled = false;
-                muteAudio.IsChecked = false;
-                muteAudio.IsEnabled = false;
             }
             settings = new RenderSettings();
             settings.PauseToggled += ToggledPause;
@@ -158,7 +156,7 @@ namespace Black_Midi_Render
             viewHeight.Value = settings.height;
             viewFps.Value = settings.fps;
             vsyncEnabled.IsChecked = settings.vsync;
-            tempoSlider.Value = Math.Log(settings.tempoMultiplier, 2);
+            tempoMultSlider.Value = settings.tempoMultiplier;
 
             ReloadPlugins();
         }
@@ -442,8 +440,6 @@ namespace Black_Midi_Render
             windowTabs.SelectedIndex = 4;
 
             settings.realtimePlayback = (bool)realtimePlayback.IsChecked;
-            settings.playbackEnabled = (bool)useOmniMidi.IsChecked;
-            settings.playSound = !(bool)muteAudio.IsChecked;
 
             settings.running = true;
             settings.width = (int)viewWidth.Value * (int)SSAAFactor.Value;
@@ -494,8 +490,6 @@ namespace Black_Midi_Render
             }
 
             settings.realtimePlayback = false;
-            settings.playbackEnabled = false;
-            settings.playSound = true;
 
             settings.running = true;
             settings.width = (int)viewWidth.Value * (int)SSAAFactor.Value;
@@ -509,7 +503,7 @@ namespace Black_Midi_Render
             settings.Paused = false;
             previewPaused.IsChecked = false;
             settings.tempoMultiplier = 1;
-            tempoSlider.Value = 0;
+            tempoMultSlider.Value = 1;
 
             settings.ffmpegDebug = (bool)ffdebug.IsChecked;
 
@@ -574,37 +568,6 @@ namespace Black_Midi_Render
                 settings.vsync = (bool)vsyncEnabled.IsChecked;
             }
             catch { }
-        }
-
-        private void TempoSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            try
-            {
-                settings.tempoMultiplier = Math.Pow(2, tempoSlider.Value);
-                tempoValue.Content = Math.Round(settings.tempoMultiplier * 100) / 100;
-            }
-            catch (NullReferenceException)
-            {
-
-            }
-        }
-
-        private void ForceReRender_Checked(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                settings.forceReRender = (bool)forceReRender.IsChecked;
-            }
-            catch { }
-        }
-
-        private void TempoSlider_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            //if (e.RightButton == MouseButtonState.Pressed)
-            //{
-            //    previewPaused.IsChecked = !settings.Paused;
-            //    settings.Paused = (bool)previewPaused.IsChecked;
-            //}
         }
 
         private void Grid_KeyDown(object sender, KeyEventArgs e)
@@ -680,16 +643,6 @@ namespace Black_Midi_Render
             Resources.MergedDictionaries[0].MergedDictionaries.Add(Languages[languageSelect.SelectedIndex]["window"]);
         }
 
-        private void RadioChecked(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                RadioButton[] buttons = new RadioButton[] { bitrateOption, crfOption };
-                foreach (var b in buttons) if (b != sender) b.IsChecked = false;
-            }
-            catch { }
-        }
-
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (foundOmniMIDI)
@@ -700,12 +653,6 @@ namespace Black_Midi_Render
         {
             try
             {
-                if (sender == useOmniMidi)
-                {
-                    settings.playbackEnabled = (bool)useOmniMidi.IsChecked;
-                    if (!settings.playbackEnabled) midifile.globalPlaybackEvents.Unlink();
-                }
-                if (sender == muteAudio) settings.playSound = !(bool)muteAudio.IsChecked;
                 if (sender == realtimePlayback) settings.realtimePlayback = (bool)realtimePlayback.IsChecked;
             }
             catch { }
@@ -717,10 +664,7 @@ namespace Black_Midi_Render
             {
                 disableKDMAPI.Content = Resources["disableKDMAPI"];
                 OmniMIDIDisabled = false;
-                useOmniMidi.IsEnabled = true;
-                useOmniMidi.IsChecked = true;
-                muteAudio.IsEnabled = true;
-                muteAudio.IsChecked = false;
+                settings.playbackEnabled = true;
                 try
                 {
                     Console.WriteLine("Loading KDMAPI...");
@@ -733,10 +677,7 @@ namespace Black_Midi_Render
             {
                 disableKDMAPI.Content = Resources["enableKDMAPI"];
                 OmniMIDIDisabled = true;
-                useOmniMidi.IsChecked = false;
-                useOmniMidi.IsEnabled = false;
-                muteAudio.IsChecked = false;
-                muteAudio.IsEnabled = false;
+                settings.playbackEnabled = false;
                 try
                 {
                     Console.WriteLine("Unloading KDMAPI");
@@ -829,6 +770,11 @@ namespace Black_Midi_Render
             }
             catch { }
             WindowState = WindowState.Minimized;
+        }
+
+        private void tempoMultSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (settings != null) settings.tempoMultiplier = tempoMultSlider.Value;
         }
     }
 
