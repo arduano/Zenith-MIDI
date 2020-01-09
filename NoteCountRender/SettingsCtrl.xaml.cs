@@ -16,6 +16,8 @@ using System.Windows.Shapes;
 using Path = System.IO.Path;
 using FontStyle = System.Drawing.FontStyle;
 using Microsoft.Win32;
+using System.Diagnostics;
+using System.Reflection;
 
 namespace NoteCountRender
 {
@@ -45,6 +47,8 @@ Time Signature: {tsn}/{tsd}
 Average NPS: {avgnps}";
 
         bool initialised = false;
+
+        string templateFolder = "Plugins\\Assets\\NoteCounter\\Templates";
 
         Dictionary<FontStyle, string> fontStyles = new Dictionary<FontStyle, string>() {
             { System.Drawing.FontStyle.Regular, "Regular" },
@@ -107,7 +111,7 @@ Average NPS: {avgnps}";
             settings.textAlignment = (Alignments)alignSelect.SelectedIndex;
         }
 
-        private void FontSize_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        private void FontSize_ValueChanged(object sender, RoutedPropertyChangedEventArgs<decimal> e)
         {
             if (!initialised) return;
             settings.fontSize = (int)fontSize.Value;
@@ -155,21 +159,21 @@ Average NPS: {avgnps}";
         List<string> templateStrings = new List<string>();
         void Reload()
         {
-            if (!Directory.Exists("Plugins/Assets/NoteCounter/Templates"))
+            if (!Directory.Exists(templateFolder))
             {
-                Directory.CreateDirectory("Plugins/Assets/NoteCounter/Templates");
+                Directory.CreateDirectory(templateFolder);
             }
             try
             {
-                File.WriteAllText("Plugins/Assets/NoteCounter/Templates/default.txt", defText);
+                File.WriteAllText(Path.Combine(templateFolder, "default.txt"), defText);
             }
             catch { }
             try
             {
-                File.WriteAllText("Plugins/Assets/NoteCounter/Templates/full.txt", fullText);
+                File.WriteAllText(Path.Combine(templateFolder, "full.txt"), fullText);
             }
             catch { }
-            var files = Directory.GetFiles("Plugins/Assets/NoteCounter/Templates").Where(f => f.EndsWith(".txt"));
+            var files = Directory.GetFiles(templateFolder).Where(f => f.EndsWith(".txt"));
             templateStrings.Clear();
             templates.Items.Clear();
             foreach (var f in files)
@@ -224,6 +228,14 @@ Average NPS: {avgnps}";
         {
             if (!initialised) return; 
             settings.csvFormat = csvFormat.Text;
+        }
+
+        private void openFolder_Click(object sender, RoutedEventArgs e)
+        {
+            if (!templateFolder.Contains(":\\") && !templateFolder.Contains(":/"))
+                Process.Start("explorer.exe", System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), templateFolder));
+            else
+                Process.Start("explorer.exe", templateFolder);
         }
     }
 }

@@ -99,7 +99,7 @@
                                         <Border Name="titlebar" Grid.Row="0" DockPanel.Dock="Top" Height="50" Visibility="{Binding ChromeVisibility, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" Background="#11FFFFFF">
                                             <DockPanel>
                                                 <Image Source="pack://application:,,,/Zenith;component/icon.png" RenderOptions.BitmapScalingMode="HighQuality" Width="30" Height="30" Margin="10"/>
-                                                <Label VerticalAlignment="Center" FontSize="20" Margin="-5,0,10,0">v1.6.2</Label>
+                                                <Label VerticalAlignment="Center" FontSize="20" Margin="-5,0,10,0">v1.7b</Label>
                                                 <TabPanel
                                                      Grid.Row="0"
                                                      Panel.ZIndex="1"
@@ -132,7 +132,7 @@
                 <TabItem Header="{DynamicResource generalTab}" IsEnabled="{DynamicResource notRendering}">
                     <Grid>
                         <StackPanel>
-                            <Grid Height="30" Margin="5">
+                            <Grid Height="30" Margin="10">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition/>
                                     <ColumnDefinition/>
@@ -147,114 +147,109 @@
                                     </Button.IsEnabled>
                                 </Button>
                             </Grid>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-                                <Border Padding="5">
-                                    <StackPanel>
-                                        <Label FontSize="16" HorizontalAlignment="Center">
-                                            Render Resolution
-                                        </Label>
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition/>
-                                                <ColumnDefinition/>
-                                            </Grid.ColumnDefinitions>
-                                            <StackPanel>
-                                                <DockPanel LastChildFill="False" Margin="0,0,0,5" HorizontalAlignment="Left">
-                                                    <Label Content="{DynamicResource width}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left"/>
-                                                    <ui:NumberSelect x:Name="viewWidth" Maximum="15360" Minimum="1" Width="118" IsEnabled="{Binding IsEnabled, ElementName=notPreviewingOrRendering}"  DockPanel.Dock="Left" Margin="5,0,0,0"  />
+                            <StackPanel Margin="10">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Padding="0">
+                                        <StackPanel>
+                                            <Label FontSize="16" HorizontalAlignment="Center" Content="{StaticResource renderResolution}"/>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel>
+                                                    <DockPanel LastChildFill="False" Margin="0,0,0,5" HorizontalAlignment="Left">
+                                                        <Label Content="{DynamicResource width}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left"/>
+                                                        <ui:NumberSelect x:Name="viewWidth" Maximum="15360" Minimum="1" Width="118" IsEnabled="{Binding IsEnabled, ElementName=notPreviewingOrRendering}"  DockPanel.Dock="Left" Margin="5,0,0,0"  />
+                                                    </DockPanel>
+                                                    <DockPanel LastChildFill="False" HorizontalAlignment="Left">
+                                                        <Label Content="{DynamicResource height}" HorizontalAlignment="Left" DockPanel.Dock="Left" Margin="0,0,0,0"/>
+                                                        <ui:NumberSelect x:Name="viewHeight" Maximum="8640" Minimum="1" Width="118" IsEnabled="{Binding IsEnabled, ElementName=notPreviewingOrRendering}"  DockPanel.Dock="Left" Margin="5,0,0,0"  />
+                                                    </DockPanel>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="1">
+                                                    <DockPanel LastChildFill="False" Margin="0,0,0,5" HorizontalAlignment="Left">
+                                                        <Label Content="{DynamicResource presets}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                                        <ComboBox IsEnabled="{Binding ElementName=notPreviewingOrRendering, Path=IsEnabled}" x:Name="resolutionPreset" Margin="10,0,0,0" Width="110" SelectionChanged="ResolutionPreset_SelectionChanged">
+                                                            <ComboBoxItem Content="720p"/>
+                                                            <ComboBoxItem Content="1080p"/>
+                                                            <ComboBoxItem Content="1440p"/>
+                                                            <ComboBoxItem Content="4k"/>
+                                                            <ComboBoxItem Content="5k"/>
+                                                            <ComboBoxItem Content="8k"/>
+                                                            <ComboBoxItem Content="16k"/>
+                                                        </ComboBox>
+                                                    </DockPanel>
+                                                    <DockPanel DockPanel.Dock="Top" HorizontalAlignment="Left" LastChildFill="False" Margin="0,5" VerticalAlignment="Top">
+                                                        <Label Content="{DynamicResource superRes}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left"/>
+                                                        <ui:NumberSelect DockPanel.Dock="Left" x:Name="SSAAFactor" Value="1" Maximum="4" Minimum="1" HorizontalAlignment="Left" Width="118" IsEnabled="{Binding IsEnabled, ElementName=notPreviewingOrRendering}" Margin="5,0,0,0"  />
+                                                    </DockPanel>
+                                                </StackPanel>
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
+                                    <Border Padding="0" Grid.Column="1">
+                                        <StackPanel>
+                                            <Label FontSize="16" HorizontalAlignment="Center" Content="{StaticResource renderOptions}"/>
+                                            <DockPanel HorizontalAlignment="Center" Margin="0,0,0,10">
+                                                <DockPanel LastChildFill="False" VerticalAlignment="Top" HorizontalAlignment="Left">
+                                                    <Label Content="{DynamicResource fps}" HorizontalAlignment="Left" RenderTransformOrigin="1.078,0.59" DockPanel.Dock="Left" Margin="0,0,0,0"/>
+                                                    <ui:NumberSelect x:Name="viewFps" Maximum="1000" Minimum="1" Width="77" IsEnabled="{Binding IsEnabled, ElementName=notPreviewingOrRendering}"  DockPanel.Dock="Left" Margin="5,0,0,0"  />
                                                 </DockPanel>
-                                                <DockPanel LastChildFill="False" HorizontalAlignment="Left">
-                                                    <Label Content="{DynamicResource height}" HorizontalAlignment="Left" DockPanel.Dock="Left" Margin="0,0,0,0"/>
-                                                    <ui:NumberSelect x:Name="viewHeight" Maximum="8640" Minimum="1" Width="118" IsEnabled="{Binding IsEnabled, ElementName=notPreviewingOrRendering}"  DockPanel.Dock="Left" Margin="5,0,0,0"  />
-                                                </DockPanel>
-                                            </StackPanel>
-                                            <StackPanel Grid.Column="1">
-                                                <DockPanel LastChildFill="False" Margin="0,0,0,5" HorizontalAlignment="Left">
-                                                    <Label Content="{DynamicResource presets}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                                    <ComboBox IsEnabled="{Binding ElementName=notPreviewingOrRendering, Path=IsEnabled}" x:Name="resolutionPreset" Margin="10,0,0,0" Width="110" SelectionChanged="ResolutionPreset_SelectionChanged">
-                                                        <ComboBoxItem Content="720p"/>
-                                                        <ComboBoxItem Content="1080p"/>
-                                                        <ComboBoxItem Content="1440p"/>
-                                                        <ComboBoxItem Content="4k"/>
-                                                        <ComboBoxItem Content="5k"/>
-                                                        <ComboBoxItem Content="8k"/>
-                                                        <ComboBoxItem Content="16k"/>
+                                                <DockPanel HorizontalAlignment="Center" LastChildFill="False" Margin="20,0,0,0" VerticalAlignment="Top" >
+                                                    <Label Content="{DynamicResource noteSize}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left"/>
+                                                    <ComboBox x:Name="noteSizeStyle" IsEnabled="{Binding ElementName=notPreviewingOrRendering, Path=IsEnabled}" DockPanel.Dock="Left" Padding="7,4,10,4" Margin="5,0,0,0" SelectedIndex="0" SelectionChanged="NoteSizeStyle_SelectionChanged">
+                                                        <ComboBoxItem Content="{DynamicResource tickBased}"/>
+                                                        <ComboBoxItem Content="{DynamicResource timeBased}"/>
                                                     </ComboBox>
                                                 </DockPanel>
-                                                <DockPanel DockPanel.Dock="Top" HorizontalAlignment="Left" LastChildFill="False" Margin="0,5" VerticalAlignment="Top">
-                                                    <Label Content="{DynamicResource superRes}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left"/>
-                                                    <ui:NumberSelect DockPanel.Dock="Left" x:Name="SSAAFactor" Value="1" Maximum="4" Minimum="1" HorizontalAlignment="Left" Width="118" IsEnabled="{Binding IsEnabled, ElementName=notPreviewingOrRendering}" Margin="5,0,0,0"  />
-                                                </DockPanel>
-                                            </StackPanel>
-                                        </Grid>
-                                    </StackPanel>
-                                </Border>
-                                <Border Padding="5" Grid.Column="1">
-                                    <StackPanel>
-                                        <Label FontSize="16" HorizontalAlignment="Center">
-                                            Render Options
-                                        </Label>
-                                        <DockPanel HorizontalAlignment="Center" Margin="0,0,0,10">
-                                            <DockPanel LastChildFill="False" VerticalAlignment="Top" HorizontalAlignment="Left">
-                                                <Label Content="{DynamicResource fps}" HorizontalAlignment="Left" RenderTransformOrigin="1.078,0.59" DockPanel.Dock="Left" Margin="0,0,0,0"/>
-                                                <ui:NumberSelect x:Name="viewFps" Maximum="1000" Minimum="1" Width="77" IsEnabled="{Binding IsEnabled, ElementName=notPreviewingOrRendering}"  DockPanel.Dock="Left" Margin="5,0,0,0"  />
                                             </DockPanel>
-                                            <DockPanel HorizontalAlignment="Center" LastChildFill="False" Margin="20,0,0,0" VerticalAlignment="Top" >
-                                                <Label Content="{DynamicResource noteSize}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left"/>
-                                                <ComboBox x:Name="noteSizeStyle" IsEnabled="{Binding ElementName=notPreviewingOrRendering, Path=IsEnabled}" DockPanel.Dock="Left" Padding="7,4,10,4" Margin="5,0,0,0" SelectedIndex="0" SelectionChanged="NoteSizeStyle_SelectionChanged">
-                                                    <ComboBoxItem Content="{DynamicResource tickBased}"/>
-                                                    <ComboBoxItem Content="{DynamicResource timeBased}"/>
-                                                </ComboBox>
-                                            </DockPanel>
-                                        </DockPanel>
-                                        <ui:BetterCheckbox Height="26" x:Name="ignoreColorEvents" Text="{DynamicResource ignoreColorEvents}" CheckToggled="IgnoreColorEvents_Checked" HorizontalAlignment="Center"/>
-                                    </StackPanel>
-                                </Border>
-                            </Grid>
-                            <DockPanel LastChildFill="False" VerticalAlignment="Top">
-                                <TextBlock DockPanel.Dock="Top" TextWrapping="Wrap" Text="{DynamicResource zenithRenderWarning}" VerticalAlignment="Top" Margin="5,5,0,5" HorizontalAlignment="Left"/>
-                                <TextBlock DockPanel.Dock="Top" TextWrapping="Wrap" Text="{DynamicResource superResWarning}" VerticalAlignment="Top" Margin="5,5,0,5" HorizontalAlignment="Left"/>
-                            </DockPanel>
-                            <DockPanel LastChildFill="True" Height="26" Margin="0,10,0,10" VerticalAlignment="Top">
-                                <ui:BetterCheckbox x:Name="useBGImage" Text="{DynamicResource useBackgroundImage}" HorizontalAlignment="Left" DockPanel.Dock="Left" CheckToggled="UseBGImage_Checked" Margin="0,4,0,0"/>
-                                <Button x:Name="browseBG" IsEnabled="{Binding ElementName=useBGImage, Path=IsChecked}" Content="{DynamicResource browse}" Padding="15,1,15,1" HorizontalAlignment="Left" DockPanel.Dock="Left" Margin="5,0,0,0" Click="BrowseBG_Click"/>
-                                <TextBox x:Name="bgImagePath" Text="" DockPanel.Dock="Right" TextWrapping="Wrap" VerticalAlignment="Stretch" Margin="5,0,0,0" IsEnabled="False"/>
-                            </DockPanel>
-                            <Label FontSize="16" HorizontalAlignment="Center">Preview Options</Label>
-                            <DockPanel HorizontalAlignment="Center" Height="30" LastChildFill="False" Margin="0,0,0,10" VerticalAlignment="Top">
-                                <Label Content="{DynamicResource tempo}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left"/>
-                                <ui:ValueSlider ValueChanged="tempoMultSlider_ValueChanged" Name="tempoMultSlider" Width="396" Minimum="-4" Maximum="6" TrueMin="0.01" TrueMax="1000" DecimalPoints="2" Value="1" Margin="0,0,0,4"/>
-                            </DockPanel>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-                                <ui:BetterCheckbox HorizontalAlignment="Center" x:Name="vsyncEnabled" Text="{DynamicResource vsync}" CheckToggled="VsyncEnabled_Checked" Focusable="False" IsChecked="True"/>
-                                <ui:BetterCheckbox HorizontalAlignment="Center" Grid.Column="1" x:Name="previewPaused" Text="{DynamicResource paused}" CheckToggled="Paused_Checked"/>
-                                <ui:BetterCheckbox HorizontalAlignment="Center" Grid.Column="2" Text="{DynamicResource realtimePlayback}" Name="realtimePlayback" CheckToggled="Checkbox_Checked" IsChecked="True"/>
-                            </Grid>
-                            <DockPanel Margin="10,10,10,10">
-                                <Button HorizontalAlignment="Left" x:Name="disableKDMAPI" Content="{DynamicResource disableKDMAPI}" Padding="20,2,20,2" Click="DisableKDMAPI_Click" />
-                                <Label Content="{DynamicResource pauseHintNew}" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top"/>
-                            </DockPanel>
+                                            <ui:BetterCheckbox Height="26" x:Name="ignoreColorEvents" Text="{DynamicResource ignoreColorEvents}" CheckToggled="IgnoreColorEvents_Checked" HorizontalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+                                <DockPanel LastChildFill="False" VerticalAlignment="Top">
+                                    <TextBlock DockPanel.Dock="Top" TextWrapping="Wrap" Text="{DynamicResource zenithRenderWarning}" VerticalAlignment="Top" Margin="5,5,0,5" HorizontalAlignment="Left"/>
+                                    <TextBlock DockPanel.Dock="Top" TextWrapping="Wrap" Text="{DynamicResource superResWarning}" VerticalAlignment="Top" Margin="5,5,0,5" HorizontalAlignment="Left"/>
+                                </DockPanel>
+                                <DockPanel LastChildFill="True" Height="26" Margin="0,10,0,10" VerticalAlignment="Top">
+                                    <ui:BetterCheckbox x:Name="useBGImage" Text="{DynamicResource useBackgroundImage}" HorizontalAlignment="Left" DockPanel.Dock="Left" CheckToggled="UseBGImage_Checked" Margin="0,4,0,0"/>
+                                    <Button x:Name="browseBG" IsEnabled="{Binding ElementName=useBGImage, Path=IsChecked}" Content="{DynamicResource browse}" Padding="15,1,15,1" HorizontalAlignment="Left" DockPanel.Dock="Left" Margin="5,0,0,0" Click="BrowseBG_Click"/>
+                                    <TextBox x:Name="bgImagePath" Text="" DockPanel.Dock="Right" TextWrapping="Wrap" VerticalAlignment="Stretch" Margin="5,0,0,0" IsEnabled="False"/>
+                                </DockPanel>
+                                <Label FontSize="16" HorizontalAlignment="Center" Content="{StaticResource previewOptions}"/>
+                                <DockPanel HorizontalAlignment="Center" Height="30" LastChildFill="False" Margin="0,0,0,10" VerticalAlignment="Top">
+                                    <Label Content="{DynamicResource tempo}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left"/>
+                                    <ui:ValueSlider ValueChanged="tempoMultSlider_ValueChanged" Name="tempoMultSlider" Width="396" Minimum="-4" Maximum="6" TrueMin="0.01" TrueMax="1000" DecimalPoints="2" Value="1" Margin="0,0,0,4"/>
+                                </DockPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <ui:BetterCheckbox HorizontalAlignment="Center" x:Name="vsyncEnabled" Text="{DynamicResource vsync}" CheckToggled="VsyncEnabled_Checked" Focusable="False" IsChecked="True"/>
+                                    <ui:BetterCheckbox HorizontalAlignment="Center" Grid.Column="1" x:Name="previewPaused" Text="{DynamicResource paused}" CheckToggled="Paused_Checked"/>
+                                    <ui:BetterCheckbox HorizontalAlignment="Center" Grid.Column="2" Text="{DynamicResource realtimePlayback}" Name="realtimePlayback" CheckToggled="Checkbox_Checked" IsChecked="True"/>
+                                </Grid>
+                                <DockPanel Margin="10,10,10,10">
+                                    <Button HorizontalAlignment="Left" x:Name="disableKDMAPI" Content="{DynamicResource disableKDMAPI}" Padding="20,2,20,2" Click="DisableKDMAPI_Click" />
+                                    <Label Content="{DynamicResource pauseHintNew}" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top"/>
+                                </DockPanel>
+                            </StackPanel>
                         </StackPanel>
                         <DockPanel LastChildFill="False" Margin="0,0,10,10" HorizontalAlignment="Right" Width="293" Height="30" VerticalAlignment="Bottom">
-                            <ComboBox Name="languageSelect" DockPanel.Dock="Right" HorizontalAlignment="Left" Margin="0" Width="120" SelectionChanged="LanguageSelect_SelectionChanged"/>
+                            <ComboBox x:Name="languageSelect" DockPanel.Dock="Right" HorizontalAlignment="Left" Margin="0" Width="120" SelectionChanged="LanguageSelect_SelectionChanged"/>
                             <Label DockPanel.Dock="Right" Content="{DynamicResource language}" VerticalAlignment="Top"/>
                         </DockPanel>
                         <DockPanel HorizontalAlignment="Left" LastChildFill="False" Margin="10,0,0,10" Height="26" VerticalAlignment="Bottom">
                             <Button Content="{DynamicResource startPreview}" HorizontalAlignment="Left" Margin="0,0,0,0" Padding="20,0,20,0" IsEnabled="{Binding IsEnabled, ElementName=previewStartEnabled}" Click="StartButton_Click" DockPanel.Dock="Left" />
                             <Button Content="{DynamicResource stop}" HorizontalAlignment="Left" Margin="10,0,0,0" Padding="20,0,20,0" IsEnabled="{Binding IsEnabled, ElementName=stopEnabled}" Click="StopButton_Click" DockPanel.Dock="Left" />
                         </DockPanel>
-                        <DockPanel HorizontalAlignment="Left" LastChildFill="False" Margin="10,68,0,0" VerticalAlignment="Top" />
-                        <Grid Margin="10,10,10,0" VerticalAlignment="Top">
-                        </Grid>
                     </Grid>
                 </TabItem>
                 <TabItem Header="{DynamicResource pluginsTab}" IsEnabled="{DynamicResource notRendering}">
@@ -358,7 +353,7 @@
                             </DockPanel>
                         </StackPanel>
                         <DockPanel Margin="10">
-                        <TextBox DockPanel.Dock="Bottom" x:Name="creditText" Text="hhhh" AcceptsReturn="True" IsReadOnly="True" HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Width="281" VerticalAlignment="Bottom"/>
+                            <TextBox DockPanel.Dock="Bottom" x:Name="creditText" Text="hhhh" AcceptsReturn="True" IsReadOnly="True" HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Width="281" VerticalAlignment="Bottom"/>
                             <Label Content="{DynamicResource ifUploading}" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Bottom"/>
                         </DockPanel>
                     </Grid>

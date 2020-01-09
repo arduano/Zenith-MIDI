@@ -384,7 +384,11 @@ namespace Black_Midi_Render
             c.Margin = new Thickness(0);
             pluginControl = c;
             if (languageSelect.SelectedIndex != -1)
-                c.Resources.MergedDictionaries.Add(Languages[languageSelect.SelectedIndex][RenderPlugins[id].LanguageDictName]);
+            {
+                c.Resources.MergedDictionaries[0].MergedDictionaries.Clear();
+                c.Resources.MergedDictionaries[0].MergedDictionaries.Add(Languages[0][renderer.renderer.LanguageDictName]);
+                c.Resources.MergedDictionaries[0].MergedDictionaries.Add(Languages[languageSelect.SelectedIndex][renderer.renderer.LanguageDictName]);
+            }
         }
 
         private void LoadButton_Click(object sender, RoutedEventArgs e)
@@ -637,9 +641,11 @@ namespace Black_Midi_Render
                 lock (renderer)
                 {
                     ((UserControl)pluginControl).Resources.MergedDictionaries[0].MergedDictionaries.Clear();
+                    ((UserControl)pluginControl).Resources.MergedDictionaries[0].MergedDictionaries.Add(Languages[0][renderer.renderer.LanguageDictName]);
                     ((UserControl)pluginControl).Resources.MergedDictionaries[0].MergedDictionaries.Add(Languages[languageSelect.SelectedIndex][renderer.renderer.LanguageDictName]);
                 }
             Resources.MergedDictionaries[0].MergedDictionaries.Clear();
+            Resources.MergedDictionaries[0].MergedDictionaries.Add(Languages[0]["window"]);
             Resources.MergedDictionaries[0].MergedDictionaries.Add(Languages[languageSelect.SelectedIndex]["window"]);
         }
 

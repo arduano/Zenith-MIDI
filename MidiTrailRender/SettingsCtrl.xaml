@@ -35,16 +35,16 @@
                         </DockPanel>
                         <DockPanel HorizontalAlignment="Left" LastChildFill="False" Margin="0,10,0,0" VerticalAlignment="Top">
                             <Label Content="{DynamicResource keyDownSpeed}" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Top"/>
-                            <ui:NumberSelect x:Name="noteDownSpeed" Value="0.2" Maximum="1" Minimum="0" Margin="5,0,0,2" HorizontalAlignment="Left" Width="65" Height="26" VerticalAlignment="Top" ValueChanged="Nud_ValueChanged"  />
+                            <ui:NumberSelect x:Name="noteDownSpeed" DecimalPoints="2" Step="0.1" Value="0.2" Maximum="1" Minimum="0" Margin="5,0,0,2" HorizontalAlignment="Left" Width="65" Height="26" VerticalAlignment="Top" ValueChanged="Nud_ValueChanged"  />
                             <Label Content="{DynamicResource keyUpSpeed}" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top"/>
-                            <ui:NumberSelect x:Name="noteUpSpeed" Value="0.1" Maximum="1" Minimum="0" Margin="5,0,0,2" HorizontalAlignment="Left" Width="65" Height="26" VerticalAlignment="Top" ValueChanged="Nud_ValueChanged"  />
+                            <ui:NumberSelect x:Name="noteUpSpeed" DecimalPoints="2" Step="0.1" Value="0.1" Maximum="1" Minimum="0" Margin="5,0,0,2" HorizontalAlignment="Left" Width="65" Height="26" VerticalAlignment="Top" ValueChanged="Nud_ValueChanged"  />
                         </DockPanel>
                         <ui:BetterCheckbox x:Name="tiltKeys" Text ="{DynamicResource tiltKeys}" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top"  CheckToggled="CheckboxChecked"/>
                         <ui:BetterCheckbox x:Name="boxNotes" Text="{DynamicResource 3dNotes}" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" CheckToggled="BoxNotes_Checked"/>
                         <ui:BetterCheckbox IsEnabled="{Binding IsChecked, ElementName=boxNotes }" x:Name="lightShade" Text="{DynamicResource lightShade}" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" CheckToggled="CheckboxChecked"/>
                         <DockPanel HorizontalAlignment="Left" LastChildFill="False" Margin="0,10,0,0" VerticalAlignment="Top" >
                             <Label Content="{DynamicResource noteSpeed}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left"/>
-                            <ui:ValueSlider x:Name="noteDeltaScreenTime" HorizontalAlignment="Left" VerticalAlignment="Top" Width="275" Maximum="11" TrueMax="8192" Minimum="2" TrueMin="1" Value="1" ValueChanged="NoteDeltaScreenTime_ValueChanged" DockPanel.Dock="Left" Margin="0,0,0,0"/>
+                            <ui:ValueSlider x:Name="noteDeltaScreenTime" DecimalPoints="1" HorizontalAlignment="Left" VerticalAlignment="Top" Width="275" Maximum="11" TrueMax="8192" Minimum="2" TrueMin="1" Value="1" ValueChanged="NoteDeltaScreenTime_ValueChanged" DockPanel.Dock="Left" Margin="0,0,0,0"/>
                         </DockPanel>
                         <ui:BetterCheckbox x:Name="useVel" Text="{DynamicResource velocityStrength}" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" CheckToggled="CheckboxChecked"/>
                         <ui:BetterCheckbox x:Name="eatNotes" Text="{DynamicResource keyboardClip}" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" CheckToggled="CheckboxChecked"/>
@@ -70,32 +70,32 @@
                     </DockPanel>
                     <DockPanel HorizontalAlignment="Left" LastChildFill="False" Margin="0,10,0,0" VerticalAlignment="Top">
                         <Label Content="{DynamicResource FOV}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left"/>
-                        <ui:ValueSlider x:Name="FOVSlider" HorizontalAlignment="Left" Width="285" Maximum="150" TrueMax="150" Minimum="20" TrueMin="5" Value="60" VerticalAlignment="Top" ValueChanged="FOVSlider_ValueChanged" DockPanel.Dock="Left" Margin="0,0,0,0"/>
+                        <ui:ValueSlider x:Name="FOVSlider" HorizontalAlignment="Left" DecimalPoints="2" Width="285" Maximum="150" TrueMax="150" Minimum="20" TrueMin="5" Value="60" VerticalAlignment="Top" ValueChanged="FOVSlider_ValueChanged" DockPanel.Dock="Left" Margin="0,0,0,0"/>
                     </DockPanel>
                     <DockPanel HorizontalAlignment="Left" LastChildFill="False" Margin="0,10,0,0" VerticalAlignment="Top" >
                         <Label Content="{DynamicResource renderDistF}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left"/>
-                        <ui:ValueSlider x:Name="renderDistSlider" HorizontalAlignment="Left" VerticalAlignment="Top" Width="467" Maximum="20" TrueMax="200" Minimum="0" TrueMin="0" Value="60" Height="26" ValueChanged="RenderDistSlider_ValueChanged" DockPanel.Dock="Left" Margin="0,0,0,0"/>
+                        <ui:ValueSlider x:Name="renderDistSlider" HorizontalAlignment="Left" DecimalPoints="2" VerticalAlignment="Top" Width="467" Maximum="20" TrueMax="200" Minimum="0" TrueMin="0" Value="60" Height="26" ValueChanged="RenderDistSlider_ValueChanged" DockPanel.Dock="Left" Margin="0,0,0,0"/>
                     </DockPanel>
                     <DockPanel HorizontalAlignment="Left" LastChildFill="False" Margin="0,10,0,0" VerticalAlignment="Top" >
                         <Label Content="{DynamicResource renderDistB}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left"/>
-                        <ui:ValueSlider x:Name="renderDistBackSlider" HorizontalAlignment="Left" VerticalAlignment="Top" Width="461" Maximum="20" TrueMax="200" Minimum="0" TrueMin="0" Value="60" Height="26" ValueChanged="RenderDistBackSlider_ValueChanged" DockPanel.Dock="Left" Margin="0,0,0,0"/>
+                        <ui:ValueSlider x:Name="renderDistBackSlider" HorizontalAlignment="Left" DecimalPoints="2" VerticalAlignment="Top" Width="461" Maximum="20" TrueMax="200" Minimum="0" TrueMin="0" Value="60" Height="26" ValueChanged="RenderDistBackSlider_ValueChanged" DockPanel.Dock="Left" Margin="0,0,0,0"/>
                     </DockPanel>
                     <DockPanel HorizontalAlignment="Left" LastChildFill="False" Margin="0,10,0,0" VerticalAlignment="Top" >
                         <Label Content="{DynamicResource camOffsets}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left"/>
                         <Label Content="{DynamicResource offsetX}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left" Margin="10,0,0,0"/>
-                        <ui:NumberSelect x:Name="camOffsetX" Value="0.0" Maximum="15" Minimum="-20" HorizontalAlignment="Left" Width="65" Height="26" VerticalAlignment="Top" ValueChanged="Nud_ValueChanged"  DockPanel.Dock="Left" Margin="5,0,0,0"  />
+                        <ui:NumberSelect x:Name="camOffsetX" Value="0.0" DecimalPoints="2" Step="0.1" Maximum="15" Minimum="-20" HorizontalAlignment="Left" Width="65" Height="26" VerticalAlignment="Top" ValueChanged="Nud_ValueChanged"  DockPanel.Dock="Left" Margin="5,0,0,0"  />
                         <Label Content="{DynamicResource offsetY}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left" Margin="10,0,0,0"/>
-                        <ui:NumberSelect x:Name="camOffsetY" Value="0.0" Maximum="10" Minimum="0" HorizontalAlignment="Left" Width="64" Height="26" VerticalAlignment="Top" ValueChanged="Nud_ValueChanged"  DockPanel.Dock="Left" Margin="5,0,0,0"  />
+                        <ui:NumberSelect x:Name="camOffsetY" Value="0.0" DecimalPoints="2" Step="0.1" Maximum="10" Minimum="0" HorizontalAlignment="Left" Width="64" Height="26" VerticalAlignment="Top" ValueChanged="Nud_ValueChanged"  DockPanel.Dock="Left" Margin="5,0,0,0"  />
                         <Label Content="{DynamicResource offsetZ}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left" Margin="10,0,0,0"/>
-                        <ui:NumberSelect x:Name="camOffsetZ" Value="0.0" Maximum="20" Minimum="-20" HorizontalAlignment="Left" Width="64" Height="26" VerticalAlignment="Top" ValueChanged="Nud_ValueChanged"  DockPanel.Dock="Left" Margin="5,0,0,0"  />
+                        <ui:NumberSelect x:Name="camOffsetZ" Value="0.0" DecimalPoints="2" Step="0.1" Maximum="20" Minimum="-20" HorizontalAlignment="Left" Width="64" Height="26" VerticalAlignment="Top" ValueChanged="Nud_ValueChanged"  DockPanel.Dock="Left" Margin="5,0,0,0"  />
                     </DockPanel>
                     <DockPanel HorizontalAlignment="Left" LastChildFill="False" Margin="0,10,0,0" VerticalAlignment="Top" >
                         <Label Content="{DynamicResource viewTilt}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left"/>
-                        <ui:ValueSlider x:Name="viewAngSlider" HorizontalAlignment="Left" VerticalAlignment="Top" Width="324" Maximum="90" TrueMax="90" Minimum="0" TrueMin="0" Value="0" Height="26" ValueChanged="ViewAngSlider_ValueChanged" DockPanel.Dock="Left" Margin="0,0,0,0"/>
+                        <ui:ValueSlider x:Name="viewAngSlider" HorizontalAlignment="Left" DecimalPoints="2" VerticalAlignment="Top" Width="324" Maximum="90" TrueMax="90" Minimum="0" TrueMin="0" Value="0" Height="26" ValueChanged="ViewAngSlider_ValueChanged" DockPanel.Dock="Left" Margin="0,0,0,0"/>
                     </DockPanel>
                     <DockPanel HorizontalAlignment="Left" LastChildFill="False" Margin="0,10,0,0" VerticalAlignment="Top" >
                         <Label Content="{DynamicResource viewTurn}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left"/>
-                        <ui:ValueSlider x:Name="viewTurnSlider" HorizontalAlignment="Left" VerticalAlignment="Top" Width="370" Maximum="180" TrueMax="180" Minimum="-180" TrueMin="-180" Value="0" Height="26" ValueChanged="ViewTurnSlider_ValueChanged" DockPanel.Dock="Left" Margin="0,0,0,0"/>
+                        <ui:ValueSlider x:Name="viewTurnSlider" HorizontalAlignment="Left" DecimalPoints="2" VerticalAlignment="Top" Width="370" Maximum="180" TrueMax="180" Minimum="-180" TrueMin="-180" Value="0" Height="26" ValueChanged="ViewTurnSlider_ValueChanged" DockPanel.Dock="Left" Margin="0,0,0,0"/>
                     </DockPanel>
                 </StackPanel>
             </TabItem>

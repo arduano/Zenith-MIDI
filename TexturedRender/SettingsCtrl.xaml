@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ui="clr-namespace:BMEngine.UI;assembly=ZenithEngine"
              xmlns:local="clr-namespace:TexturedRender"
              xmlns:bme="clr-namespace:BMEngine;assembly=ZenithEngine"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" x:Class="TexturedRender.SettingsCtrl"
@@ -16,51 +17,56 @@
                         <ResourceDictionary Source="pack://siteoforigin:,,,/Languages/en/textured.xaml" />
                     </ResourceDictionary.MergedDictionaries>
                 </ResourceDictionary>
+                <ResourceDictionary Source="pack://application:,,,/ZenithEngine;component/UI/Material.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <Style TargetType="TabControl" BasedOn="{StaticResource SubTabs}"/>
+            <Style TargetType="TabItem" BasedOn="{StaticResource SubTabItems}"/>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
         <TabControl Margin="10">
             <TabItem Header="{DynamicResource resourcesTab}">
-                <Grid Background="#FFE5E5E5">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="66*"/>
+                        <RowDefinition Height="29*"/>
+                    </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="204*"/>
                         <ColumnDefinition Width="371*"/>
                         <ColumnDefinition Width="199*"/>
                     </Grid.ColumnDefinitions>
-                    <bme:NoteColorPalettePick x:FieldModifier="public" x:Name="paletteList" Margin="10" Grid.Column="2" />
-                    <DockPanel LastChildFill="True" Margin="10">
-                        <TextBlock DockPanel.Dock="Top" Text="{DynamicResource resourcePath}" Margin="0,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" />
-                        <TextBlock DockPanel.Dock="Top" Text="{DynamicResource resourcePathDir}" Margin="0,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" />
-                        <Button x:Name="reloadListButton" Content="{DynamicResource reloadList}" Margin="0,10,0,5" VerticalAlignment="Top" DockPanel.Dock="Top" Click="ReloadButton_Click"/>
-                        <Button x:Name="reloadPackButton" Content="{DynamicResource reloadPack}" Margin="0,0,0,5" VerticalAlignment="Top" DockPanel.Dock="Top" Click="ReloadPackButton_Click"/>
-                        <ListBox x:Name="pluginList" Margin="0" SelectionChanged="PluginList_SelectionChanged"/>
+                    <bme:NoteColorPalettePick x:FieldModifier="public" x:Name="paletteList" Margin="0" Grid.Column="2" Grid.RowSpan="2" />
+                    <DockPanel LastChildFill="True" Grid.RowSpan="2">
+                        <Button x:Name="reloadListButton" Content="{DynamicResource reloadList}" Margin="0,0,0,0" Height="26" DockPanel.Dock="Top" Click="ReloadButton_Click"/>
+                        <Button x:Name="reloadPackButton" Content="{DynamicResource reloadPack}" Margin="0,10,0,0" Height="26" DockPanel.Dock="Top" Click="ReloadPackButton_Click"/>
+                        <Button x:Name="openFolderButton" Content="{DynamicResource openFolder}" Margin="0,10,0,0" Height="26" DockPanel.Dock="Bottom" Click="openFolderButton_Click"/>
+                        <ListBox x:Name="pluginList" Margin="0,10,0,0" SelectionChanged="PluginList_SelectionChanged"/>
                     </DockPanel>
-                    <Image x:Name="previewImg" Grid.Column="1" Margin="0,10,0,103"/>
-                    <TextBox x:Name="pluginDesc" Grid.Column="1" Margin="0,0,0,10" TextWrapping="Wrap" Height="88" VerticalAlignment="Bottom" IsEnabled="False"/>
+                    <Image x:Name="previewImg" Grid.Column="1" Margin="10,0,10,0"/>
+                    <TextBox TextAlignment="Center" x:Name="pluginDesc" Grid.Column="1" Margin="10,10,10,0" TextWrapping="Wrap" IsEnabled="False" Grid.Row="1"/>
                 </Grid>
             </TabItem>
             <TabItem Header="{DynamicResource switchesTab}" Name="switchTab">
-                <Grid Background="#FFE5E5E5">
+                <Grid>
                     <StackPanel Name="switchPanel" Margin="10">
                     </StackPanel>
                 </Grid>
             </TabItem>
             <TabItem Header="{DynamicResource miscTab}">
-                <Grid Background="#FFE5E5E5">
-                    <DockPanel HorizontalAlignment="Left" LastChildFill="False" Margin="10,10,0,0" VerticalAlignment="Top">
+                <StackPanel Margin="10">
+                    <DockPanel HorizontalAlignment="Left" LastChildFill="False" Margin="0,0,0,0" VerticalAlignment="Top">
                         <Label Content="{DynamicResource firstNote}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left"/>
-                        <xctk:DecimalUpDown x:Name="firstNote" FormatString="F0" Value="0" Increment="1"  Maximum="254" Minimum="0" Margin="5,0,0,0" HorizontalAlignment="Left" Width="80" Height="26" VerticalAlignment="Top" ValueChanged="Nud_ValueChanged"  />
+                        <ui:NumberSelect x:Name="firstNote" Value="0" Maximum="254" Minimum="0" Margin="5,0,0,0" HorizontalAlignment="Left" Width="80" Height="26" VerticalAlignment="Top" ValueChanged="Nud_ValueChanged"  />
                         <Label Content="{DynamicResource lastNote}" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top"/>
-                        <xctk:DecimalUpDown x:Name="lastNote" FormatString="F0" Value="127" Increment="1"  Maximum="255" Minimum="1" Margin="5,0,0,0" HorizontalAlignment="Left" Width="80" Height="26" VerticalAlignment="Top" ValueChanged="Nud_ValueChanged"  />
+                        <ui:NumberSelect x:Name="lastNote" Value="127" Maximum="255" Minimum="1" Margin="5,0,0,0" HorizontalAlignment="Left" Width="80" Height="26" VerticalAlignment="Top" ValueChanged="Nud_ValueChanged"  />
                     </DockPanel>
-                    <DockPanel HorizontalAlignment="Left" LastChildFill="False" Margin="10,41,0,0" VerticalAlignment="Top" >
+                    <DockPanel HorizontalAlignment="Left" LastChildFill="False" Margin="0,10,0,0" VerticalAlignment="Top" Width="528" >
                         <Label Content="{DynamicResource noteScreenTime}" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top"/>
-                        <Slider x:Name="noteDeltaScreenTime" IsSnapToTickEnabled="True" TickPlacement="BottomRight" HorizontalAlignment="Left" Margin="5,5,0,0" VerticalAlignment="Top" Width="236" Maximum="13" Minimum="2" Value="1" TickFrequency="0.2" ValueChanged="NoteDeltaScreenTime_ValueChanged"/>
-                        <xctk:DecimalUpDown x:Name="screenTime_nud" FormatString="F2" Value="1" Increment="1"  Maximum="16000" Minimum="1" HorizontalAlignment="Left" Width="80" Height="26" VerticalAlignment="Top" ValueChanged="ScreenTime_nud_ValueChanged"  DockPanel.Dock="Left"  />
+                        <ui:ValueSlider x:Name="noteDeltaScreenTime" Maximum="12" DecimalPoints="2" Minimum="2" TrueMin="1" TrueMax="10000" ValueChanged="NoteDeltaScreenTime_ValueChanged" Width="305" VerticalAlignment="Top"/>
                     </DockPanel>
-                    <CheckBox x:Name="blackNotesAbove" Content="{DynamicResource blackNotesAbove}" HorizontalAlignment="Left" Margin="10,75,0,0" VerticalAlignment="Top" Checked="BlackNotesAbove_Checked" Unchecked="BlackNotesAbove_Checked"/>
-                </Grid>
+                    <ui:BetterCheckbox x:Name="blackNotesAbove" Text="{DynamicResource blackNotesAbove}" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" CheckToggled="BlackNotesAbove_Checked" />
+                </StackPanel>
             </TabItem>
         </TabControl>
     </Grid>

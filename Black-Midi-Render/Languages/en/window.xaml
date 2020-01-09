@@ -24,6 +24,9 @@
     <system:String x:Key="superRes">SSAA</system:String>
     <system:String x:Key="superResWarning">Increasing SSAA can greatly increase the smoothness of the pixels but takes much more performance</system:String>
     <system:String x:Key="language">Language</system:String>
+    <system:String x:Key="renderResolution">Render Resolution</system:String>
+    <system:String x:Key="previewOptions">Preview Options</system:String>
+    <system:String x:Key="renderOptions">Render Options</system:String>
     
     <!--Plugins Page-->
     <system:String x:Key="reload">Reload</system:String>

@@ -354,7 +354,7 @@
         </Setter>
     </Style>
     <Style TargetType="{x:Type TextBox}">
-        <Setter Property="Background" Value="#666666"/>
+        <Setter Property="Background" Value="#444444"/>
         <Setter Property="Foreground" Value="White"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="Padding" Value="3"/>
@@ -364,7 +364,7 @@
                     <Grid>
                         <Border Background="Black">
                             <Border.Effect>
-                                <DropShadowEffect ShadowDepth="0" BlurRadius="5"/>
+                                <DropShadowEffect x:Name="dropShadow" ShadowDepth="0" BlurRadius="5"/>
                             </Border.Effect>
                         </Border>
                         <Border Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" 
@@ -378,6 +378,26 @@
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Value="#333333" Property="Background" />
                         </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsEnabled" Value="True"/>
+                                <Condition Property="IsMouseOver" Value="True"/>
+                            </MultiTrigger.Conditions>
+                            <MultiTrigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="dropShadow" Storyboard.TargetProperty="BlurRadius" Duration="0:0:0.1" To="10" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </MultiTrigger.EnterActions>
+                            <MultiTrigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="dropShadow" Storyboard.TargetProperty="BlurRadius" Duration="0:0:0.1" To="5" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </MultiTrigger.ExitActions>
+                        </MultiTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

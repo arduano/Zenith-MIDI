@@ -12,6 +12,7 @@
     <!--Resources-->
     <system:String x:Key="resourcePath">Resource packs path:</system:String>
     <system:String x:Key="resourcePathDir">Plugins\Assets\Textured\Resources</system:String>
+    <system:String x:Key="openFolder">Open Folder</system:String>
     <system:String x:Key="reloadList">Reload List</system:String>
     <system:String x:Key="reloadPack">Reload Pack</system:String>
 

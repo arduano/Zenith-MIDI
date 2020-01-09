@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Remoting;
 using System.Security.Cryptography;
 using System.Text;
@@ -50,6 +52,8 @@ namespace TexturedRender
             add { paletteList.PaletteChanged += value; }
             remove { paletteList.PaletteChanged -= value; }
         }
+        
+        string packPath = "Plugins\\Assets\\Textured\\Resources";
 
         BitmapImage BitmapToImageSource(Bitmap bitmap)
         {
@@ -72,6 +76,8 @@ namespace TexturedRender
         {
             this.settings = settings;
             InitializeComponent();
+            noteDeltaScreenTime.nudToSlider = v => Math.Log(v, 2);
+            noteDeltaScreenTime.sliderToNud = v => Math.Pow(2, v);
             inited = true;
             paletteList.SetPath("Plugins\\Assets\\Palettes", 1f);
             ReloadPacks();
@@ -80,7 +86,7 @@ namespace TexturedRender
 
         void WriteDefaultPack()
         {
-            string dir = "Plugins\\Assets\\Textured\\Resources\\Default";
+            string dir = Path.Combine(packPath, "Default");
             if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
             Properties.Resources.keyBlack.Save(dir + "\\keyBlack.png");
             Properties.Resources.keyBlackPressed.Save(dir + "\\keyBlackPressed.png");
@@ -107,7 +113,7 @@ namespace TexturedRender
                 lastSelectedName = (string)((ListBoxItem)pluginList.SelectedItem).Content;
             }
 
-            string dir = "Plugins\\Assets\\Textured\\Resources";
+            string dir = packPath;
 
             resourcePacks.Clear();
             WriteDefaultPack();
@@ -160,7 +166,7 @@ namespace TexturedRender
                     pluginList.Items.Add(new ListBoxItem()
                     {
                         Content = p.filename.Split('\\').Last(),
-                        Foreground = Brushes.Black
+                        Foreground = Brushes.White
                     });
                 else
                     pluginList.Items.Add(new ListBoxItem()
@@ -948,7 +954,7 @@ namespace TexturedRender
                 var pack = LoadPack(p.filename, p.type);
                 if (!pack.error)
                 {
-                    pluginDesc.Foreground = Brushes.Black;
+                    pluginDesc.Foreground = Brushes.White;
                     settings.currPack = pack;
                     settings.lastPackChangeTime = DateTime.Now.Ticks;
                 }
@@ -1007,7 +1013,7 @@ namespace TexturedRender
                 if (!pack.error)
                 {
                     pluginDesc.Text = pack.description;
-                    pluginDesc.Foreground = Brushes.Black;
+                    pluginDesc.Foreground = Brushes.White;
                     settings.currPack = pack;
                     settings.lastPackChangeTime = DateTime.Now.Ticks;
                 }
@@ -1029,7 +1035,7 @@ namespace TexturedRender
         {
             firstNote.Value = settings.firstNote;
             lastNote.Value = settings.lastNote - 1;
-            noteDeltaScreenTime.Value = Math.Log(settings.deltaTimeOnScreen, 2);
+            noteDeltaScreenTime.Value = settings.deltaTimeOnScreen;
             blackNotesAbove.IsChecked = settings.blackNotesAbove;
             paletteList.SelectImage(settings.palette);
         }
@@ -1040,22 +1046,6 @@ namespace TexturedRender
         }
 
         bool screenTimeLock = false;
-        private void ScreenTime_nud_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            if (!inited) return;
-            try
-            {
-                if (screenTimeLock) return;
-                screenTimeLock = true;
-                noteDeltaScreenTime.Value = Math.Log((double)screenTime_nud.Value, 2);
-                settings.deltaTimeOnScreen = (double)screenTime_nud.Value;
-                screenTimeLock = false;
-            }
-            catch
-            {
-                screenTimeLock = false;
-            }
-        }
 
         private void BlackNotesAbove_Checked(object sender, RoutedEventArgs e)
         {
@@ -1074,8 +1064,7 @@ namespace TexturedRender
             {
                 if (screenTimeLock) return;
                 screenTimeLock = true;
-                settings.deltaTimeOnScreen = Math.Pow(2, noteDeltaScreenTime.Value);
-                screenTime_nud.Value = (decimal)settings.deltaTimeOnScreen;
+                settings.deltaTimeOnScreen = noteDeltaScreenTime.Value;
                 screenTimeLock = false;
             }
             catch (NullReferenceException)
@@ -1084,17 +1073,24 @@ namespace TexturedRender
             }
         }
 
-        private void Nud_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        private void Nud_ValueChanged(object sender, RoutedPropertyChangedEventArgs<decimal> e)
         {
             if (!inited) return;
             try
             {
                 if (sender == firstNote) settings.firstNote = (int)firstNote.Value;
                 if (sender == lastNote) settings.lastNote = (int)lastNote.Value + 1;
-                if (sender == noteDeltaScreenTime) settings.deltaTimeOnScreen = (int)noteDeltaScreenTime.Value;
             }
             catch (NullReferenceException) { }
             catch (InvalidOperationException) { }
+        }
+
+        private void openFolderButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!packPath.Contains(":\\") && !packPath.Contains(":/"))
+                Process.Start("explorer.exe", System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), packPath));
+            else
+                Process.Start("explorer.exe", packPath);
         }
     }
 }

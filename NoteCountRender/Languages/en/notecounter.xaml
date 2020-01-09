@@ -16,7 +16,7 @@
     <system:String x:Key="font">Font</system:String>
 
     <system:String x:Key="reload">Reload</system:String>
-    <system:String x:Key="noteTextPath">Location: Plugins/Assets/NoteCounter/Templates</system:String>
+    <system:String x:Key="openFolder">Open Folder</system:String>
 
     <system:String x:Key="savePath">Save Location</system:String>
     <system:String x:Key="browse">Browse</system:String>
