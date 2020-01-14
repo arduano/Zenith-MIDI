@@ -52,14 +52,15 @@ namespace MIDITrailRender
             FOVSlider.Value = settings.FOV / Math.PI * 180;
             viewAngSlider.Value = settings.camAng / Math.PI * 180;
             viewTurnSlider.Value = settings.camRot / Math.PI * 180;
-            viewTurnSlider.Value = settings.camRot / Math.PI * 180;
+            viewSpinSlider.Value = settings.camSpin / Math.PI * 180;
             renderDistSlider.Value = settings.viewdist;
             renderDistBackSlider.Value = settings.viewback;
+            verticalNotes.IsChecked = settings.verticalNotes;
             paletteList.SelectImage(settings.palette);
             auraselect.LoadSettings();
         }
 
-        ProfileManager profiles = new ProfileManager("Plugins/MIDITrailRender.json");
+        ProfileManager profiles = new ProfileManager("Plugins/Assets/Textured/Profiles.json");
         public SettingsCtrl(Settings settings) : base()
         {
             InitializeComponent();
@@ -185,6 +186,7 @@ namespace MIDITrailRender
             FOVSlider.Value = 60;
             viewAngSlider.Value = 32.08;
             viewTurnSlider.Value = 0;
+            viewSpinSlider.Value = 0;
             renderDistSlider.Value = 14;
             renderDistBackSlider.Value = 0.2;
         }
@@ -197,6 +199,7 @@ namespace MIDITrailRender
             FOVSlider.Value = 60;
             viewAngSlider.Value = 34.98;
             viewTurnSlider.Value = 0;
+            viewSpinSlider.Value = 0;
             renderDistSlider.Value = 5.52;
             renderDistBackSlider.Value = 0.2;
         }
@@ -209,6 +212,7 @@ namespace MIDITrailRender
             FOVSlider.Value = 60;
             viewAngSlider.Value = 39.62;
             viewTurnSlider.Value = 0;
+            viewSpinSlider.Value = 0;
             renderDistSlider.Value = 3.06;
             renderDistBackSlider.Value = 0.2;
         }
@@ -221,6 +225,7 @@ namespace MIDITrailRender
             FOVSlider.Value = 26;
             viewAngSlider.Value = 90;
             viewTurnSlider.Value = -90;
+            viewSpinSlider.Value = 0;
             renderDistSlider.Value = 7.93;
             renderDistBackSlider.Value = 0.64;
         }
@@ -233,6 +238,7 @@ namespace MIDITrailRender
             FOVSlider.Value = 60;
             viewAngSlider.Value = 33.24;
             viewTurnSlider.Value = -13.84;
+            viewSpinSlider.Value = 0;
             renderDistSlider.Value = 14;
             renderDistBackSlider.Value = 0.98;
         }
@@ -311,11 +317,18 @@ namespace MIDITrailRender
                 MessageBox.Show("Please write a name for the profile");
                 return;
             }
+            if (profiles.Profiles.Contains(profileName.Text))
+            {
+                if (MessageBox.Show("Are you sure you want to override the profile \"" + profileName.Text + "\"?", "Override Profile", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                {
+                    return;
+                }
+            }
             profiles.Add(settings, profileName.Text);
             ReloadProfiles();
             foreach (var i in profileSelect.Items)
             {
-                if((string)((ComboBoxItem)i).Content == profileName.Text)
+                if ((string)((ComboBoxItem)i).Content == profileName.Text)
                 {
                     profileSelect.SelectedItem = i;
                     break;
@@ -348,11 +361,35 @@ namespace MIDITrailRender
             profileSelect.Items.Clear();
             foreach (var p in ps)
             {
-                profileSelect.Items.Add(new ComboBoxItem()
+                var item = new ComboBoxItem()
                 {
                     Content = p
-                });
+                };
+                profileSelect.Items.Add(item);
             }
+        }
+
+        private void verticalNotes_CheckToggled(object sender, RoutedPropertyChangedEventArgs<bool> e)
+        {
+            try
+            {
+                settings.verticalNotes = verticalNotes.IsChecked;
+            }
+            catch { }
+        }
+
+        private void viewSpinSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            try
+            {
+                settings.camSpin = (double)viewSpinSlider.Value / 180 * Math.PI;
+            }
+            catch { }
+        }
+
+        private void profileSelect_DropDownOpened(object sender, EventArgs e)
+        {
+            profileSelect.SelectedIndex = -1;
         }
     }
 }

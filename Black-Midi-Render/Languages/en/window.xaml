@@ -8,8 +8,8 @@
     
     <!--Tab Names-->
     <system:String x:Key="generalTab">General</system:String>
-    <system:String x:Key="pluginsTab">Plugins</system:String>
-    <system:String x:Key="pluginSettingsTab">Plugin Settings</system:String>
+    <system:String x:Key="modulesTab">Modules</system:String>
+    <system:String x:Key="moduleSettingsTab">Module Settings</system:String>
     <system:String x:Key="renderTab">Render</system:String>
 
     <!--Main Page-->

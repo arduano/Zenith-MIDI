@@ -26,6 +26,7 @@
                  KeyDown="TextBox_KeyDown"
                      Foreground="White"
                      Text="0"
+                     CaretBrush="White"
                      RenderTransformOrigin="0.5,0.5" TextChanged="TextBox_TextChanged" LostFocus="TextBox_LostFocus" TextInput="TextBox_TextInput" FontSize="16" Margin="0,2,0,0">
                 <TextBox.Style>
                     <Style TargetType="TextBox">

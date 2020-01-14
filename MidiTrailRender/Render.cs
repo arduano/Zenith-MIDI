@@ -852,6 +852,7 @@ void main()
         double viewoffset;
         double camAng;
         double camRot;
+        double camSpin;
 
         double circleRadius;
         #endregion
@@ -909,6 +910,7 @@ void main()
             viewoffset = -settings.viewOffset;
             camAng = settings.camAng;
             camRot = settings.camRot;
+            camSpin = settings.camSpin;
             fov /= 1;
             for (int i = 0; i < 514; i++) keyColors[i] = Color4.Transparent;
             for (int i = 0; i < 256; i++) auraSize[i] = 0;
@@ -977,9 +979,12 @@ void main()
             noteBuffPos = 0;
             GL.UseProgram(noteShader);
 
-            mvp = Matrix4.Identity *
+            mvp = Matrix4.Identity;
+            if (settings.verticalNotes) mvp *= Matrix4.CreateRotationX(-(float)Math.PI / 2);
+            mvp = mvp *
                 Matrix4.CreateTranslation((float)viewpan, -(float)viewheight, -(float)viewoffset) *
                 Matrix4.CreateScale(1, 1, -1) *
+                Matrix4.CreateRotationZ((float)camSpin) *
                 Matrix4.CreateRotationY((float)camRot) *
                 Matrix4.CreateRotationX((float)camAng) *
                 Matrix4.CreatePerspectiveFieldOfView((float)fov, (float)aspect, 0.01f, 400)
@@ -1127,7 +1132,7 @@ void main()
                                 y1 = viewdist * deltaTimeOnScreen;
                             y1 /= deltaTimeOnScreen / viewdist;
                             y2 /= deltaTimeOnScreen / viewdist;
-                            if (y2 < viewoffset) y2 = y1;
+                            if ((settings.verticalNotes && y2 < viewheight) || (!settings.verticalNotes && y2 < viewoffset)) y2 = y1;
                             if (n.start < midiTime && (n.end > midiTime || !n.hasEnded))
                             {
                                 double factor = 0.5;
@@ -1348,7 +1353,8 @@ void main()
             LastNoteCount = nc;
             #endregion
 
-            if (viewoffset < 0)
+
+            if ((!settings.verticalNotes && viewoffset < 0) || (settings.verticalNotes && viewheight < 0.025))
             {
                 if (auraEnabled)
                 {
@@ -1409,10 +1415,15 @@ void main()
 
             GL.BindTexture(TextureTarget.Texture2D, auraTex);
 
-            mvp = Matrix4.Identity *
+            mvp = Matrix4.Identity;
+            if (settings.verticalNotes) mvp *= 
+                    Matrix4.CreateRotationX(-(float)Math.PI / 2) *
+                    Matrix4.CreateTranslation(0, 0.025f, 0);
+            mvp *= 
                 Matrix4.CreateTranslation((float)viewpan, -(float)viewheight, -(float)viewoffset) *
                 Matrix4.CreateScale(1, 1, -1) *
-            Matrix4.CreateRotationY((float)camRot) *
+                Matrix4.CreateRotationZ((float)camSpin) *
+                Matrix4.CreateRotationY((float)camRot) *
                 Matrix4.CreateRotationX((float)camAng) *
                 Matrix4.CreatePerspectiveFieldOfView((float)fov, (float)aspect, 0.01f, 400)
                 ;
@@ -1664,9 +1675,11 @@ void main()
                         Matrix4.CreateTranslation(0, -0.3f, 0) *
                         (sameWidth ? Matrix4.CreateScale(wdth, wdth2 * 0.9f, wdth2 * 1.01f) : Matrix4.CreateScale(wdth2, wdth2, wdth2)) *
                         Matrix4.CreateTranslation(x1, 0, 0) *
+                        (settings.verticalNotes ? Matrix4.CreateTranslation(0, 0, 0.05f) : Matrix4.Identity) *
                         Matrix4.CreateTranslation((float)viewpan, -(float)viewheight, -(float)viewoffset) *
                         Matrix4.CreateScale(1, 1, -1) *
-                    Matrix4.CreateRotationY((float)camRot) *
+                        Matrix4.CreateRotationZ((float)camSpin) *
+                        Matrix4.CreateRotationY((float)camRot) *
                         Matrix4.CreateRotationX((float)camAng) *
                         Matrix4.CreatePerspectiveFieldOfView((float)fov, (float)aspect, 0.01f, 400)
                     ;
@@ -1739,8 +1752,10 @@ void main()
                     Matrix4.CreateTranslation(0, vertOffset, 0) *
                     Matrix4.CreateScale(wdth, wdth / scale, wdth) *
                     Matrix4.CreateTranslation(x1, 0, 0) *
+                    (settings.verticalNotes ? Matrix4.CreateTranslation(0, 0, 0.05f) : Matrix4.Identity) *
                     Matrix4.CreateTranslation((float)viewpan, -(float)viewheight, -(float)viewoffset) *
                     Matrix4.CreateScale(1, 1, -1) *
+                    Matrix4.CreateRotationZ((float)camSpin) *
                     Matrix4.CreateRotationY((float)camRot) *
                     Matrix4.CreateRotationX((float)camAng) *
                     Matrix4.CreatePerspectiveFieldOfView((float)fov, (float)aspect, 0.01f, 400)

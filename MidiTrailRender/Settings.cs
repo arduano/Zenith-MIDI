@@ -19,8 +19,11 @@ namespace MIDITrailRender
         public double viewPan = 0.0;
         public double camAng = 0.56;
         public double camRot = 0;
+        public double camSpin = 0;
         public double viewdist = 14;
         public double viewback = 0.2;
+
+        public bool verticalNotes = false;
 
         public double noteDownSpeed = 0.6;
         public double noteUpSpeed = 0.2;

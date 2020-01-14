@@ -16,24 +16,6 @@ namespace TexturedRender
 {
     public class Render : IPluginRender
     {
-        #region PreviewConvert
-        BitmapImage BitmapToImageSource(Bitmap bitmap)
-        {
-            using (MemoryStream memory = new MemoryStream())
-            {
-                bitmap.Save(memory, System.Drawing.Imaging.ImageFormat.Bmp);
-                memory.Position = 0;
-                BitmapImage bitmapimage = new BitmapImage();
-                bitmapimage.BeginInit();
-                bitmapimage.StreamSource = memory;
-                bitmapimage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapimage.EndInit();
-
-                return bitmapimage;
-            }
-        }
-        #endregion
-
         public string Name => "Textured";
 
         public string Description => "Plugin for loading and rendering custom resource packs, " +
@@ -224,7 +206,7 @@ void main()
         }
         #endregion
 
-        void loadImage(Bitmap image, int texID, bool loop)
+        void loadImage(Bitmap image, int texID, bool loop, bool linear = false)
         {
             GL.BindTexture(TextureTarget.Texture2D, texID);
             BitmapData data = image.LockBits(new System.Drawing.Rectangle(0, 0, image.Width, image.Height),
@@ -349,8 +331,8 @@ void main()
                 currPack.blackKeyPressedTexID = GL.GenTexture();
                 if (currPack.useBar) currPack.barTexID = GL.GenTexture();
 
-                loadImage(currPack.whiteKeyTex, currPack.whiteKeyTexID, false);
-                loadImage(currPack.whiteKeyPressedTex, currPack.whiteKeyPressedTexID, false);
+                loadImage(currPack.whiteKeyTex, currPack.whiteKeyTexID, false, currPack.linearScaling);
+                loadImage(currPack.whiteKeyPressedTex, currPack.whiteKeyPressedTexID, false, currPack.linearScaling);
                 loadImage(currPack.blackKeyTex, currPack.blackKeyTexID, false);
                 loadImage(currPack.blackKeyPressedTex, currPack.blackKeyPressedTexID, false);
 
@@ -358,15 +340,15 @@ void main()
                 {
                     currPack.whiteKeyLeftTexID = GL.GenTexture();
                     currPack.whiteKeyPressedLeftTexID = GL.GenTexture();
-                    loadImage(currPack.whiteKeyLeftTex, currPack.whiteKeyLeftTexID, false);
-                    loadImage(currPack.whiteKeyPressedLeftTex, currPack.whiteKeyPressedLeftTexID, false);
+                    loadImage(currPack.whiteKeyLeftTex, currPack.whiteKeyLeftTexID, false, currPack.linearScaling);
+                    loadImage(currPack.whiteKeyPressedLeftTex, currPack.whiteKeyPressedLeftTexID, false, currPack.linearScaling);
                 }
                 if (currPack.whiteKeyRightTex != null)
                 {
                     currPack.whiteKeyRightTexID = GL.GenTexture();
                     currPack.whiteKeyPressedRightTexID = GL.GenTexture();
-                    loadImage(currPack.whiteKeyRightTex, currPack.whiteKeyRightTexID, false);
-                    loadImage(currPack.whiteKeyPressedRightTex, currPack.whiteKeyPressedRightTexID, false);
+                    loadImage(currPack.whiteKeyRightTex, currPack.whiteKeyRightTexID, false, currPack.linearScaling);
+                    loadImage(currPack.whiteKeyPressedRightTex, currPack.whiteKeyPressedRightTexID, false, currPack.linearScaling);
                 }
 
                 if (currPack.useBar) loadImage(currPack.barTex, currPack.barTexID, false);
@@ -421,7 +403,7 @@ void main()
             this.renderSettings = settings;
             SettingsControl = new SettingsCtrl(this.settings);
             ((SettingsCtrl)SettingsControl).PaletteChanged += () => { ReloadTrackColors(); };
-            PreviewImage = BitmapToImageSource(Properties.Resources.pluginPreview);
+            PreviewImage = PluginUtils.BitmapToImageSource(Properties.Resources.pluginPreview);
 
             for (int i = 0; i < blackKeys.Length; i++) blackKeys[i] = isBlackNote(i);
             int b = 0;
@@ -527,6 +509,7 @@ void main()
             GL.EnableVertexAttribArray(3);
 
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            GL.BlendEquationSeparate(BlendEquationMode.FuncAdd, BlendEquationMode.Max);
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, finalCompositeBuff);
             GL.Viewport(0, 0, renderSettings.width, renderSettings.height);

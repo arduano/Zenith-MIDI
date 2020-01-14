@@ -68,6 +68,7 @@ namespace TexturedRender
         public string filepath;
         public PackType filetype;
 
+        public List<string> switchOrder = new List<string>();
         public Dictionary<string, string> switchValues = new Dictionary<string, string>();
         public Dictionary<string, string[]> switchChoices = new Dictionary<string, string[]>();
 
@@ -93,6 +94,8 @@ namespace TexturedRender
         public double blackNote2setOffset = 0;
         public double blackNote3setOffset = 0;
         public double blackNoteScale = 1;
+
+        public bool linearScaling = true;
 
         public double[] advancedBlackKeyOffsets = new double[] { 0, 0, 0, 0, 0 };
 

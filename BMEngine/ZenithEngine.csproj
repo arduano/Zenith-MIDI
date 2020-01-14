@@ -101,6 +101,7 @@
     <Compile Include="NoteColorPalettePick.xaml.cs">
       <DependentUpon>NoteColorPalettePick.xaml</DependentUpon>
     </Compile>
+    <Compile Include="PluginUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenderSettings.cs" />
     <Compile Include="UI\BBinding.cs" />

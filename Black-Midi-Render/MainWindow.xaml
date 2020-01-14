@@ -252,7 +252,7 @@
                         </DockPanel>
                     </Grid>
                 </TabItem>
-                <TabItem Header="{DynamicResource pluginsTab}" IsEnabled="{DynamicResource notRendering}">
+                <TabItem Header="{DynamicResource modulesTab}" IsEnabled="{DynamicResource notRendering}">
                     <DockPanel Margin="10">
                         <TextBox DockPanel.Dock="Bottom" Name="pluginDescription" Margin="0,10,0,0" MinHeight="100" TextAlignment="Center" Grid.Row="1" TextWrapping="Wrap" IsEnabled="False"/>
                         <DockPanel>
@@ -264,7 +264,7 @@
                         </DockPanel>
                     </DockPanel>
                 </TabItem>
-                <TabItem Header="{DynamicResource pluginSettingsTab}" IsEnabled="{DynamicResource notRendering}">
+                <TabItem Header="{DynamicResource moduleSettingsTab}" IsEnabled="{DynamicResource notRendering}">
                     <Grid Name="pluginsSettings">
 
                     </Grid>
@@ -303,7 +303,7 @@
                             </DockPanel>
                             <DockPanel Height="30" LastChildFill="False" Margin="0,30,0,0" VerticalAlignment="Top">
                                 <ui:BetterRadio IsEnabled="{DynamicResource notRendering}" ParentDepth="3" x:Name="bitrateOption" Text="{DynamicResource bitrate}" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="True" DockPanel.Dock="Left" Margin="0,6,0,0"/>
-                                <ui:NumberSelect x:Name="bitrate" Value="20000" Maximum="1000000" Minimum="1" HorizontalAlignment="Left" Width="118" DockPanel.Dock="Left" Margin="10,0,0,0" >
+                                <ui:NumberSelect x:Name="bitrate" Maximum="2000000" Minimum="1" Value="20000" HorizontalAlignment="Left" Width="118" DockPanel.Dock="Left" Margin="10,0,0,0" >
                                     <ui:NumberSelect.IsEnabled>
                                         <MultiBinding Converter="{StaticResource AndValueConverter}">
                                             <Binding ElementName="bitrateOption" Path="IsChecked" />

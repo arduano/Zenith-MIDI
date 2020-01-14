@@ -51,6 +51,7 @@
 
     <system:String x:Key="viewTilt">Camera Tilt</system:String>
     <system:String x:Key="viewTurn">Camera Turn</system:String>
+    <system:String x:Key="viewSpin">Camera Spin</system:String>
     <system:String x:Key="offsetX">X</system:String>
     <system:String x:Key="offsetY">Y</system:String>
     <system:String x:Key="offsetZ">Z</system:String>

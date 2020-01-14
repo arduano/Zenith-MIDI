@@ -52,7 +52,7 @@ namespace TexturedRender
             add { paletteList.PaletteChanged += value; }
             remove { paletteList.PaletteChanged -= value; }
         }
-        
+
         string packPath = "Plugins\\Assets\\Textured\\Resources";
 
         BitmapImage BitmapToImageSource(Bitmap bitmap)
@@ -464,7 +464,17 @@ namespace TexturedRender
                         dynamic swValArr;
                         swName = s.name;
                         if (swName == null)
-                            throw new Exception("missing property 'name' on switch");
+                        {
+                            string titleText = s.text;
+                            if (titleText == null)
+                                throw new Exception("missing property 'name' or 'text' on switch");
+                            else
+                            {
+                                pack.switchOrder.Add(titleText);
+                                continue;
+                            }
+                        }
+                        pack.switchOrder.Add(swName);
                         swValArr = s.values;
                         if (swValArr == null) throw new Exception("missing property 'values' on switch");
                         if (swValArr.GetType() != typeof(JArray)) throw new Exception("'values' must be a string array");
@@ -528,6 +538,11 @@ namespace TexturedRender
                 try
                 {
                     pack.blackKeyDefaultWhite = parseType<bool>(pack, data.blackKeysWhiteShade);
+                }
+                catch (RuntimeBinderException) { }
+                try
+                {
+                    pack.linearScaling = parseType<bool>(pack, data.linearTextureScaling);
                 }
                 catch (RuntimeBinderException) { }
                 try
@@ -973,22 +988,31 @@ namespace TexturedRender
                 if (pack.switchChoices != null && pack.switchChoices.Count != 0)
                 {
                     switchTab.Visibility = Visibility.Visible;
-                    foreach (var s in pack.switchChoices.Keys)
+                    bool first = true;
+                    foreach (var s in pack.switchOrder)
                     {
-                        var menu = new ComboBox();
-                        menu.Tag = s;
-                        foreach (var v in pack.switchChoices[s])
+                        if (pack.switchChoices.ContainsKey(s))
                         {
-                            menu.Items.Add(new ComboBoxItem() { Content = v });
+                            var menu = new ComboBox();
+                            menu.Tag = s;
+                            foreach (var v in pack.switchChoices[s])
+                            {
+                                menu.Items.Add(new ComboBoxItem() { Content = v });
+                            }
+                            var dock = new DockPanel();
+                            dock.HorizontalAlignment = HorizontalAlignment.Left;
+                            dock.Children.Add(new Label() { Content = s });
+                            dock.Children.Add(menu);
+                            switchPanel.Children.Add(dock);
+                            menu.SelectedIndex = 0;
+                            pack.switchValues[s] = pack.switchChoices[s][0];
+                            menu.SelectionChanged += Menu_SelectionChanged;
                         }
-                        var dock = new DockPanel();
-                        dock.HorizontalAlignment = HorizontalAlignment.Left;
-                        dock.Children.Add(new Label() { Content = s });
-                        dock.Children.Add(menu);
-                        switchPanel.Children.Add(dock);
-                        menu.SelectedIndex = 0;
-                        pack.switchValues[s] = pack.switchChoices[s][0];
-                        menu.SelectionChanged += Menu_SelectionChanged;
+                        else
+                        {
+                            switchPanel.Children.Add(new Label() { Content = s, FontSize = 16, Margin = first ? new Thickness(0) : new Thickness(0, 10, 0, 0) });
+                        }
+                        first = false;
                     }
                 }
                 pluginDesc.Text = pack.description;
