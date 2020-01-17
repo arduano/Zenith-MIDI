@@ -215,7 +215,7 @@ void main()
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0,
                 OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
 
-            if (false)
+            if (linear)
             {
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
@@ -386,9 +386,11 @@ void main()
 
         public void Dispose()
         {
-            GL.DeleteBuffers(3, new int[] { vertexBufferID, colorBufferID, uvBufferID });
+            GL.DeleteBuffers(3, new int[] { vertexBufferID, colorBufferID, uvBufferID, indexBufferId, texIDBufferID });
 
             GL.DeleteProgram(quadShader);
+            GL.DeleteProgram(inverseQuadShader);
+            GL.DeleteProgram(evenquadShader);
             quadVertexbuff = null;
             quadColorbuff = null;
             quadUVbuff = null;
@@ -652,7 +654,7 @@ void main()
                         if (n.start < renderCutoff + maxBottomCapSize)
                         {
                             nc++;
-                            int k = n.note;
+                            int k = n.key;
                             if (blackabove && !black && blackKeys[k]) continue;
                             if (blackabove && black && !blackKeys[k]) continue;
                             if (!(k >= firstNote && k < lastNote)) continue;
@@ -780,7 +782,7 @@ void main()
                             quadVertexbuff[pos++] = y2;
 
                             pos = quadBufferPos * 16;
-                            if (blackKeys[n.note])
+                            if (blackKeys[n.key])
                             {
                                 float multiply = (float)currNoteTex.darkenBlackNotes;
                                 r = coll.R * multiply;

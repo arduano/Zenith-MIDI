@@ -44,6 +44,13 @@
     <DockPanel>
         <Grid>
             <Grid Name="midiLoaded" IsEnabled="{DynamicResource midiLoaded}"></Grid>
+            <Grid Name="midiNotLoaded">
+                <Grid.IsEnabled>
+                    <MultiBinding Converter="{StaticResource NotValueConverter}">
+                        <Binding ElementName="midiLoaded" Path="IsEnabled"/>
+                    </MultiBinding>
+                </Grid.IsEnabled>
+            </Grid>
             <Grid Name="notRendering" IsEnabled="{DynamicResource notRendering}"></Grid>
             <Grid Name="notPreviewing" IsEnabled="{DynamicResource notPreviewing}"></Grid>
             <Grid Name="notPreviewingOrRendering">
@@ -137,7 +144,14 @@
                                     <ColumnDefinition/>
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
-                                <Button Margin="0,0,3,0" Content="{DynamicResource load}" Padding="30,0,30,0" x:Name="browseMidiButton" Click="LoadButton_Click" IsEnabled="{Binding IsEnabled, ElementName=notPreviewingOrRendering}" DockPanel.Dock="Left"/>
+                                <Button Margin="0,0,3,0" Content="{DynamicResource load}" Padding="30,0,30,0" x:Name="browseMidiButton" Click="LoadButton_Click" DockPanel.Dock="Left">
+                                    <Button.IsEnabled>
+                                        <MultiBinding Converter="{StaticResource AndValueConverter}">
+                                            <Binding ElementName="notPreviewingOrRendering" Path="IsEnabled"/>
+                                            <Binding ElementName="midiNotLoaded" Path="IsEnabled"/>
+                                        </MultiBinding>
+                                    </Button.IsEnabled>
+                                </Button>
                                 <Button Margin="3,0,0,0" Grid.Column="1" x:Name="unloadButton" Content="{DynamicResource unload}" Padding="20,0,20,0" Click="UnloadButton_Click" DockPanel.Dock="Left">
                                     <Button.IsEnabled>
                                         <MultiBinding Converter="{StaticResource AndValueConverter}">
@@ -216,7 +230,7 @@
                                     <TextBlock DockPanel.Dock="Top" TextWrapping="Wrap" Text="{DynamicResource zenithRenderWarning}" VerticalAlignment="Top" Margin="5,5,0,5" HorizontalAlignment="Left"/>
                                     <TextBlock DockPanel.Dock="Top" TextWrapping="Wrap" Text="{DynamicResource superResWarning}" VerticalAlignment="Top" Margin="5,5,0,5" HorizontalAlignment="Left"/>
                                 </DockPanel>
-                                <DockPanel LastChildFill="True" Height="26" Margin="0,10,0,10" VerticalAlignment="Top">
+                                <DockPanel LastChildFill="True" Height="26" Margin="0,10,0,20" VerticalAlignment="Top">
                                     <ui:BetterCheckbox x:Name="useBGImage" Text="{DynamicResource useBackgroundImage}" HorizontalAlignment="Left" DockPanel.Dock="Left" CheckToggled="UseBGImage_Checked" Margin="0,4,0,0"/>
                                     <Button x:Name="browseBG" IsEnabled="{Binding ElementName=useBGImage, Path=IsChecked}" Content="{DynamicResource browse}" Padding="15,1,15,1" HorizontalAlignment="Left" DockPanel.Dock="Left" Margin="5,0,0,0" Click="BrowseBG_Click"/>
                                     <TextBox x:Name="bgImagePath" Text="" DockPanel.Dock="Right" TextWrapping="Wrap" VerticalAlignment="Stretch" Margin="5,0,0,0" IsEnabled="False"/>

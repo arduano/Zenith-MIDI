@@ -333,7 +333,7 @@ void main()
                 {
                     if ((settings.blackNotesAbove && !settings.sameWidthNotes))
                     {
-                        if ((noteKey == 0) ^ !blackKeys[n.note]) continue;
+                        if ((noteKey == 0) ^ !blackKeys[n.key]) continue;
                     }
                     if (n.end >= midiTime || !n.hasEnded)
                     {
@@ -342,7 +342,7 @@ void main()
                             unsafe
                             {
                                 nc++;
-                                int k = n.note;
+                                int k = n.key;
                                 if (!(k >= firstNote && k < lastNote)) continue;
                                 Color4 coll = n.color.left;
                                 Color4 colr = n.color.right;

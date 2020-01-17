@@ -13,10 +13,11 @@ namespace BMEngine
         public double end;
         public bool hasEnded;
         public byte channel;
-        public byte note;
+        public byte key;
         public byte vel;
         public bool delete = false;
         public object meta = null;
+        public int track;
         public NoteColor color;
     }
 
@@ -265,10 +266,11 @@ namespace BMEngine
                     {
                         Note n = new Note();
                         n.start = time;
-                        n.note = note;
+                        n.key = note;
                         n.color = trkColors[channel];
                         n.channel = channel;
                         n.vel = vel;
+                        n.track = trackID;
                         if (UnendedNotes == null)
                         {
                             UnendedNotes = new FastList<Note>[256 * 16];

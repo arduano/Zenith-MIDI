@@ -312,7 +312,8 @@ namespace Black_Midi_Render
             {
                 lock (midifile)
                 {
-                    return (midifile.ParseUpTo((win.midiTime + win.lastDeltaTimeOnScreen +
+                    return (midifile.ParseUpTo(
+                        (win.midiTime + win.lastDeltaTimeOnScreen +
                         (win.tempoFrameStep * 20 * settings.tempoMultiplier * (win.lastMV > 1 ? win.lastMV : 1))))
                         || nc != 0) && settings.running;
                 }
@@ -382,8 +383,9 @@ namespace Black_Midi_Render
                     s.Start();
                     SpinWait.SpinUntil(() =>
                     (
-                        s.ElapsedMilliseconds > 1000.0 / settings.fps * 10 ||
-                        win.midiTime + win.lastDeltaTimeOnScreen + (win.tempoFrameStep * 10 * settings.tempoMultiplier * win.lastMV) > midifile.currentSyncTime ||
+                        (s.ElapsedMilliseconds > 1000.0 / settings.fps * 30 && false) ||
+                        (win.midiTime + win.lastDeltaTimeOnScreen +
+                        (win.tempoFrameStep * 10 * settings.tempoMultiplier * (win.lastMV > 1 ? win.lastMV : 1))) > midifile.currentSyncTime ||
                         lastWinTime != win.midiTime || render != renderer.renderer || !settings.running
                     )
                     ); ;
@@ -539,6 +541,7 @@ namespace Black_Midi_Render
                 GC.WaitForFullGCComplete();
                 midifile = new MidiFile(midipath, settings);
                 Resources["midiLoaded"] = true;
+                browseMidiButton.Content = Path.GetFileName(midipath);
             }
             catch (Exception ex)
             {
@@ -556,6 +559,7 @@ namespace Black_Midi_Render
             GC.WaitForFullGCComplete();
             Console.WriteLine("Unloaded");
             Resources["midiLoaded"] = false;
+            browseMidiButton.SetResourceReference(Button.ContentProperty, "load");
         }
 
         private void StartButton_Click(object sender, RoutedEventArgs e)
@@ -692,11 +696,8 @@ namespace Black_Midi_Render
 
         private void VsyncEnabled_Checked(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                settings.vsync = (bool)vsyncEnabled.IsChecked;
-            }
-            catch { }
+            if (settings == null) return;
+            settings.vsync = (bool)vsyncEnabled.IsChecked;
         }
 
         private void Grid_KeyDown(object sender, KeyEventArgs e)
@@ -782,11 +783,8 @@ namespace Black_Midi_Render
 
         private void Checkbox_Checked(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                if (sender == realtimePlayback) settings.realtimePlayback = (bool)realtimePlayback.IsChecked;
-            }
-            catch { }
+            if (settings == null) return;
+            if (sender == realtimePlayback) settings.realtimePlayback = (bool)realtimePlayback.IsChecked;
         }
 
         private void DisableKDMAPI_Click(object sender, RoutedEventArgs e)
@@ -820,21 +818,15 @@ namespace Black_Midi_Render
 
         private void NoteSizeStyle_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            try
-            {
-                if (noteSizeStyle.SelectedIndex == 0) settings.timeBasedNotes = false;
-                if (noteSizeStyle.SelectedIndex == 1) settings.timeBasedNotes = true;
-            }
-            catch { }
+            if (settings == null) return;
+            if (noteSizeStyle.SelectedIndex == 0) settings.timeBasedNotes = false;
+            if (noteSizeStyle.SelectedIndex == 1) settings.timeBasedNotes = true;
         }
 
         private void IgnoreColorEvents_Checked(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                settings.ignoreColorEvents = (bool)ignoreColorEvents.IsChecked;
-            }
-            catch { }
+            if (settings == null) return;
+            settings.ignoreColorEvents = (bool)ignoreColorEvents.IsChecked;
         }
 
         private void UseBGImage_Checked(object sender, RoutedEventArgs e)

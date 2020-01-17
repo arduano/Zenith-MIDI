@@ -60,7 +60,7 @@ namespace MIDITrailRender
             auraselect.LoadSettings();
         }
 
-        ProfileManager profiles = new ProfileManager("Plugins/Assets/Textured/Profiles.json");
+        ProfileManager profiles = new ProfileManager("Plugins/Assets/MIDITrail/Profiles.json");
         public SettingsCtrl(Settings settings) : base()
         {
             InitializeComponent();
@@ -68,7 +68,6 @@ namespace MIDITrailRender
             noteDeltaScreenTime.sliderToNud = v => Math.Pow(2, v);
             this.settings = settings;
             paletteList.SetPath("Plugins\\Assets\\Palettes");
-            LoadSettings(true);
             auraselect = new AuraSelect(settings);
             auraSubControlGrid.Children.Add(auraselect);
             auraselect.Margin = new Thickness(0);
@@ -82,18 +81,14 @@ namespace MIDITrailRender
 
         private void Nud_ValueChanged(object sender, RoutedPropertyChangedEventArgs<decimal> e)
         {
-            try
-            {
-                if (sender == firstNote) settings.firstNote = (int)firstNote.Value;
-                if (sender == lastNote) settings.lastNote = (int)lastNote.Value + 1;
-                if (sender == noteDownSpeed) settings.noteDownSpeed = (double)noteDownSpeed.Value;
-                if (sender == noteUpSpeed) settings.noteUpSpeed = (double)noteUpSpeed.Value;
-                if (sender == camOffsetX) settings.viewOffset = (double)camOffsetX.Value;
-                if (sender == camOffsetY) settings.viewHeight = (double)camOffsetY.Value;
-                if (sender == camOffsetZ) settings.viewPan = (double)camOffsetZ.Value;
-            }
-            catch (NullReferenceException) { }
-            catch (InvalidOperationException) { }
+            if (settings == null) return;
+            if (sender == firstNote) settings.firstNote = (int)firstNote.Value;
+            if (sender == lastNote) settings.lastNote = (int)lastNote.Value + 1;
+            if (sender == noteDownSpeed) settings.noteDownSpeed = (double)noteDownSpeed.Value;
+            if (sender == noteUpSpeed) settings.noteUpSpeed = (double)noteUpSpeed.Value;
+            if (sender == camOffsetX) settings.viewOffset = (double)camOffsetX.Value;
+            if (sender == camOffsetY) settings.viewHeight = (double)camOffsetY.Value;
+            if (sender == camOffsetZ) settings.viewPan = (double)camOffsetZ.Value;
         }
 
         void injectSettings(Settings sett)
@@ -114,68 +109,44 @@ namespace MIDITrailRender
 
         private void BoxNotes_Checked(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                settings.boxNotes = (bool)boxNotes.IsChecked;
-            }
-            catch { }
+            if (settings == null) return;
+            settings.boxNotes = (bool)boxNotes.IsChecked;
         }
 
         private void FOVSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            try
-            {
-                settings.FOV = (double)FOVSlider.Value / 180 * Math.PI;
-            }
-            catch { }
+            if (settings == null) return;
+            settings.FOV = (double)FOVSlider.Value / 180 * Math.PI;
         }
 
         private void ViewAngSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            try
-            {
-                settings.camAng = (double)viewAngSlider.Value / 180 * Math.PI;
-            }
-            catch { }
+            if (settings == null) return;
+            settings.camAng = (double)viewAngSlider.Value / 180 * Math.PI;
         }
 
         private void ViewTurnSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            try
-            {
-                settings.camRot = (double)viewTurnSlider.Value / 180 * Math.PI;
-            }
-            catch { }
+            if (settings == null) return;
+            settings.camRot = (double)viewTurnSlider.Value / 180 * Math.PI;
         }
 
         private void NoteDeltaScreenTime_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            try
-            {
-                settings.deltaTimeOnScreen = noteDeltaScreenTime.Value;
-            }
-            catch (NullReferenceException)
-            {
-
-            }
+            if (settings == null) return;
+            settings.deltaTimeOnScreen = noteDeltaScreenTime.Value;
         }
 
         private void RenderDistSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            try
-            {
-                settings.viewdist = (double)renderDistSlider.Value;
-            }
-            catch { }
+            if (settings == null) return;
+            settings.viewdist = (double)renderDistSlider.Value;
         }
 
         private void RenderDistBackSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            try
-            {
-                settings.viewback = (double)renderDistBackSlider.Value;
-            }
-            catch { }
+            if (settings == null) return;
+            settings.viewback = (double)renderDistBackSlider.Value;
         }
 
         private void FarPreset_Click(object sender, RoutedEventArgs e)
@@ -258,28 +229,6 @@ namespace MIDITrailRender
             }
         }
 
-        void LoadSettings(bool startup = false)
-        {
-
-            try
-            {
-                string s = File.ReadAllText("Plugins/MIDITrailRender.json");
-                var sett = JsonConvert.DeserializeObject<Settings>(s);
-                injectSettings(sett);
-                Console.WriteLine("Loaded settings from MIDITrailRender.json");
-            }
-            catch
-            {
-                if (!startup)
-                    Console.WriteLine("Could not load saved plugin settings");
-            }
-        }
-
-        private void LoadButton_Click(object sender, RoutedEventArgs e)
-        {
-            LoadSettings();
-        }
-
         private void DefaultsButton_Click(object sender, RoutedEventArgs e)
         {
             injectSettings(new Settings());
@@ -296,8 +245,7 @@ namespace MIDITrailRender
 
         private void CheckboxChecked(object sender, RoutedEventArgs e)
         {
-            try
-            {
+            if (settings == null) return;
                 if (sender == notesChangeSize) settings.notesChangeSize = (bool)notesChangeSize.IsChecked;
                 if (sender == notesChangeTint) settings.notesChangeTint = (bool)notesChangeTint.IsChecked;
                 if (sender == eatNotes) settings.eatNotes = (bool)eatNotes.IsChecked;
@@ -305,8 +253,6 @@ namespace MIDITrailRender
                 if (sender == lightShade) settings.lightShade = (bool)lightShade.IsChecked;
                 if (sender == tiltKeys) settings.tiltKeys = (bool)tiltKeys.IsChecked;
                 if (sender == showKeyboard) settings.showKeyboard = (bool)showKeyboard.IsChecked;
-            }
-            catch { }
         }
 
         private void NewProfile_Click(object sender, RoutedEventArgs e)

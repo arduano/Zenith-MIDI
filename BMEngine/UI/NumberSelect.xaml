@@ -56,7 +56,7 @@
                     </TransformGroup>
                 </TextBox.RenderTransform>
             </TextBox>
-            <Rectangle Fill="Black" Height="1" VerticalAlignment="Bottom"/>
+            <Rectangle Fill="{StaticResource PrimaryBrush}" Height="1" VerticalAlignment="Bottom"/>
         </Grid>
         <Grid Grid.Column="1" Width="25" Height="25" Grid.ColumnSpan="2" Margin="0,0">
             <Grid.RowDefinitions>

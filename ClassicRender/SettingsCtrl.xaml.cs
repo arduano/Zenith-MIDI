@@ -54,39 +54,30 @@ namespace ClassicRender
 
         private void Nud_ValueChanged(object sender, RoutedPropertyChangedEventArgs<decimal> e)
         {
-            try
-            {
+            if (settings == null) return;
                 if (sender == firstNote) settings.firstNote = (int)firstNote.Value;
                 if (sender == lastNote) settings.lastNote = (int)lastNote.Value + 1;
                 if (sender == pianoHeight) settings.pianoHeight = (double)pianoHeight.Value / 100;
                 if (sender == noteDeltaScreenTime) settings.deltaTimeOnScreen = (int)noteDeltaScreenTime.Value;
-            }
-            catch (NullReferenceException) { }
-            catch (InvalidOperationException) { }
         }
 
         private void NoteDeltaScreenTime_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
+            if (settings == null) return;
             settings.deltaTimeOnScreen = noteDeltaScreenTime.Value;
         }
 
         private void BlackNotesAbove_Checked(object sender, RoutedEventArgs e)
         {
-            try
-            {
+            if (settings == null) return;
                 settings.blackNotesAbove = (bool)blackNotesAbove.IsChecked;
-            }
-            catch (NullReferenceException) { }
         }
 
         private void SameWidth_Checked(object sender, RoutedEventArgs e)
         {
-            try
-            {
+            if (settings == null) return;
                 settings.sameWidthNotes = (bool)sameWidth.IsChecked;
                 blackNotesAbove.IsEnabled = !settings.sameWidthNotes;
-            }
-            catch (NullReferenceException) { }
         }
     }
 }

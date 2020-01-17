@@ -1004,7 +1004,7 @@ void main()
                         if (n.start < renderCutoff)
                         {
                             nc++;
-                            int k = n.note;
+                            int k = n.key;
                             if (!(k >= firstNote && k < lastNote)) continue;
                             Color4 coll = n.color.left;
                             Color4 colr = n.color.right;
@@ -1116,7 +1116,7 @@ void main()
                         if (n.start < renderCutoff)
                         {
                             nc++;
-                            int k = n.note;
+                            int k = n.key;
                             if (!(k >= firstNote && k < lastNote)) continue;
                             Color4 coll = n.color.left;
                             Color4 colr = n.color.right;
@@ -1224,7 +1224,7 @@ void main()
                         unsafe
                         {
                             nc++;
-                            int k = n.note;
+                            int k = n.key;
                             if (!(k >= firstNote && k < lastNote)) continue;
                             Color4 coll = n.color.left;
                             Color4 colr = n.color.right;

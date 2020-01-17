@@ -7,18 +7,17 @@
     <!--Tab Names-->
     <system:String x:Key="resourcesTab">Resources</system:String>
     <system:String x:Key="miscTab">Misc</system:String>
-    <system:String x:Key="switchesTab">Switches</system:String>
+    <system:String x:Key="settingsTab">Script Settings</system:String>
 
     <!--Resources-->
     <system:String x:Key="resourcePath">Resource packs path:</system:String>
     <system:String x:Key="resourcePathDir">Plugins\Assets\Textured\Resources</system:String>
     <system:String x:Key="openFolder">Open Folder</system:String>
     <system:String x:Key="reloadList">Reload List</system:String>
-    <system:String x:Key="reloadPack">Reload Pack</system:String>
+    <system:String x:Key="reloadScript">Reload Script</system:String>
 
     <!--Other settings-->
     <system:String x:Key="firstNote">First Note</system:String>
     <system:String x:Key="lastNote">Last Note</system:String>
     <system:String x:Key="noteScreenTime">Note screen time</system:String>
-    <system:String x:Key="blackNotesAbove">Draw black notes above (Warning: SLOWER!!)</system:String>
 </ResourceDictionary>

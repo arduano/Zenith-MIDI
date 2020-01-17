@@ -284,12 +284,12 @@ void main()
                 { 
                     if (n.start < renderCutoff)
                     {
-                        if (n.note >= firstNote && n.note < lastNote)
+                        if (n.key >= firstNote && n.key < lastNote)
                         {
                             unsafe
                             {
                                 nc++;
-                                int k = n.note;
+                                int k = n.key;
                                 if (!(k >= firstNote && k < lastNote)) continue;
                                 Color4 coll = n.color.left;
                                 Color4 colr = n.color.right;

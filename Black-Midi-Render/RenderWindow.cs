@@ -404,6 +404,7 @@ void main()
                 }
                 try
                 {
+                    if (globalPlaybackEvents.ZeroLen) continue;
                     pe = globalPlaybackEvents.Pop();
                     now = DateTime.Now.Ticks;
                     if (now - 10000000 > frameStartTime)
@@ -522,7 +523,7 @@ void main()
                         }
                         catch (Exception ex)
                         {
-                            MessageBox.Show("The renderer has crashed\n" + ex.Message);
+                            MessageBox.Show("The renderer has crashed\n" + ex.Message + "\n" + ex.StackTrace);
                             break;
                         }
                     }
