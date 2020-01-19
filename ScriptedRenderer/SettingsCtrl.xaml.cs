@@ -370,7 +370,9 @@ namespace ScriptedRender
                 compiler_parameters.ReferencedAssemblies.Add(typeof(LinkedList<object>).Assembly.Location);
                 compiler_parameters.ReferencedAssemblies.Add(typeof(System.Drawing.Color).Assembly.Location);
                 compiler_parameters.ReferencedAssemblies.Add(typeof(IO).Assembly.Location);
-                compiler_parameters.CompilerOptions = "/optimize /unsafe";
+                compiler_parameters.ReferencedAssemblies.Add(typeof(System.Linq.Enumerable).Assembly.Location);
+
+                compiler_parameters.CompilerOptions = "/optimize /unsafe /nostdlib";
 
                 CompilerResults results = provider.CompileAssemblyFromSource(compiler_parameters, code);
 
@@ -383,12 +385,6 @@ namespace ScriptedRender
                     }
                     throw new Exception(String.Format("Error on line {0}:\n{1}", results.Errors[0].Line, results.Errors[0].ErrorText) + "\n" + builder.ToString());
                 }
-
-                Assembly assembly = results.CompiledAssembly;
-                var renderType = assembly.GetType("Script");
-                var instance = (dynamic)Activator.CreateInstance(renderType);
-                script.instance = instance;
-                script.renderType = renderType;
 
                 IO.loadTexture = (path, loop, linear) =>
                 {
@@ -406,6 +402,12 @@ namespace ScriptedRender
                     script.textures.Add(loaded);
                     return loaded;
                 };
+
+                Assembly assembly = results.CompiledAssembly;
+                var renderType = assembly.GetType("Script");
+                var instance = (dynamic)Activator.CreateInstance(renderType);
+                script.instance = instance;
+                script.renderType = renderType;
 
                 IO.callLoadFunction(script.instance);
 
@@ -441,6 +443,7 @@ namespace ScriptedRender
             }
             catch (Exception e)
             {
+                if (e is TargetInvocationException) e = e.InnerException;
                 script.error = true;
                 script.description = e.Message;
             }
@@ -468,6 +471,7 @@ namespace ScriptedRender
 
         void PopulateSettingsDock(IEnumerable<UISetting> settings, DockPanel dock)
         {
+            dock.LastChildFill = false;
             foreach (var sett in settings)
             {
                 if (sett is UILabel)
@@ -546,6 +550,19 @@ namespace ScriptedRender
                     };
                     drop.SelectedIndex = s.Index;
                     dock.Children.Add(d);
+                }
+                if (sett is UICheckbox)
+                {
+                    var s = sett as UICheckbox;
+                    var check = new BetterCheckbox() { FontSize = 16, Text = s.Text };
+                    DockPanel.SetDock(check, Dock.Top);
+                    check.CheckToggled += (_, e) =>
+                    {
+                        s.Checked = e.NewValue;
+                    };
+                    check.Margin = new Thickness(0, 0, 0, 10);
+                    check.IsChecked = s.Checked;
+                    dock.Children.Add(check);
                 }
                 if (sett is UITabs)
                 {

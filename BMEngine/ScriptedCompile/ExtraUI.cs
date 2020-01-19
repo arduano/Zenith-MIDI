@@ -101,4 +101,16 @@ namespace ScriptedEngine
         public int Index { get; set; }
         public string[] Options { get; }
     }
+
+    public class UICheckbox : UISetting
+    {
+        public UICheckbox(string text, bool @checked)
+        {
+            this.Text = text;
+            this.Checked = @checked;
+        }
+
+        public string Text { get; }
+        public bool Checked { get; set; }
+    }
 }

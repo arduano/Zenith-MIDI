@@ -185,10 +185,10 @@ namespace NoteCountRender
             long maxbar = (long)Math.Floor(CurrentMidi.tickLength / barDivide);
             if (bar > maxbar) bar = maxbar;
 
-            Func<string, bool, string> replace = (text, separate) =>
+            Func<string, Commas, string> replace = (text, separator) =>
             {
                 string sep = "";
-                if (separate) sep = "#,##";
+                if (separator == Commas.Comma) sep = "#,##";
 
                 text = text.Replace("{bpm}", (Math.Round(tempo * 10) / 10).ToString());
 
@@ -223,7 +223,7 @@ namespace NoteCountRender
 
 
             string renderText = settings.text;
-            renderText = replace(renderText, true);
+            renderText = replace(renderText, settings.thousandSeparator);
 
             if (settings.textAlignment == Alignments.TopLeft)
             {
@@ -322,7 +322,7 @@ namespace NoteCountRender
 
             if(outputCsv != null)
             {
-                outputCsv.WriteLine(replace(settings.csvFormat, false));
+                outputCsv.WriteLine(replace(settings.csvFormat, Commas.Nothing));
             }
         }
 

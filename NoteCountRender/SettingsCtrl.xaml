@@ -26,31 +26,39 @@
         <TabControl Margin="10,10,10,10">
             <TabItem Header="Render">
                 <DockPanel Margin="10">
-                    <StackPanel DockPanel.Dock="Top">
-                        <DockPanel HorizontalAlignment="Left" LastChildFill="False" Margin="0,0,0,0" VerticalAlignment="Top">
-                            <Label DockPanel.Dock="Left" Content="{DynamicResource fontSize}" VerticalAlignment="Top"/>
-                            <ui:NumberSelect x:Name="fontSize" Value="1"  Maximum="15360" Minimum="1" HorizontalAlignment="Left" Width="99" IsEnabled="{Binding IsEnabled, ElementName=notPreviewingOrRendering}"  DockPanel.Dock="Left" Margin="5,0,0,0" ValueChanged="FontSize_ValueChanged"  />
-                            <Label DockPanel.Dock="Left" Content="{DynamicResource font}" VerticalAlignment="Top"/>
-                            <ComboBox x:Name="fontSelect" DockPanel.Dock="Left" Width="120" Margin="5,0,0,0" SelectionChanged="FontSelect_SelectionChanged"/>
-                            <ComboBox x:Name="fontStyle" HorizontalAlignment="Left" Margin="10,0,0,0" Width="120" SelectionChanged="FontStyle_SelectionChanged"/>
-                        </DockPanel>
-                        <DockPanel HorizontalAlignment="Left" LastChildFill="False" Margin="0,10,0,0" VerticalAlignment="Top" >
-                            <Label Content="{DynamicResource alignments}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left"/>
-                            <ComboBox x:Name="alignSelect" DockPanel.Dock="Left" HorizontalAlignment="Left" Margin="5,0,0,0" VerticalAlignment="Top" Height="26" SelectedIndex="0" SelectionChanged="AlignSelect_SelectionChanged">
-                                <ComboBoxItem Content="{DynamicResource alTopLeft}"/>
-                                <ComboBoxItem Content="{DynamicResource alTopRight}"/>
-                                <ComboBoxItem Content="{DynamicResource alBottomLeft}"/>
-                                <ComboBoxItem Content="{DynamicResource alBottomRight}"/>
-                                <ComboBoxItem Content="{DynamicResource alTopSpread}"/>
-                                <ComboBoxItem Content="{DynamicResource alBottomSpread}"/>
-                            </ComboBox>
-                        </DockPanel>
-                        <DockPanel HorizontalAlignment="Left" LastChildFill="False" Margin="0,10,0,0" VerticalAlignment="Top">
-                            <ComboBox x:Name="templates" DockPanel.Dock="Left" Width="120" SelectionChanged="Templates_SelectionChanged"/>
-                            <Button x:Name="reload" Content="{DynamicResource reload}" HorizontalAlignment="Left" Padding="10,0,10,0" DockPanel.Dock="Left" Margin="5,0,0,0" Click="Reload_Click"/>
-                            <Button x:Name="openFolder" Content="{DynamicResource openFolder}" HorizontalAlignment="Left" Padding="10,0,10,0" DockPanel.Dock="Left" Margin="5,0,0,0" Click="openFolder_Click"/>
-                        </DockPanel>
-                    </StackPanel>
+                    <DockPanel DockPanel.Dock="Top">
+                        <StackPanel>
+                            <DockPanel HorizontalAlignment="Left" LastChildFill="False" Margin="0,0,0,0" VerticalAlignment="Top">
+                                <Label DockPanel.Dock="Left" Content="{DynamicResource fontSize}" VerticalAlignment="Top"/>
+                                <ui:NumberSelect x:Name="fontSize" Value="1"  Maximum="15360" Minimum="1" HorizontalAlignment="Left" Width="99" IsEnabled="{Binding IsEnabled, ElementName=notPreviewingOrRendering}"  DockPanel.Dock="Left" Margin="5,0,0,0" ValueChanged="FontSize_ValueChanged"  />
+                                <Label DockPanel.Dock="Left" Content="{DynamicResource font}" VerticalAlignment="Top"/>
+                                <ComboBox x:Name="fontSelect" DockPanel.Dock="Left" Width="120" Margin="5,0,0,0" SelectionChanged="FontSelect_SelectionChanged"/>
+                                <ComboBox x:Name="fontStyle" HorizontalAlignment="Left" Margin="10,0,0,0" Width="120" SelectionChanged="FontStyle_SelectionChanged"/>
+                            </DockPanel>
+                            <DockPanel HorizontalAlignment="Left" LastChildFill="False" Margin="0,10,0,0" VerticalAlignment="Top" >
+                                <Label Content="{DynamicResource alignments}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left"/>
+                                <ComboBox x:Name="alignSelect" DockPanel.Dock="Left" HorizontalAlignment="Left" Margin="5,0,0,0" VerticalAlignment="Top" Height="26" SelectedIndex="0" SelectionChanged="AlignSelect_SelectionChanged">
+                                    <ComboBoxItem Content="{DynamicResource alTopLeft}"/>
+                                    <ComboBoxItem Content="{DynamicResource alTopRight}"/>
+                                    <ComboBoxItem Content="{DynamicResource alBottomLeft}"/>
+                                    <ComboBoxItem Content="{DynamicResource alBottomRight}"/>
+                                    <ComboBoxItem Content="{DynamicResource alTopSpread}"/>
+                                    <ComboBoxItem Content="{DynamicResource alBottomSpread}"/>
+                                </ComboBox>
+                            </DockPanel>
+                            <DockPanel HorizontalAlignment="Left" LastChildFill="False" Margin="0,10,0,0" VerticalAlignment="Top">
+                                <ComboBox x:Name="templates" DockPanel.Dock="Left" Width="120" SelectionChanged="Templates_SelectionChanged"/>
+                                <Button x:Name="reload" Content="{DynamicResource reload}" HorizontalAlignment="Left" Padding="10,0,10,0" DockPanel.Dock="Left" Margin="5,0,0,0" Click="Reload_Click"/>
+                                <Button x:Name="openFolder" Content="{DynamicResource openFolder}" HorizontalAlignment="Left" Padding="10,0,10,0" DockPanel.Dock="Left" Margin="5,0,0,0" Click="openFolder_Click"/>
+                            </DockPanel>
+                        </StackPanel>
+                        <StackPanel Margin="30,0,0,0">
+                            <Label>Thousands separator</Label>
+                            <ui:BetterRadio x:Name="useCommas" IsChecked="True" Text="Commas" Margin="0,0,0,5" RadioChecked="useCommas_RadioChecked"/>
+                            <!--<ui:BetterRadio x:Name="useDots" Text="Dots" Margin="0,0,0,5" RadioChecked="useCommas_RadioChecked"/>-->
+                            <ui:BetterRadio x:Name="useNothing" Text="Nothing" Margin="0,0,0,5" RadioChecked="useCommas_RadioChecked"/>
+                        </StackPanel>
+                    </DockPanel>
                     <TextBox AcceptsReturn="True" VerticalContentAlignment="Top" x:Name="textTemplate" Margin="0,10,0,0" TextWrapping="Wrap" Text="TextBox" TextChanged="TextTemplate_TextChanged"/>
                 </DockPanel>
             </TabItem>

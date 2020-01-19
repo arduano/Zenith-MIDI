@@ -72,6 +72,11 @@ namespace ScriptedEngine
         public pos[] notes;
         public bool[] blackKey = new bool[257];
         public int[] keyNumber = new int[257];
+
+        public double blackKeyWidth;
+        public double whiteKeyWidth;
+        public double blackNoteWidth;
+        public double whiteNoteWidth;
     }
 
     public class KeyboardOptions
@@ -94,7 +99,7 @@ namespace ScriptedEngine
         public static Func<string, bool, bool, Texture> loadTexture;
         public static Texture LoadTexture(string path)
         {
-            if (!IsInFunction("Load")) throw new Exception("Can't call LoadTexture outside the load function");
+            if (!IsInFunction("Load") && !IsInFunction(".ctor")) throw new Exception("Can't call LoadTexture outside the load function");
             return loadTexture(path, true, false);
         }
 
@@ -155,7 +160,7 @@ namespace ScriptedEngine
 
         public static void ForceFlushBuffer() => forceFlush();
 
-        static string[] functions = new string[] { "Load", "Render", "RenderInit", "RenderDispose" };
+        static string[] functions = new string[] { "Load", "Render", "RenderInit", "RenderDispose", ".ctor" };
 
         static bool IsInFunction(string name)
         {
@@ -196,13 +201,20 @@ namespace ScriptedEngine
 
             if (options.sameWidthNotes)
             {
+                var samewidth = 1.0f / (lastNote - firstNote);
+
                 for (int i = 0; i < 257; i++)
                 {
-                    leftArrayKeys[i] = (i - firstNote) / (lastNote - firstNote);
-                    widthArrayKeys[i] = 1.0f / (lastNote - firstNote);
-                    leftArrayNotes[i] = (i - firstNote) / (lastNote - firstNote);
-                    widthArrayNotes[i] = 1.0f / (lastNote - firstNote);
+                    leftArrayKeys[i] = (i - firstNote) / (double)(lastNote - firstNote);
+                    widthArrayKeys[i] = samewidth;
+                    leftArrayNotes[i] = (i - firstNote) / (double)(lastNote - firstNote);
+                    widthArrayNotes[i] = samewidth;
                 }
+
+                layout.blackKeyWidth = samewidth;
+                layout.whiteKeyWidth = samewidth;
+                layout.blackNoteWidth = samewidth;
+                layout.whiteNoteWidth = samewidth;
             }
             else
             {
@@ -253,6 +265,11 @@ namespace ScriptedEngine
                     widthArrayKeys[i] /= width;
                     widthArrayNotes[i] /= width;
                 }
+
+                layout.blackKeyWidth = options.blackKeyScale / width;
+                layout.whiteKeyWidth = 1 / width;
+                layout.blackNoteWidth = options.blackKeyScale * options.blackNoteScale / width;
+                layout.whiteNoteWidth = 1 / width;
             }
 
             for (int i = 0; i < 257; i++)

@@ -626,6 +626,7 @@ void main()
                 }
             }
             FlushQuadBuffer(false);
+            activeTexIds[0] = id;
             return 0;
         }
 

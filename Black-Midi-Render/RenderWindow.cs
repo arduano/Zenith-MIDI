@@ -536,25 +536,25 @@ void main()
                         mv = settings.fps / 4;
                 }
                 lastMV = mv;
-                lock (globalTempoEvents)
-                {
-                    while (globalTempoEvents.First != null && midiTime + (tempoFrameStep * mv * settings.tempoMultiplier) > globalTempoEvents.First.pos)
-                    {
-                        var t = globalTempoEvents.Pop();
-                        if (t.tempo == 0)
-                        {
-                            Console.WriteLine("Zero tempo event encountered, ignoring");
-                            continue;
-                        }
-                        var _t = ((t.pos) - midiTime) / (tempoFrameStep * mv * settings.tempoMultiplier);
-                        mv *= 1 - _t;
-                        if (!settings.timeBasedNotes) tempoFrameStep = ((double)midi.division / t.tempo) * (1000000.0 / settings.fps);
-                        lastTempo = t.tempo;
-                        midiTime = t.pos;
-                    }
-                }
                 if (!settings.Paused)
                 {
+                    lock (globalTempoEvents)
+                    {
+                        while (globalTempoEvents.First != null && midiTime + (tempoFrameStep * mv * settings.tempoMultiplier) > globalTempoEvents.First.pos)
+                        {
+                            var t = globalTempoEvents.Pop();
+                            if (t.tempo == 0)
+                            {
+                                Console.WriteLine("Zero tempo event encountered, ignoring");
+                                continue;
+                            }
+                            var _t = ((t.pos) - midiTime) / (tempoFrameStep * mv * settings.tempoMultiplier);
+                            mv *= 1 - _t;
+                            if (!settings.timeBasedNotes) tempoFrameStep = ((double)midi.division / t.tempo) * (1000000.0 / settings.fps);
+                            lastTempo = t.tempo;
+                            midiTime = t.pos;
+                        }
+                    }
                     midiTime += mv * tempoFrameStep * settings.tempoMultiplier;
                 }
                 frameStartTime = DateTime.Now.Ticks;

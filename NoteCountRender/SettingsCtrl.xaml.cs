@@ -142,12 +142,8 @@ Average NPS: {avgnps}";
 
         private void FontStyle_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!initialised) return;
-            try
-            {
-                settings.fontStyle = fontStyles.ToDictionary(kp => kp.Value, kp => kp.Key)[(string)((ComboBoxItem)fontStyle.SelectedItem).Content];
-            }
-            catch { }
+            if (!initialised || fontStyle.SelectedItem == null) return;
+            settings.fontStyle = fontStyles.ToDictionary(kp => kp.Value, kp => kp.Key)[(string)((ComboBoxItem)fontStyle.SelectedItem).Content];
         }
 
         private void TextTemplate_TextChanged(object sender, TextChangedEventArgs e)
@@ -194,11 +190,8 @@ Average NPS: {avgnps}";
 
         private void Templates_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            try
-            {
-                textTemplate.Text = templateStrings[templates.SelectedIndex];
-            }
-            catch { }
+            if (!initialised) return;
+            textTemplate.Text = templateStrings[templates.SelectedIndex];
         }
 
         private void Reload_Click(object sender, RoutedEventArgs e)
@@ -210,7 +203,7 @@ Average NPS: {avgnps}";
         {
             if (!initialised) return;
             settings.saveCsv = (bool)saveCsv.IsChecked;
-         }
+        }
 
         private void browseOutputSaveButton_Click(object sender, RoutedEventArgs e)
         {
@@ -226,7 +219,7 @@ Average NPS: {avgnps}";
 
         private void csvFormat_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (!initialised) return; 
+            if (!initialised) return;
             settings.csvFormat = csvFormat.Text;
         }
 
@@ -236,6 +229,14 @@ Average NPS: {avgnps}";
                 Process.Start("explorer.exe", System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), templateFolder));
             else
                 Process.Start("explorer.exe", templateFolder);
+        }
+
+        private void useCommas_RadioChecked(object sender, RoutedEventArgs e)
+        {
+            if (!initialised) return;
+            if (useCommas.IsChecked) settings.thousandSeparator = Commas.Comma;
+            //if (useDots.IsChecked) settings.thousandSeparator = Commas.Dot;
+            if (useNothing.IsChecked) settings.thousandSeparator = Commas.Nothing;
         }
     }
 }
