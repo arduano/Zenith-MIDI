@@ -1,9 +1,9 @@
-﻿<UserControl x:Class="BMEngine.UI.NumberSelect"
+﻿<UserControl x:Class="ZenithEngine.UI.NumberSelect"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:BMEngine.UI"
+             xmlns:local="clr-namespace:ZenithEngine.UI"
              TextOptions.TextRenderingMode="Aliased"
              KeyDown="UserControl_KeyDown"
              mc:Ignorable="d" >

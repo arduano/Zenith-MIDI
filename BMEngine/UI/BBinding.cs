@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 
-namespace BMEngine.UI
+namespace ZenithEngine.UI
 {
     public class BBinding : Binding
     {

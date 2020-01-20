@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace BMEngine
+namespace ZenithEngine
 {
     public interface IPluginRender : IDisposable
     {

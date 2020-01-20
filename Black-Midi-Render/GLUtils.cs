@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK.Graphics.OpenGL;
 
-namespace Black_Midi_Render
+namespace Zenith_MIDI
 {
     static class GLUtils
     {

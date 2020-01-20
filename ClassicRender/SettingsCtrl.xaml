@@ -4,8 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ClassicRender"
-             xmlns:ui="clr-namespace:BMEngine.UI;assembly=ZenithEngine"
-             xmlns:bme="clr-namespace:BMEngine;assembly=ZenithEngine"
+             xmlns:ui="clr-namespace:ZenithEngine.UI;assembly=ZenithEngine"
+             xmlns:bme="clr-namespace:ZenithEngine;assembly=ZenithEngine"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:System="clr-namespace:System;assembly=mscorlib" x:Class="ClassicRender.SettingsCtrl"
              mc:Ignorable="d" Height="366.234" Width="753.096">
     <UserControl.Resources>

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK.Graphics.OpenGL;
 
-namespace BMEngine
+namespace ZenithEngine
 {
     public static class GLUtils
     {

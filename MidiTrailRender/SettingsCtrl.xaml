@@ -4,9 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MIDITrailRender"
-             xmlns:ui="clr-namespace:BMEngine.UI;assembly=ZenithEngine"
+             xmlns:ui="clr-namespace:ZenithEngine.UI;assembly=ZenithEngine"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-             xmlns:bme="clr-namespace:BMEngine;assembly=ZenithEngine" x:Class="MIDITrailRender.SettingsCtrl"
+             xmlns:bme="clr-namespace:ZenithEngine;assembly=ZenithEngine" x:Class="MIDITrailRender.SettingsCtrl"
              mc:Ignorable="d" Height="500" Width="688.373">
     <UserControl.Resources>
         <ResourceDictionary>

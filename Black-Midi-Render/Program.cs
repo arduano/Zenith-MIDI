@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Black_Midi_Render
+namespace Zenith_MIDI
 {
     class Program
     {

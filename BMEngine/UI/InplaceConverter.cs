@@ -8,7 +8,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Reflection;
 
-namespace BMEngine.UI
+namespace ZenithEngine.UI
 {
     public class InplaceConverter : IMultiValueConverter
     {

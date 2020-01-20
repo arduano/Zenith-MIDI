@@ -1,4 +1,4 @@
-﻿using BMEngine;
+﻿using ZenithEngine;
 using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.Win32;
 using System;
@@ -26,7 +26,7 @@ using Newtonsoft.Json.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
 
-namespace Black_Midi_Render
+namespace Zenith_MIDI
 {
     class CurrentRendererPointer
     {

@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
-namespace BMEngine.UI
+namespace ZenithEngine.UI
 {
     public class RippleEffectDecorator : ContentControl
     {

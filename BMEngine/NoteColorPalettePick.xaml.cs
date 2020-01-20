@@ -22,7 +22,7 @@ using Brushes = System.Windows.Media.Brushes;
 using Color = System.Drawing.Color;
 using Path = System.IO.Path;
 
-namespace BMEngine
+namespace ZenithEngine
 {
     /// <summary>
     /// Interaction logic for NoteColorPalettePick.xaml

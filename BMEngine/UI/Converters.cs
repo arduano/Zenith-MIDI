@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace BMEngine.UI
+namespace ZenithEngine.UI
 {
 
     public class AndValueConverter : IMultiValueConverter

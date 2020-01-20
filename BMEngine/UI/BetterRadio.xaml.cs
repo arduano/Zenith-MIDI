@@ -15,7 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace BMEngine.UI
+namespace ZenithEngine.UI
 {
     /// <summary>
     /// Interaction logic for BetterRadio.xaml

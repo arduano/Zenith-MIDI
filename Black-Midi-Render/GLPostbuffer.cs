@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BMEngine;
+using ZenithEngine;
 using OpenTK.Graphics.OpenGL;
 
-namespace Black_Midi_Render
+namespace Zenith_MIDI
 {
     class GLPostbuffer: IDisposable
     {

@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
-namespace BMEngine
+namespace ZenithEngine
 {
     public static class PluginUtils
     {

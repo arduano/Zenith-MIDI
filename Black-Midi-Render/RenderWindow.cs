@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using BMEngine;
+using ZenithEngine;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -23,7 +23,7 @@ using System.Text.RegularExpressions;
 using System.Drawing.Imaging;
 using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
 
-namespace Black_Midi_Render
+namespace Zenith_MIDI
 {
     interface INoteRender : IDisposable
     {

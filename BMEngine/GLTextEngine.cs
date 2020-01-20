@@ -13,7 +13,7 @@ using OpenTK;
 using System.Drawing.Imaging;
 using Size = System.Drawing.Size;
 
-namespace BMEngine
+namespace ZenithEngine
 {
     public class GLTextEngine
     {
