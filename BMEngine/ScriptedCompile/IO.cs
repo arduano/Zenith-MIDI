@@ -32,6 +32,12 @@ namespace ScriptedEngine
         Hybrid
     }
 
+    public enum BlendFunc
+    {
+        Mix,
+        Add
+    }
+
     public class RenderOptions
     {
         public int firstKey;
@@ -117,6 +123,7 @@ namespace ScriptedEngine
 
         public static Action<double, double, double, double, Color4, Color4, Color4, Color4, Texture, double, double, double, double> renderQuad;
         public static Action<TextureShaders> selectTexShader;
+        public static Action<BlendFunc> setBlendFunc;
         public static Action forceFlush;
         public static Action<Vector2d, Vector2d, Vector2d, Vector2d, Color4, Color4, Color4, Color4, Texture, Vector2d, Vector2d, Vector2d, Vector2d> renderShape;
 
@@ -157,6 +164,8 @@ namespace ScriptedEngine
             renderShape(v1, v2, v3, v4, topLeft, topRight, bottomRight, bottomLeft, tex, uv1, uv2, uv3, uv4);
 
         public static void SelectTextureShader(TextureShaders shader) => selectTexShader(shader);
+
+        public static void SetBlendFunc(BlendFunc function) => setBlendFunc(function);
 
         public static void ForceFlushBuffer() => forceFlush();
 

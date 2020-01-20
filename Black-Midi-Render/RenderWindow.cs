@@ -133,6 +133,19 @@ void main()
     color.w = 1;
 }
 ";
+        string postShaderFragBlackFill = @"#version 330 compatibility
+
+in vec2 UV;
+
+out vec4 color;
+
+uniform sampler2D myTextureSampler;
+
+void main()
+{
+    color = vec4( 0,0,0,1 );
+}
+";
 
 
         int MakeShader(string vert, string frag)
@@ -221,6 +234,7 @@ void main()
         int postShaderDownscale;
         int postShaderMask;
         int postShaderMaskColor;
+        int postShaderBlackFill;
 
         int uDownscaleRes;
         int uDownscaleFac;
@@ -376,6 +390,7 @@ void main()
             postShaderMask = MakeShader(postShaderVert, postShaderFragAlphaMask);
             postShaderMaskColor = MakeShader(postShaderVert, postShaderFragAlphaMaskColor);
             postShaderDownscale = MakeShader(postShaderVert, postShaderFragDownscale);
+            postShaderBlackFill = MakeShader(postShaderVert, postShaderFragBlackFill);
 
             uDownscaleRes = GL.GetUniformLocation(postShaderDownscale, "res");
             uDownscaleFac = GL.GetUniformLocation(postShaderDownscale, "factor");
@@ -654,9 +669,11 @@ void main()
                     }
                 }
 
-                GL.UseProgram(postShader);
                 GLPostbuffer.UnbindBuffers();
                 GL.Clear(ClearBufferMask.ColorBufferBit);
+                GL.UseProgram(postShaderBlackFill);
+                DrawScreenQuad();
+                GL.UseProgram(postShader);
                 GL.Viewport(0, 0, Width, Height);
                 downscaleBuff.BindTexture();
                 DrawScreenQuad();

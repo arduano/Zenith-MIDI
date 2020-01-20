@@ -7,7 +7,30 @@ using System.Threading.Tasks;
 
 namespace ScriptedEngine
 {
-    public abstract class UISetting { }
+    public abstract class UISetting
+    {
+        public double Padding { get; set; } = 10;
+    }
+    public abstract class UISettingEnabled : UISetting
+    {
+        private bool enabled = true;
+
+        public event Action<bool> EnableToggled;
+
+        public bool Enabled
+        {
+            get => enabled;
+            set
+            {
+                if (enabled != value)
+                {
+                    enabled = value;
+                    EnableToggled?.Invoke(Enabled);
+                }
+            }
+        }
+
+    }
 
     public class UITabs : UISetting
     {
@@ -24,10 +47,13 @@ namespace ScriptedEngine
 
         public UILabel(string text) { Text = text; }
         public UILabel(string text, double fontSize) { Text = text; FontSize = fontSize; }
+        public UILabel(string text, double fontSize, double padding) { Text = text; FontSize = fontSize; Padding = padding; }
     }
 
-    public class UINumber : UISetting
+    public class UINumber : UISettingEnabled
     {
+        private double value;
+
         public UINumber(string text, double value, double minimum, double maximum, int decialPoints)
         {
             Text = text;
@@ -42,16 +68,31 @@ namespace ScriptedEngine
             Step = step;
         }
 
+        public event Action<double> ValueChanged;
+
+        public double Value
+        {
+            get => value;
+            set
+            {
+                if (this.value != value)
+                {
+                    this.value = value;
+                    ValueChanged?.Invoke(this.value);
+                }
+            }
+        }
         public string Text { get; }
-        public double Value { get; set; }
         public double Minimum { get; }
         public double Maximum { get; }
         public int DecialPoints { get; }
         public double Step { get; } = 1;
     }
 
-    public class UINumberSlider : UISetting
+    public class UINumberSlider : UISettingEnabled
     {
+        private double value;
+
         public UINumberSlider(string text, double value, double minimum, double maximum, double trueMinimum, double trueMaximum, int decialPoints)
         {
             Text = text;
@@ -68,8 +109,22 @@ namespace ScriptedEngine
             Logarithmic = logarithmic;
         }
 
+
+        public event Action<double> ValueChanged;
+
+        public double Value
+        {
+            get => value;
+            set
+            {
+                if (this.value != value)
+                {
+                    this.value = value;
+                    ValueChanged?.Invoke(this.value);
+                }
+            }
+        }
         public string Text { get; }
-        public double Value { get; set; }
         public double Minimum { get; }
         public double Maximum { get; }
         public double TrueMinimum { get; }
@@ -78,8 +133,11 @@ namespace ScriptedEngine
         public bool Logarithmic { get; } = false;
     }
 
-    public class UIDropdown : UISetting
+    public class UIDropdown : UISettingEnabled
     {
+        private string value;
+        private int index;
+
         public UIDropdown(string text, string[] options)
         {
             Text = text;
@@ -96,21 +154,66 @@ namespace ScriptedEngine
             Options = options;
         }
 
+
+        public event Action<int> IndexChanged;
+
+        public string Value
+        {
+            get => value;
+            set
+            {
+                if (this.value != value)
+                {
+                    this.value = value;
+                    if (!Options.Contains(value)) throw new Exception("Dropdown doesn't contain value '" + value + "'");
+                    Index = Array.IndexOf(Options, value);
+                }
+            }
+        }
         public string Text { get; }
-        public string Value { get; set; }
-        public int Index { get; set; }
+        public int Index
+        {
+            get => index;
+            set
+            {
+                if (index != value)
+                {
+                    index = value;
+                    if (index < 0 || index >= Options.Length) throw new Exception("Index value of " + index + " is outside the rage of the dropdown's " + Options.Length + " item count.");
+                    this.value = Options[index];
+                    IndexChanged?.Invoke(index);
+                }
+            }
+        }
         public string[] Options { get; }
     }
 
-    public class UICheckbox : UISetting
+    public class UICheckbox : UISettingEnabled
     {
+        private bool value;
+
         public UICheckbox(string text, bool @checked)
         {
             this.Text = text;
             this.Checked = @checked;
         }
 
+
+
+        public event Action<bool> ValueChanged;
+
+        public bool Checked
+        {
+            get => value;
+            set
+            {
+                if (this.value != value)
+                {
+                    this.value = value;
+                    ValueChanged?.Invoke(this.value);
+                }
+            }
+        }
         public string Text { get; }
-        public bool Checked { get; set; }
     }
 }

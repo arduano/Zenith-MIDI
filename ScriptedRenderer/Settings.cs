@@ -10,7 +10,7 @@ namespace ScriptedRender
     {
         public int firstNote = 0;
         public int lastNote = 128;
-        public double deltaTimeOnScreen = 294.067;
+        public double deltaTimeOnScreen = 300;
 
         public string palette = "Random";
 

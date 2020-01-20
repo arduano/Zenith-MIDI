@@ -32,6 +32,7 @@ using ScriptedEngine;
 using Brushes = System.Windows.Media.Brushes;
 using Path = System.IO.Path;
 using BMEngine.UI;
+using System.Threading;
 
 namespace ScriptedRender
 {
@@ -471,14 +472,27 @@ namespace ScriptedRender
 
         void PopulateSettingsDock(IEnumerable<UISetting> settings, DockPanel dock)
         {
+            void Dispatch(Action action)
+            {
+                if (Thread.CurrentThread.ManagedThreadId == Dispatcher.Thread.ManagedThreadId)
+                {
+                    action();
+                }
+                else
+                {
+                    Dispatcher.InvokeAsync(action).Task.GetAwaiter().GetResult();
+                }
+            }
+
             dock.LastChildFill = false;
             foreach (var sett in settings)
             {
                 if (sett is UILabel)
                 {
                     var s = sett as UILabel;
-                    var label = new Label() { Content = s.Text, FontSize = s.FontSize };
+                    var label = new Label() { Content = s.Text, FontSize = s.FontSize, Margin = new Thickness(0, 0, 0, s.Padding) };
                     DockPanel.SetDock(label, Dock.Top);
+
                     dock.Children.Add(label);
                 }
                 if (sett is UINumber)
@@ -487,7 +501,7 @@ namespace ScriptedRender
                     var number = new NumberSelect() { Minimum = (decimal)s.Minimum, Maximum = (decimal)s.Maximum, DecimalPoints = s.DecialPoints, Step = (decimal)s.Step, Value = (decimal)s.Value };
                     number.MinWidth = 100;
                     var label = new Label() { Content = s.Text, FontSize = 16 };
-                    var d = new DockPanel() { HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 0, 0, 10) };
+                    var d = new DockPanel() { HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 0, 0, s.Padding) };
                     if (!(s.Text == null || s.Text == ""))
                     {
                         number.Margin = new Thickness(5, 0, 0, 1);
@@ -497,6 +511,11 @@ namespace ScriptedRender
                     DockPanel.SetDock(d, Dock.Top);
                     number.ValueChanged += (_, e) => { s.Value = (double)e.NewValue; };
                     dock.Children.Add(d);
+
+                    s.EnableToggled += (enable) =>
+                    {
+                        Dispatch(() => number.IsEnabled = enable);
+                    };
                 }
                 if (sett is UINumberSlider)
                 {
@@ -517,7 +536,7 @@ namespace ScriptedRender
                     number.Value = s.Value;
                     number.MinWidth = 400;
                     var label = new Label() { Content = s.Text, FontSize = 16 };
-                    var d = new DockPanel() { HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 0, 0, 10) };
+                    var d = new DockPanel() { HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 0, 0, s.Padding) };
                     if (!(s.Text == null || s.Text == ""))
                     {
                         number.Margin = new Thickness(5, 0, 0, 1);
@@ -527,6 +546,11 @@ namespace ScriptedRender
                     DockPanel.SetDock(d, Dock.Top);
                     number.ValueChanged += (_, e) => { s.Value = e.NewValue; };
                     dock.Children.Add(d);
+
+                    s.EnableToggled += (enable) =>
+                    {
+                        Dispatch(() => number.IsEnabled = enable);
+                    };
                 }
                 if (sett is UIDropdown)
                 {
@@ -534,7 +558,7 @@ namespace ScriptedRender
                     var drop = new ComboBox() { FontSize = 16 };
                     var label = new Label() { Content = s.Text, FontSize = 16 };
                     foreach (var o in s.Options) drop.Items.Add(new ComboBoxItem() { Content = o, FontSize = 16 });
-                    var d = new DockPanel() { HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 0, 0, 10) };
+                    var d = new DockPanel() { HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 0, 0, s.Padding) };
                     if (!(s.Text == null || s.Text == ""))
                     {
                         drop.Margin = new Thickness(5, 0, 0, 0);
@@ -550,6 +574,11 @@ namespace ScriptedRender
                     };
                     drop.SelectedIndex = s.Index;
                     dock.Children.Add(d);
+
+                    s.EnableToggled += (enable) =>
+                    {
+                        Dispatch(() => drop.IsEnabled = enable);
+                    };
                 }
                 if (sett is UICheckbox)
                 {
@@ -560,9 +589,14 @@ namespace ScriptedRender
                     {
                         s.Checked = e.NewValue;
                     };
-                    check.Margin = new Thickness(0, 0, 0, 10);
+                    check.Margin = new Thickness(0, 0, 0, s.Padding);
                     check.IsChecked = s.Checked;
                     dock.Children.Add(check);
+
+                    s.EnableToggled += (enable) =>
+                    {
+                        Dispatch(() => check.IsEnabled = enable);
+                    };
                 }
                 if (sett is UITabs)
                 {

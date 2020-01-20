@@ -14,8 +14,29 @@
     </UserControl.Resources>
     <DockPanel MouseDown="DockPanel_MouseDown" Background="Transparent">
         <Grid Margin="4,0,0,0" VerticalAlignment="Center">
-            <Border Width="16" Height="16" BorderThickness="2" BorderBrush="{StaticResource PrimaryBrush}" Background="Transparent" CornerRadius="3">
-                <Border Name="checkedBox" Margin="2" CornerRadius="1" Background="{StaticResource PrimaryBrush}">
+            <Border Width="16" Height="16" BorderThickness="2" Background="Transparent" CornerRadius="3">
+
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="BorderBrush" Value="#777777"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <Border Name="checkedBox" Margin="2" CornerRadius="1">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Background" Value="#777777"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
                 </Border>
             </Border>
             <Grid Name="rippleBox" Margin="-7">

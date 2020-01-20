@@ -19,13 +19,34 @@
     <Grid Height="14" Name="clickerGrid" Background="Transparent" MouseEnter="ClickerGrid_MouseEnter" MouseLeave="ClickerGrid_MouseLeave" MouseDown="ClickerGrid_MouseDown" MouseMove="ClickerGrid_MouseMove" MouseUp="ClickerGrid_MouseUp">
         <Grid Margin="5" VerticalAlignment="Center" Name="barGrid" Height="4" Background="#55000000">
             <Rectangle HorizontalAlignment="Left" Fill="{StaticResource PrimaryBrush}" Opacity="0.8">
+                <Rectangle.Style>
+                    <Style TargetType="Rectangle">
+                        <Setter Property="Fill" Value="{StaticResource PrimaryBrush}"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Fill" Value="#777777"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Rectangle.Style>
                 <Rectangle.Width>
                     <Binding ElementName="slider" Path="ScaledValue"/>
                 </Rectangle.Width>
             </Rectangle>
         </Grid>
         <Grid Name="headGrid" HorizontalAlignment="Left" VerticalAlignment="Center" Height="10" Width="10">
-            <Ellipse Name="trueHead" Width="10" Height="10" HorizontalAlignment="Center" VerticalAlignment="Center" Fill="{StaticResource PrimaryBrush}"/>
+            <Ellipse Name="trueHead" Width="10" Height="10" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Ellipse.Style>
+                    <Style TargetType="Ellipse">
+                        <Setter Property="Fill" Value="{StaticResource PrimaryBrush}"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Fill" Value="#777777"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Ellipse.Style>
+            </Ellipse>
             <Grid Margin="-7" Name="auraGrid">
                 <Ellipse Name="hoverEllipse" Visibility="Hidden" Fill="#44000000"/>
             </Grid>

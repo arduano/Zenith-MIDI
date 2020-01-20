@@ -11,7 +11,7 @@ namespace FlatRender
         public int firstNote = 0;
         public int lastNote = 128;
         public double pianoHeight = 0.16;
-        public double deltaTimeOnScreen = 294.067;
+        public double deltaTimeOnScreen = 300;
         public bool sameWidthNotes = true;
 
         public string palette = "Random";

@@ -61,7 +61,7 @@
                     </DockPanel>
                     <DockPanel HorizontalAlignment="Left" LastChildFill="False" Margin="0,10,0,0" VerticalAlignment="Top" Width="528" >
                         <Label Content="{DynamicResource noteScreenTime}" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top"/>
-                        <ui:ValueSlider x:Name="noteDeltaScreenTime" Maximum="12" DecimalPoints="2" Minimum="2" TrueMin="1" TrueMax="10000" ValueChanged="NoteDeltaScreenTime_ValueChanged" Width="305" VerticalAlignment="Top"/>
+                        <ui:ValueSlider x:Name="noteDeltaScreenTime" Maximum="12" DecimalPoints="2" Minimum="2" TrueMin="1" TrueMax="100000" ValueChanged="NoteDeltaScreenTime_ValueChanged" Width="305" VerticalAlignment="Top"/>
                     </DockPanel>
                 </StackPanel>
             </TabItem>

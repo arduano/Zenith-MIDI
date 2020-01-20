@@ -271,6 +271,7 @@ void main()
         Script currScript;
 
         TextureShaders currentShader;
+        BlendFunc currentBlendFunc;
         #endregion
 
         public Render(RenderSettings settings)
@@ -438,6 +439,13 @@ void main()
                 if (s == TextureShaders.Hybrid) GL.UseProgram(evenquadShader);
                 currentShader = s;
             };
+            IO.setBlendFunc += (f) =>
+            {
+                if (currentBlendFunc != f) FlushQuadBuffer(false);
+                if (f == BlendFunc.Mix) OpenTK.Graphics.OpenGL4.GL.BlendFuncSeparate(OpenTK.Graphics.OpenGL4.BlendingFactorSrc.SrcAlpha, OpenTK.Graphics.OpenGL4.BlendingFactorDest.OneMinusSrcAlpha, OpenTK.Graphics.OpenGL4.BlendingFactorSrc.One, OpenTK.Graphics.OpenGL4.BlendingFactorDest.One);
+                if (f == BlendFunc.Add) OpenTK.Graphics.OpenGL4.GL.BlendFuncSeparate(OpenTK.Graphics.OpenGL4.BlendingFactorSrc.SrcAlpha, OpenTK.Graphics.OpenGL4.BlendingFactorDest.One, OpenTK.Graphics.OpenGL4.BlendingFactorSrc.One, OpenTK.Graphics.OpenGL4.BlendingFactorDest.One);
+                currentBlendFunc = f;
+            };
 
             Initialized = true;
             Console.WriteLine("Initialised ScriptedRender");
@@ -475,14 +483,16 @@ void main()
 
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
             GL.BlendEquationSeparate(BlendEquationMode.FuncAdd, BlendEquationMode.Max);
-
+            OpenTK.Graphics.OpenGL4.GL.BlendEquationSeparate(OpenTK.Graphics.OpenGL4.BlendEquationMode.FuncAdd, OpenTK.Graphics.OpenGL4.BlendEquationMode.FuncAdd);
+            OpenTK.Graphics.OpenGL4.GL.BlendFuncSeparate(OpenTK.Graphics.OpenGL4.BlendingFactorSrc.SrcAlpha, OpenTK.Graphics.OpenGL4.BlendingFactorDest.OneMinusSrcAlpha, OpenTK.Graphics.OpenGL4.BlendingFactorSrc.One, OpenTK.Graphics.OpenGL4.BlendingFactorDest.One);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, finalCompositeBuff);
             GL.Viewport(0, 0, renderSettings.width, renderSettings.height);
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
             #region Vars
             for (int i = 0; i < 12; i++) activeTexIds[i] = -1;
-
+            currentShader = TextureShaders.Normal;
+            currentBlendFunc = BlendFunc.Mix;
 
             #endregion
 
@@ -497,6 +507,7 @@ void main()
 
             FlushQuadBuffer(false);
 
+            OpenTK.Graphics.OpenGL4.GL.BlendEquationSeparate(OpenTK.Graphics.OpenGL4.BlendEquationMode.FuncAdd, OpenTK.Graphics.OpenGL4.BlendEquationMode.FuncAdd);
 
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.Disable(EnableCap.Blend);
