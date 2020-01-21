@@ -25,6 +25,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
+using ZenithShared;
 
 namespace Zenith_MIDI
 {
@@ -898,6 +899,12 @@ namespace Zenith_MIDI
         private void tempoMultSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (settings != null) settings.tempoMultiplier = tempoMultSlider.Value;
+        }
+
+        private void updateDownloaded_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            ZenithUpdates.KillAllProcesses();
+            Process.Start(ZenithUpdates.InstallerPath, "update -Reopen");
         }
     }
 

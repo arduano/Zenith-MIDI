@@ -113,6 +113,13 @@
                                                      Margin="0,0,0,0"
                                                      IsItemsHost="True"
                                                      Background="Transparent" />
+                                                <StackPanel Name="updateDownloaded" MouseDown="updateDownloaded_MouseDown" Margin="20,0,0,0" VerticalAlignment="Center" Cursor="Arrow" WindowChrome.IsHitTestVisibleInChrome="True">
+                                                    <TextBlock Foreground="White" FontSize="14">Update installed!</TextBlock>
+                                                    <TextBlock Foreground="White" FontSize="14">Click here to restart Zenith</TextBlock>
+                                                </StackPanel>
+                                                <StackPanel Visibility="Collapsed" Name="downloadingUpdate" Margin="20,0,0,0" VerticalAlignment="Center">
+                                                    <TextBlock Foreground="White" FontSize="20">Downloading update...</TextBlock>
+                                                </StackPanel>
                                                 <DockPanel DockPanel.Dock="Right" VerticalAlignment="Stretch" HorizontalAlignment="Right" Margin="0,0,10,0" Grid.RowSpan="2" Width="52" Panel.ZIndex="100">
                                                     <Button Style="{StaticResource WindowButton}" Focusable="False" Name="ExitButton" Background="Red" Width="20" Height="20" Margin="3" DockPanel.Dock="Right" WindowChrome.IsHitTestVisibleInChrome="True" Click="ExitButton_Click"></Button>
                                                     <Button Style="{StaticResource WindowButton}" Focusable="False" Name="MinimiseButton" Background="Orange" Width="20" Height="20" Margin="3" DockPanel.Dock="Right" WindowChrome.IsHitTestVisibleInChrome="True" Click="MinimiseButton_Click"></Button>

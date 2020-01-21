@@ -191,7 +191,7 @@ namespace ZenithShared
             if (File.Exists(shortcutLocation)) File.Delete(shortcutLocation);
         }
 
-        public static void DeleteKivaFolder()
+        public static void DeleteProgramFolder()
         {
             Directory.Delete(InstallPath, true);
         }
