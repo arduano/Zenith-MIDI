@@ -1,0 +1,15 @@
+﻿<Window x:Class="ZenithInstaller.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ZenithInstaller"
+        mc:Ignorable="d"
+        Title="LoadingMidiForm" WindowStyle="None" Height="72.729" Width="266.373" Loaded="Window_Loaded" WindowStartupLocation="CenterScreen">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="{Binding ActualHeight,ElementName=content}"/>
+    </WindowChrome.WindowChrome>
+    <Grid Name="content" Background="#009245">
+        <Label Name="progressText" FontSize="16" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center">Downloading Zenith...</Label>
+    </Grid>
+</Window>
