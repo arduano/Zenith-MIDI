@@ -26,6 +26,8 @@ using Newtonsoft.Json.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
 using ZenithShared;
+using System.IO;
+using System.IO.Compression;
 
 namespace Zenith_MIDI
 {
@@ -33,6 +35,13 @@ namespace Zenith_MIDI
     {
         public Queue<IPluginRender> disposeQueue = new Queue<IPluginRender>();
         public IPluginRender renderer = null;
+    }
+
+    public enum UpdateProgress
+    {
+        NotDownloading,
+        Downloading,
+        Downloaded
     }
 
     public partial class MainWindow : Window
@@ -170,9 +179,90 @@ namespace Zenith_MIDI
 
         string defaultPlugin = "Classic";
 
+        Settings metaSettings = new Settings();
+
+        void RunLanguageCheck()
+        {
+            string ver;
+            try
+            {
+                ver = ZenithLanguages.GetLatestVersion();
+            }
+            catch { return; }
+            if (ver != metaSettings.LanguagesVersion)
+            {
+                try
+                {
+                    Console.WriteLine("Update found for language packs, downloading...");
+                    var latest = ZenithLanguages.DownloadLatestVersion();
+                    ZenithLanguages.UnpackFromStream(latest);
+                    metaSettings.LanguagesVersion = ver;
+                    metaSettings.SaveConfig();
+                    Console.WriteLine("Updated language packs!");
+                }
+                catch { Console.WriteLine("Failed to update language packs"); }
+            }
+        }
+
+        void RunUpdateCheck()
+        {
+            if (!metaSettings.AutoUpdate) return;
+            string ver;
+            try
+            {
+                ver = ZenithUpdates.GetLatestVersion();
+            }
+            catch { return; }
+            if (ver != metaSettings.VersionName)
+            {
+                Console.WriteLine("Found Update! Current: " + metaSettings.VersionName + " Latest: " + ver);
+                try
+                {
+                    Dispatcher.InvokeAsync(() => windowTabs.UpdaterProgress = UpdateProgress.Downloading).Wait();
+                    Stream data;
+                    if (Environment.Is64BitOperatingSystem) data = ZenithUpdates.DownloadAssetData(ZenithUpdates.DataAssetName64);
+                    else data = ZenithUpdates.DownloadAssetData(ZenithUpdates.DataAssetName32);
+                    var dest = File.OpenWrite(ZenithUpdates.DefaultUpdatePackagePath);
+                    data.CopyTo(dest);
+                    data.Close();
+                    dest.Close();
+                    Dispatcher.InvokeAsync(() => windowTabs.UpdaterProgress = UpdateProgress.Downloaded).Wait();
+                }
+                catch (Exception e)
+                {
+                    Dispatcher.InvokeAsync(() => windowTabs.UpdaterProgress = UpdateProgress.NotDownloading).Wait();
+                    MessageBox.Show("Couldn't download and save update package", "Update failed");
+                }
+            }
+        }
+
+        void CheckUpdateDownloaded()
+        {
+            if (metaSettings.AutoUpdate)
+            {
+                if (File.Exists(ZenithUpdates.DefaultUpdatePackagePath))
+                {
+                    try
+                    {
+                        using (var z = File.OpenRead(ZenithUpdates.DefaultUpdatePackagePath))
+                        using (ZipArchive archive = new ZipArchive(z))
+                        { }
+                        Dispatcher.InvokeAsync(() => windowTabs.UpdaterProgress = UpdateProgress.Downloaded).Wait();
+                        if (!ZenithUpdates.IsAnotherProcessRunning())
+                        {
+                            Process.Start(ZenithUpdates.InstallerPath, "update -Reopen");
+                        }
+                    }
+                    catch (Exception) { File.Delete(ZenithUpdates.DefaultUpdatePackagePath); }
+                }
+            }
+        }
+
         public MainWindow()
         {
             InitializeComponent();
+
+            windowTabs.VersionName = metaSettings.VersionName;
 
             SourceInitialized += (s, e) =>
             {
@@ -205,6 +295,8 @@ namespace Zenith_MIDI
             Height = (double)size[1];
 
             Task omnimidiLoader = null;
+            Task languageLoader = Task.Run(RunLanguageCheck);
+            Task updateLoader = Task.Run(RunUpdateCheck);
             if (foundOmniMIDI)
             {
                 omnimidiLoader = Task.Run(() =>
@@ -229,6 +321,8 @@ namespace Zenith_MIDI
             settings.PauseToggled += ToggledPause;
             InitialiseSettingsValues();
             creditText.Text = "Video was rendered with Zenith\nhttps://arduano.github.io/Zenith-MIDI/start";
+
+            languageLoader.Wait();
 
             var languagePacks = Directory.GetDirectories("Languages");
             foreach (var language in languagePacks)
@@ -261,7 +355,7 @@ namespace Zenith_MIDI
             }
             languageSelect.SelectedIndex = 0;
             if (omnimidiLoader != null)
-                omnimidiLoader.GetAwaiter().GetResult();
+                omnimidiLoader.Wait();
         }
 
         void ToggledPause()
@@ -906,6 +1000,28 @@ namespace Zenith_MIDI
             ZenithUpdates.KillAllProcesses();
             Process.Start(ZenithUpdates.InstallerPath, "update -Reopen");
         }
+    }
+
+    public class CustomTabs : TabControl
+    {
+        public UpdateProgress UpdaterProgress
+        {
+            get { return (UpdateProgress)GetValue(UpdaterProgressProperty); }
+            set { SetValue(UpdaterProgressProperty, value); }
+        }
+
+        public static readonly DependencyProperty UpdaterProgressProperty =
+            DependencyProperty.Register("UpdaterProgress", typeof(UpdateProgress), typeof(CustomTabs), new PropertyMetadata(UpdateProgress.NotDownloading));
+
+
+        public string VersionName
+        {
+            get { return (string)GetValue(VersionNameProperty); }
+            set { SetValue(VersionNameProperty, value); }
+        }
+
+        public static readonly DependencyProperty VersionNameProperty =
+            DependencyProperty.Register("VersionName", typeof(string), typeof(CustomTabs), new PropertyMetadata(""));
     }
 
     public class AndValueConverter : IMultiValueConverter

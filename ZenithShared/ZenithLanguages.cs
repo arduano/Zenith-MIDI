@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ZenithShared
 {
-    public static class Languages
+    public static class ZenithLanguages
     {
         public static readonly string ApiURL = "https://api.github.com/repos/Hans5958/Zenith-MIDI-i18n/releases/latest";
         public static readonly string DataAssetName = "pack.zip";
@@ -20,6 +20,11 @@ namespace ZenithShared
 
         public static void UnpackFromStream(Stream s, string dir)
         {
+            foreach(var f in Directory.GetDirectories(dir))
+            {
+                if (!f.EndsWith("\\en")) Directory.Delete(f, true);
+            }
+
             using (ZipArchive archive = new ZipArchive(s))
             {
                 foreach (var e in archive.Entries)

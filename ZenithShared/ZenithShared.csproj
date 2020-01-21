@@ -48,7 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="InstallFailedException.cs" />
-    <Compile Include="Languages.cs" />
+    <Compile Include="ZenithLanguages.cs" />
     <Compile Include="ZenithUpdates.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

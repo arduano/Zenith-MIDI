@@ -16,12 +16,6 @@ namespace Zenith_MIDI
         [STAThread]
         static void Main(string[] args)
         {
-            //var ver = Languages.GetLatestVersion();
-            //var stream = Languages.DownloadLatestVersion();
-            //Languages.UnpackFromStream(stream);
-
-            new Settings();
-
             Console.Title = "Zenith";
             Application app = new Application();
             app.Run(new MainWindow());

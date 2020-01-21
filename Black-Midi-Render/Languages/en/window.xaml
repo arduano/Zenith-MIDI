@@ -12,6 +12,11 @@
     <system:String x:Key="moduleSettingsTab">Module Settings</system:String>
     <system:String x:Key="renderTab">Render</system:String>
 
+    <!--Auto Update-->
+    <system:String x:Key="updateDownloading">Downloading update...</system:String>
+    <system:String x:Key="updateReady">Update installed!</system:String>
+    <system:String x:Key="clickToRestart">Click here to restart Zenith</system:String>
+
     <!--Main Page-->
     <system:String x:Key="load">Load</system:String>
     <system:String x:Key="unload">Unload</system:String>
