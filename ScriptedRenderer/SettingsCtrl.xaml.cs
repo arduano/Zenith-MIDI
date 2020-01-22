@@ -354,10 +354,50 @@ namespace ScriptedRender
                 }
 
                 var fc = code.Replace(" ", "").Replace("\t", "").Replace("\n", "").Replace("\r", "");
-                if (fc.Contains("System.IO")) throw new Exception("System.IO is not allowed");
-                if (fc.Contains("System.Reflection")) throw new Exception("System.Reflection is not allowed");
-                if (fc.Contains("Microsoft.CSharp")) throw new Exception("Microsoft.CSharp is not allowed");
-                if (fc.Contains("System.Net")) throw new Exception("Microsoft.CSharp is not allowed");
+
+                Dictionary<string, string> notallowed = new Dictionary<string, string>()
+                {
+                    {"System.IO", null},
+                    {"System.Reflection", null},
+                    {"Microsoft.CSharp", null},
+                    {"System.Net", null},
+                    {"Microsoft.VisualBasic", null},
+                    {"System.Drawing", null},
+                    {"System.AttributeUsage", null},
+                    {"System.EnterpriseServices", null},
+                    {"System.Media", null},
+                    {"System.Messaging", null},
+                    {"System.Printing", null},
+                    {"System.Runtime", null},
+                    {"System.Security", null},
+                    {"System.ServiceModel", null},
+                    {"System.ServiceProcess", null},
+                    {"System.Speech", null},
+                    {"System.Web", null},
+                    {"System.Windows", null},
+                    {"System.Xml", null},
+                    {"Microsoft.Windows", null},
+                    {"Microsoft.Win32", null},
+                    {"Microsoft.SqlServer", null},
+                    {"Microsoft.JScript", null},
+                    {"Microsoft.Build", null},
+                    {"Accessibility", null},
+                    {"Microsoft.Activities", null},
+                    {"System.Diagnostics", "random user"},
+                    {"System.Runtime", "random user"},
+                    {"System.Management", "random user"}
+                };
+
+                foreach (var n in notallowed)
+                {
+                    if (fc.Contains(n.Key))
+                    {
+                        if (n.Value == null)
+                            throw new Exception(n.Key + " is not allowed");
+                        else
+                            if (fc.Contains(n.Key)) throw new Exception(n.Key + " is not allowed (found by " + n.Value + ")");
+                    }
+                }
 
                 CompilerParameters compiler_parameters = new CompilerParameters();
 

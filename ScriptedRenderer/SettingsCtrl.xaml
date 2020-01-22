@@ -45,11 +45,12 @@
                 </Grid>
             </TabItem>
             <TabItem Header="{DynamicResource settingsTab}" Name="switchTab">
-                <Grid>
-                    <DockPanel Name="settingsPanel" Margin="10" LastChildFill="False">
-                        
+                <DockPanel Margin="10">
+                    <DockPanel />
+                    <DockPanel Name="settingsPanel" LastChildFill="False">
+
                     </DockPanel>
-                </Grid>
+                </DockPanel>
             </TabItem>
             <TabItem Header="{DynamicResource miscTab}">
                 <StackPanel Margin="10">
