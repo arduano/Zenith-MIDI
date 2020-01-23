@@ -10,6 +10,9 @@
         <WindowChrome CaptionHeight="{Binding ActualHeight,ElementName=content}"/>
     </WindowChrome.WindowChrome>
     <Grid Name="content" Background="#009245">
-        <Label Name="progressText" FontSize="16" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center">Downloading Zenith...</Label>
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Label Name="progressText" FontSize="16" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center">Downloading Zenith...</Label>
+            <Label Name="dlProgress" Visibility="Collapsed" FontSize="12" HorizontalAlignment="Center" Padding="0" Foreground="White">0%</Label>
+        </StackPanel>
     </Grid>
 </Window>

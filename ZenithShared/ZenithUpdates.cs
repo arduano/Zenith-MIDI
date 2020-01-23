@@ -20,7 +20,7 @@ namespace ZenithShared
     public static class ZenithUpdates
     {
         public static readonly string DefaultUpdatePackagePath = "Updates\\pkg.zip";
-        public static readonly string DataAssetName32 = "Zenithx32.zip";
+        public static readonly string DataAssetName32 = "Zenithx86.zip";
         public static readonly string DataAssetName64 = "Zenithx64.zip";
         public static readonly string InstallerPath = "Updates\\ins.exe";
         public static readonly string SettingsPath = "Settings\\meta.kvs";
@@ -67,6 +67,34 @@ namespace ZenithShared
             }
         }
 
+        public static Stream GetHTTPDataProgressive(string uri, Action<long, long> progressCallback)
+        {
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
+            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+            request.UserAgent = ProgramName;
+
+            var res = request.BeginGetResponse((o) => { }, "");
+
+            using (HttpWebResponse response = (HttpWebResponse)request.EndGetResponse(res))
+            {
+                using (Stream stream = response.GetResponseStream())
+                {
+                    MemoryStream data = new MemoryStream();
+                    var buffer = new byte[2048];
+                    var copied = 0;
+                    while (copied < response.ContentLength)
+                    {
+                        var r = stream.Read(buffer, 0, buffer.Length);
+                        data.Write(buffer, 0, r);
+                        copied += r;
+                        progressCallback(copied, response.ContentLength);
+                    }
+                    data.Position = 0;
+                    return data;
+                }
+            }
+        }
+
         public static string GetLatestVersion() => GetLatestVersion(ApiURL);
         public static string GetLatestVersion(string repo)
         {
@@ -82,6 +110,16 @@ namespace ZenithShared
             var asset = (dynamic)assets.Where(a => ((dynamic)a).name == filename).First();
             var url = (string)asset.browser_download_url;
             return GetHTTPData(url);
+        }
+
+        public static Stream DownloadAssetDataProgressive(string filename, Action<long, long> progressCallback) => DownloadAssetDataProgressive(filename, ApiURL, progressCallback);
+        public static Stream DownloadAssetDataProgressive(string filename, string repo, Action<long, long> progressCallback)
+        {
+            var data = GetHTTPJSON(repo);
+            var assets = (JArray)data.assets;
+            var asset = (dynamic)assets.Where(a => ((dynamic)a).name == filename).First();
+            var url = (string)asset.browser_download_url;
+            return GetHTTPDataProgressive(url, progressCallback);
         }
 
         public static bool IsAnotherProcessRunning()

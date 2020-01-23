@@ -29,6 +29,15 @@ namespace ZenithInstaller
 
         public Exception exception = null;
 
+        void ProgressCallbac(long dl, long total)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                dlProgress.Visibility = Visibility.Visible;
+                dlProgress.Content = (Math.Round(((double)dl / total * 1000.0)) / 10) + "% of " + (Math.Round(total / 100000.0) / 10) + "mb";
+            });
+        }
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Task.Run(() =>
@@ -36,8 +45,12 @@ namespace ZenithInstaller
                 try
                 {
                     Stream data;
-                    if(Environment.Is64BitOperatingSystem) data = ZenithUpdates.DownloadAssetData(ZenithUpdates.DataAssetName64);
-                    else data = ZenithUpdates.DownloadAssetData(ZenithUpdates.DataAssetName32);
+                    if(Environment.Is64BitOperatingSystem) data = ZenithUpdates.DownloadAssetDataProgressive(ZenithUpdates.DataAssetName64, ProgressCallbac);
+                    else data = ZenithUpdates.DownloadAssetDataProgressive(ZenithUpdates.DataAssetName32, ProgressCallbac);
+                    Dispatcher.Invoke(() =>
+                    {
+                        dlProgress.Visibility = Visibility.Collapsed;
+                    });
                     Dispatcher.Invoke(() => progressText.Content = "Installing...");
                     ZenithUpdates.InstallFromStream(data);
                     data.Close();

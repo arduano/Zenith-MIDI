@@ -33,6 +33,7 @@ using Brushes = System.Windows.Media.Brushes;
 using Path = System.IO.Path;
 using ZenithEngine.UI;
 using System.Threading;
+using Newtonsoft.Json;
 
 namespace ScriptedRender
 {
@@ -56,6 +57,12 @@ namespace ScriptedRender
             add { paletteList.PaletteChanged += value; }
             remove { paletteList.PaletteChanged -= value; }
         }
+
+        JObject packProfiles = null;
+        string profilesDir;
+        List<Control> settingsControls = new List<Control>();
+        List<UISetting> settingsMeta = new List<UISetting>();
+        List<object[]> profiles = new List<object[]>();
 
         string packPath = "Plugins\\Assets\\Scripted\\Resources";
 
@@ -368,7 +375,6 @@ namespace ScriptedRender
                     {"System.Media", null},
                     {"System.Messaging", null},
                     {"System.Printing", null},
-                    {"System.Runtime", null},
                     {"System.Security", null},
                     {"System.ServiceModel", null},
                     {"System.ServiceProcess", null},
@@ -476,6 +482,7 @@ namespace ScriptedRender
                 if (hasVar("NoteCollectorOffset", typeof(double))) script.hasCollectorOffset = true;
                 if (hasVar("NoteScreenTime", typeof(double))) script.hasNoteScreenTime = true;
                 if (hasVar("LastNoteCount", typeof(long))) script.hasNoteCount = true;
+                if (hasVar("UseProfiles", typeof(bool))) script.hasProfiles = script.instance.UseProfiles;
 
                 if (hasVar("SettingsUI", typeof(IEnumerable<UISetting>)))
                 {
@@ -556,6 +563,15 @@ namespace ScriptedRender
                     {
                         Dispatch(() => number.IsEnabled = enable);
                     };
+
+                    s.ValueChanged += (v) =>
+                    {
+                        if (number.Value != (decimal)v)
+                            number.Value = (decimal)v;
+                    };
+
+                    settingsControls.Add(number);
+                    settingsMeta.Add(s);
                 }
                 if (sett is UINumberSlider)
                 {
@@ -591,6 +607,16 @@ namespace ScriptedRender
                     {
                         Dispatch(() => number.IsEnabled = enable);
                     };
+
+                    s.ValueChanged += (v) =>
+                    {
+                        v = Math.Round(v, s.DecialPoints);
+                        if (number.Value != v)
+                            number.Value = v;
+                    };
+
+                    settingsControls.Add(number);
+                    settingsMeta.Add(s);
                 }
                 if (sett is UIDropdown)
                 {
@@ -619,6 +645,15 @@ namespace ScriptedRender
                     {
                         Dispatch(() => drop.IsEnabled = enable);
                     };
+
+                    s.IndexChanged += (i) =>
+                    {
+                        if (drop.SelectedIndex != i)
+                            drop.SelectedIndex = i;
+                    };
+
+                    settingsControls.Add(drop);
+                    settingsMeta.Add(s);
                 }
                 if (sett is UICheckbox)
                 {
@@ -637,6 +672,15 @@ namespace ScriptedRender
                     {
                         Dispatch(() => check.IsEnabled = enable);
                     };
+
+                    s.ValueChanged += (c) =>
+                    {
+                        if (check.IsChecked != c)
+                            check.IsChecked = c;
+                    };
+
+                    settingsControls.Add(check);
+                    settingsMeta.Add(s);
                 }
                 if (sett is UITabs)
                 {
@@ -665,13 +709,18 @@ namespace ScriptedRender
             if (pluginList.SelectedIndex == -1) return;
             try
             {
+                settingsControls.Clear();
+                settingsMeta.Clear();
+                profiles.Clear();
+                profileSelect.Items.Clear();
                 var p = resourcePacks[pluginList.SelectedIndex];
                 if (settings.currScript != null) UnloadScript(settings.currScript);
-                var pack = LoadScript(p.filename, p.type);
-                if (!pack.error)
+                var script = LoadScript(p.filename, p.type);
+
+                if (!script.error)
                 {
                     pluginDesc.Foreground = Brushes.White;
-                    settings.currScript = pack;
+                    settings.currScript = script;
                     settings.lastScriptChangeTime = DateTime.Now.Ticks;
                 }
                 else
@@ -680,20 +729,65 @@ namespace ScriptedRender
                     settings.currScript = null;
                     settings.lastScriptChangeTime = DateTime.Now.Ticks;
                 }
-                if (pack.preview == null)
+                if (script.preview == null)
                     previewImg.Source = null;
                 else
-                    previewImg.Source = BitmapToImageSource(pack.preview);
+                    previewImg.Source = BitmapToImageSource(script.preview);
                 switchTab.Visibility = Visibility.Collapsed;
                 settingsPanel.Children.Clear();
 
-                if (pack.uiSettings != null)
+                if (script.uiSettings != null)
                 {
                     switchTab.Visibility = Visibility.Visible;
-                    PopulateSettingsDock(pack.uiSettings, settingsPanel);
+                    PopulateSettingsDock(script.uiSettings, settingsPanel);
                 }
 
-                pluginDesc.Text = pack.description;
+                if (script.hasProfiles)
+                {
+                    profilesDir = p.filename + ".profiles.json";
+                    if (File.Exists(profilesDir))
+                    {
+                        try
+                        {
+                            var text = File.ReadAllText(profilesDir);
+                            packProfiles = (JObject)JsonConvert.DeserializeObject(text);
+                        }
+                        catch
+                        {
+                            packProfiles = new JObject();
+                        }
+                    }
+                    else
+                    {
+                        packProfiles = new JObject();
+                    }
+                    profileDock.Visibility = Visibility.Visible;
+                    foreach (var v in packProfiles)
+                    {
+                        if (!(v.Value is JArray)) continue;
+                        var data = (v.Value as JArray).Select<JToken, object>(val => {
+                            if (val.Type == JTokenType.Boolean) return (bool)val;
+                            if (val.Type == JTokenType.Integer) return (int)val;
+                            if (val.Type == JTokenType.Float) return (double)val;
+                            return null;
+                        }).ToArray();
+                        if(!CheckProfileValidity(data)) return;
+                        profiles.Add(data);
+                        profileSelect.Items.Add(new ComboBoxItem()
+                        {
+                            Content = v.Key,
+                            Tag = v.Key
+                        });
+                    }
+                }
+                else
+                {
+                    profilesDir = null;
+                    packProfiles = null;
+                    profileDock.Visibility = Visibility.Collapsed;
+                }
+
+                pluginDesc.Text = script.description;
             }
             catch { }
         }
@@ -747,6 +841,163 @@ namespace ScriptedRender
                 Process.Start("explorer.exe", System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), packPath));
             else
                 Process.Start("explorer.exe", packPath);
+        }
+
+        void SaveProfilesFile()
+        {
+            File.WriteAllText(profilesDir, JsonConvert.SerializeObject(packProfiles));
+        }
+
+        private void saveProfile_Click(object sender, RoutedEventArgs e)
+        {
+            var name = profileName.Text.Trim();
+            if (name == "") MessageBox.Show("Please write a name for the profile", "Invalid name");
+            else
+            {
+                if (packProfiles.ContainsKey(name))
+                {
+                    if (MessageBox.Show("Are you sure you want to override profile " + name + "?", "Override", MessageBoxButton.YesNo) == MessageBoxResult.No) return;
+                    packProfiles.Remove(name);
+                    ComboBoxItem item = null;
+                    foreach (var i in profileSelect.Items)
+                    {
+                        if ((string)((ComboBoxItem)i).Tag == name)
+                        {
+                            item = (ComboBoxItem)i;
+                            break;
+                        }
+                    }
+                    profiles.RemoveAt(profileSelect.Items.IndexOf(item));
+                    profileSelect.Items.Remove(item);
+                }
+                var values = settingsMeta.Select(s =>
+                {
+                    if (s is UINumber)
+                        return (object)(s as UINumber).Value;
+                    if (s is UINumberSlider)
+                        return (object)(s as UINumberSlider).Value;
+                    if (s is UICheckbox)
+                        return (object)(s as UICheckbox).Checked;
+                    if (s is UIDropdown)
+                        return (object)(s as UIDropdown).Index;
+                    return (object)null;
+                }).ToArray();
+                packProfiles.Add(name, new JArray(values));
+                SaveProfilesFile();
+                profiles.Add(values);
+                profileSelect.Items.Add(new ComboBoxItem()
+                {
+                    Content = name,
+                    Tag = name
+                });
+                profileSelect.SelectedIndex = profileSelect.Items.Count - 1;
+            }
+        }
+
+        private bool CheckProfileValidity(IEnumerable<object> data)
+        {
+            var i = 0;
+            foreach (var d in data)
+            {
+                if (settingsMeta[i] is UINumber)
+                    if (!typeof(double).IsAssignableFrom(d.GetType()) && !typeof(int).IsAssignableFrom(d.GetType())) 
+                        return false;
+                if (settingsMeta[i] is UINumberSlider)
+                    if (!typeof(double).IsAssignableFrom(d.GetType()) && !typeof(int).IsAssignableFrom(d.GetType())) 
+                        return false;
+                if (settingsMeta[i] is UICheckbox)
+                    if (!typeof(bool).IsAssignableFrom(d.GetType())) 
+                        return false;
+                if (settingsMeta[i] is UIDropdown)
+                {
+                    if (!typeof(int).IsAssignableFrom(d.GetType())) 
+                        return false;
+                    var index = (int)d;
+                    if (index < 0 || index >= ((UIDropdown)settingsMeta[i]).Options.Length) 
+                        return false;
+                }
+                i++;
+            }
+            return true;
+        }
+
+        private void deleteProfile_Click(object sender, RoutedEventArgs e)
+        {
+            if (profileSelect.SelectedIndex == -1) return;
+            var i = profileSelect.SelectedIndex;
+            profiles.RemoveAt(i);
+            var name = (string)((ComboBoxItem)profileSelect.SelectedItem).Tag;
+            var selected = profileSelect.SelectedItem;
+            profileSelect.SelectedIndex = -1;
+            profileSelect.Items.Remove(selected);
+            packProfiles.Remove(name);
+            SaveProfilesFile();
+        }
+
+        private void profileDefaults_Click(object sender, RoutedEventArgs e)
+        {
+            for (int i = 0; i < settingsMeta.Count; i++)
+            {
+                var m = settingsMeta[i];
+                if (m is UINumber)
+                {
+                    var me = m as UINumber;
+                    me.Value = me.Default;
+                }
+                if (m is UINumberSlider)
+                {
+                    var me = m as UINumberSlider;
+                    me.Value = me.Default;
+                }
+                if (m is UICheckbox)
+                {
+                    var me = m as UICheckbox;
+                    me.Checked = me.Default;
+                }
+                if (m is UIDropdown)
+                {
+                    var me = m as UIDropdown;
+                    me.Index = me.Default;
+                }
+            }
+        }
+
+        private void profileSelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (profileSelect.SelectedIndex == -1) return;
+            var profile = profiles[profileSelect.SelectedIndex];
+
+            for (int i = 0; i < profile.Length; i++)
+            {
+                var d = profile[i]
+;                if (settingsMeta[i] is UINumber)
+                {
+                    if (!typeof(double).IsAssignableFrom(d.GetType()) && !typeof(int).IsAssignableFrom(d.GetType())) return;
+                    (settingsMeta[i] as UINumber).Value = (double)d;
+                }
+                if (settingsMeta[i] is UINumberSlider)
+                {
+                    if (!typeof(double).IsAssignableFrom(d.GetType()) && !typeof(int).IsAssignableFrom(d.GetType())) return;
+                    (settingsMeta[i] as UINumberSlider).Value = (double)d;
+                }
+                if (settingsMeta[i] is UICheckbox)
+                {
+                    if (!typeof(bool).IsAssignableFrom(d.GetType())) return;
+                    (settingsMeta[i] as UICheckbox).Checked = (bool)d;
+                }
+                if (settingsMeta[i] is UIDropdown)
+                {
+                    if (!typeof(int).IsAssignableFrom(d.GetType())) return;
+                    var index = (int)d;
+                    if (index < 0 || index >= ((UIDropdown)settingsMeta[i]).Options.Length) return;
+                    (settingsMeta[i] as UIDropdown).Index = (int)d;
+                }
+            }
+        }
+
+        private void profileSelect_DropDownOpened(object sender, EventArgs e)
+        {
+            profileSelect.SelectedIndex = -1;
         }
     }
 }

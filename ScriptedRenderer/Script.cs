@@ -34,6 +34,8 @@ namespace ScriptedRender
         public bool hasNoteScreenTime = false;
         public bool hasNoteCount = false;
 
+        public bool hasProfiles = false;
+
         public dynamic instance;
         public Type renderType;
 

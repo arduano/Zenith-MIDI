@@ -11,11 +11,13 @@ namespace ScriptedEngine
     {
         public double Padding { get; set; } = 10;
     }
-    public abstract class UISettingEnabled : UISetting
+    public abstract class UISettingValued<T> : UISetting
     {
         private bool enabled = true;
 
         public event Action<bool> EnableToggled;
+
+        public T Default { get; protected set; }
 
         public bool Enabled
         {
@@ -50,12 +52,13 @@ namespace ScriptedEngine
         public UILabel(string text, double fontSize, double padding) { Text = text; FontSize = fontSize; Padding = padding; }
     }
 
-    public class UINumber : UISettingEnabled
+    public class UINumber : UISettingValued<double>
     {
         private double value;
 
         public UINumber(string text, double value, double minimum, double maximum, int decialPoints)
         {
+            Default = value;
             Text = text;
             Value = value;
             Minimum = minimum;
@@ -89,12 +92,13 @@ namespace ScriptedEngine
         public double Step { get; } = 1;
     }
 
-    public class UINumberSlider : UISettingEnabled
+    public class UINumberSlider : UISettingValued<double>
     {
         private double value;
 
         public UINumberSlider(string text, double value, double minimum, double maximum, double trueMinimum, double trueMaximum, int decialPoints)
         {
+            Default = value;
             Text = text;
             Value = value;
             Minimum = minimum;
@@ -133,7 +137,7 @@ namespace ScriptedEngine
         public bool Logarithmic { get; } = false;
     }
 
-    public class UIDropdown : UISettingEnabled
+    public class UIDropdown : UISettingValued<int>
     {
         private string value;
         private int index;
@@ -144,6 +148,7 @@ namespace ScriptedEngine
             Options = options;
             Index = 0;
             Value = options[0];
+            Default = 0;
         }
 
         public UIDropdown(string text, int index, string[] options)
@@ -152,6 +157,7 @@ namespace ScriptedEngine
             Index = index;
             Value = options[index];
             Options = options;
+            Default = index;
         }
 
 
@@ -188,7 +194,7 @@ namespace ScriptedEngine
         public string[] Options { get; }
     }
 
-    public class UICheckbox : UISettingEnabled
+    public class UICheckbox : UISettingValued<bool>
     {
         private bool value;
 
@@ -196,9 +202,8 @@ namespace ScriptedEngine
         {
             this.Text = text;
             this.Checked = @checked;
+            Default = @checked;
         }
-
-
 
         public event Action<bool> ValueChanged;
 

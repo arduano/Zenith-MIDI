@@ -466,7 +466,7 @@ void main()
 
         public void RenderFrame(FastList<Note> notes, double midiTime, int finalCompositeBuff)
         {
-            CheckScript();
+            CheckScript(notes);
 
             if (currScript == null || currScript.error) return;
 

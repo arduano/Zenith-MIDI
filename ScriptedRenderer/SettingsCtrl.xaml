@@ -46,7 +46,14 @@
             </TabItem>
             <TabItem Header="{DynamicResource settingsTab}" Name="switchTab">
                 <DockPanel Margin="10">
-                    <DockPanel />
+                    <DockPanel Visibility="Collapsed" Name="profileDock" DockPanel.Dock="Top" LastChildFill="False" Margin="0,0,0,10">
+                        <Label Content="{DynamicResource profile}"/>
+                        <ComboBox DropDownOpened="profileSelect_DropDownOpened" Name="profileSelect" Width="120" Margin="5,0,0,0" SelectionChanged="profileSelect_SelectionChanged"/>
+                        <TextBox Name="profileName" Margin="5,0,0,0" Width="120" />
+                        <Button Name="saveProfile" Margin="5,0,0,0" Padding="20,0" Content="{DynamicResource save}" Click="saveProfile_Click"/>
+                        <Button Name="deleteProfile" Margin="5,0,0,0" Padding="20,0" Content="{DynamicResource delete}" Click="deleteProfile_Click" />
+                        <Button Name="profileDefaults" DockPanel.Dock="Right" Padding="20,0" Content="{DynamicResource defaults}" Click="profileDefaults_Click"/>
+                    </DockPanel>
                     <DockPanel Name="settingsPanel" LastChildFill="False">
 
                     </DockPanel>

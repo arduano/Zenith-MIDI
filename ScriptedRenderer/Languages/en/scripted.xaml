@@ -20,4 +20,10 @@
     <system:String x:Key="firstNote">First Note</system:String>
     <system:String x:Key="lastNote">Last Note</system:String>
     <system:String x:Key="noteScreenTime">Note screen time</system:String>
+
+    <system:String x:Key="profile">Profile</system:String>
+    <system:String x:Key="save">Save</system:String>
+    <system:String x:Key="delete">Delete</system:String>
+    <system:String x:Key="defaults">Defauts</system:String>
+
 </ResourceDictionary>
