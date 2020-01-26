@@ -79,6 +79,10 @@ namespace ZenithEngine.UI
         public static readonly DependencyProperty TrueMaxProperty =
             DependencyProperty.Register("TrueMax", typeof(decimal), typeof(ValueSlider), new PropertyMetadata((decimal)1.0d));
 
+        public decimal Step
+        { get => (decimal)GetValue(StepProperty); set => SetValue(StepProperty, value); }
+        public static readonly DependencyProperty StepProperty = DependencyProperty.Register("Step", typeof(decimal), typeof(ValueSlider), new PropertyMetadata((decimal)1));
+
 
         public static readonly RoutedEvent ValueChangedEvent = EventManager.RegisterRoutedEvent(
                 "ValueChanged", RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<double>), typeof(ValueSlider));
@@ -112,6 +116,7 @@ namespace ZenithEngine.UI
             updown.SetBinding(NumberSelect.MinimumProperty, new Binding("TrueMin") { Source = this });
             updown.SetBinding(NumberSelect.MaximumProperty, new Binding("TrueMax") { Source = this });
             updown.SetBinding(NumberSelect.DecimalPointsProperty, new Binding("DecimalPoints") { Source = this });
+            updown.SetBinding(NumberSelect.StepProperty, new Binding("Step") { Source = this });
         }
 
         bool ignoreslider = false;

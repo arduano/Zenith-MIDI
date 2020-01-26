@@ -73,6 +73,8 @@ uniform sampler2D TextureSampler;
 void main()
 {
     color = texture2D( TextureSampler, UV );
+    color.a = sqrt(color.a);
+    color.rgb /= color.a;
 }
 ";
         string postShaderFragDownscale = @"#version 330 compatibility
@@ -431,8 +433,12 @@ void main()
                         continue;
                     if (timeJump > 0)
                         Thread.Sleep(timeJump);
-                    if (settings.playSound)
-                        KDMAPI.SendDirectData((uint)pe.val);
+                    if (settings.playSound && settings.playbackEnabled)
+                        try
+                        {
+                            KDMAPI.SendDirectData((uint)pe.val);
+                        }
+                        catch { continue; }
                 }
                 catch { continue; }
             }

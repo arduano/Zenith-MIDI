@@ -45,7 +45,7 @@
                 </Grid>
             </TabItem>
             <TabItem Header="{DynamicResource settingsTab}" Name="switchTab">
-                <DockPanel Margin="10">
+                <DockPanel Margin="10,10,10,0">
                     <DockPanel Visibility="Collapsed" Name="profileDock" DockPanel.Dock="Top" LastChildFill="False" Margin="0,0,0,10">
                         <Label Content="{DynamicResource profile}"/>
                         <ComboBox DropDownOpened="profileSelect_DropDownOpened" Name="profileSelect" Width="120" Margin="5,0,0,0" SelectionChanged="profileSelect_SelectionChanged"/>

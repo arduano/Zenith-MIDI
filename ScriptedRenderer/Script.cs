@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using ScriptedEngine;
+using Font = ScriptedEngine.Font;
 
 namespace ScriptedRender
 {
@@ -25,6 +26,7 @@ namespace ScriptedRender
         public Bitmap preview = null;
 
         public List<Texture> textures = new List<Texture>();
+        public List<Font> fonts = new List<Font>();
 
         public bool hasPreRender = false;
         public bool hasPostRender = false;

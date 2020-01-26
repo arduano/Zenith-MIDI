@@ -207,6 +207,16 @@ namespace Zenith_MIDI
         void RunUpdateCheck()
         {
             if (!metaSettings.AutoUpdate) return;
+
+            var requiredInstaller = "2";
+            if (metaSettings.InstallerVer != requiredInstaller)
+            {
+                Console.WriteLine("Important update found for installer, updating...");
+                ZenithUpdates.UpdateInstaller();
+                metaSettings.InstallerVer = requiredInstaller;
+                metaSettings.SaveConfig();
+            }
+
             string ver;
             try
             {
@@ -238,6 +248,13 @@ namespace Zenith_MIDI
 
         void CheckUpdateDownloaded()
         {
+            if(metaSettings.PreviousVersion != metaSettings.VersionName)
+            {
+                if (File.Exists("settings.json")) File.Delete("settings.json");
+                metaSettings.PreviousVersion = metaSettings.VersionName;
+                metaSettings.SaveConfig();
+            }
+
             if (metaSettings.AutoUpdate)
             {
                 if (File.Exists(ZenithUpdates.DefaultUpdatePackagePath))
@@ -260,6 +277,8 @@ namespace Zenith_MIDI
 
         public MainWindow()
         {
+            CheckUpdateDownloaded();
+
             InitializeComponent();
 
             windowTabs.VersionName = metaSettings.VersionName;
@@ -273,26 +292,38 @@ namespace Zenith_MIDI
             tempoMultSlider.nudToSlider = v => Math.Log(v, 2);
             tempoMultSlider.sliderToNud = v => Math.Pow(2, v);
 
-            dynamic sett = JsonConvert.DeserializeObject(File.ReadAllText("settings.json"));
-            if (sett.defaultBackground != "")
+            bool dontUpdateLanguages = false;
+
+            if (!File.Exists("Settings/settings.json"))
             {
-                try
-                {
-                    bgImagePath.Text = sett.defaultBackground;
-                    settings.BGImage = new Bitmap(bgImagePath.Text);
-                }
-                catch
-                {
-                    settings.BGImage = null;
-                    if (bgImagePath.Text != "")
-                        MessageBox.Show("Couldn't load default background image");
-                }
+                var sett = new JObject();
+                sett.Add("defaultBackground", "");
+                sett.Add("ignoreKDMAPI", "false");
+                sett.Add("defaultPlugin", "Classic");
+                sett.Add("ignoreLanguageUpdates", "false");
+                File.WriteAllText("Settings/settings.json", JsonConvert.SerializeObject(sett));
             }
-            if ((bool)sett.ignoreKDMAPI) foundOmniMIDI = false;
-            defaultPlugin = (string)sett.defaultPlugin;
-            JArray size = sett.settingsWindowSize;
-            Width = (double)size[0];
-            Height = (double)size[1];
+
+            {
+                dynamic sett = JsonConvert.DeserializeObject(File.ReadAllText("Settings/settings.json"));
+                if (sett.defaultBackground != "")
+                {
+                    try
+                    {
+                        bgImagePath.Text = sett.defaultBackground;
+                        settings.BGImage = new Bitmap(bgImagePath.Text);
+                    }
+                    catch
+                    {
+                        settings.BGImage = null;
+                        if (bgImagePath.Text != "")
+                            MessageBox.Show("Couldn't load default background image");
+                    }
+                }
+                if ((bool)sett.ignoreKDMAPI) foundOmniMIDI = false;
+                defaultPlugin = (string)sett.defaultPlugin;
+                dontUpdateLanguages = (bool)sett.ignoreLanguageUpdates;
+            }
 
             Task omnimidiLoader = null;
             Task languageLoader = Task.Run(RunLanguageCheck);
@@ -605,7 +636,7 @@ namespace Zenith_MIDI
             c.Height = double.NaN;
             c.Margin = new Thickness(0);
             pluginControl = c;
-            if (languageSelect.SelectedIndex != -1)
+            if (languageSelect.SelectedIndex != -1 && Languages[languageSelect.SelectedIndex].ContainsKey(renderer.renderer.LanguageDictName))
             {
                 c.Resources.MergedDictionaries[0].MergedDictionaries.Clear();
                 c.Resources.MergedDictionaries[0].MergedDictionaries.Add(Languages[0][renderer.renderer.LanguageDictName]);

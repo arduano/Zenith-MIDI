@@ -125,6 +125,17 @@ namespace NoteCountRender
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
+            GL.Enable(EnableCap.Blend);
+            GL.EnableClientState(ArrayCap.VertexArray);
+            GL.EnableClientState(ArrayCap.ColorArray);
+            GL.EnableClientState(ArrayCap.TextureCoordArray);
+            GL.Enable(EnableCap.Texture2D);
+
+            GL.EnableVertexAttribArray(0);
+            GL.EnableVertexAttribArray(1);
+
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+
             if (settings.fontName != font || settings.fontSize != fontSize || settings.fontStyle != fontStyle)
             {
                 font = settings.fontName;
@@ -324,6 +335,15 @@ namespace NoteCountRender
             {
                 outputCsv.WriteLine(replace(settings.csvFormat, Commas.Nothing));
             }
+
+            GL.Disable(EnableCap.Blend);
+            GL.Disable(EnableCap.Texture2D);
+            GL.DisableClientState(ArrayCap.VertexArray);
+            GL.DisableClientState(ArrayCap.ColorArray);
+            GL.DisableClientState(ArrayCap.TextureCoordArray);
+
+            GL.DisableVertexAttribArray(0);
+            GL.DisableVertexAttribArray(1);
         }
 
         public void ReloadTrackColors()

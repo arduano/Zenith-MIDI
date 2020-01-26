@@ -25,6 +25,34 @@ namespace ScriptedEngine
         public double aspectRatio;
     }
 
+    public enum FontStyle
+    {
+        Regular = 0,
+        Bold = 1,
+        Italic = 2,
+        Underline = 4,
+        Strikeout = 8
+    }
+
+    public enum TextAlignment
+    {
+        Regular = 0,
+        Bold = 1,
+        Italic = 2,
+        Underline = 4,
+        Strikeout = 8
+    }
+
+    public class Font
+    {
+        public int fontPixelSize;
+        public string fontName;
+        public FontStyle fontStyle;
+        public string charMap;
+
+        public GLTextEngine engine;
+    }
+
     public enum TextureShaders
     {
         Normal,
@@ -49,6 +77,11 @@ namespace ScriptedEngine
         public int renderSSAA;
         public double midiTime;
         public double noteScreenTime;
+
+        public int midiPPQ;
+        public bool midiTimeBased;
+        public TimeSignature midiTimeSignature;
+        public int midiBarLength;
     }
 
     public class KeyLayout
@@ -111,17 +144,41 @@ namespace ScriptedEngine
 
         public static Texture LoadTexture(string path, bool linear)
         {
-            if (!IsInFunction("Load")) throw new Exception("Can't call LoadTexture outside the load function");
+            if (!IsInFunction("Load") && !IsInFunction(".ctor")) throw new Exception("Can't call LoadTexture outside the load function");
             return loadTexture(path, true, linear);
         }
 
         public static Texture LoadTexture(string path, bool uvLoop, bool linear)
         {
-            if (!IsInFunction("Load")) throw new Exception("Can't call LoadTexture outside the load function");
+            if (!IsInFunction("Load") && !IsInFunction(".ctor")) throw new Exception("Can't call LoadTexture outside the load function");
             return loadTexture(path, uvLoop, linear);
         }
 
+        public static Func<int, string, FontStyle, string, Font> loadFont;
+        public static Font LoadFont(int size, string name)
+        {
+            if (!IsInFunction("Load") && !IsInFunction(".ctor")) throw new Exception("Can't call LoadFont outside the load function");
+            return loadFont(size, name, FontStyle.Regular, null);
+        }
+        public static Font LoadFont(int size, string name, FontStyle style)
+        {
+            if (!IsInFunction("Load") && !IsInFunction(".ctor")) throw new Exception("Can't call LoadFont outside the load function");
+            return loadFont(size, name, style, null);
+        }
+        public static Font LoadFont(int size, string name, string charmap)
+        {
+            if (!IsInFunction("Load") && !IsInFunction(".ctor")) throw new Exception("Can't call LoadFont outside the load function");
+            return loadFont(size, name, FontStyle.Regular, charmap);
+        }
+        public static Font LoadFont(int size, string name, FontStyle style, string charmap)
+        {
+            if (!IsInFunction("Load") && !IsInFunction(".ctor")) throw new Exception("Can't call LoadFont outside the load function");
+            return loadFont(size, name, style, charmap);
+        }
+
         public static Action<double, double, double, double, Color4, Color4, Color4, Color4, Texture, double, double, double, double> renderQuad;
+        public static Action<double, double, double, Color4, Font, string> renderText;
+        public static Func<Font, string, double> getTextSize;
         public static Action<TextureShaders> selectTexShader;
         public static Action<BlendFunc> setBlendFunc;
         public static Action forceFlush;
@@ -166,6 +223,10 @@ namespace ScriptedEngine
         public static void SelectTextureShader(TextureShaders shader) => selectTexShader(shader);
 
         public static void SetBlendFunc(BlendFunc function) => setBlendFunc(function);
+
+        public static void RenderText(double left, double bottom, double height, Color4 color, Font font, string text) => renderText(left, bottom, height, color, font, text);
+        public static double GetTextWidth(Font font, string text) => getTextSize(font, text);
+        public static double GetTextWidth(Font font, double height, string text) => getTextSize(font, text) * height;
 
         public static void ForceFlushBuffer() => forceFlush();
 

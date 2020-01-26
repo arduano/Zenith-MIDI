@@ -124,8 +124,8 @@
                                                             </Style.Triggers>
                                                         </Style>
                                                     </StackPanel.Style>
-                                                    <TextBlock Foreground="White" FontSize="14" Text="{DynamicResource updateDownloading}"/>
                                                     <TextBlock Foreground="White" FontSize="14" Text="{DynamicResource updateReady}"/>
+                                                    <TextBlock Foreground="White" FontSize="14" Text="{DynamicResource clickToRestart}"/>
                                                 </StackPanel>
                                                 <StackPanel Margin="20,0,0,0" VerticalAlignment="Center">
                                                     <StackPanel.Style>
@@ -196,7 +196,7 @@
                                     </Grid.ColumnDefinitions>
                                     <Border Padding="0">
                                         <StackPanel>
-                                            <Label FontSize="16" HorizontalAlignment="Center" Content="{StaticResource renderResolution}"/>
+                                            <Label FontSize="16" HorizontalAlignment="Center" Content="{DynamicResource renderResolution}"/>
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition/>
@@ -235,7 +235,7 @@
                                     </Border>
                                     <Border Padding="0" Grid.Column="1">
                                         <StackPanel>
-                                            <Label FontSize="16" HorizontalAlignment="Center" Content="{StaticResource renderOptions}"/>
+                                            <Label FontSize="16" HorizontalAlignment="Center" Content="{DynamicResource renderOptions}"/>
                                             <DockPanel HorizontalAlignment="Center" Margin="0,0,0,10">
                                                 <DockPanel LastChildFill="False" VerticalAlignment="Top" HorizontalAlignment="Left">
                                                     <Label Content="{DynamicResource fps}" HorizontalAlignment="Left" RenderTransformOrigin="1.078,0.59" DockPanel.Dock="Left" Margin="0,0,0,0"/>
@@ -262,7 +262,7 @@
                                     <Button x:Name="browseBG" IsEnabled="{Binding ElementName=useBGImage, Path=IsChecked}" Content="{DynamicResource browse}" Padding="15,1,15,1" HorizontalAlignment="Left" DockPanel.Dock="Left" Margin="5,0,0,0" Click="BrowseBG_Click"/>
                                     <TextBox x:Name="bgImagePath" Text="" DockPanel.Dock="Right" TextWrapping="Wrap" VerticalAlignment="Stretch" Margin="5,0,0,0" IsEnabled="False"/>
                                 </DockPanel>
-                                <Label FontSize="16" HorizontalAlignment="Center" Content="{StaticResource previewOptions}"/>
+                                <Label FontSize="16" HorizontalAlignment="Center" Content="{DynamicResource previewOptions}"/>
                                 <DockPanel HorizontalAlignment="Center" Height="30" LastChildFill="False" Margin="0,0,0,10" VerticalAlignment="Top">
                                     <Label Content="{DynamicResource tempo}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left"/>
                                     <ui:ValueSlider ValueChanged="tempoMultSlider_ValueChanged" Name="tempoMultSlider" Width="396" Minimum="-4" Maximum="6" TrueMin="0.01" TrueMax="1000" DecimalPoints="2" Value="1" Margin="0,0,0,4"/>

@@ -29,6 +29,8 @@ namespace ZenithShared
         public static readonly string[] ProcessNames = new[] { "Zenith", "Zenith-MIDI" };
         public static readonly string InstallPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Zenith");
 
+        public static readonly string InstallerVer = "2";
+
         public static readonly string ApiURL = "https://api.github.com/repos/arduano/Zenith-MIDI/releases/latest";
 
         public static dynamic GetHTTPJSON(string uri)
@@ -173,11 +175,27 @@ namespace ZenithShared
             var path = Path.Combine(InstallPath, SettingsPath);
             if (!Directory.Exists(Path.GetDirectoryName(path))) Directory.CreateDirectory(Path.GetDirectoryName(path));
 
+            JObject jobj;
+            if (File.Exists(path))
+            {
+                var s = new StreamReader(new GZipStream(File.Open(SettingsPath, FileMode.Open), CompressionMode.Decompress));
+                var text = s.ReadToEnd();
+                jobj = (JObject)JsonConvert.DeserializeObject(text);
+                s.Close();
+            }
+            else
+            {
+                jobj = new JObject();
+            }
 
-            var jobj = new JObject();
+            if (jobj.ContainsKey("version")) jobj.Remove("version");
+            if (jobj.ContainsKey("autoUpdate")) jobj.Remove("autoUpdate");
+            if (jobj.ContainsKey("installed")) jobj.Remove("installed");
+            if (jobj.ContainsKey("installerVer")) jobj.Remove("installerVer");
             jobj.Add("version", version);
             jobj.Add("autoUpdate", autoUpdate);
             jobj.Add("installed", installed);
+            jobj.Add("installerVer", InstallerVer);
 
             var stream = new StreamWriter(new GZipStream(File.Open(path, FileMode.Create), CompressionMode.Compress));
             stream.Write(JsonConvert.SerializeObject(jobj));
@@ -189,6 +207,15 @@ namespace ZenithShared
             var p = Path.Combine(InstallPath, path);
             if (!Directory.Exists(Path.GetDirectoryName(p))) Directory.CreateDirectory(Path.GetDirectoryName(p));
             File.Copy(System.Reflection.Assembly.GetEntryAssembly().Location, p, true);
+        }
+
+        public static void UpdateInstaller()
+        {
+            var data = DownloadAssetData("ZenithInstaller.exe");
+            var s = File.Open(InstallerPath, FileMode.Create);
+            data.Position = 0;
+            data.CopyTo(s);
+            s.Close();
         }
 
         public static void CreateStartShortcut()

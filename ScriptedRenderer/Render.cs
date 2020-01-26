@@ -10,6 +10,7 @@ using OpenTK;
 using System.Drawing;
 using System.Drawing.Imaging;
 using ScriptedEngine;
+using Font = ScriptedEngine.Font;
 
 namespace ScriptedRender
 {
@@ -297,7 +298,12 @@ void main()
                 renderWidth = renderSettings.width,
                 renderHeight = renderSettings.height,
                 renderSSAA = renderSettings.downscale,
-                renderAspectRatio = renderSettings.width / (double)renderSettings.height
+                renderAspectRatio = renderSettings.width / (double)renderSettings.height,
+
+                midiPPQ = CurrentMidi.division,
+                midiTimeBased = renderSettings.timeBasedNotes,
+                midiTimeSignature = CurrentMidi.timeSig,
+                midiBarLength = CurrentMidi.division * CurrentMidi.timeSig.numerator / CurrentMidi.timeSig.denominator * 4
             };
         }
 
@@ -307,6 +313,11 @@ void main()
             {
                 GL.DeleteTexture(lt.texId);
                 lt.texId = -1;
+            }
+            foreach (var lt in s.fonts)
+            {
+                lt.engine.Dispose();
+                lt.engine = null;
             }
             if (s.hasPostRender) s.instance.RenderDispose();
         }
@@ -318,6 +329,18 @@ void main()
             {
                 lt.texId = GL.GenTexture();
                 loadImage(lt.bitmap, lt.texId, lt.looped, lt.linear);
+            }
+            foreach (var lt in s.fonts)
+            {
+                lt.engine = new GLTextEngine();
+                if(lt.charMap == null)
+                {
+                    lt.engine.SetFont(lt.fontName, (System.Drawing.FontStyle)lt.fontStyle, lt.fontPixelSize);
+                }
+                else
+                {
+                    lt.engine.SetFont(lt.fontName, (System.Drawing.FontStyle)lt.fontStyle, lt.fontPixelSize, lt.charMap);
+                }
             }
             if (s.hasPreRender) s.instance.RenderInit(GetRenderOptions());
             CopyScriptValues();
@@ -439,12 +462,34 @@ void main()
                 if (s == TextureShaders.Hybrid) GL.UseProgram(evenquadShader);
                 currentShader = s;
             };
-            IO.setBlendFunc += (f) =>
+            IO.setBlendFunc = (f) =>
             {
                 if (currentBlendFunc != f) FlushQuadBuffer(false);
                 if (f == BlendFunc.Mix) OpenTK.Graphics.OpenGL4.GL.BlendFuncSeparate(OpenTK.Graphics.OpenGL4.BlendingFactorSrc.SrcAlpha, OpenTK.Graphics.OpenGL4.BlendingFactorDest.OneMinusSrcAlpha, OpenTK.Graphics.OpenGL4.BlendingFactorSrc.One, OpenTK.Graphics.OpenGL4.BlendingFactorDest.One);
                 if (f == BlendFunc.Add) OpenTK.Graphics.OpenGL4.GL.BlendFuncSeparate(OpenTK.Graphics.OpenGL4.BlendingFactorSrc.SrcAlpha, OpenTK.Graphics.OpenGL4.BlendingFactorDest.One, OpenTK.Graphics.OpenGL4.BlendingFactorSrc.One, OpenTK.Graphics.OpenGL4.BlendingFactorDest.One);
                 currentBlendFunc = f;
+            };
+            IO.getTextSize = (Font f, string t) =>
+            {
+                var bb = f.engine.GetBoundBox(t);
+                return bb.Width / (double)bb.Height / renderSettings.width * renderSettings.height;
+            };
+            IO.renderText = (double left, double bottom, double height, Color4 color, Font f, string text) =>
+            {
+                if (text.Contains("\n")) throw new Exception("New line characters not allowed when rendering text (yet)");
+
+                FlushQuadBuffer(false);
+
+                var size = f.engine.GetBoundBox(text);
+                Matrix4 transform = Matrix4.Identity;
+                transform = Matrix4.Mult(transform, Matrix4.CreateScale(1.0f / renderSettings.width * renderSettings.height / f.fontPixelSize * (float)height, -1.0f / f.fontPixelSize * (float)height, 1.0f));
+                transform = Matrix4.Mult(transform, Matrix4.CreateTranslation((float)left * 2 - 1, (float)(bottom + height * 0.7) * 2 - 1, 0));
+                
+                f.engine.Render(text, transform, color);
+
+                if (currentShader == TextureShaders.Normal) GL.UseProgram(quadShader);
+                if (currentShader == TextureShaders.Inverted) GL.UseProgram(inverseQuadShader);
+                if (currentShader == TextureShaders.Hybrid) GL.UseProgram(evenquadShader);
             };
 
             Initialized = true;
@@ -474,6 +519,7 @@ void main()
             GL.Enable(EnableCap.Blend);
             GL.EnableClientState(ArrayCap.VertexArray);
             GL.EnableClientState(ArrayCap.ColorArray);
+            GL.EnableClientState(ArrayCap.TextureCoordArray);
             GL.Enable(EnableCap.Texture2D);
 
             GL.EnableVertexAttribArray(0);
@@ -513,6 +559,7 @@ void main()
             GL.Disable(EnableCap.Blend);
             GL.DisableClientState(ArrayCap.VertexArray);
             GL.DisableClientState(ArrayCap.ColorArray);
+            GL.DisableClientState(ArrayCap.TextureCoordArray);
             GL.Disable(EnableCap.Texture2D);
 
             GL.DisableVertexAttribArray(0);
@@ -641,10 +688,17 @@ void main()
             return 0;
         }
 
-        void FlushQuadBuffer(bool check = true)
+        void FlushQuadBuffer(bool check = true, bool forceShader = true)
         {
             if (quadBufferPos < quadBufferLength && check) return;
             if (quadBufferPos == 0) return;
+
+            if (forceShader)
+            {
+                if (currentShader == TextureShaders.Normal) GL.UseProgram(quadShader);
+                if (currentShader == TextureShaders.Inverted) GL.UseProgram(inverseQuadShader);
+                if (currentShader == TextureShaders.Hybrid) GL.UseProgram(evenquadShader);
+            }
 
             for (int i = 0; i < 12 && activeTexIds[i] != -1; i++)
             {

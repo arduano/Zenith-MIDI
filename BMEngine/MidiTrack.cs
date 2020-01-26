@@ -51,8 +51,8 @@ namespace ZenithEngine
 
     public class TimeSignature
     {
-        public int numerator;
-        public int denominator;
+        public int numerator { get; internal set; }
+        public int denominator { get; internal set; }
     }
 
     public class MidiTrack : IDisposable

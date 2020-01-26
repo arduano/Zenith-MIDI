@@ -16,9 +16,22 @@ namespace Zenith_MIDI
         [STAThread]
         static void Main(string[] args)
         {
+#if !DEBUG
+            try
+            {
+#endif
             Console.Title = "Zenith";
             Application app = new Application();
             app.Run(new MainWindow());
+#if !DEBUG
+            }
+            catch (Exception e)
+            {
+                string msg = e.Message + "\n" + e.Data + "\n";
+                msg += e.StackTrace;
+                MessageBox.Show(msg, "Zenith has crashed!");
+            }
+#endif
         }
     }
 }

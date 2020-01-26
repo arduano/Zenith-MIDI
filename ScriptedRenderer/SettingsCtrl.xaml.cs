@@ -34,6 +34,7 @@ using Path = System.IO.Path;
 using ZenithEngine.UI;
 using System.Threading;
 using Newtonsoft.Json;
+using Font = ScriptedEngine.Font;
 
 namespace ScriptedRender
 {
@@ -268,7 +269,7 @@ namespace ScriptedRender
                 }
                 else
                 {
-                    path = Path.Combine(pbase, path).Replace("/", "\\");
+                    path = Path.Combine(pbase, path);
                     Stream s;
                     var e = compress.Entries.Where(a => a.Key == path).ToArray();
                     if (e.Length == 0) throw new Exception("Could not open " + path);
@@ -349,7 +350,7 @@ namespace ScriptedRender
                     if (type == ScriptType.Tar)
                         compress = TarArchive.Open(p);
 
-                    var files = compress.Entries.Where(e => e.Key.EndsWith("\\script.cs") || e.Key == "script.cs").ToArray();
+                    var files = compress.Entries.Where(e => e.Key.EndsWith("/script.cs") || e.Key == "script.cs").ToArray();
                     Array.Sort(files.Select(s => s.Key.Length).ToArray(), files);
                     if (files.Length == 0) throw new Exception("Could not find script.cs file");
                     var jsonfile = files[0];
@@ -448,6 +449,19 @@ namespace ScriptedRender
                     };
                     script.textures.Add(loaded);
                     return loaded;
+                };
+
+                IO.loadFont = (size, name, style, chars) =>
+                {
+                    var font = new Font()
+                    {
+                        charMap = chars,
+                        fontName = name,
+                        fontPixelSize = size,
+                        fontStyle = style
+                    };
+                    script.fonts.Add(font);
+                    return font;
                 };
 
                 Assembly assembly = results.CompiledAssembly;
@@ -564,11 +578,13 @@ namespace ScriptedRender
                         Dispatch(() => number.IsEnabled = enable);
                     };
 
-                    s.ValueChanged += (v) =>
+                    s.ValueChanged += (v) => Dispatch(() =>
                     {
+                        if (v < (double)number.Minimum) v = (double)number.Minimum;
+                        if (v > (double)number.Maximum) v = (double)number.Maximum;
                         if (number.Value != (decimal)v)
                             number.Value = (decimal)v;
-                    };
+                    });
 
                     settingsControls.Add(number);
                     settingsMeta.Add(s);
@@ -583,7 +599,7 @@ namespace ScriptedRender
                         min = Math.Log(min, 2);
                         max = Math.Log(max, 2);
                     }
-                    var number = new ValueSlider() { Minimum = min, Maximum = max, TrueMin = (decimal)s.TrueMinimum, TrueMax = (decimal)s.TrueMaximum, DecimalPoints = s.DecialPoints };
+                    var number = new ValueSlider() { Minimum = min, Maximum = max, TrueMin = (decimal)s.TrueMinimum, TrueMax = (decimal)s.TrueMaximum, DecimalPoints = s.DecialPoints, Step = (decimal)s.Step };
                     if (s.Logarithmic)
                     {
                         number.nudToSlider = v => Math.Log(v, 2);
@@ -608,12 +624,14 @@ namespace ScriptedRender
                         Dispatch(() => number.IsEnabled = enable);
                     };
 
-                    s.ValueChanged += (v) =>
+                    s.ValueChanged += (v) => Dispatch(() =>
                     {
                         v = Math.Round(v, s.DecialPoints);
+                        if (v < (double)number.TrueMin) v = (double)number.TrueMin;
+                        if (v > (double)number.TrueMax) v = (double)number.TrueMax;
                         if (number.Value != v)
                             number.Value = v;
-                    };
+                    });
 
                     settingsControls.Add(number);
                     settingsMeta.Add(s);
@@ -646,11 +664,11 @@ namespace ScriptedRender
                         Dispatch(() => drop.IsEnabled = enable);
                     };
 
-                    s.IndexChanged += (i) =>
+                    s.IndexChanged += (i) => Dispatch(() =>
                     {
                         if (drop.SelectedIndex != i)
                             drop.SelectedIndex = i;
-                    };
+                    });
 
                     settingsControls.Add(drop);
                     settingsMeta.Add(s);
@@ -673,11 +691,11 @@ namespace ScriptedRender
                         Dispatch(() => check.IsEnabled = enable);
                     };
 
-                    s.ValueChanged += (c) =>
+                    s.ValueChanged += (c) => Dispatch(() =>
                     {
                         if (check.IsChecked != c)
                             check.IsChecked = c;
-                    };
+                    });
 
                     settingsControls.Add(check);
                     settingsMeta.Add(s);
@@ -689,7 +707,7 @@ namespace ScriptedRender
                     foreach (var k in s.Tabs.Keys)
                     {
                         var item = new TabItem() { Header = k };
-                        var d = new DockPanel() { Margin = new Thickness(10) };
+                        var d = new DockPanel() { Margin = new Thickness(10, 10, 10, 0) };
                         d.LastChildFill = false;
                         var c = new Grid();
                         c.Children.Add(d);
@@ -765,13 +783,14 @@ namespace ScriptedRender
                     foreach (var v in packProfiles)
                     {
                         if (!(v.Value is JArray)) continue;
-                        var data = (v.Value as JArray).Select<JToken, object>(val => {
+                        var data = (v.Value as JArray).Select<JToken, object>(val =>
+                        {
                             if (val.Type == JTokenType.Boolean) return (bool)val;
                             if (val.Type == JTokenType.Integer) return (int)val;
                             if (val.Type == JTokenType.Float) return (double)val;
                             return null;
                         }).ToArray();
-                        if(!CheckProfileValidity(data)) return;
+                        if (!CheckProfileValidity(data)) continue;
                         profiles.Add(data);
                         profileSelect.Items.Add(new ComboBoxItem()
                         {
@@ -900,20 +919,20 @@ namespace ScriptedRender
             foreach (var d in data)
             {
                 if (settingsMeta[i] is UINumber)
-                    if (!typeof(double).IsAssignableFrom(d.GetType()) && !typeof(int).IsAssignableFrom(d.GetType())) 
+                    if (!typeof(double).IsAssignableFrom(d.GetType()) && !typeof(int).IsAssignableFrom(d.GetType()))
                         return false;
                 if (settingsMeta[i] is UINumberSlider)
-                    if (!typeof(double).IsAssignableFrom(d.GetType()) && !typeof(int).IsAssignableFrom(d.GetType())) 
+                    if (!typeof(double).IsAssignableFrom(d.GetType()) && !typeof(int).IsAssignableFrom(d.GetType()))
                         return false;
                 if (settingsMeta[i] is UICheckbox)
-                    if (!typeof(bool).IsAssignableFrom(d.GetType())) 
+                    if (!typeof(bool).IsAssignableFrom(d.GetType()))
                         return false;
                 if (settingsMeta[i] is UIDropdown)
                 {
-                    if (!typeof(int).IsAssignableFrom(d.GetType())) 
+                    if (!typeof(int).IsAssignableFrom(d.GetType()))
                         return false;
                     var index = (int)d;
-                    if (index < 0 || index >= ((UIDropdown)settingsMeta[i]).Options.Length) 
+                    if (index < 0 || index >= ((UIDropdown)settingsMeta[i]).Options.Length)
                         return false;
                 }
                 i++;
@@ -966,11 +985,12 @@ namespace ScriptedRender
         {
             if (profileSelect.SelectedIndex == -1) return;
             var profile = profiles[profileSelect.SelectedIndex];
+            profileName.Text = (string)(((ComboBoxItem)profileSelect.SelectedItem).Tag);
 
             for (int i = 0; i < profile.Length; i++)
             {
-                var d = profile[i]
-;                if (settingsMeta[i] is UINumber)
+                var d = profile[i];
+                if (settingsMeta[i] is UINumber)
                 {
                     if (!typeof(double).IsAssignableFrom(d.GetType()) && !typeof(int).IsAssignableFrom(d.GetType())) return;
                     (settingsMeta[i] as UINumber).Value = (double)d;

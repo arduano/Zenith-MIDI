@@ -113,6 +113,32 @@ namespace ScriptedEngine
             Logarithmic = logarithmic;
         }
 
+        public UINumberSlider(string text, double value, double minimum, double maximum, double trueMinimum, double trueMaximum, int decialPoints, double step, bool logarithmic)
+        {
+            Default = value;
+            Value = value;
+            Text = text;
+            Minimum = minimum;
+            Maximum = maximum;
+            TrueMinimum = trueMinimum;
+            TrueMaximum = trueMaximum;
+            DecialPoints = decialPoints;
+            Step = step;
+            Logarithmic = logarithmic;
+        }
+
+        public UINumberSlider(string text, double value, double minimum, double maximum, double trueMinimum, double trueMaximum, int decialPoints, double step)
+        {
+            Default = value;
+            Value = value;
+            Text = text;
+            Minimum = minimum;
+            Maximum = maximum;
+            TrueMinimum = trueMinimum;
+            TrueMaximum = trueMaximum;
+            DecialPoints = decialPoints;
+            Step = step;
+        }
 
         public event Action<double> ValueChanged;
 
@@ -134,6 +160,7 @@ namespace ScriptedEngine
         public double TrueMinimum { get; }
         public double TrueMaximum { get; }
         public int DecialPoints { get; }
+        public double Step { get; } = 1;
         public bool Logarithmic { get; } = false;
     }
 
@@ -154,9 +181,9 @@ namespace ScriptedEngine
         public UIDropdown(string text, int index, string[] options)
         {
             Text = text;
+            Options = options;
             Index = index;
             Value = options[index];
-            Options = options;
             Default = index;
         }
 
