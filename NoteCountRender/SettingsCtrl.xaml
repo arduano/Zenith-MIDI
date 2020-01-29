@@ -53,10 +53,10 @@
                             </DockPanel>
                         </StackPanel>
                         <StackPanel Margin="30,0,0,0">
-                            <Label>Thousands separator</Label>
-                            <ui:BetterRadio x:Name="useCommas" IsChecked="True" Text="Commas" Margin="0,0,0,5" RadioChecked="useCommas_RadioChecked"/>
+                            <Label Content="{DynamicResource thousandsSeparator}"/>
+                            <ui:BetterRadio x:Name="useCommas" IsChecked="True" Text="{DynamicResource commas}" Margin="0,0,0,5" RadioChecked="useCommas_RadioChecked"/>
                             <!--<ui:BetterRadio x:Name="useDots" Text="Dots" Margin="0,0,0,5" RadioChecked="useCommas_RadioChecked"/>-->
-                            <ui:BetterRadio x:Name="useNothing" Text="Nothing" Margin="0,0,0,5" RadioChecked="useCommas_RadioChecked"/>
+                            <ui:BetterRadio x:Name="useNothing" Text="{DynamicResource nothing}" Margin="0,0,0,5" RadioChecked="useCommas_RadioChecked"/>
                         </StackPanel>
                     </DockPanel>
                     <TextBox AcceptsReturn="True" VerticalContentAlignment="Top" x:Name="textTemplate" Margin="0,10,0,0" TextWrapping="Wrap" Text="TextBox" TextChanged="TextTemplate_TextChanged"/>

@@ -18,6 +18,10 @@
     <system:String x:Key="reload">Reload</system:String>
     <system:String x:Key="openFolder">Open Folder</system:String>
 
+    <system:String x:Key="thousandsSeparator">Thousands separator</system:String>
+    <system:String x:Key="commas">Commas</system:String>
+    <system:String x:Key="nothing">Nothing</system:String>
+
     <system:String x:Key="savePath">Save Location</system:String>
     <system:String x:Key="browse">Browse</system:String>
     <system:String x:Key="saveToFile">Save frame data to .csv file</system:String>

@@ -29,7 +29,7 @@ namespace ZenithShared
         public static readonly string[] ProcessNames = new[] { "Zenith", "Zenith-MIDI" };
         public static readonly string InstallPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Zenith");
 
-        public static readonly string InstallerVer = "2";
+        public static readonly string InstallerVer = "3";
 
         public static readonly string ApiURL = "https://api.github.com/repos/arduano/Zenith-MIDI/releases/latest";
 
@@ -160,7 +160,9 @@ namespace ZenithShared
                         Directory.CreateDirectory(Path.Combine(basePath, Path.GetDirectoryName(e.FullName)));
                     try
                     {
-                        e.ExtractToFile(Path.Combine(basePath, e.FullName), true);
+                        var fs = File.Open(Path.Combine(basePath, e.FullName), FileMode.Open);
+                        e.Open().CopyTo(fs);
+                        fs.Close();
                     }
                     catch (IOException ex)
                     {
@@ -178,7 +180,7 @@ namespace ZenithShared
             JObject jobj;
             if (File.Exists(path))
             {
-                var s = new StreamReader(new GZipStream(File.Open(SettingsPath, FileMode.Open), CompressionMode.Decompress));
+                var s = new StreamReader(new GZipStream(File.Open(path, FileMode.Open), CompressionMode.Decompress));
                 var text = s.ReadToEnd();
                 jobj = (JObject)JsonConvert.DeserializeObject(text);
                 s.Close();

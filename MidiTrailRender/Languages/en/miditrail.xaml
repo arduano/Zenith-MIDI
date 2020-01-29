@@ -41,6 +41,7 @@
     <system:String x:Key="closerPreset">Closer</system:String>
     <system:String x:Key="closePreset">Close</system:String>
 
+    <system:String x:Key="verticalNotes">Vertical Notes</system:String>
     <system:String x:Key="FOV">FOV</system:String>
     <system:String x:Key="viewAngle">View Angle</system:String>
     <system:String x:Key="renderDistF">Note Render Dist. Forwards</system:String>

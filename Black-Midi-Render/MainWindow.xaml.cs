@@ -208,7 +208,7 @@ namespace Zenith_MIDI
         {
             if (!metaSettings.AutoUpdate) return;
 
-            var requiredInstaller = "2";
+            var requiredInstaller = "3";
             if (metaSettings.InstallerVer != requiredInstaller)
             {
                 Console.WriteLine("Important update found for installer, updating...");

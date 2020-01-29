@@ -24,6 +24,6 @@
     <system:String x:Key="profile">Profile</system:String>
     <system:String x:Key="save">Save</system:String>
     <system:String x:Key="delete">Delete</system:String>
-    <system:String x:Key="defaults">Defauts</system:String>
+    <system:String x:Key="defaults">Defaults</system:String>
 
 </ResourceDictionary>

@@ -336,7 +336,7 @@ void main()
                                     coll.G * blendfac + origcoll.G * revblendfac,
                                     coll.B * blendfac + origcoll.B * revblendfac,
                                     1);
-                                blendfac = colr.A * 0.8f;
+                                blendfac = colr.A;
                                 revblendfac = 1 - blendfac;
                                 keyColors[k * 2 + 1] = new Color4(
                                     colr.R * blendfac + origcolr.R * revblendfac,
@@ -1780,7 +1780,7 @@ void main()
             #endregion
 
             FlushQuadBuffer(false);
-            #endregion( ͡° ͜ʖ ͡°)( ͡° ͜ʖ ͡°)
+            #endregion
 
 
             GL.Disable(EnableCap.Blend);
