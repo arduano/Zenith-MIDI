@@ -225,6 +225,7 @@
             </Setter.Value>
         </Setter>
     </Style>
+    
     <Style x:Key="ComboBoxToggleButton" TargetType="{x:Type ToggleButton}">
         <Setter Property="OverridesDefaultStyle" Value="true"/>
         <Setter Property="IsTabStop" Value="false"/>
@@ -353,6 +354,7 @@
             </Setter.Value>
         </Setter>
     </Style>
+    
     <Style TargetType="{x:Type TextBox}">
         <Setter Property="Background" Value="#444444"/>
         <Setter Property="Foreground" Value="White"/>
