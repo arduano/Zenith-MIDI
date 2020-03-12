@@ -200,8 +200,8 @@ namespace NoteCountRender
             {
                 string sep = "";
                 if (separator == Commas.Comma) sep = "#,##";
-
-                text = text.Replace("{bpm}", (Math.Round(tempo * 10) / 10).ToString());
+                string bpmtemp = Math.Round(tempo * 10).toString();
+                text = text.Replace("{bpm}", bpmtemp.Insert(bpmtemp.Length - 1, "."));
 
                 text = text.Replace("{nc}", noteCount.ToString(sep + "0"));
                 text = text.Replace("{nr}", (CurrentMidi.noteCount - noteCount).ToString(sep + "0"));
