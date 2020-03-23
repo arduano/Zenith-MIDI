@@ -192,7 +192,7 @@ namespace NoteCountRender
             long limMidiTime = (long)midiTime;
             if (limMidiTime > CurrentMidi.tickLength) limMidiTime = CurrentMidi.tickLength;
 
-            long bar = (long)Math.Floor(limMidiTime / barDivide);
+            long bar = (long)Math.Floor(limMidiTime / barDivide) + 1;
             long maxbar = (long)Math.Floor(CurrentMidi.tickLength / barDivide);
             if (bar > maxbar) bar = maxbar;
 
