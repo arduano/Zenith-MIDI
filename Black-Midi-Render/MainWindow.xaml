@@ -205,7 +205,7 @@
                                                 <StackPanel>
                                                     <DockPanel LastChildFill="False" Margin="0,0,0,5" HorizontalAlignment="Left">
                                                         <Label Content="{DynamicResource width}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left"/>
-                                                        <ui:NumberSelect x:Name="viewWidth" Maximum="15360" Minimum="1" Width="118" IsEnabled="{Binding IsEnabled, ElementName=notPreviewingOrRendering}"  DockPanel.Dock="Left" Margin="5,0,0,0"  />
+                                                        <ui:NumberSelect x:Name="viewWidth" Maximum="15360" Minimum="1" Width="118" IsEnabled="{Binding IsEnabled, ElementName=notPreviewingOrRendering}"  DockPanel.Dock="Left" Margin="10,0,0,0"  />
                                                     </DockPanel>
                                                     <DockPanel LastChildFill="False" HorizontalAlignment="Left">
                                                         <Label Content="{DynamicResource height}" HorizontalAlignment="Left" DockPanel.Dock="Left" Margin="0,0,0,0"/>
@@ -227,7 +227,7 @@
                                                     </DockPanel>
                                                     <DockPanel DockPanel.Dock="Top" HorizontalAlignment="Left" LastChildFill="False" Margin="0,5" VerticalAlignment="Top">
                                                         <Label Content="{DynamicResource superRes}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left"/>
-                                                        <ui:NumberSelect DockPanel.Dock="Left" x:Name="SSAAFactor" Value="1" Maximum="4" Minimum="1" HorizontalAlignment="Left" Width="118" IsEnabled="{Binding IsEnabled, ElementName=notPreviewingOrRendering}" Margin="5,0,0,0"  />
+                                                        <ui:NumberSelect DockPanel.Dock="Left" x:Name="SSAAFactor" Value="1" Maximum="4" Minimum="1" HorizontalAlignment="Left" Width="118" IsEnabled="{Binding IsEnabled, ElementName=notPreviewingOrRendering}" Margin="20,0,0,0"  />
                                                     </DockPanel>
                                                 </StackPanel>
                                             </Grid>
