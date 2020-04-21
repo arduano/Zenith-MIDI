@@ -232,7 +232,7 @@ namespace ZenithEngine
 
             double time = 0;
             long ticks = maxTrackTime;
-            double multiplier = ((double)500000 / division) / 1000000;
+            double multiplier = ((double)500000 / division) / 1000;
             long lastt = 0;
             foreach (var t in Tempos)
             {
@@ -240,7 +240,7 @@ namespace ZenithEngine
                 time += offset * multiplier;
                 ticks -= offset;
                 lastt = t.pos;
-                multiplier = ((double)t.tempo / division) / 1000000;
+                multiplier = ((double)t.tempo / division) / 1000;
             }
 
             time += ticks * multiplier;
