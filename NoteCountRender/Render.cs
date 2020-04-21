@@ -181,21 +181,13 @@ namespace NoteCountRender
 
             int seconds = (int)Math.Floor((double)frames / renderSettings.fps);
             int milliseconds = (int)Math.Floor((double)frames * 1000 / renderSettings.fps);
-<<<<<<< Updated upstream
-            int totalsec = (int)Math.Floor(CurrentMidi.secondsLength / 1000);
-=======
             int totalsec = (int)Math.Floor(CurrentMidi.secondsLength);
             int totalmillisec = (int)Math.Floor(CurrentMidi.secondsLength * 1000);
->>>>>>> Stashed changes
             if (seconds > totalsec) seconds = totalsec;
             TimeSpan time = new TimeSpan(0, 0, seconds);
             TimeSpan miltime = new TimeSpan(0, 0, 0, 0, milliseconds);
             TimeSpan totaltime = new TimeSpan(0, 0, totalsec);
-<<<<<<< Updated upstream
-            TimeSpan totalmiltime = new TimeSpan(0, 0, 0, 0, (int)Math.Floor(CurrentMidi.secondsLength));
-=======
             TimeSpan totalmiltime = new TimeSpan(0, 0, 0, 0, totalmillisec);
->>>>>>> Stashed changes
             if (time > totaltime) time = totaltime;
             if (!renderSettings.Paused) frames++;
 
