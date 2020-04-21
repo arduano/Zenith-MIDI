@@ -36,16 +36,18 @@ Polyphony: {plph}
 Time: {currtime}";
         string fullText = @"Notes: {nc} / {tn} / {nr}
 BPM: {bpm}
-NPS: {nps}
-Polyphony: {plph}
+NPS: {nps} (Max: {mnps})
+Polyphony: {plph} (Max: {mplph})
 Seconds: {currsec} / {totalsec} / {remsec}
 Time: {currtime} / {totaltime} / {remtime}
 Time(ms): {cmiltime} / {tmiltime} / {rmiltime}
 Ticks: {currticks} / {totalticks} / {remticks}
 Bars: {currbars} / {totalbars} / {rembars}
+Frames: {currframes} / {totalframes} / {remframes}
 PPQ: {ppq}
 Time Signature: {tsn}/{tsd}
 Average NPS: {avgnps}";
+        string MIDITrail = @"TIME:{cmiltime}/{tmiltime}  BPM:{bpm}  BEAT:{tsn}/{tsd}  BAR:{currbars}/{totalbars}  NOTES:{nc}/{tn}";
 
         bool initialised = false;
 
@@ -169,6 +171,10 @@ Average NPS: {avgnps}";
             {
                 File.WriteAllText(Path.Combine(templateFolder, "full.txt"), fullText);
             }
+            catch { }try
+            {
+                File.WriteAllText(Path.Combine(templateFolder, "MIDITrail.txt"), MIDITrail);
+            }
             catch { }
             var files = Directory.GetFiles(templateFolder).Where(f => f.EndsWith(".txt"));
             templateStrings.Clear();
@@ -238,6 +244,11 @@ Average NPS: {avgnps}";
             if (useCommas.IsChecked) settings.thousandSeparator = Commas.Comma;
             //if (useDots.IsChecked) settings.thousandSeparator = Commas.Dot;
             if (useNothing.IsChecked) settings.thousandSeparator = Commas.Nothing;
+        }
+
+        private void ZP(object sender, RoutedPropertyChangedEventArgs<bool> e)
+        {
+            settings.PaddingZeroes = (bool)ZeroPadding.IsChecked;
         }
     }
 }

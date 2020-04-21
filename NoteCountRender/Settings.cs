@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenTK.Graphics.OpenGL;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -33,7 +34,16 @@ namespace NoteCountRender
         public Commas thousandSeparator = Commas.Comma;
 
         public bool saveCsv = false;
+        public bool PaddingZeroes = false;
         public string csvOutput = "";
         public string csvFormat = "{nps},{plph},{bpm},{nc}";
+    }
+    public class Zeroes
+    {
+        public string bpm = "0.00";
+        public string nc = "0";
+        public string plph = "0";
+        public string tick = "0";
+        public string bars = "0";
     }
 }

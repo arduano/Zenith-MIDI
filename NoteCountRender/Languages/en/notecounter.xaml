@@ -21,6 +21,7 @@
     <system:String x:Key="thousandsSeparator">Thousands separator</system:String>
     <system:String x:Key="commas">Commas</system:String>
     <system:String x:Key="nothing">Nothing</system:String>
+    <system:String x:Key="ZeroPadding">Zero Padding</system:String>
 
     <system:String x:Key="savePath">Save Location</system:String>
     <system:String x:Key="browse">Browse</system:String>
