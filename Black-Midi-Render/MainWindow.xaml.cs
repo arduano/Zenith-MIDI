@@ -490,7 +490,7 @@ namespace Zenith_MIDI
                     try
                     {
                         double progress = win.midiTime / midifile.maxTrackTime;
-                        if (settings.timeBasedNotes) progress = win.midiTime / 1000 / midifile.info.secondsLength;
+                        if (settings.timeBasedNotes) progress = win.midiTime / midifile.info.secondsLength;
                         Console.WriteLine(
                             Math.Round(progress * 10000) / 100 +
                             "\tNotes drawn: " + renderer.renderer.LastNoteCount +
