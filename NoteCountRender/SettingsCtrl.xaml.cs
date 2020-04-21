@@ -40,6 +40,7 @@ NPS: {nps}
 Polyphony: {plph}
 Seconds: {currsec} / {totalsec} / {remsec}
 Time: {currtime} / {totaltime} / {remtime}
+Time(ms): {cmiltime} / {tmiltime} / {rmiltime}
 Ticks: {currticks} / {totalticks} / {remticks}
 Bars: {currbars} / {totalbars} / {rembars}
 PPQ: {ppq}
