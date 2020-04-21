@@ -10,6 +10,7 @@ using ZenithEngine;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using System.Windows.Controls;
 
 namespace NoteCountRender
 {
@@ -207,15 +208,15 @@ namespace NoteCountRender
             {
                 Zeroes zeroes = new Zeroes();
                 string sep = "";
-                string digits = new string('0', 2);
                 if (separator == Commas.Comma) sep = "#,";
                 if (settings.PaddingZeroes)
                 {
-                    zeroes.bpm = "000." + digits;
-                    zeroes.nc = "00000";
-                    zeroes.plph = "000";
-                    zeroes.tick = "00000";
-                    zeroes.bars = "000";
+                    zeroes.bpm = new string('0', 3) +"." + new string('0', 2);
+                    zeroes.nc = new string('0', 5);
+                    zeroes.plph = new string('0', 3);
+                    zeroes.tick = new string('0', 5);
+                    zeroes.bars = new string('0', 3);
+                    zeroes.frms = new string('0', 5);
                 }
 
                 text = text.Replace("{bpm}", tempo.ToString(zeroes.bpm));
@@ -232,14 +233,17 @@ namespace NoteCountRender
                 text = text.Replace("{currsec}", ((double)(seconds / 100) / 10).ToString(sep + "0.0"));
                 text = text.Replace("{currtime}", time.ToString("mm\\:ss"));
                 text = text.Replace("{cmiltime}", time.ToString("mm\\:ss\\.fff"));
+                text = text.Replace("{cfrtime}", time.ToString("mm\\:ss") + ";" + (frames % renderSettings.fps).ToString("00"));
 
                 text = text.Replace("{totalsec}", ((double)(totalsec / 100) / 10).ToString(sep + "0.0"));
                 text = text.Replace("{totaltime}", totaltime.ToString("mm\\:ss"));
                 text = text.Replace("{tmiltime}", totaltime.ToString("mm\\:ss\\.fff"));
+                text = text.Replace("{tfrtime}", totaltime.ToString("mm\\:ss") + ";" + (totalframes % renderSettings.fps).ToString("00"));
 
                 text = text.Replace("{remsec}", ((double)((totalsec - seconds) / 100) / 10).ToString(sep + "0.0"));
                 text = text.Replace("{remtime}", (totaltime - time).ToString("mm\\:ss"));
                 text = text.Replace("{rmiltime}", (totaltime - time).ToString("mm\\:ss\\.fff"));
+                text = text.Replace("{rfrtime}", (totaltime - time).ToString("mm\\:ss") + ";" + ((totalframes - frames + renderSettings.fps) % renderSettings.fps).ToString("00"));
 
                 text = text.Replace("{currticks}", (limMidiTime).ToString(sep + "0"));
                 text = text.Replace("{totalticks}", (CurrentMidi.tickLength).ToString(sep + "0"));
@@ -254,9 +258,9 @@ namespace NoteCountRender
                 text = text.Replace("{tsd}", CurrentMidi.timeSig.denominator.ToString());
                 text = text.Replace("{avgnps}", ((double)CurrentMidi.noteCount / (double)totalsec).ToString(sep + "0"));
 
-                text = text.Replace("{currframes}", frames.ToString());
-                text = text.Replace("{totalframes}", totalframes.ToString());
-                text = text.Replace("{remframes}", (totalframes - frames).ToString());
+                text = text.Replace("{currframes}", frames.ToString(sep + zeroes.frms));
+                text = text.Replace("{totalframes}", totalframes.ToString(sep + zeroes.frms));
+                text = text.Replace("{remframes}", (totalframes - frames).ToString(sep + zeroes.frms));
                 return text;
             };
 

@@ -41,6 +41,7 @@ Polyphony: {plph} (Max: {mplph})
 Seconds: {currsec} / {totalsec} / {remsec}
 Time: {currtime} / {totaltime} / {remtime}
 Time(ms): {cmiltime} / {tmiltime} / {rmiltime}
+Time(frame): {cfrtime} / {tfrtime} / {rfrtime}
 Ticks: {currticks} / {totalticks} / {remticks}
 Bars: {currbars} / {totalbars} / {rembars}
 Frames: {currframes} / {totalframes} / {remframes}

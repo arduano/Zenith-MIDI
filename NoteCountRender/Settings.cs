@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Effects;
 
 namespace NoteCountRender
 {
@@ -45,5 +46,6 @@ namespace NoteCountRender
         public string plph = "0";
         public string tick = "0";
         public string bars = "0";
+        public string frms = "0";
     }
 }
