@@ -251,5 +251,28 @@ Average NPS: {avgnps}";
         {
             settings.PaddingZeroes = (bool)ZeroPadding.IsChecked;
         }
+        private void Paddings_ValueChanged(object sender, RoutedPropertyChangedEventArgs<decimal> e)
+        {
+            settings.BPMintPad = (int)BPMint.Value;
+            settings.BPMDecPtPad = (int)BPMDecPt.Value;
+            settings.NoteCountPad = (int)NoteCount.Value;
+            settings.PolyphonyPad = (int)Polyphony.Value;
+            settings.NPSPad = (int)NPS.Value;
+            settings.TicksPad = (int)Ticks.Value;
+            settings.BarCountPad = (int)Bars.Value;
+            settings.FrCountPad = (int)Frames.Value;
+        }
+
+        private void SetDefault_Click(object sender, RoutedEventArgs e)
+        {
+            settings.BPMintPad = 3;
+            settings.BPMDecPtPad = 2;
+            settings.NoteCountPad = 5;
+            settings.PolyphonyPad = 3;
+            settings.NPSPad = 3;
+            settings.TicksPad = 5;
+            settings.BarCountPad = 3;
+            settings.FrCountPad = 5;
+        }
     }
 }

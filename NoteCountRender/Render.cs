@@ -185,7 +185,7 @@ namespace NoteCountRender
             }
 
             double tempo = Tempo;
-
+            
             int seconds = (int)Math.Floor((double)frames * 1000 / renderSettings.fps);
             int totalsec = (int)Math.Floor(CurrentMidi.secondsLength * 1000);
             int totalframes = (int)Math.Ceiling(CurrentMidi.secondsLength * renderSettings.fps);
@@ -211,12 +211,13 @@ namespace NoteCountRender
                 if (separator == Commas.Comma) sep = "#,";
                 if (settings.PaddingZeroes)
                 {
-                    zeroes.bpm = new string('0', 3) +"." + new string('0', 2);
-                    zeroes.nc = new string('0', 5);
-                    zeroes.plph = new string('0', 3);
-                    zeroes.tick = new string('0', 5);
-                    zeroes.bars = new string('0', 3);
-                    zeroes.frms = new string('0', 5);
+                    zeroes.bpm = new string('0', settings.BPMintPad) +"." + new string('0', settings.BPMDecPtPad);
+                    zeroes.nc = new string('0', settings.NoteCountPad);
+                    zeroes.plph = new string('0', settings.PolyphonyPad);
+                    zeroes.nps = new string('0', settings.NPSPad);
+                    zeroes.tick = new string('0', settings.TicksPad);
+                    zeroes.bars = new string('0', settings.BarCountPad);
+                    zeroes.frms = new string('0', settings.FrCountPad);
                 }
 
                 text = text.Replace("{bpm}", tempo.ToString(zeroes.bpm));
@@ -225,8 +226,8 @@ namespace NoteCountRender
                 text = text.Replace("{nr}", (CurrentMidi.noteCount - noteCount).ToString(sep + zeroes.nc));
                 text = text.Replace("{tn}", CurrentMidi.noteCount.ToString(sep + zeroes.nc));
 
-                text = text.Replace("{nps}", nps.ToString(sep + zeroes.plph));
-                text = text.Replace("{mnps}", Mnps.ToString(sep + zeroes.plph));
+                text = text.Replace("{nps}", nps.ToString(sep + zeroes.nps));
+                text = text.Replace("{mnps}", Mnps.ToString(sep + zeroes.nps));
                 text = text.Replace("{plph}", polyphony.ToString(sep + zeroes.plph));
                 text = text.Replace("{mplph}", Mplph.ToString(sep + zeroes.plph));
 
