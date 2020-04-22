@@ -54,6 +54,7 @@
     <system:String x:Key="ffmpegDebug">ffmpeg debug</system:String>
     <system:String x:Key="startRender">Start Render</system:String>
     <system:String x:Key="ifUploading">If uploading the video online, please credit the program</system:String>
+    <system:String x:Key="Custom">Customize FFmpeg Options (for experts, at your own risk)</system:String>
     
     <!--NEW 1.5-->
     <system:String x:Key="realtimePlayback">Realtime Playback</system:String>

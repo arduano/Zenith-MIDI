@@ -46,10 +46,12 @@ namespace ZenithEngine
         public int maxTrackBufferSize = 10000;
 
         public bool useBitrate = true;
+        public bool CustomFFmpeg = false;
         public int bitrate = 20000;
         public int crf = 17;
         public string crfPreset = "medium";
         public bool ffmpegDebug = false;
+        public string ffoption = "";
 
         public bool showNoteCount = false;
         public bool showNotesRendered = false;
