@@ -261,8 +261,8 @@ void main()
                 args = "" +
                     " -f rawvideo -s " + settings.width / settings.downscale + "x" + settings.height / settings.downscale +
                     " -pix_fmt rgb32 -r " + settings.fps + " -i -" +
-                    " -itsoffset " + offset.ToString().Replace(",", ".") + " -i \"" + settings.audioPath + "\"" +
-                    " -vf vflip -vcodec libx264 -pix_fmt yuv420p -acodec aac";
+                    " -itsoffset " + offset.ToString().Replace(",", ".") + " -i \"" + settings.audioPath + "\"" + " -vf vflip -pix_fmt yuv420p ";
+                args += settings.CustomFFmpeg ? "" : "-vcodec libx264 -acodec aac";
             }
             else
             {
@@ -270,13 +270,18 @@ void main()
                     " -f rawvideo -s " + settings.width / settings.downscale + "x" + settings.height / settings.downscale +
                     " -strict -2" +
                     " -pix_fmt rgb32 -r " + settings.fps + " -i -" +
-                    " -vf vflip -vcodec libx264 -pix_fmt yuv420p";
+                    " -vf vflip-pix_fmt yuv420p ";
+                args += settings.CustomFFmpeg ? "" : "-vcodec libx264";
             }
             if (settings.useBitrate)
             {
                 args += " -b:v " + settings.bitrate + "k" +
                     " -maxrate " + settings.bitrate + "k" +
                     " -minrate " + settings.bitrate + "k";
+            }
+            else if (settings.CustomFFmpeg)
+            {
+                args += settings.ffoption;
             }
             else
             {

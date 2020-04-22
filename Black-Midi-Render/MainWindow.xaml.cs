@@ -768,7 +768,12 @@ namespace Zenith_MIDI
             settings.ffmpegDebug = (bool)ffdebug.IsChecked;
 
             settings.useBitrate = (bool)bitrateOption.IsChecked;
+            settings.CustomFFmpeg = (bool)FFmpeg.IsChecked;
             if (settings.useBitrate) settings.bitrate = (int)bitrate.Value;
+            else if (settings.CustomFFmpeg)
+            {
+                settings.ffoption = FFmpegOptions.Text;
+            }
             else
             {
                 settings.crf = (int)crfFactor.Value;
@@ -788,7 +793,7 @@ namespace Zenith_MIDI
         {
             var save = new SaveFileDialog();
             save.OverwritePrompt = true;
-            save.Filter = "H.264 video (*.mp4)|*.mp4";
+            save.Filter = "H.264 video (*.mp4)|*.mp4|All types|*.*";
             if ((bool)save.ShowDialog())
             {
                 videoPath.Text = save.FileName;

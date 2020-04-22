@@ -383,6 +383,19 @@
                                 </ComboBox>
                                 <Label Content="{DynamicResource crfHint}" HorizontalAlignment="Left" DockPanel.Dock="Left" Margin="10,0,0,0"/>
                             </DockPanel>
+                            <DockPanel Height="30" LastChildFill="False" Margin="3,10,0,0" VerticalAlignment="Top">
+                                <ui:BetterRadio IsEnabled="{DynamicResource notRendering}" ParentDepth="3" x:Name="FFmpeg" Text="{DynamicResource Custom}" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="False" DockPanel.Dock="Left" Margin="0,6,0,0" />
+                            </DockPanel>
+                            <DockPanel>
+                                <TextBox AcceptsReturn="True" VerticalContentAlignment="Top" x:Name="FFmpegOptions" Margin="20,5,0,0" TextWrapping="Wrap" Height="50" Text="FFmpeg options">
+                                    <TextBox.IsEnabled>
+                                        <MultiBinding Converter="{StaticResource AndValueConverter}">
+                                            <Binding ElementName="FFmpeg" Path="IsChecked" />
+                                            <Binding ElementName="notRendering" Path="IsEnabled"/>
+                                        </MultiBinding>
+                                    </TextBox.IsEnabled>
+                                </TextBox>
+                            </DockPanel>
                             <DockPanel LastChildFill="False" Margin="0,30,0,0" VerticalAlignment="Top">
                                 <Label Content="{DynamicResource delatStart}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left"/>
                                 <ui:NumberSelect x:Name="secondsDelay" Value="0" Maximum="10" Minimum="0" HorizontalAlignment="Left" Width="82"  IsEnabled="{Binding IsEnabled, ElementName=notRendering}" DockPanel.Dock="Left" />
