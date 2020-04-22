@@ -270,7 +270,7 @@ void main()
                     " -f rawvideo -s " + settings.width / settings.downscale + "x" + settings.height / settings.downscale +
                     " -strict -2" +
                     " -pix_fmt rgb32 -r " + settings.fps + " -i -" +
-                    " -vf vflip-pix_fmt yuv420p ";
+                    " -vf vflip -pix_fmt yuv420p ";
                 args += settings.CustomFFmpeg ? "" : "-vcodec libx264";
             }
             if (settings.useBitrate)
