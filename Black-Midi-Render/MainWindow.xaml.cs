@@ -208,7 +208,7 @@ namespace Zenith_MIDI
         {
             if (!metaSettings.AutoUpdate) return;
 
-            var requiredInstaller = "3";
+            var requiredInstaller = ZenithUpdates.InstallerVer;
             if (metaSettings.InstallerVer != requiredInstaller)
             {
                 Console.WriteLine("Important update found for installer, updating...");
@@ -311,7 +311,7 @@ namespace Zenith_MIDI
                     try
                     {
                         bgImagePath.Text = sett.defaultBackground;
-                        settings.BGImage = new Bitmap(bgImagePath.Text);
+                        settings.BGImage = bgImagePath.Text;
                     }
                     catch
                     {
@@ -326,7 +326,8 @@ namespace Zenith_MIDI
             }
 
             Task omnimidiLoader = null;
-            Task languageLoader = Task.Run(RunLanguageCheck);
+            Task languageLoader = null;
+            if (!dontUpdateLanguages) Task.Run(RunLanguageCheck);
             Task updateLoader = Task.Run(RunUpdateCheck);
             if (foundOmniMIDI)
             {
@@ -353,7 +354,7 @@ namespace Zenith_MIDI
             InitialiseSettingsValues();
             creditText.Text = "Video was rendered with Zenith\nhttps://arduano.github.io/Zenith-MIDI/start";
 
-            languageLoader.Wait();
+            if(languageLoader != null) languageLoader.Wait();
 
             var languagePacks = Directory.GetDirectories("Languages");
             foreach (var language in languagePacks)
@@ -959,24 +960,15 @@ namespace Zenith_MIDI
         {
             try
             {
-                settings.lastyBGChangeTime = DateTime.Now.Ticks;
-                if ((bool)useBGImage.IsChecked)
+                if (useBGImage.IsChecked && bgImagePath.Text != "")
                 {
-                    try
-                    {
-                        settings.BGImage = new Bitmap(bgImagePath.Text);
-                    }
-                    catch
-                    {
-                        settings.BGImage = null;
-                        if (bgImagePath.Text != "")
-                            MessageBox.Show("Couldn't load image");
-                    }
+                    settings.BGImage = bgImagePath.Text;
                 }
                 else
                 {
                     settings.BGImage = null;
                 }
+                settings.lastBGChangeTime = DateTime.Now.Ticks;
             }
             catch { }
         }
@@ -990,14 +982,13 @@ namespace Zenith_MIDI
                 bgImagePath.Text = open.FileName;
                 try
                 {
-                    settings.BGImage = new Bitmap(bgImagePath.Text);
+                    settings.BGImage = bgImagePath.Text;
                 }
                 catch
                 {
                     settings.BGImage = null;
-                    if (bgImagePath.Text != "")
-                        MessageBox.Show("Couldn't load image");
                 }
+                settings.lastBGChangeTime = DateTime.Now.Ticks;
             }
         }
 
@@ -1030,6 +1021,7 @@ namespace Zenith_MIDI
         {
             ZenithUpdates.KillAllProcesses();
             Process.Start(ZenithUpdates.InstallerPath, "update -Reopen");
+            Close();
         }
     }
 

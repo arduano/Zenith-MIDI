@@ -474,7 +474,7 @@ void main()
             {
                 if (!settings.Paused || settings.forceReRender)
                 {
-                    if (settings.lastyBGChangeTime != lastBGChangeTime)
+                    if (settings.lastBGChangeTime != lastBGChangeTime)
                     {
                         if (settings.BGImage == null)
                         {
@@ -484,8 +484,18 @@ void main()
                         else
                         {
                             if (bgTexID == -1) bgTexID = GL.GenTexture();
-                            loadImage(settings.BGImage, bgTexID, false, true);
+                            try
+                            {
+                                loadImage(new Bitmap(settings.BGImage), bgTexID, false, true);
+                            }
+                            catch
+                            {
+                                MessageBox.Show("Couldn't load image");
+                                if (bgTexID != -1) GL.DeleteTexture(bgTexID);
+                                bgTexID = -1;
+                            }
                         }
+                        lastBGChangeTime = settings.lastBGChangeTime;
                     }
 
                     lock (render)

@@ -17,8 +17,10 @@ namespace ZenithInstaller
         [STAThread]
         static void Main(string[] args)
         {
+#if !DEBUG
             try
             {
+#endif
                 ZenithUpdates.KillAllProcesses();
 
                 bool reopen = false;
@@ -119,6 +121,7 @@ namespace ZenithInstaller
                         Arguments = "\"" + reopenArg + "\""
                     });
                 }
+#if !DEBUG
             }
             catch (Exception e)
             {
@@ -129,6 +132,7 @@ namespace ZenithInstaller
                     MessageBox.Show(msg, ZenithUpdates.ProgramName + " installer has crashed!");
                 }
             }
+#endif
         }
 
         static void NormalInstall()

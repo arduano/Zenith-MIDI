@@ -707,6 +707,13 @@ namespace TexturedRender
                     pack.advancedBlackKeyOffsets = offsets.Select(s => (double)s).ToArray();
                 }
                 catch (RuntimeBinderException) { }
+                try
+                {
+                    JArray offsets = parseType<JArray>(pack, data.advancedBlackKeySizes);
+                    if (offsets.Count != 5) throw new Exception("advancedBlackKeySizes must have 5 elements");
+                    pack.advancedBlackKeySizes = offsets.Select(s => (double)s).ToArray();
+                }
+                catch (RuntimeBinderException) { }
                 #endregion
 
                 #region Bar

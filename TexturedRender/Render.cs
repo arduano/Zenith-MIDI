@@ -569,7 +569,7 @@ void main()
                     else
                     {
                         int _i = i + 1;
-                        wdth = currPack.blackKeyScale;
+                        wdth = currPack.blackKeyScale * currPack.advancedBlackKeySizes[keynum[i] % 5];
                         int bknum = keynum[i] % 5;
                         double offset = wdth / 2;
                         if (bknum == 0) offset += wdth / 2 * currPack.blackKey2setOffset;

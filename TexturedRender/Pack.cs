@@ -98,6 +98,7 @@ namespace TexturedRender
         public bool linearScaling = true;
 
         public double[] advancedBlackKeyOffsets = new double[] { 0, 0, 0, 0, 0 };
+        public double[] advancedBlackKeySizes = new double[] { 1, 1, 1, 1, 1 };
 
         public Bitmap whiteKeyTex;
         public int whiteKeyTexID;

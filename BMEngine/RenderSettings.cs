@@ -69,8 +69,8 @@ namespace ZenithEngine
 
         public bool ignoreColorEvents = false;
 
-        public long lastyBGChangeTime = -1;
-        public Bitmap BGImage = null;
+        public long lastBGChangeTime = -1;
+        public string BGImage = null;
 
         public event Action PauseToggled;
         public bool Paused

@@ -29,7 +29,7 @@ namespace ZenithShared
         public static readonly string[] ProcessNames = new[] { "Zenith", "Zenith-MIDI" };
         public static readonly string InstallPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Zenith");
 
-        public static readonly string InstallerVer = "3";
+        public static readonly string InstallerVer = "4";
 
         public static readonly string ApiURL = "https://api.github.com/repos/arduano/Zenith-MIDI/releases/latest";
 
@@ -158,16 +158,10 @@ namespace ZenithShared
                     if (e.FullName.EndsWith("\\") || e.FullName.EndsWith("/")) continue;
                     if (!Directory.Exists(Path.Combine(basePath, Path.GetDirectoryName(e.FullName))))
                         Directory.CreateDirectory(Path.Combine(basePath, Path.GetDirectoryName(e.FullName)));
-                    try
-                    {
-                        var fs = File.Open(Path.Combine(basePath, e.FullName), FileMode.Open);
-                        e.Open().CopyTo(fs);
-                        fs.Close();
-                    }
-                    catch (IOException ex)
-                    {
-                        throw new InstallFailedException("Could not overwrite file " + Path.Combine(basePath, e.FullName));
-                    }
+
+                    var fs = File.Open(Path.Combine(basePath, e.FullName), FileMode.OpenOrCreate);
+                    e.Open().CopyTo(fs);
+                    fs.Close();
                 }
             }
         }

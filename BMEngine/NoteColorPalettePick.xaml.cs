@@ -37,6 +37,8 @@ namespace ZenithEngine
 
         public event Action PaletteChanged;
 
+        int seed = 0;
+
         float defS, defV;
         public NoteColorPalettePick()
         {
@@ -186,7 +188,7 @@ namespace ZenithEngine
 
         public Color4[] GetColors(int tracks)
         {
-            Random r = new Random(0);
+            Random r = new Random(seed);
             double[] order = new double[tracks * 16];
             int[] coords = new int[tracks * 16];
             for (int i = 0; i < order.Length; i++)
@@ -231,6 +233,8 @@ namespace ZenithEngine
         private void randomiseOrder_CheckToggled(object sender, RoutedPropertyChangedEventArgs<bool> e)
         {
             randomise = (bool)randomiseOrder.IsChecked;
+            if (randomise) seed++;
+            PaletteChanged?.Invoke();
         }
 
         private void openPaletteFolder_Click(object sender, RoutedEventArgs e)
