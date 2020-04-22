@@ -246,9 +246,9 @@ namespace NoteCountRender
                 text = text.Replace("{rmiltime}", (totaltime - time).ToString("mm\\:ss\\.fff"));
                 text = text.Replace("{rfrtime}", (totaltime - time).ToString("mm\\:ss") + ";" + ((totalframes - frames + renderSettings.fps) % renderSettings.fps).ToString("00"));
 
-                text = text.Replace("{currticks}", (limMidiTime).ToString(sep + "0"));
-                text = text.Replace("{totalticks}", (CurrentMidi.tickLength).ToString(sep + "0"));
-                text = text.Replace("{remticks}", (CurrentMidi.tickLength - limMidiTime).ToString(sep + "0"));
+                text = text.Replace("{currticks}", (limMidiTime).ToString(sep + zeroes.tick));
+                text = text.Replace("{totalticks}", (CurrentMidi.tickLength).ToString(sep + zeroes.tick));
+                text = text.Replace("{remticks}", (CurrentMidi.tickLength - limMidiTime).ToString(sep + zeroes.tick));
 
                 text = text.Replace("{currbars}", bar.ToString(sep + zeroes.bars));
                 text = text.Replace("{totalbars}", maxbar.ToString(sep + zeroes.bars));
@@ -257,7 +257,7 @@ namespace NoteCountRender
                 text = text.Replace("{ppq}", CurrentMidi.division.ToString());
                 text = text.Replace("{tsn}", CurrentMidi.timeSig.numerator.ToString());
                 text = text.Replace("{tsd}", CurrentMidi.timeSig.denominator.ToString());
-                text = text.Replace("{avgnps}", ((double)CurrentMidi.noteCount / (double)totalsec).ToString(sep + "0"));
+                text = text.Replace("{avgnps}", ((double)CurrentMidi.noteCount / (double)totalsec).ToString(sep + zeroes.nps));
 
                 text = text.Replace("{currframes}", frames.ToString(sep + zeroes.frms));
                 text = text.Replace("{totalframes}", totalframes.ToString(sep + zeroes.frms));
