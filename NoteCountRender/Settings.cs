@@ -1,8 +1,10 @@
-﻿using System;
+﻿using OpenTK.Graphics.OpenGL;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Effects;
 
 namespace NoteCountRender
 {
@@ -33,7 +35,27 @@ namespace NoteCountRender
         public Commas thousandSeparator = Commas.Comma;
 
         public bool saveCsv = false;
+        public bool PaddingZeroes = false;
         public string csvOutput = "";
         public string csvFormat = "{nps},{plph},{bpm},{nc}";
+
+        public int BPMintPad = 3;
+        public int BPMDecPtPad = 2;
+        public int NoteCountPad = 5;
+        public int PolyphonyPad = 3;
+        public int NPSPad = 3;
+        public int TicksPad = 5;
+        public int BarCountPad = 3;
+        public int FrCountPad = 5;
+    }
+    public class Zeroes
+    {
+        public string bpm = "0.00";
+        public string nc = "0";
+        public string plph = "0";
+        public string nps = "0";
+        public string tick = "0";
+        public string bars = "0";
+        public string frms = "0";
     }
 }

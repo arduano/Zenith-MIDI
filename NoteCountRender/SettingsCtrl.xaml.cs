@@ -36,16 +36,19 @@ Polyphony: {plph}
 Time: {currtime}";
         string fullText = @"Notes: {nc} / {tn} / {nr}
 BPM: {bpm}
-NPS: {nps}
-Polyphony: {plph}
+NPS: {nps} (Max: {mnps})
+Polyphony: {plph} (Max: {mplph})
 Seconds: {currsec} / {totalsec} / {remsec}
 Time: {currtime} / {totaltime} / {remtime}
 Time(ms): {cmiltime} / {tmiltime} / {rmiltime}
+Time(frame): {cfrtime} / {tfrtime} / {rfrtime}
 Ticks: {currticks} / {totalticks} / {remticks}
 Bars: {currbars} / {totalbars} / {rembars}
+Frames: {currframes} / {totalframes} / {remframes}
 PPQ: {ppq}
 Time Signature: {tsn}/{tsd}
 Average NPS: {avgnps}";
+        string MIDITrail = @"TIME:{cmiltime}/{tmiltime}  BPM:{bpm}  BEAT:{tsn}/{tsd}  BAR:{currbars}/{totalbars}  NOTES:{nc}/{tn}";
 
         bool initialised = false;
 
@@ -170,6 +173,11 @@ Average NPS: {avgnps}";
                 File.WriteAllText(Path.Combine(templateFolder, "full.txt"), fullText);
             }
             catch { }
+            try
+            {
+                File.WriteAllText(Path.Combine(templateFolder, "MIDITrail.txt"), MIDITrail);
+            }
+            catch { }
             var files = Directory.GetFiles(templateFolder).Where(f => f.EndsWith(".txt"));
             templateStrings.Clear();
             templates.Items.Clear();
@@ -238,6 +246,34 @@ Average NPS: {avgnps}";
             if (useCommas.IsChecked) settings.thousandSeparator = Commas.Comma;
             //if (useDots.IsChecked) settings.thousandSeparator = Commas.Dot;
             if (useNothing.IsChecked) settings.thousandSeparator = Commas.Nothing;
+        }
+
+        private void ZP(object sender, RoutedPropertyChangedEventArgs<bool> e)
+        {
+            settings.PaddingZeroes = (bool)ZeroPadding.IsChecked;
+        }
+        private void Paddings_ValueChanged(object sender, RoutedPropertyChangedEventArgs<decimal> e)
+        {
+            settings.BPMintPad = (int)BPMint.Value;
+            settings.BPMDecPtPad = (int)BPMDecPt.Value;
+            settings.NoteCountPad = (int)NoteCount.Value;
+            settings.PolyphonyPad = (int)Polyphony.Value;
+            settings.NPSPad = (int)NPS.Value;
+            settings.TicksPad = (int)Ticks.Value;
+            settings.BarCountPad = (int)Bars.Value;
+            settings.FrCountPad = (int)Frames.Value;
+        }
+
+        private void SetDefault_Click(object sender, RoutedEventArgs e)
+        {
+            settings.BPMintPad = 3;
+            settings.BPMDecPtPad = 2;
+            settings.NoteCountPad = 5;
+            settings.PolyphonyPad = 3;
+            settings.NPSPad = 3;
+            settings.TicksPad = 5;
+            settings.BarCountPad = 3;
+            settings.FrCountPad = 5;
         }
     }
 }

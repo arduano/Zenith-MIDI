@@ -4,6 +4,12 @@
     xmlns:local="using:MSDNSample"
     xmlns:system="clr-namespace:System;assembly=mscorlib">
 
+    <!-- Tab Names -->
+    <system:String x:Key="Render">Render</system:String>
+    <system:String x:Key="SaveCSV">Save Data</system:String>
+    <system:String x:Key="Padding">Padding</system:String>
+
+    <!-- Render Tab -->
     <system:String x:Key="alignments">Alignments</system:String>
     <system:String x:Key="alTopLeft">Top Left</system:String>
     <system:String x:Key="alTopRight">Top Right</system:String>
@@ -21,9 +27,22 @@
     <system:String x:Key="thousandsSeparator">Thousands separator</system:String>
     <system:String x:Key="commas">Commas</system:String>
     <system:String x:Key="nothing">Nothing</system:String>
+    <system:String x:Key="ZeroPadding">Zero Padding</system:String>
 
+    <!-- Save Data Tab -->
     <system:String x:Key="savePath">Save Location</system:String>
     <system:String x:Key="browse">Browse</system:String>
     <system:String x:Key="saveToFile">Save frame data to .csv file</system:String>
     <system:String x:Key="formatString">CSV line format</system:String>
+
+    <!-- Padding Tab -->
+    <system:String x:Key="BPMint">BPM</system:String>
+    <system:String x:Key="BPMfrac">(Decimal Part)</system:String>
+    <system:String x:Key="NoteCount">Notes</system:String>
+    <system:String x:Key="Polyphony">Polyphony</system:String>
+    <system:String x:Key="NPS">NPS</system:String>
+    <system:String x:Key="Ticks">Tick</system:String>
+    <system:String x:Key="Bars">Bar</system:String>
+    <system:String x:Key="Frames">Frame</system:String>
+    <system:String x:Key="SetDefault">Defalut</system:String>
 </ResourceDictionary>
