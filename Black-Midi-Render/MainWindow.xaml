@@ -205,7 +205,7 @@
                                                 <StackPanel>
                                                     <DockPanel LastChildFill="False" Margin="0,0,0,5" HorizontalAlignment="Left">
                                                         <Label Content="{DynamicResource width}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left"/>
-                                                        <ui:NumberSelect x:Name="viewWidth" Maximum="15360" Minimum="1" Width="118" IsEnabled="{Binding IsEnabled, ElementName=notPreviewingOrRendering}"  DockPanel.Dock="Left" Margin="5,0,0,0"  />
+                                                        <ui:NumberSelect x:Name="viewWidth" Maximum="15360" Minimum="1" Width="118" IsEnabled="{Binding IsEnabled, ElementName=notPreviewingOrRendering}"  DockPanel.Dock="Left" Margin="10,0,0,0"  />
                                                     </DockPanel>
                                                     <DockPanel LastChildFill="False" HorizontalAlignment="Left">
                                                         <Label Content="{DynamicResource height}" HorizontalAlignment="Left" DockPanel.Dock="Left" Margin="0,0,0,0"/>
@@ -227,7 +227,7 @@
                                                     </DockPanel>
                                                     <DockPanel DockPanel.Dock="Top" HorizontalAlignment="Left" LastChildFill="False" Margin="0,5" VerticalAlignment="Top">
                                                         <Label Content="{DynamicResource superRes}" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left"/>
-                                                        <ui:NumberSelect DockPanel.Dock="Left" x:Name="SSAAFactor" Value="1" Maximum="4" Minimum="1" HorizontalAlignment="Left" Width="118" IsEnabled="{Binding IsEnabled, ElementName=notPreviewingOrRendering}" Margin="5,0,0,0"  />
+                                                        <ui:NumberSelect DockPanel.Dock="Left" x:Name="SSAAFactor" Value="1" Maximum="4" Minimum="1" HorizontalAlignment="Left" Width="118" IsEnabled="{Binding IsEnabled, ElementName=notPreviewingOrRendering}" Margin="20,0,0,0"  />
                                                     </DockPanel>
                                                 </StackPanel>
                                             </Grid>
@@ -342,7 +342,7 @@
                                 </Button>
                                 <TextBox x:Name="alphaPath" IsEnabled="False" TextWrapping="Wrap" Text="" DockPanel.Dock="Right" Margin="10,0,0,0"/>
                             </DockPanel>
-                            <DockPanel Height="30" LastChildFill="False" Margin="0,30,0,0" VerticalAlignment="Top">
+                            <DockPanel Height="30" LastChildFill="False" Margin="3,30,0,0" VerticalAlignment="Top">
                                 <ui:BetterRadio IsEnabled="{DynamicResource notRendering}" ParentDepth="3" x:Name="bitrateOption" Text="{DynamicResource bitrate}" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="True" DockPanel.Dock="Left" Margin="0,6,0,0"/>
                                 <ui:NumberSelect x:Name="bitrate" Maximum="2000000" Minimum="1" Value="20000" HorizontalAlignment="Left" Width="118" DockPanel.Dock="Left" Margin="10,0,0,0" >
                                     <ui:NumberSelect.IsEnabled>
@@ -354,7 +354,7 @@
                                 </ui:NumberSelect>
                                 <Label Content="kbps" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left" Margin="5,0,0,0"/>
                             </DockPanel>
-                            <DockPanel LastChildFill="False" Margin="0,10,0,0" VerticalAlignment="Top">
+                            <DockPanel LastChildFill="False" Margin="3,10,0,0" VerticalAlignment="Top">
                                 <ui:BetterRadio ParentDepth="3" IsEnabled="{DynamicResource notRendering}" x:Name="crfOption" Text="crf" HorizontalAlignment="Left" RenderTransformOrigin="5.125,1.133" DockPanel.Dock="Left"/>
                                 <ui:NumberSelect x:Name="crfFactor" Value="17" Maximum="51" Minimum="0" HorizontalAlignment="Left" Width="64" DockPanel.Dock="Left" Margin="10,0,0,0" >
                                     <ui:NumberSelect.IsEnabled>
