@@ -792,8 +792,7 @@ namespace Zenith_MIDI
         {
             var save = new SaveFileDialog();
             save.OverwritePrompt = true;
-            if (FFmpeg.IsChecked) save.Filter = "All types|*.*";
-            else save.Filter = "H.264 video (*.mp4)|*.mp4";
+            save.Filter = "H.264 video (*.mp4)|*.mp4|All types|*.*";
             if ((bool)save.ShowDialog())
             {
                 videoPath.Text = save.FileName;
