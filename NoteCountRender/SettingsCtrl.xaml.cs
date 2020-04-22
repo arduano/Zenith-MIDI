@@ -172,7 +172,8 @@ Average NPS: {avgnps}";
             {
                 File.WriteAllText(Path.Combine(templateFolder, "full.txt"), fullText);
             }
-            catch { }try
+            catch { }
+            try
             {
                 File.WriteAllText(Path.Combine(templateFolder, "MIDITrail.txt"), MIDITrail);
             }
