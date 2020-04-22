@@ -647,6 +647,15 @@ void main()
 
                 if (settings.ffRender)
                 {
+                    if (ffmpegvideo.HasExited || (settings.ffRenderMask && ffmpegmask.HasExited))
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("FFMPEG process closed unexpectedly!");
+                        Console.WriteLine("Use 'ffmpeg debug' for more advanced info.");
+                        Console.ResetColor();
+                        settings.running = false;
+                    }
+
                     if (!settings.ffRenderMask)
                         GL.UseProgram(postShader);
                     else
