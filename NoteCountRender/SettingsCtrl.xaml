@@ -101,7 +101,7 @@
                         <Label HorizontalAlignment="Right" Margin="0,1,0,0" Content="{DynamicResource BPMint}" />
                         <ui:NumberSelect Grid.Column="1" Grid.Row="0" x:Name="BPMint" Value="3" Maximum="5" Minimum="1" Width="64" IsEnabled="{Binding IsEnabled, ElementName=notPreviewingOrRendering}"  HorizontalAlignment="Left" Margin="10,-2,0,0" ValueChanged="Paddings_ValueChanged" Height="32" VerticalAlignment="Top"/>
                         <Label Grid.Column="2" Grid.Row="0" HorizontalAlignment="Right" Margin="10,1,0,0" Content="{DynamicResource BPMfrac}"/>
-                        <ui:NumberSelect Grid.Column="3" Grid.Row="0" x:Name="BPMDecPt" Value="2" Maximum="12" Minimum="1" Width="64" IsEnabled="{Binding IsEnabled, ElementName=notPreviewingOrRendering}"  HorizontalAlignment="Left" Margin="10,-2,0,0" ValueChanged="Paddings_ValueChanged"/>
+                        <ui:NumberSelect Grid.Column="3" Grid.Row="0" x:Name="BPMDecPt" Value="2" Maximum="12" Minimum="0" Width="64" IsEnabled="{Binding IsEnabled, ElementName=notPreviewingOrRendering}"  HorizontalAlignment="Left" Margin="10,-2,0,0" ValueChanged="Paddings_ValueChanged"/>
                         <Label Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right" Margin="0,0,0,0" Content="{DynamicResource NoteCount}" />
                         <ui:NumberSelect Grid.Column="1" Grid.Row="1" x:Name="NoteCount" Value="5" Maximum="12" Minimum="1" Width="64" IsEnabled="{Binding IsEnabled, ElementName=notPreviewingOrRendering}"  HorizontalAlignment="Left" Margin="10,-2,0,0" ValueChanged="Paddings_ValueChanged"/>
                         <Label Grid.Column="0" Grid.Row="2" HorizontalAlignment="Right" Margin="0,0,0,0" Content="{DynamicResource Polyphony}" />
