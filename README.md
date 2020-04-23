@@ -9,7 +9,7 @@
 <p align="center">
     <a href="https://github.com/arduano/Zenith-MIDI/releases/"><img src="https://img.shields.io/github/release/arduano/Zenith-MIDI.svg?style=flat-square" alt="GitHub release"></a>
     <a href="https://github.com/arduano/Zenith-MIDI/releases/"><img src="https://img.shields.io/github/downloads/arduano/Zenith-MIDI/total.svg?style=flat-square" alt="GitHub release"></a>
-    <a href="https://github.com/arduano/Zenith-MIDI/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-DBAD-blue.svg?style=flat-square?style=flat-square" alt="DBAD license"></a>
+    <a href="https://github.com/arduano/Zenith-MIDI/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-DBAD-blue.svg?style=flat-square" alt="DBAD license"></a>
     <a href="http://makeapullrequest.com"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square" alt="PRs Welcome"></a>
     <a href="https://discord.gg/Aj4cb5"><img src="https://img.shields.io/discord/549344616210628609.svg?color=7289DA&style=flat-square" alt="Discord"></a>
     <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=M9XRCSPYSMBCA&source=url"><img src="https://img.shields.io/badge/Donate-PayPal-green.svg?style=flat-square" alt="Donate"></a>
@@ -35,7 +35,9 @@ It is possible for anyone else who knows C# to make a plugin themselves as well.
 - **Note Count Render:** Renders a highly customisable text label for the midi statistics, including properties such as note count, polyphony, tempo, time, ticks, bars and MANY more. Font and font size are also easily customsiable. *Included with the program*
 - **Textured:** If the other plugins aren't enough for you, you can make your own look by using the Textured plugin. Extremely customisable, allowing features such as custom note caps for rounded notes and custom keyboard overlays. *Included with the program*
 
-## Instalation
+## Installation
+[![](https://img.shields.io/github/v/release/arduano/Zenith-MIDI?label=download%2032-bit&style=flat-square)](https://github.com/arduano/Zenith-MIDI/releases/latest/download/Zenithx86.zip) [![](https://img.shields.io/github/v/release/arduano/Zenith-MIDI?label=download%2064-bit&style=flat-square&color=green)](https://github.com/arduano/Zenith-MIDI/releases/latest/download/Zenithx64.zip)
+
 You can download the latest version of Zenith for Windows 32-bit [here](https://github.com/arduano/Zenith-MIDI/releases/latest/download/Zenithx86.zip) and Windows 64-bit [here](https://github.com/arduano/Zenith-MIDI/releases/latest/download/Zenithx64.zip).
 
 FFmpeg is required for video rendering, which you can get it [here](https://ffmpeg.zeranoe.com/builds/).
@@ -47,8 +49,8 @@ After downloading the app, extract the .zip archive and run the program. If FFmp
 Zenith is licensed under the terms of the [Don't Be a Dick Public License](https://github.com/arduano/Zenith-MIDI/blob/master/LICENSE).
 
 ## Screenshots
-|  ![](https://arduano.github.io/Zenith-MIDI/dist/bmr/assets/plugins/classic.png)  |  ![](https://arduano.github.io/Zenith-MIDI/dist/bmr/assets/plugins/flat.png)
-| :------------: | :------------: |
-|  Classic plugin  | Flat plugin  |
-|  ![](https://arduano.github.io/Zenith-MIDI/dist/bmr/assets/plugins/pfa.png)  |  ![](https://arduano.github.io/Zenith-MIDI/dist/bmr/assets/plugins/miditrail.png)
-| PFA+ plugin  | MidiTrail+ plugin  |
+| ![](https://arduano.github.io/Zenith-MIDI/dist/bmr/assets/plugins/classic.png) |   ![](https://arduano.github.io/Zenith-MIDI/dist/bmr/assets/plugins/flat.png)    |
+| :----------------------------------------------------------------------------: | :------------------------------------------------------------------------------: |
+|                                 Classic plugin                                 |                                   Flat plugin                                    |
+|   ![](https://arduano.github.io/Zenith-MIDI/dist/bmr/assets/plugins/pfa.png)   | ![](https://arduano.github.io/Zenith-MIDI/dist/bmr/assets/plugins/miditrail.png) |
+|                                  PFA+ plugin                                   |                                MidiTrail+ plugin                                 |
