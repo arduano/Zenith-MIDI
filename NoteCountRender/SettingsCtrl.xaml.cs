@@ -47,7 +47,12 @@ Bars: {currbars} / {totalbars} / {rembars}
 Frames: {currframes} / {totalframes} / {remframes}
 PPQ: {ppq}
 Time Signature: {tsn}/{tsd}
-Average NPS: {avgnps}";
+Average NPS: {avgnps}
+
+-----Progress-----
+Notes: {notep}%
+Ticks: {tickp}%
+Time: {timep}%";
         string MIDITrail = @"TIME:{cmiltime}/{tmiltime}  BPM:{bpm}  BEAT:{tsn}/{tsd}  BAR:{currbars}/{totalbars}  NOTES:{nc}/{tn}";
 
         bool initialised = false;

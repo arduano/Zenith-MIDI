@@ -44,5 +44,5 @@
     <system:String x:Key="Ticks">Tick</system:String>
     <system:String x:Key="Bars">Bar</system:String>
     <system:String x:Key="Frames">Frame</system:String>
-    <system:String x:Key="SetDefault">Default</system:String>
+    <system:String x:Key="SetDefault">Defaults</system:String>
 </ResourceDictionary>
