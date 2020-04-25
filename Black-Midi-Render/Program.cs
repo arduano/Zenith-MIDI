@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,6 +17,20 @@ namespace Zenith_MIDI
         [STAThread]
         static void Main(string[] args)
         {
+            BlockingCollection<int> test = new BlockingCollection<int>();
+            BlockingCollection<int> test2 = new BlockingCollection<int>();
+            Task.Run(() =>
+            {
+                foreach (var v in test.GetConsumingEnumerable()) test2.Add(v);
+            });
+            for(int i = 0; ; i++)
+            {
+                test.Add(i);
+                var b = test2.Take();
+                if (b % 10000 == 0) Console.WriteLine(b);
+            }
+
+
 #if !DEBUG
             try
             {

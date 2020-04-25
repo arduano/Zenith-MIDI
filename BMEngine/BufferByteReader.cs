@@ -35,6 +35,11 @@ namespace ZenithEngine
 
         void UpdateBuffer(long pos, bool first = false)
         {
+            //lock (stream)
+            //{
+            //    stream.Position = pos + streamstart;
+            //    stream.Read(buffer, 0, buffersize);
+            //}
             if (first)
             {
                 nextReader = Task.Run(() =>
@@ -57,11 +62,11 @@ namespace ZenithEngine
                 }
             });
             nextReader.GetAwaiter().GetResult();
-            //lock (stream)
-            //{
-            //    stream.Position = pos + streamstart;
-            //    stream.Read(buffer, 0, buffersize);
-            //}
+            lock (stream)
+            {
+                stream.Position = pos + streamstart;
+                stream.Read(buffer, 0, buffersize);
+            }
             maxbufferpos = (int)Math.Min(streamlen - pos + 1, buffersize);
         }
 

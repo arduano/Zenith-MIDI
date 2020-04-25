@@ -168,6 +168,8 @@ namespace ZenithEngine
             List<FastList<Tempo>> tempos = new List<FastList<Tempo>>();
             Parallel.For(0, tracks.Length, (i) =>
                {
+                   int buffSize = (int)(trackLengths[i] / 10);
+                   if (buffSize > settings.maxTrackBufferSize) buffSize = settings.maxTrackBufferSize;
                    var reader = new BufferByteReader(MidiFileReader, settings.maxTrackBufferSize, trackBeginnings[i], trackLengths[i]);
                    tracks[i] = new MidiTrack(i, reader, this, settings);
                    var t = tracks[i];
@@ -175,7 +177,7 @@ namespace ZenithEngine
                    {
                        try
                        {
-                           t.ParseNextEventFast();
+                           t.ParseNextEvent(true);
                        }
                        catch
                        {

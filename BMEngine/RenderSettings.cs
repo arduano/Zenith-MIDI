@@ -43,7 +43,7 @@ namespace ZenithEngine
         public bool includeAudio = false;
         public string audioPath = "";
 
-        public int maxTrackBufferSize = 10000;
+        public int maxTrackBufferSize = 100000;
 
         public bool useBitrate = true;
         public bool CustomFFmpeg = false;

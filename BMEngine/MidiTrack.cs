@@ -79,6 +79,8 @@ namespace ZenithEngine
         FastList<ColorChange> globalColorEvents;
         FastList<PlaybackEvent> globalPlaybackEvents;
 
+        public FastList<Tempo> TempoEvents = new FastList<Tempo>();
+
         public NoteColor[] trkColors;
         public NoteColor[] zeroTickTrkColors;
 
@@ -175,7 +177,7 @@ namespace ZenithEngine
                         long d = trackTime;
                         do
                         {
-                            ParseNextEvent();
+                            ParseNextEvent(false);
                             if (trackEnded) return;
                             trackTime += ReadVariableLen();
                             readDelta = true;
@@ -216,7 +218,7 @@ namespace ZenithEngine
 
         byte prevCommand = 0;
         bool timebase = false;
-        public void ParseNextEvent()
+        public void ParseNextEvent(bool loading)
         {
             try
             {
@@ -237,12 +239,21 @@ namespace ZenithEngine
                     command = prevCommand;
                 }
                 prevCommand = command;
-                byte comm = (byte)(command & 0b11110000);
-                if (comm == 0b10010000)
+                byte comm = (byte)(command & 0xF0);
+                if (comm == 0x90 || comm == 0x80)
                 {
-                    byte channel = (byte)(command & 0b00001111);
+                    byte channel = (byte)(command & 0x0F);
                     byte note = reader.Read();
                     byte vel = reader.ReadFast();
+
+                    if (loading)
+                    {
+                        if (comm == 0x90 && vel != 0)
+                        {
+                            noteCount++;
+                        }
+                        return;
+                    }
 
                     if (settings.playbackEnabled && vel > 10)
                     {
@@ -252,7 +263,8 @@ namespace ZenithEngine
                             val = command | (note << 8) | (vel << 16)
                         });
                     }
-                    if (vel == 0)
+
+                    if (comm == 0x80 || vel == 0)
                     {
                         var l = UnendedNotes[note << 4 | channel];
                         if (!l.ZeroLen)
@@ -283,38 +295,14 @@ namespace ZenithEngine
                         globalDisplayNotes.Add(n);
                     }
                 }
-                else if (comm == 0b10000000)
+                else if (comm == 0xA0)
                 {
-                    int channel = command & 0b00001111;
-                    byte note = reader.Read();
-                    byte vel = reader.ReadFast();
-                    var l = UnendedNotes[note << 4 | channel];
-                    if (!l.ZeroLen)
-                    {
-                        try
-                        {
-                            Note n = l.Pop();
-
-                            if (settings.playbackEnabled && n.vel > 10)
-                            {
-                                globalPlaybackEvents.Add(new PlaybackEvent()
-                                {
-                                    pos = time,
-                                    val = command | (note << 8) | (vel << 16)
-                                });
-                            }
-                            n.end = time;
-                            n.hasEnded = true;
-                        }
-                        catch
-                        { }
-                    }
-                }
-                else if (comm == 0b10100000)
-                {
-                    int channel = command & 0b00001111;
+                    int channel = command & 0x0F;
                     byte note = reader.Read();
                     byte vel = reader.Read();
+
+                    if (loading) return;
+
                     if (settings.playbackEnabled)
                     {
                         globalPlaybackEvents.Add(new PlaybackEvent()
@@ -324,52 +312,14 @@ namespace ZenithEngine
                         });
                     }
                 }
-                else if (comm == 0b11000000)
+                else if (comm == 0xB0)
                 {
-                    int channel = command & 0b00001111;
-                    byte program = reader.Read();
-                    if (settings.playbackEnabled)
-                    {
-                        globalPlaybackEvents.Add(new PlaybackEvent()
-                        {
-                            pos = time,
-                            val = command | (program << 8)
-                        });
-                    }
-                }
-                else if (comm == 0b11010000)
-                {
-
-                    int channel = command & 0b00001111;
-                    byte pressure = reader.Read();
-                    if (settings.playbackEnabled)
-                    {
-                        globalPlaybackEvents.Add(new PlaybackEvent()
-                        {
-                            pos = time,
-                            val = command | (pressure << 8)
-                        });
-                    }
-                }
-                else if (comm == 0b11100000)
-                {
-                    int channel = command & 0b00001111;
-                    byte l = reader.Read();
-                    byte m = reader.Read();
-                    if (settings.playbackEnabled)
-                    {
-                        globalPlaybackEvents.Add(new PlaybackEvent()
-                        {
-                            pos = time,
-                            val = command | (l << 8) | (m << 16)
-                        });
-                    }
-                }
-                else if (comm == 0b10110000)
-                {
-                    int channel = command & 0b00001111;
+                    int channel = command & 0x0F;
                     byte cc = reader.Read();
                     byte vv = reader.Read();
+
+                    if (loading) return;
+
                     if (settings.playbackEnabled)
                     {
                         globalPlaybackEvents.Add(new PlaybackEvent()
@@ -379,148 +329,76 @@ namespace ZenithEngine
                         });
                     }
                 }
-                else if (command == 0b11110000)
+                else if (comm == 0xC0)
+                {
+                    int channel = command & 0x0F;
+                    byte program = reader.Read();
+
+                    if (loading) return;
+
+                    if (settings.playbackEnabled)
+                    {
+                        globalPlaybackEvents.Add(new PlaybackEvent()
+                        {
+                            pos = time,
+                            val = command | (program << 8)
+                        });
+                    }
+                }
+                else if (comm == 0xD0)
+                {
+                    int channel = command & 0x0F;
+                    byte pressure = reader.Read();
+
+                    if (loading) return;
+
+                    if (settings.playbackEnabled)
+                    {
+                        globalPlaybackEvents.Add(new PlaybackEvent()
+                        {
+                            pos = time,
+                            val = command | (pressure << 8)
+                        });
+                    }
+                }
+                else if (comm == 0xE0)
+                {
+                    int channel = command & 0x0F;
+                    byte l = reader.Read();
+                    byte m = reader.Read();
+
+                    if (loading) return;
+
+                    if (settings.playbackEnabled)
+                    {
+                        globalPlaybackEvents.Add(new PlaybackEvent()
+                        {
+                            pos = time,
+                            val = command | (l << 8) | (m << 16)
+                        });
+                    }
+                }
+                else if (command == 0xF0)
                 {
                     while (reader.Read() != 0b11110111) ;
                 }
-                else if (command == 0b11110100 || command == 0b11110001 || command == 0b11110101 || command == 0b11111001 || command == 0b11111101)
-                {
-                    //printf("Undefined\n");
-                }
                 else if (command == 0b11110010)
                 {
-                    int channel = command & 0b00001111;
+                    int channel = command & 0x0F;
                     byte ll = reader.Read();
                     byte mm = reader.Read();
-
                 }
                 else if (command == 0b11110011)
                 {
                     byte ss = reader.Read();
                 }
-                else if (command == 0b11110110)
-                {
-                }
-                else if (command == 0b11110111)
-                {
-                }
-                else if (command == 0b11111000)
-                {
-                }
-                else if (command == 0b11111010)
-                {
-                }
-                else if (command == 0b11111100)
-                {
-                }
-                else if (command == 0b11111110)
-                {
-                }
                 else if (command == 0xFF)
                 {
                     command = reader.Read();
-                    if (command == 0x00)
+                    int size = (int)ReadVariableLen();
+
+                    if (command == 0x0A)
                     {
-                        if (reader.Read() != 2)
-                        {
-                            throw new Exception("Corrupt Track");
-                        }
-                        reader.Read(); 
-                        reader.Read();
-                    }
-                    else if (command == 0x01)
-                    {
-                        int size = (int)ReadVariableLen();
-                        char[] text = new char[size];
-                        for (int i = 0; i < size; i++)
-                        {
-                            text[i] = (char)reader.Read();
-                        }
-                        string str = new string(text);
-                    }
-                    else if (command == 0x02)
-                    {
-                        int size = (int)ReadVariableLen();
-                        char[] text = new char[size];
-                        for (int i = 0; i < size; i++)
-                        {
-                            text[i] = (char)reader.Read();
-                        }
-                        string str = new string(text);
-                    }
-                    else if (command == 0x03)
-                    {
-                        int size = (int)ReadVariableLen();
-                        char[] text = new char[size];
-                        for (int i = 0; i < size; i++)
-                        {
-                            text[i] = (char)reader.Read();
-                        }
-                        string str = new string(text);
-                    }
-                    else if (command == 0x04)
-                    {
-                        int size = (int)ReadVariableLen();
-                        char[] text = new char[size];
-                        for (int i = 0; i < size; i++)
-                        {
-                            text[i] = (char)reader.Read();
-                        }
-                        string str = new string(text);
-                    }
-                    else if (command == 0x05)
-                    {
-                        int size = (int)ReadVariableLen();
-                        char[] text = new char[size];
-                        for (int i = 0; i < size; i++)
-                        {
-                            text[i] = (char)reader.Read();
-                        }
-                        string str = new string(text);
-                    }
-                    else if (command == 0x06)
-                    {
-                        int size = (int)ReadVariableLen();
-                        char[] text = new char[size];
-                        for (int i = 0; i < size; i++)
-                        {
-                            text[i] = (char)reader.Read();
-                        }
-                        string str = new string(text);
-                    }
-                    else if (command == 0x07)
-                    {
-                        int size = (int)ReadVariableLen();
-                        char[] text = new char[size];
-                        for (int i = 0; i < size; i++)
-                        {
-                            text[i] = (char)reader.Read();
-                        }
-                        string str = new string(text);
-                    }
-                    else if (command == 0x08)
-                    {
-                        int size = (int)ReadVariableLen();
-                        char[] text = new char[size];
-                        for (int i = 0; i < size; i++)
-                        {
-                            text[i] = (char)reader.Read();
-                        }
-                        string str = new string(text);
-                    }
-                    else if (command == 0x09)
-                    {
-                        int size = (int)ReadVariableLen();
-                        char[] text = new char[size];
-                        for (int i = 0; i < size; i++)
-                        {
-                            text[i] = (char)reader.Read();
-                        }
-                        string str = new string(text);
-                    }
-                    else if (command == 0x0A)
-                    {
-                        int size = (int)ReadVariableLen();
                         byte[] data = new byte[size];
                         for (int i = 0; i < size; i++)
                         {
@@ -536,243 +414,8 @@ namespace ZenithEngine
                                 if (data.Length == 12)
                                     col2 = new Color4(data[8], data[9], data[10], data[11]);
                                 else col2 = col1;
-                                if (data[2] < 0x10 || data[2] == 0x7F)
+                                if (loading)
                                 {
-                                    var c = new ColorChange() { pos = time, col1 = col1, col2 = col2, channel = data[2], track = this };
-                                    globalColorEvents.Add(c);
-                                }
-                            }
-                        }
-                    }
-                    else if (command == 0x20)
-                    {
-                        command = reader.Read();
-                        if (command != 1)
-                        {
-                            throw new Exception("Corrupt Track");
-                        }
-                        channelPrefix = reader.Read();
-                    }
-                    else if (command == 0x21)
-                    {
-                        command = reader.Read();
-                        if (command != 1)
-                        {
-                            throw new Exception("Corrupt Track");
-                        }
-                        reader.Skip(1);
-                        //TODO:  MIDI port
-                    }
-                    else if (command == 0x2F)
-                    {
-                        command = reader.Read();
-                        if (command != 0)
-                        {
-                            throw new Exception("Corrupt Track");
-                        }
-                        EndTrack();
-                    }
-                    else if (command == 0x51)
-                    {
-                        command = reader.Read();
-                        if (command != 3)
-                        {
-                            throw new Exception("Corrupt Track");
-                        }
-                        int btempo = 0;
-                        for (int i = 0; i != 3; i++)
-                            btempo = (int)((btempo << 8) | reader.Read());
-                        if (!timebase)
-                        {
-                            Tempo t = new Tempo();
-                            t.pos = trackTime;
-                            t.tempo = btempo;
-
-                            lock (globalTempoEvents)
-                            {
-                                globalTempoEvents.Add(t);
-                            }
-                        }
-                        midi.tempoTickMultiplier = ((double)midi.division / btempo) * 1000;
-                    }
-                    else if (command == 0x54)
-                    {
-                        command = reader.Read();
-                        if (command != 5)
-                        {
-                            throw new Exception("Corrupt Track");
-                        }
-                        reader.Skip(4);
-                    }
-                    else if (command == 0x58)
-                    {
-                        command = reader.Read();
-                        if (command != 4)
-                        {
-                            throw new Exception("Corrupt Track");
-                        }
-                        reader.Skip(4);
-                    }
-                    else if (command == 0x59)
-                    {
-                        command = reader.Read();
-                        if (command != 2)
-                        {
-                            throw new Exception("Corrupt Track");
-                        }
-                        reader.Skip(2);
-                        //TODO: Key Signature
-                    }
-                    else if (command == 0x7F)
-                    {
-                        int size = (int)ReadVariableLen();
-                        byte[] data = new byte[size];
-                        for (int i = 0; i < size; i++)
-                        {
-                            data[i] = reader.Read();
-                        }
-                    }
-                    else
-                    {
-                        throw new Exception("Corrupt Track");
-                    }
-                }
-                else
-                {
-                    throw new Exception("Corrupt Track");
-                }
-            }
-            catch (IndexOutOfRangeException)
-            {
-                EndTrack();
-            }
-            catch
-            { }
-        }
-
-        public FastList<Tempo> TempoEvents = new FastList<Tempo>();
-        public void ParseNextEventFast()
-        {
-            try
-            {
-                trackTime += ReadVariableLen();
-                byte command = reader.Read();
-                if (command < 0x80)
-                {
-                    reader.Pushback = command;
-                    command = prevCommand;
-                }
-                prevCommand = command;
-                byte comm = (byte)(command & 0b11110000);
-                if (comm == 0b10010000)
-                {
-                    byte channel = (byte)(command & 0b00001111);
-                    reader.Skip(1);
-                    byte vel = reader.Read();
-                    if (vel != 0)
-                        noteCount++;
-                }
-                else if (comm == 0b10000000)
-                {
-                    int channel = command & 0b00001111;
-                    reader.Skip(2);
-                }
-                else if (comm == 0b10100000)
-                {
-                    int channel = command & 0b00001111;
-                    reader.Skip(2);
-                }
-                else if (comm == 0b11000000)
-                {
-                    int channel = command & 0b00001111;
-                    reader.Skip(1);
-                }
-                else if (comm == 0b11010000)
-                {
-                    int channel = command & 0b00001111;
-                    reader.Skip(1);
-                }
-                else if (comm == 0b11100000)
-                {
-                    int channel = command & 0b00001111;
-                    reader.Skip(2);
-                }
-                else if (comm == 0b10110000)
-                {
-                    int channel = command & 0b00001111;
-                    reader.Skip(2);
-                }
-                else if (command == 0b11110000)
-                {
-                    while (reader.Read() != 0b11110111) ;
-                }
-                else if (command == 0b11110100 || command == 0b11110001 || command == 0b11110101 || command == 0b11111001 || command == 0b11111101)
-                {
-                    //printf("Undefined\n");
-                }
-                else if (command == 0b11110010)
-                {
-                    int channel = command & 0b00001111;
-                    reader.Skip(2);
-
-                }
-                else if (command == 0b11110011)
-                {
-                    byte ss = reader.Read();
-                }
-                else if (command == 0b11110110)
-                {
-                }
-                else if (command == 0b11110111)
-                {
-                }
-                else if (command == 0b11111000)
-                {
-                }
-                else if (command == 0b11111010)
-                {
-                }
-                else if (command == 0b11111100)
-                {
-                }
-                else if (command == 0b11111110)
-                {
-                }
-                else if (command == 0xFF)
-                {
-                    command = reader.Read();
-                    if (command == 0x00)
-                    {
-                        if (reader.Read() != 2)
-                        {
-                            throw new Exception("Corrupt Track");
-                        }
-                    }
-                    else if (command >= 0x01 &&
-                            command <= 0x0A)
-                    {
-                        int size = (int)ReadVariableLen();
-                        if (command != 0x0A || trackTime != 0)
-                        {
-                            reader.Skip(size);
-                        }
-                        else
-                        {
-                            byte[] data = new byte[size];
-                            for (int i = 0; i < size; i++)
-                            {
-                                data[i] = reader.Read();
-                            }
-                            if (data.Length == 8 || data.Length == 12)
-                            {
-                                if (data[0] == 0x00 &&
-                                    data[1] == 0x0F)
-                                {
-                                    Color4 col1 = new Color4(data[4], data[5], data[6], data[7]);
-                                    Color4 col2;
-                                    if (data.Length == 12)
-                                        col2 = new Color4(data[8], data[9], data[10], data[11]);
-                                    else col2 = col1;
                                     if (data[2] < 0x10)
                                     {
                                         zeroTickTrkColors[data[2]] = new NoteColor() { left = col1, right = col2 };
@@ -783,32 +426,20 @@ namespace ZenithEngine
                                             zeroTickTrkColors[i] = new NoteColor() { left = col1, right = col2 };
                                     }
                                 }
+                                else
+                                {
+                                    if (data[2] < 0x10 || data[2] == 0x7F)
+                                    {
+                                        var c = new ColorChange() { pos = time, col1 = col1, col2 = col2, channel = data[2], track = this };
+                                        globalColorEvents.Add(c);
+                                    }
+                                }
                             }
                         }
                     }
-                    else if (command == 0x20)
-                    {
-                        command = reader.Read();
-                        if (command != 1)
-                        {
-                            throw new Exception("Corrupt Track");
-                        }
-                        channelPrefix = reader.Read();
-                    }
-                    else if (command == 0x21)
-                    {
-                        command = reader.Read();
-                        if (command != 1)
-                        {
-                            throw new Exception("Corrupt Track");
-                        }
-                        reader.Skip(1);
-                        //TODO:  MIDI port
-                    }
                     else if (command == 0x2F)
                     {
-                        command = reader.Read();
-                        if (command != 0)
+                        if (size != 0)
                         {
                             throw new Exception("Corrupt Track");
                         }
@@ -816,69 +447,46 @@ namespace ZenithEngine
                     }
                     else if (command == 0x51)
                     {
-                        command = reader.Read();
-                        if (command != 3)
+                        if (size != 3)
                         {
                             throw new Exception("Corrupt Track");
                         }
                         int btempo = 0;
                         for (int i = 0; i != 3; i++)
                             btempo = (int)((btempo << 8) | reader.Read());
-                        if (trackTime == 0)
-                        {
-                            zerothTempo = btempo;
-                        }
 
-                        Tempo t = new Tempo();
-                        t.pos = trackTime;
-                        t.tempo = btempo;
-                        TempoEvents.Add(t);
-                    }
-                    else if (command == 0x54)
-                    {
-                        command = reader.Read();
-                        if (command != 5)
+                        if (loading)
                         {
-                            throw new Exception("Corrupt Track");
+                            if (trackTime == 0)
+                            {
+                                zerothTempo = btempo;
+                            }
+
+                            Tempo t = new Tempo();
+                            t.pos = trackTime;
+                            t.tempo = btempo;
+                            TempoEvents.Add(t);
                         }
-                        reader.Skip(4);
-                    }
-                    else if (command == 0x58)
-                    {
-                        command = reader.Read();
-                        if (command != 4)
+                        else
                         {
-                            throw new Exception("Corrupt Track");
+                            if (!timebase)
+                            {
+                                Tempo t = new Tempo();
+                                t.pos = trackTime;
+                                t.tempo = btempo;
+
+                                lock (globalTempoEvents)
+                                {
+                                    globalTempoEvents.Add(t);
+                                }
+                            }
+                            midi.tempoTickMultiplier = ((double)midi.division / btempo) * 1000;
                         }
-                        int nn = reader.ReadFast();
-                        int dd = reader.ReadFast();
-                        dd = (int)Math.Pow(2, dd);
-                        foundTimeSig = new TimeSignature() { numerator = nn, denominator = dd };
-                        reader.Skip(2);
-                    }
-                    else if (command == 0x59)
-                    {
-                        command = reader.Read();
-                        if (command != 2)
-                        {
-                            throw new Exception("Corrupt Track");
-                        }
-                        reader.Skip(2);
-                        //TODO: Key Signature
-                    }
-                    else if (command == 0x7F)
-                    {
-                        int size = (int)ReadVariableLen();
-                        reader.Skip(size);
                     }
                     else
                     {
-                        throw new Exception("Corrupt Track");
+                        reader.Skip(size);
                     }
-                }
-                else
-                {
-                    throw new Exception("Corrupt Track");
                 }
             }
             catch (IndexOutOfRangeException)
