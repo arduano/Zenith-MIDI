@@ -12,11 +12,11 @@ namespace ZenithEngine
     public class BufferByteReader
     {
         long pos;
-        int buffersize;
-        int bufferpos;
-        int maxbufferpos;
-        long streamstart;
-        long streamlen;
+        int bufferSize;
+        int bufferPos;
+        int maxBufferPos;
+        long streamStart;
+        long streamLen;
         DiskReadProvider stream;
         byte[] buffer;
         byte[] bufferNext;
@@ -26,11 +26,11 @@ namespace ZenithEngine
         public BufferByteReader(DiskReadProvider stream, int buffersize, long streamstart, long streamlen)
         {
             if (buffersize > streamlen) buffersize = (int)streamlen;
-            this.buffersize = buffersize;
+            this.bufferSize = buffersize;
             buffer = new byte[buffersize];
             bufferNext = new byte[buffersize];
-            this.streamstart = streamstart;
-            this.streamlen = streamlen;
+            this.streamStart = streamstart;
+            this.streamLen = streamlen;
             this.stream = stream;
             UpdateBuffer(pos, true);
         }
@@ -43,15 +43,15 @@ namespace ZenithEngine
                 {
                     readReturn.Take();
                 }
-                stream.Request(new ReadDiskRequest(pos + streamstart, buffersize, bufferNext, readReturn));
+                stream.Request(new ReadDiskRequest(pos + streamStart, bufferSize, bufferNext, readReturn));
                 sentRequest = true;
             }
             bufferNext = readReturn.Take();
             sentRequest = false;
-            Buffer.BlockCopy(bufferNext, 0, buffer, 0, buffersize);
-            stream.Request(new ReadDiskRequest(pos + streamstart + buffersize, buffersize, bufferNext, readReturn));
+            Buffer.BlockCopy(bufferNext, 0, buffer, 0, bufferSize);
+            stream.Request(new ReadDiskRequest(pos + streamStart + bufferSize, bufferSize, bufferNext, readReturn));
             sentRequest = true;
-            maxbufferpos = (int)Math.Min(streamlen - pos + 1, buffersize);
+            maxBufferPos = (int)Math.Min(streamLen - pos + 1, bufferSize);
         }
 
         public long Location => pos;
@@ -66,12 +66,12 @@ namespace ZenithEngine
                 Pushback = -1;
                 return _b;
             }
-            byte b = buffer[bufferpos++];
-            if (bufferpos < maxbufferpos) return b;
-            else if (bufferpos >= buffersize)
+            byte b = buffer[bufferPos++];
+            if (bufferPos < maxBufferPos) return b;
+            else if (bufferPos >= bufferSize)
             {
-                pos += bufferpos;
-                bufferpos = 0;
+                pos += bufferPos;
+                bufferPos = 0;
                 UpdateBuffer(pos);
                 return b;
             }
@@ -80,12 +80,12 @@ namespace ZenithEngine
 
         public byte ReadFast()
         {
-            byte b = buffer[bufferpos++];
-            if (bufferpos < maxbufferpos) return b;
-            else if (bufferpos >= buffersize)
+            byte b = buffer[bufferPos++];
+            if (bufferPos < maxBufferPos) return b;
+            else if (bufferPos >= bufferSize)
             {
-                pos += bufferpos;
-                bufferpos = 0;
+                pos += bufferPos;
+                bufferPos = 0;
                 UpdateBuffer(pos);
                 return b;
             }
@@ -95,14 +95,14 @@ namespace ZenithEngine
         public void Reset()
         {
             pos = 0;
-            bufferpos = 0;
+            bufferPos = 0;
             UpdateBuffer(pos, true);
         }
 
         public void ResetAndResize(int buffersize)
         {
-            if (buffersize > streamlen) buffersize = (int)streamlen;
-            this.buffersize = buffersize;
+            if (buffersize > streamLen) buffersize = (int)streamLen;
+            this.bufferSize = buffersize;
             buffer = new byte[buffersize];
             bufferNext = new byte[buffersize];
             Reset();
@@ -117,12 +117,12 @@ namespace ZenithEngine
                     Pushback = -1;
                     continue;
                 }
-                bufferpos++;
-                if (bufferpos < maxbufferpos) continue;
-                if (bufferpos >= buffersize)
+                bufferPos++;
+                if (bufferPos < maxBufferPos) continue;
+                if (bufferPos >= bufferSize)
                 {
-                    pos += bufferpos;
-                    bufferpos = 0;
+                    pos += bufferPos;
+                    bufferPos = 0;
                     UpdateBuffer(pos);
                 }
                 else throw new IndexOutOfRangeException();

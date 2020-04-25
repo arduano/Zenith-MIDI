@@ -9,17 +9,28 @@ using System.Threading.Tasks;
 
 namespace ZenithEngine
 {
+    struct TrackPos
+    {
+        public long start;
+        public uint length;
+
+        public TrackPos(long start, uint length)
+        {
+            this.start = start;
+            this.length = length;
+        }
+    }
+
     public class MidiFile : IDisposable
     {
         Stream MidiFileReader;
         public ushort division;
-        public int trackcount;
+        public int trackCount;
         public ushort format;
 
         public int zerothTempo = 500000;
 
-        List<long> trackBeginnings = new List<long>();
-        List<uint> trackLengths = new List<uint>();
+        List<TrackPos> trackPositions = new List<TrackPos>();
 
         public MidiTrack[] tracks;
 
@@ -51,7 +62,7 @@ namespace ZenithEngine
             {
                 ParseTrackChunk();
             }
-            tracks = new MidiTrack[trackcount];
+            tracks = new MidiTrack[trackCount];
 
             Console.WriteLine("Loading tracks into memory, biggest tracks first.");
             Console.WriteLine("Please expect this to start slow, especially on bigger midis.");
@@ -59,13 +70,13 @@ namespace ZenithEngine
             LoadAndParseAll(true);
             Console.WriteLine("Loaded!");
             Console.WriteLine("Note count: " + noteCount);
-            unendedTracks = trackcount;
+            unendedTracks = trackCount;
 
             info.division = division;
             info.firstTempo = zerothTempo;
             info.noteCount = noteCount;
             info.tickLength = maxTrackTime;
-            info.trackCount = trackcount;
+            info.trackCount = trackCount;
             tempoTickMultiplier = (double)division / 500000 * 1000;
         }
 
@@ -112,11 +123,10 @@ namespace ZenithEngine
         {
             AssertText("MTrk");
             uint length = ReadInt32();
-            trackBeginnings.Add(MidiFileReader.Position);
-            trackLengths.Add(length);
+            trackPositions.Add(new TrackPos(MidiFileReader.Position, length));
             MidiFileReader.Position += length;
-            trackcount++;
-            Console.WriteLine("Track " + trackcount + ", Size " + length);
+            trackCount++;
+            Console.WriteLine("Track " + trackCount + ", Size " + length);
         }
 
 
@@ -129,7 +139,7 @@ namespace ZenithEngine
                     {
                         currentFlexSyncTime += 1 / tempoTickMultiplier;
                         int ut = 0;
-                        for (int trk = 0; trk < trackcount; trk++)
+                        for (int trk = 0; trk < trackCount; trk++)
                         {
                             var t = tracks[trk];
                             if (!t.trackEnded)
@@ -144,7 +154,7 @@ namespace ZenithEngine
                     for (; currentSyncTime <= targetTime && settings.running; currentSyncTime++)
                     {
                         int ut = 0;
-                        for (int trk = 0; trk < trackcount; trk++)
+                        for (int trk = 0; trk < trackCount; trk++)
                         {
                             var t = tracks[trk];
                             if (!t.trackEnded)
@@ -165,20 +175,18 @@ namespace ZenithEngine
 
         public void LoadAndParseAll(bool useBufferStream = false)
         {
-            long[] tracklens = new long[tracks.Length];
+            long[] trackLengths = new long[tracks.Length];
             int p = 0;
             List<FastList<Tempo>> tempos = new List<FastList<Tempo>>();
             var diskReader = new DiskReadProvider(MidiFileReader);
-            int[] trackorder = new int[tracks.Length];
-            for (int i = 0; i < trackorder.Length; i++) trackorder[i] = i;
-            Array.Sort(trackLengths.ToArray(), trackorder);
-            trackorder = trackorder.Reverse().ToArray();
+            int[] trackOrder = new int[tracks.Length];
+            for (int i = 0; i < trackOrder.Length; i++) trackOrder[i] = i;
+            Array.Sort(trackPositions.Select(t => t.length).ToArray(), trackOrder);
+            trackOrder = trackOrder.Reverse().ToArray();
             ParallelFor(0, tracks.Length, Environment.ProcessorCount * 3, (_i) =>
                {
-                   int i = trackorder[_i];
-                   int buffSize = (int)(trackLengths[i] / 2);
-                   if (buffSize > 10000000) buffSize = 10000000;
-                   var reader = new BufferByteReader(diskReader, buffSize, trackBeginnings[i], trackLengths[i]);
+                   int i = trackOrder[_i];
+                   var reader = new BufferByteReader(diskReader, 10000000, trackPositions[i].start, trackPositions[i].length);
                    tracks[i] = new MidiTrack(i, reader, this, settings);
                    var t = tracks[i];
                    while (!t.trackEnded)
@@ -193,7 +201,7 @@ namespace ZenithEngine
                        }
                    }
                    noteCount += t.noteCount;
-                   tracklens[i] = t.trackTime;
+                   trackLengths[i] = t.trackTime;
                    if (t.foundTimeSig != null)
                        info.timeSig = t.foundTimeSig;
                    if (t.zerothTempo != -1)
@@ -207,7 +215,7 @@ namespace ZenithEngine
                        Console.WriteLine("Loaded track " + p++ + "/" + tracks.Length);
                    }
                });
-            maxTrackTime = tracklens.Max();
+            maxTrackTime = trackLengths.Max();
             Console.WriteLine("Processing Tempos");
             LinkedList<Tempo> Tempos = new LinkedList<Tempo>();
             var iters = tempos.Select(t => t.GetEnumerator()).ToArray();
@@ -259,8 +267,8 @@ namespace ZenithEngine
 
             info.secondsLength = time;
 
-            maxTrackTime = tracklens.Max();
-            unendedTracks = trackcount;
+            maxTrackTime = trackLengths.Max();
+            unendedTracks = trackCount;
         }
 
         void ParallelFor(int from, int to, int threads, Action<int> func)
@@ -306,7 +314,7 @@ namespace ZenithEngine
             globalPlaybackEvents.Unlink();
             currentSyncTime = 0;
             currentFlexSyncTime = 0;
-            unendedTracks = trackcount;
+            unendedTracks = trackCount;
             tempoTickMultiplier = (double)division / 500000 * 1000;
             foreach (var t in tracks) t.Reset();
         }
