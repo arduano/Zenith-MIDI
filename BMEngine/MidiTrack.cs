@@ -105,6 +105,12 @@ namespace ZenithEngine
             UnendedNotes = null;
         }
 
+        public void ResetAndResize(int newSize)
+        {
+            reader.ResetAndResize(newSize);
+            reader.Reset();
+        }
+
         public void ResetColors()
         {
             trkColors = new NoteColor[16];

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,57 +17,40 @@ namespace ZenithEngine
         int maxbufferpos;
         long streamstart;
         long streamlen;
-        Stream stream;
+        DiskReadProvider stream;
         byte[] buffer;
         byte[] bufferNext;
-        Task nextReader = null;
+        BlockingCollection<byte[]> readReturn = new BlockingCollection<byte[]>();
+        bool sentRequest = false;
 
-        public BufferByteReader(Stream stream, int buffersize, long streamstart, long streamlen)
+        public BufferByteReader(DiskReadProvider stream, int buffersize, long streamstart, long streamlen)
         {
             if (buffersize > streamlen) buffersize = (int)streamlen;
             this.buffersize = buffersize;
+            buffer = new byte[buffersize];
+            bufferNext = new byte[buffersize];
             this.streamstart = streamstart;
             this.streamlen = streamlen;
             this.stream = stream;
-            buffer = new byte[buffersize];
-            bufferNext = new byte[buffersize];
             UpdateBuffer(pos, true);
         }
 
         void UpdateBuffer(long pos, bool first = false)
         {
-            //lock (stream)
-            //{
-            //    stream.Position = pos + streamstart;
-            //    stream.Read(buffer, 0, buffersize);
-            //}
             if (first)
             {
-                nextReader = Task.Run(() =>
+                if (sentRequest)
                 {
-                    lock (stream)
-                    {
-                        stream.Position = pos + streamstart;
-                        stream.Read(bufferNext, 0, buffersize);
-                    }
-                });
-            }
-            nextReader.GetAwaiter().GetResult();
-            Buffer.BlockCopy(bufferNext, 0, buffer, 0, buffersize);
-            nextReader = Task.Run(() =>
-            {
-                lock (stream)
-                {
-                    stream.Position = pos + streamstart + buffersize;
-                    stream.Read(bufferNext, 0, buffersize);
+                    readReturn.Take();
                 }
-            });
-            nextReader.GetAwaiter().GetResult();
-            lock (stream)
-            {
-                stream.Position = pos + streamstart;
-                stream.Read(buffer, 0, buffersize);
+                stream.Request(new ReadDiskRequest(pos + streamstart, buffersize, bufferNext, readReturn));
+                sentRequest = true;
             }
+            bufferNext = readReturn.Take();
+            sentRequest = false;
+            Buffer.BlockCopy(bufferNext, 0, buffer, 0, buffersize);
+            stream.Request(new ReadDiskRequest(pos + streamstart + buffersize, buffersize, bufferNext, readReturn));
+            sentRequest = true;
             maxbufferpos = (int)Math.Min(streamlen - pos + 1, buffersize);
         }
 
@@ -115,6 +99,15 @@ namespace ZenithEngine
             UpdateBuffer(pos, true);
         }
 
+        public void ResetAndResize(int buffersize)
+        {
+            if (buffersize > streamlen) buffersize = (int)streamlen;
+            this.buffersize = buffersize;
+            buffer = new byte[buffersize];
+            bufferNext = new byte[buffersize];
+            Reset();
+        }
+
         public void Skip(int count)
         {
             for (int i = 0; i < count; i++)
@@ -139,6 +132,56 @@ namespace ZenithEngine
         public void Dispose()
         {
             buffer = null;
+        }
+    }
+
+    public struct ReadDiskRequest
+    {
+        public long from;
+        public int length;
+        public byte[] buffer;
+        public BlockingCollection<byte[]> output;
+
+        public ReadDiskRequest(long from, int length, byte[] buffer, BlockingCollection<byte[]> output)
+        {
+            this.from = from;
+            this.length = length;
+            this.buffer = buffer;
+            this.output = output;
+        }
+    }
+
+    public class DiskReadProvider : IDisposable
+    {
+        BlockingCollection<ReadDiskRequest> requests = new BlockingCollection<ReadDiskRequest>();
+        Stream reader;
+
+        public DiskReadProvider(Stream reader)
+        {
+            this.reader = reader;
+            Task.Run(() =>
+            {
+                foreach(var request in requests.GetConsumingEnumerable())
+                {
+                    if(reader.Position != request.from)
+                    {
+                        reader.Position = request.from;
+                    }
+                    reader.Read(request.buffer, 0, request.length);
+                    request.output.Add(request.buffer);
+                }
+            });
+        }
+
+        public void Request(ReadDiskRequest req)
+        {
+            requests.Add(req);
+        }
+
+        public void Dispose()
+        {
+            requests.CompleteAdding();
+            reader.Dispose();
         }
     }
 }

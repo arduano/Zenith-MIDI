@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -52,7 +53,8 @@ namespace ZenithEngine
             }
             tracks = new MidiTrack[trackcount];
 
-            Console.WriteLine("Loading tracks into memory");
+            Console.WriteLine("Loading tracks into memory, biggest tracks first.");
+            Console.WriteLine("Please expect this to start slow, especially on bigger midis.");
             info = new MidiInfo();
             LoadAndParseAll(true);
             Console.WriteLine("Loaded!");
@@ -166,11 +168,17 @@ namespace ZenithEngine
             long[] tracklens = new long[tracks.Length];
             int p = 0;
             List<FastList<Tempo>> tempos = new List<FastList<Tempo>>();
-            Parallel.For(0, tracks.Length, (i) =>
+            var diskReader = new DiskReadProvider(MidiFileReader);
+            int[] trackorder = new int[tracks.Length];
+            for (int i = 0; i < trackorder.Length; i++) trackorder[i] = i;
+            Array.Sort(trackLengths.ToArray(), trackorder);
+            trackorder = trackorder.Reverse().ToArray();
+            ParallelFor(0, tracks.Length, Environment.ProcessorCount * 3, (_i) =>
                {
-                   int buffSize = (int)(trackLengths[i] / 10);
-                   if (buffSize > settings.maxTrackBufferSize) buffSize = settings.maxTrackBufferSize;
-                   var reader = new BufferByteReader(MidiFileReader, settings.maxTrackBufferSize, trackBeginnings[i], trackLengths[i]);
+                   int i = trackorder[_i];
+                   int buffSize = (int)(trackLengths[i] / 2);
+                   if (buffSize > 10000000) buffSize = 10000000;
+                   var reader = new BufferByteReader(diskReader, buffSize, trackBeginnings[i], trackLengths[i]);
                    tracks[i] = new MidiTrack(i, reader, this, settings);
                    var t = tracks[i];
                    while (!t.trackEnded)
@@ -192,10 +200,12 @@ namespace ZenithEngine
                    {
                        zerothTempo = t.zerothTempo;
                    }
-                   lock (tempos) tempos.Add(t.TempoEvents);
-                   t.Reset();
-                   Console.WriteLine("Loaded track " + p++ + "/" + tracks.Length);
-                   GC.Collect();
+                   lock (tempos)
+                   {
+                       tempos.Add(t.TempoEvents);
+                       t.ResetAndResize(100000);
+                       Console.WriteLine("Loaded track " + p++ + "/" + tracks.Length);
+                   }
                });
             maxTrackTime = tracklens.Max();
             Console.WriteLine("Processing Tempos");
@@ -251,6 +261,36 @@ namespace ZenithEngine
 
             maxTrackTime = tracklens.Max();
             unendedTracks = trackcount;
+        }
+
+        void ParallelFor(int from, int to, int threads, Action<int> func)
+        {
+            Dictionary<int, Task> tasks = new Dictionary<int, Task>();
+            BlockingCollection<int> completed = new BlockingCollection<int>();
+
+            void RunTask(int i)
+            {
+                var t = new Task(() => {
+                    func(i);
+                    completed.Add(i);
+                });
+                tasks.Add(i, t);
+                t.Start();
+            }
+
+            void TryTake()
+            {
+                var t = completed.Take();
+                tasks.Remove(t);
+            }
+
+            for (int i = from; i < to; i++)
+            {
+                RunTask(i);
+                if (tasks.Count > threads) TryTake();
+            }
+
+            while (completed.Count > 0 || tasks.Count > 0) TryTake();
         }
 
         public void SetZeroColors()
