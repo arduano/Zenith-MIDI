@@ -493,9 +493,10 @@ namespace Zenith_MIDI
                         double progress = win.midiTime / midifile.maxTrackTime;
                         if (settings.timeBasedNotes) progress = win.midiTime / 1000 / midifile.info.secondsLength;
                         Console.WriteLine(
-                            Math.Round(progress * 10000) / 100 +
-                            "\tNotes drawn: " + renderer.renderer.LastNoteCount +
-                            "\tRender FPS: " + Math.Round(settings.liveFps) + "        "
+                            new TimeSpan(0, 0, (int)(timewatch.ElapsedMilliseconds / 1000)) +
+                            " " + Math.Round(progress * 10000) / 100 +
+                            "%\tRender FPS: " + Math.Round(settings.liveFps) +
+                            "\tNotes drawn: " + renderer.renderer.LastNoteCount
                             );
                     }
                     catch
@@ -1027,6 +1028,11 @@ namespace Zenith_MIDI
             ZenithUpdates.KillAllProcesses();
             Process.Start(ZenithUpdates.InstallerPath, "update -Reopen");
             Close();
+        }
+
+        private void StackPanel_DragOver(object sender, DragEventArgs e)
+        {
+
         }
     }
 
