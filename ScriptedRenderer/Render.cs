@@ -47,7 +47,6 @@ namespace ScriptedRender
 
         public NoteColor[][] NoteColors { get; set; }
         public double Tempo { get; set; }
-        public MidiInfo CurrentMidi { get; set; }
 
         #region Shaders
         string quadShaderVert = @"#version 330 core
@@ -294,14 +293,14 @@ void main()
                 midiTime = midiTime,
                 noteScreenTime = settings.deltaTimeOnScreen,
 
-                renderFPS = renderSettings.fps,
-                renderWidth = renderSettings.width,
-                renderHeight = renderSettings.height,
-                renderSSAA = renderSettings.downscale,
-                renderAspectRatio = renderSettings.width / (double)renderSettings.height,
+                renderFPS = renderSettings.FPS,
+                renderWidth = renderSettings.PixelWidth,
+                renderHeight = renderSettings.PixelHeight,
+                renderSSAA = renderSettings.SSAA,
+                renderAspectRatio = renderSettings.PixelWidth / (double)renderSettings.PixelHeight,
 
                 midiPPQ = CurrentMidi.division,
-                midiTimeBased = renderSettings.timeBasedNotes,
+                midiTimeBased = renderSettings.TimeBased,
                 midiTimeSignature = CurrentMidi.timeSig,
                 midiBarLength = CurrentMidi.division * CurrentMidi.timeSig.numerator / CurrentMidi.timeSig.denominator * 4
             };
@@ -472,7 +471,7 @@ void main()
             IO.getTextSize = (Font f, string t) =>
             {
                 var bb = f.engine.GetBoundBox(t);
-                return bb.Width / (double)bb.Height / renderSettings.width * renderSettings.height;
+                return bb.Width / (double)bb.Height / renderSettings.PixelWidth * renderSettings.PixelHeight;
             };
             IO.renderText = (double left, double bottom, double height, Color4 color, Font f, string text) =>
             {
@@ -482,7 +481,7 @@ void main()
 
                 var size = f.engine.GetBoundBox(text);
                 Matrix4 transform = Matrix4.Identity;
-                transform = Matrix4.Mult(transform, Matrix4.CreateScale(1.0f / renderSettings.width * renderSettings.height / f.fontPixelSize * (float)height, -1.0f / f.fontPixelSize * (float)height, 1.0f));
+                transform = Matrix4.Mult(transform, Matrix4.CreateScale(1.0f / renderSettings.PixelWidth * renderSettings.PixelHeight / f.fontPixelSize * (float)height, -1.0f / f.fontPixelSize * (float)height, 1.0f));
                 transform = Matrix4.Mult(transform, Matrix4.CreateTranslation((float)left * 2 - 1, (float)(bottom + height * 0.7) * 2 - 1, 0));
                 
                 f.engine.Render(text, transform, color);
@@ -532,7 +531,7 @@ void main()
             OpenTK.Graphics.OpenGL4.GL.BlendEquationSeparate(OpenTK.Graphics.OpenGL4.BlendEquationMode.FuncAdd, OpenTK.Graphics.OpenGL4.BlendEquationMode.FuncAdd);
             OpenTK.Graphics.OpenGL4.GL.BlendFuncSeparate(OpenTK.Graphics.OpenGL4.BlendingFactorSrc.SrcAlpha, OpenTK.Graphics.OpenGL4.BlendingFactorDest.OneMinusSrcAlpha, OpenTK.Graphics.OpenGL4.BlendingFactorSrc.One, OpenTK.Graphics.OpenGL4.BlendingFactorDest.One);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, finalCompositeBuff);
-            GL.Viewport(0, 0, renderSettings.width, renderSettings.height);
+            GL.Viewport(0, 0, renderSettings.PixelWidth, renderSettings.PixelHeight);
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
             #region Vars
@@ -787,8 +786,8 @@ void main()
                 {
                     if (NoteColors[i][j].isDefault)
                     {
-                        NoteColors[i][j].left = cols[i * 32 + j * 2];
-                        NoteColors[i][j].right = cols[i * 32 + j * 2 + 1];
+                        NoteColors[i][j].Left = cols[i * 32 + j * 2];
+                        NoteColors[i][j].Right = cols[i * 32 + j * 2 + 1];
                     }
                 }
             }

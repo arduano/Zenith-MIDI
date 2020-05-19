@@ -52,8 +52,6 @@ namespace NoteCountRender
 
         public NoteColor[][] NoteColors { get; set; }
 
-        public MidiInfo CurrentMidi { get; set; }
-
         public double NoteScreenTime => 0;
 
         public long LastNoteCount { get; set; } = 0;
@@ -126,7 +124,7 @@ namespace NoteCountRender
         {
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, finalCompositeBuff);
 
-            GL.Viewport(0, 0, renderSettings.width, renderSettings.height);
+            GL.Viewport(0, 0, renderSettings.PixelWidth, renderSettings.PixelHeight);
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
@@ -178,7 +176,7 @@ namespace NoteCountRender
                     }
                 LastNoteCount = nc;
                 notesHit.AddLast(currentNotes);
-                while (notesHit.Count > renderSettings.fps) notesHit.RemoveFirst();
+                while (notesHit.Count > renderSettings.FPS) notesHit.RemoveFirst();
                 nps = notesHit.Sum();
                 if (Mnps < nps) Mnps = nps;
                 if (Mplph < polyphony) Mplph = polyphony;
@@ -187,9 +185,9 @@ namespace NoteCountRender
 
             double tempo = Tempo;
             
-            int seconds = (int)Math.Floor((double)frames * 1000 / renderSettings.fps);
+            int seconds = (int)Math.Floor((double)frames * 1000 / renderSettings.FPS);
             int totalsec = (int)Math.Floor(CurrentMidi.secondsLength * 1000);
-            int totalframes = (int)Math.Ceiling(CurrentMidi.secondsLength * renderSettings.fps);
+            int totalframes = (int)Math.Ceiling(CurrentMidi.secondsLength * renderSettings.FPS);
             if (seconds > totalsec) seconds = totalsec;
             TimeSpan time = new TimeSpan(0, 0, 0, 0, seconds);
             TimeSpan totaltime = new TimeSpan(0, 0, 0, 0, totalsec);
@@ -203,7 +201,7 @@ namespace NoteCountRender
             long bar = (long)Math.Floor(limMidiTime / barDivide) + 1;
             long maxbar = (long)Math.Floor(CurrentMidi.tickLength / barDivide);
             if (bar > maxbar) bar = maxbar;
-            string fzp = new string('0', renderSettings.fps.ToString().Length);
+            string fzp = new string('0', renderSettings.FPS.ToString().Length);
             
             Func<string, Commas, string> replace = (text, separator) =>
             {
@@ -235,17 +233,17 @@ namespace NoteCountRender
                 text = text.Replace("{currsec}", ((double)(seconds / 100) / 10).ToString(sep + "0.0"));
                 text = text.Replace("{currtime}", time.ToString("mm\\:ss"));
                 text = text.Replace("{cmiltime}", time.ToString("mm\\:ss\\.fff"));
-                text = text.Replace("{cfrtime}", time.ToString("mm\\:ss") + ";" + (frames % renderSettings.fps).ToString(fzp));
+                text = text.Replace("{cfrtime}", time.ToString("mm\\:ss") + ";" + (frames % renderSettings.FPS).ToString(fzp));
 
                 text = text.Replace("{totalsec}", ((double)(totalsec / 100) / 10).ToString(sep + "0.0"));
                 text = text.Replace("{totaltime}", totaltime.ToString("mm\\:ss"));
                 text = text.Replace("{tmiltime}", totaltime.ToString("mm\\:ss\\.fff"));
-                text = text.Replace("{tfrtime}", totaltime.ToString("mm\\:ss") + ";" + (totalframes % renderSettings.fps).ToString(fzp));
+                text = text.Replace("{tfrtime}", totaltime.ToString("mm\\:ss") + ";" + (totalframes % renderSettings.FPS).ToString(fzp));
 
                 text = text.Replace("{remsec}", ((double)((totalsec - seconds) / 100) / 10).ToString(sep + "0.0"));
                 text = text.Replace("{remtime}", (totaltime - time).ToString("mm\\:ss"));
                 text = text.Replace("{rmiltime}", (totaltime - time).ToString("mm\\:ss\\.fff"));
-                text = text.Replace("{rfrtime}", (totaltime - time).ToString("mm\\:ss") + ";" + ((totalframes - frames + renderSettings.fps) % renderSettings.fps).ToString(fzp));
+                text = text.Replace("{rfrtime}", (totaltime - time).ToString("mm\\:ss") + ";" + ((totalframes - frames + renderSettings.FPS) % renderSettings.FPS).ToString(fzp));
 
                 text = text.Replace("{currticks}", (limMidiTime).ToString(sep + zeroes.tick));
                 text = text.Replace("{totalticks}", (CurrentMidi.tickLength).ToString(sep + zeroes.tick));
@@ -278,7 +276,7 @@ namespace NoteCountRender
             {
                 var size = textEngine.GetBoundBox(renderText);
                 Matrix4 transform = Matrix4.Identity;
-                transform = Matrix4.Mult(transform, Matrix4.CreateScale(1.0f / renderSettings.width, -1.0f / renderSettings.height, 1.0f));
+                transform = Matrix4.Mult(transform, Matrix4.CreateScale(1.0f / renderSettings.PixelWidth, -1.0f / renderSettings.PixelHeight, 1.0f));
                 transform = Matrix4.Mult(transform, Matrix4.CreateTranslation(-1, 1, 0));
                 transform = Matrix4.Mult(transform, Matrix4.CreateRotationZ(0));
 
@@ -293,7 +291,7 @@ namespace NoteCountRender
                     var size = textEngine.GetBoundBox(line);
                     Matrix4 transform = Matrix4.Identity;
                     transform = Matrix4.Mult(transform, Matrix4.CreateTranslation(-size.Width, offset, 0));
-                    transform = Matrix4.Mult(transform, Matrix4.CreateScale(1.0f / renderSettings.width, -1.0f / renderSettings.height, 1.0f));
+                    transform = Matrix4.Mult(transform, Matrix4.CreateScale(1.0f / renderSettings.PixelWidth, -1.0f / renderSettings.PixelHeight, 1.0f));
                     transform = Matrix4.Mult(transform, Matrix4.CreateTranslation(1, 1, 0));
                     transform = Matrix4.Mult(transform, Matrix4.CreateRotationZ(0));
                     offset += size.Height;
@@ -309,7 +307,7 @@ namespace NoteCountRender
                     var size = textEngine.GetBoundBox(line);
                     Matrix4 transform = Matrix4.Identity;
                     transform = Matrix4.Mult(transform, Matrix4.CreateTranslation(0, offset - size.Height, 0));
-                    transform = Matrix4.Mult(transform, Matrix4.CreateScale(1.0f / renderSettings.width, -1.0f / renderSettings.height, 1.0f));
+                    transform = Matrix4.Mult(transform, Matrix4.CreateScale(1.0f / renderSettings.PixelWidth, -1.0f / renderSettings.PixelHeight, 1.0f));
                     transform = Matrix4.Mult(transform, Matrix4.CreateTranslation(-1, -1, 0));
                     transform = Matrix4.Mult(transform, Matrix4.CreateRotationZ(0));
                     offset -= size.Height;
@@ -325,7 +323,7 @@ namespace NoteCountRender
                     var size = textEngine.GetBoundBox(line);
                     Matrix4 transform = Matrix4.Identity;
                     transform = Matrix4.Mult(transform, Matrix4.CreateTranslation(-size.Width, offset - size.Height, 0));
-                    transform = Matrix4.Mult(transform, Matrix4.CreateScale(1.0f / renderSettings.width, -1.0f / renderSettings.height, 1.0f));
+                    transform = Matrix4.Mult(transform, Matrix4.CreateScale(1.0f / renderSettings.PixelWidth, -1.0f / renderSettings.PixelHeight, 1.0f));
                     transform = Matrix4.Mult(transform, Matrix4.CreateTranslation(1, -1, 0));
                     transform = Matrix4.Mult(transform, Matrix4.CreateRotationZ(0));
                     offset -= size.Height;
@@ -343,7 +341,7 @@ namespace NoteCountRender
                     var size = textEngine.GetBoundBox(line);
                     Matrix4 transform = Matrix4.Identity;
                     transform = Matrix4.Mult(transform, Matrix4.CreateTranslation(-size.Width / 2, 0, 0));
-                    transform = Matrix4.Mult(transform, Matrix4.CreateScale(1.0f / renderSettings.width, -1.0f / renderSettings.height, 1.0f));
+                    transform = Matrix4.Mult(transform, Matrix4.CreateScale(1.0f / renderSettings.PixelWidth, -1.0f / renderSettings.PixelHeight, 1.0f));
                     transform = Matrix4.Mult(transform, Matrix4.CreateTranslation((dist * p++) * 2 - 1, 1, 0));
                     transform = Matrix4.Mult(transform, Matrix4.CreateRotationZ(0));
                     offset -= size.Height;
@@ -361,7 +359,7 @@ namespace NoteCountRender
                     var size = textEngine.GetBoundBox(line);
                     Matrix4 transform = Matrix4.Identity;
                     transform = Matrix4.Mult(transform, Matrix4.CreateTranslation(-size.Width / 2, -size.Height, 0));
-                    transform = Matrix4.Mult(transform, Matrix4.CreateScale(1.0f / renderSettings.width, -1.0f / renderSettings.height, 1.0f));
+                    transform = Matrix4.Mult(transform, Matrix4.CreateScale(1.0f / renderSettings.PixelWidth, -1.0f / renderSettings.PixelHeight, 1.0f));
                     transform = Matrix4.Mult(transform, Matrix4.CreateTranslation((dist * p++) * 2 - 1, -1, 0));
                     transform = Matrix4.Mult(transform, Matrix4.CreateRotationZ(0));
                     offset -= size.Height;

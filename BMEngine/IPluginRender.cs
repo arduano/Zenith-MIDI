@@ -16,20 +16,17 @@ namespace ZenithEngine
         bool Initialized { get; }
         ImageSource PreviewImage { get; }
         bool ManualNoteDelete { get; }
-        double NoteCollectorOffset { get; }
 
         NoteColor[][] NoteColors { set; }
         double Tempo { set; }
         
-        MidiInfo CurrentMidi { set; }
-
         string LanguageDictName { get; }
 
-        double NoteScreenTime { get; }
+        double StartOffset { get; }
         long LastNoteCount { get; }
         Control SettingsControl { get; }
 
-        void Init();
+        void Init(MidiFile midi);
         void RenderFrame(FastList<Note> notes, double midiTime, int finalCompositeBuff);
         void ReloadTrackColors();
     }

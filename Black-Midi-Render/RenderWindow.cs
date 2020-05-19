@@ -253,49 +253,49 @@ void main()
         {
             Process ffmpeg = new Process();
             string args = "-hide_banner";
-            if (settings.includeAudio)
+            if (settings.IncludeAudio)
             {
-                double fstep = ((double)midi.division / lastTempo) * (1000000 / settings.fps);
-                double offset = -midiTime / fstep / settings.fps;
+                double fstep = ((double)midi.Division / lastTempo) * (1000000 / settings.FPS);
+                double offset = -midiTime / fstep / settings.FPS;
                 offset = Math.Round(offset * 100) / 100;
                 args = "" +
-                    " -f rawvideo -s " + settings.width / settings.downscale + "x" + settings.height / settings.downscale +
-                    " -pix_fmt rgb32 -r " + settings.fps + " -i -" +
-                    " -itsoffset " + offset.ToString().Replace(",", ".") + " -i \"" + settings.audioPath + "\"" + " -vf vflip -pix_fmt yuv420p ";
+                    " -f rawvideo -s " + settings.PixelWidth / settings.SSAA + "x" + settings.PixelHeight / settings.SSAA +
+                    " -pix_fmt rgb32 -r " + settings.FPS + " -i -" +
+                    " -itsoffset " + offset.ToString().Replace(",", ".") + " -i \"" + settings.AudioInputPath + "\"" + " -vf vflip -pix_fmt yuv420p ";
                 args += settings.CustomFFmpeg ? "" : "-vcodec libx264 -acodec aac";
             }
             else
             {
                 args = "" +
-                    " -f rawvideo -s " + settings.width / settings.downscale + "x" + settings.height / settings.downscale +
+                    " -f rawvideo -s " + settings.PixelWidth / settings.SSAA + "x" + settings.PixelHeight / settings.SSAA +
                     " -strict -2" +
-                    " -pix_fmt rgb32 -r " + settings.fps + " -i -" +
+                    " -pix_fmt rgb32 -r " + settings.FPS + " -i -" +
                     " -vf vflip -pix_fmt yuv420p ";
                 args += settings.CustomFFmpeg ? "" : "-vcodec libx264";
             }
-            if (settings.useBitrate)
+            if (settings.UseBitrate)
             {
-                args += " -b:v " + settings.bitrate + "k" +
-                    " -maxrate " + settings.bitrate + "k" +
-                    " -minrate " + settings.bitrate + "k";
+                args += " -b:v " + settings.Bitrate + "k" +
+                    " -maxrate " + settings.Bitrate + "k" +
+                    " -minrate " + settings.Bitrate + "k";
             }
             else if (settings.CustomFFmpeg)
             {
-                args += settings.ffoption;
+                args += settings.FFmpegCustomArgs;
             }
             else
             {
-                args += " -preset " + settings.crfPreset + " -crf " + settings.crf;
+                args += " -preset " + settings.RenderCRFPreset + " -crf " + settings.RenderCRF;
             }
             args += " -y \"" + path + "\"";
             ffmpeg.StartInfo = new ProcessStartInfo("ffmpeg", args);
             ffmpeg.StartInfo.RedirectStandardInput = true;
             ffmpeg.StartInfo.UseShellExecute = false;
-            ffmpeg.StartInfo.RedirectStandardError = !settings.ffmpegDebug;
+            ffmpeg.StartInfo.RedirectStandardError = !settings.FFmpegDebug;
             try
             {
                 ffmpeg.Start();
-                if (!settings.ffmpegDebug)
+                if (!settings.FFmpegDebug)
                 {
                     Console.OpenStandardOutput();
                     Regex messageMatch = new Regex("\\[.*@.*\\]");
@@ -312,7 +312,7 @@ void main()
                             Console.ForegroundColor = ConsoleColor.Red;
                             Console.WriteLine("An error occured in FFMPEG, closing!");
                             Console.ResetColor();
-                            settings.running = false;
+                            settings.Running = false;
                         }
                         if (messageMatch.IsMatch(e.Data))
                         {
@@ -325,7 +325,7 @@ void main()
             catch (Exception ex)
             {
                 MessageBox.Show("There was an error starting the ffmpeg process\nNo video will be written\n(Is ffmpeg.exe in the same folder as this program?)\n\n\"" + ex.Message + "\"");
-                settings.ffRender = false;
+                settings.IsRendering = false;
             }
             return ffmpeg;
         }
@@ -340,19 +340,18 @@ void main()
         public RenderWindow(CurrentRendererPointer renderer, MidiFile midi, RenderSettings settings) : base(16, 9, new GraphicsMode(new ColorFormat(8, 8, 8, 8)), "Render", GameWindowFlags.Default, DisplayDevice.Default)
         {
             Width = (int)(DisplayDevice.Default.Width / 1.5);
-            Height = (int)((double)Width / settings.width * settings.height);
+            Height = (int)((double)Width / settings.PixelWidth * settings.PixelHeight);
             Location = new Point((DisplayDevice.Default.Width - Width) / 2, (DisplayDevice.Default.Height - Height) / 2);
             //textEngine = new GLTextEngine();
             render = renderer;
             this.settings = settings;
-            lastTempo = midi.zerothTempo;
             lock (render)
             {
-                render.renderer.Tempo = 60000000.0 / midi.zerothTempo;
-                midiTime = -render.renderer.NoteScreenTime;
-                if (settings.timeBasedNotes) tempoFrameStep = 1000.0 / settings.fps;
-                else tempoFrameStep = ((double)midi.division / lastTempo) * (1000000 / settings.fps);
-                midiTime -= tempoFrameStep * settings.renderSecondsDelay * settings.fps;
+                render.renderer.Tempo = 60000000.0 / midi.TempoEvents[0].rawTempo;
+                midiTime = -render.renderer.StartOffset;
+                if (settings.TimeBased) tempoFrameStep = 1000.0 / settings.FPS;
+                else tempoFrameStep = ((double)midi.Division / lastTempo) * (1000000 / settings.FPS);
+                midiTime -= tempoFrameStep * settings.RenderStartDelay * settings.FPS;
             }
 
             globalDisplayNotes = midi.globalDisplayNotes;
@@ -360,20 +359,20 @@ void main()
             globalColorEvents = midi.globalColorEvents;
             globalPlaybackEvents = midi.globalPlaybackEvents;
             this.midi = midi;
-            if (settings.ffRender)
+            if (settings.IsRendering)
             {
-                pixels = new byte[settings.width * settings.height * 4 / settings.downscale / settings.downscale];
-                ffmpegvideo = startNewFF(settings.ffPath);
-                if (settings.ffRenderMask)
+                pixels = new byte[settings.PixelWidth * settings.PixelHeight * 4 / settings.SSAA / settings.SSAA];
+                ffmpegvideo = startNewFF(settings.RenderOutput);
+                if (settings.IsRenderingMask)
                 {
-                    pixelsmask = new byte[settings.width * settings.height * 4 / settings.downscale / settings.downscale];
-                    ffmpegmask = startNewFF(settings.ffMaskPath);
+                    pixelsmask = new byte[settings.PixelWidth * settings.PixelHeight * 4 / settings.SSAA / settings.SSAA];
+                    ffmpegmask = startNewFF(settings.RenderMaskOutput);
                 }
             }
 
-            finalCompositeBuff = new GLPostbuffer(settings.width, settings.height);
-            ffmpegOutputBuff = new GLPostbuffer(settings.width / settings.downscale, settings.height / settings.downscale);
-            downscaleBuff = new GLPostbuffer(settings.width / settings.downscale, settings.height / settings.downscale);
+            finalCompositeBuff = new GLPostbuffer(settings.PixelWidth, settings.PixelHeight);
+            ffmpegOutputBuff = new GLPostbuffer(settings.PixelWidth / settings.SSAA, settings.PixelHeight / settings.SSAA);
+            downscaleBuff = new GLPostbuffer(settings.PixelWidth / settings.SSAA, settings.PixelHeight / settings.SSAA);
 
             GL.GenBuffers(1, out screenQuadBuffer);
             GL.GenBuffers(1, out screenQuadIndexBuffer);
@@ -411,18 +410,19 @@ void main()
             int timeJump;
             long now;
             playbackLoopStarted = true;
-            if (settings.ffRender) return;
-            if (settings.Paused || !settings.playbackEnabled)
+            return;
+            if (settings.IsRendering) return;
+            if (settings.Paused || !settings.PreviewAudioEnabled)
             {
-                SpinWait.SpinUntil(() => !(settings.Paused || !settings.playbackEnabled));
+                SpinWait.SpinUntil(() => !(settings.Paused || !settings.PreviewAudioEnabled));
             }
             KDMAPI.ResetKDMAPIStream();
             KDMAPI.SendDirectData(0x0);
-            while (settings.running)
+            while (settings.Running)
             {
-                if (settings.Paused || !settings.playbackEnabled)
+                if (settings.Paused || !settings.PreviewAudioEnabled)
                 {
-                    SpinWait.SpinUntil(() => !(settings.Paused || !settings.playbackEnabled));
+                    SpinWait.SpinUntil(() => !(settings.Paused || !settings.PreviewAudioEnabled));
                 }
                 try
                 {
@@ -433,12 +433,12 @@ void main()
                     {
                         SpinWait.SpinUntil(() => now - 10000000 < frameStartTime);
                     }
-                    timeJump = (int)(((pe.pos - midiTime) * microsecondsPerTick / settings.tempoMultiplier - now + frameStartTime) / 10000);
+                    timeJump = (int)(((pe.time - midiTime) * microsecondsPerTick / settings.PreviewSpeed - now + frameStartTime) / 10000);
                     if (timeJump < -1000)
                         continue;
                     if (timeJump > 0)
                         Thread.Sleep(timeJump);
-                    if (settings.playSound && settings.playbackEnabled)
+                    if (settings.PreviewAudioEnabled)
                         try
                         {
                             KDMAPI.SendDirectData((uint)pe.val);
@@ -459,27 +459,27 @@ void main()
         long lastBGChangeTime = -1;
         protected override void OnRenderFrame(FrameEventArgs e)
         {
+            midi.StartPlaybackParse(0);
+
             Task.Factory.StartNew(() => PlaybackLoop(), TaskCreationOptions.LongRunning);
             SpinWait.SpinUntil(() => playbackLoopStarted);
             Stopwatch watch = new Stopwatch();
             watch.Start();
-            if (!settings.timeBasedNotes) tempoFrameStep = ((double)midi.division / lastTempo) * (1000000.0 / settings.fps);
-            lock (render)
-            {
-                lastDeltaTimeOnScreen = render.renderer.NoteScreenTime;
-                render.renderer.CurrentMidi = midi.info;
-            }
+            if (!settings.TimeBased) tempoFrameStep = ((double)midi.Division / lastTempo) * (1000000.0 / settings.FPS);
+
             int noNoteFrames = 0;
             long lastNC = 0;
             bool firstRenderer = true;
             frameStartTime = DateTime.Now.Ticks;
-            if (settings.timeBasedNotes) microsecondsPerTick = 10000;
-            else microsecondsPerTick = (long)((double)lastTempo / midi.division * 10);
-            while (settings.running && (noNoteFrames < settings.fps * 5 || midi.unendedTracks != 0))
+            if (settings.TimeBased) microsecondsPerTick = 10000;
+            else microsecondsPerTick = (long)((double)lastTempo / midi.Division * 10);
+            midi.ParseUpTo(midiTime);
+            while (settings.Running && (noNoteFrames < settings.FPS * 5 || midi.RemainingTracks != 0))
             {
-                if (!settings.Paused || settings.forceReRender)
+                midi.AdvancePlayback(midi.TimeSeconds + 1.0 / settings.FPS);
+                if (!settings.Paused)
                 {
-                    if (settings.lastBGChangeTime != lastBGChangeTime)
+                    if (settings.LastBGChangeTime != lastBGChangeTime)
                     {
                         if (settings.BGImage == null)
                         {
@@ -500,13 +500,13 @@ void main()
                                 bgTexID = -1;
                             }
                         }
-                        lastBGChangeTime = settings.lastBGChangeTime;
+                        lastBGChangeTime = settings.LastBGChangeTime;
                     }
 
                     lock (render)
                     {
-                        try
-                        {
+                        //try
+                        //{
                             if (render.disposeQueue.Count != 0)
                                 try
                                 {
@@ -527,15 +527,15 @@ void main()
                                 catch (InvalidOperationException) { }
                             if (!render.renderer.Initialized)
                             {
-                                render.renderer.Init();
-                                render.renderer.NoteColors = midi.tracks.Select(t => t.trkColors).ToArray();
+                                render.renderer.Init(midi);
+                                render.renderer.NoteColors = midi.Tracks.Select(t => t.TrackColors).ToArray();
                                 render.renderer.ReloadTrackColors();
                                 if (firstRenderer)
                                 {
                                     firstRenderer = false;
                                     midi.SetZeroColors();
                                 }
-                                render.renderer.CurrentMidi = midi.info;
+                                //render.renderer.CurrentMidi = midi.info;
                                 lock (globalDisplayNotes)
                                 {
                                     foreach (Note n in globalDisplayNotes)
@@ -545,85 +545,24 @@ void main()
                                 }
                             }
                             render.renderer.Tempo = 60000000.0 / lastTempo;
-                            lastDeltaTimeOnScreen = render.renderer.NoteScreenTime;
-                            if (settings.timeBasedNotes)
-                                SpinWait.SpinUntil(() => (midi.currentFlexSyncTime > midiTime + lastDeltaTimeOnScreen + tempoFrameStep * settings.tempoMultiplier || midi.unendedTracks == 0) || !settings.running);
-                            else
-                                SpinWait.SpinUntil(() => (midi.currentSyncTime > midiTime + lastDeltaTimeOnScreen + tempoFrameStep * settings.tempoMultiplier || midi.unendedTracks == 0) || !settings.running);
-                            if (!settings.running) break;
+                            if (!settings.Running) break;
 
-                            render.renderer.RenderFrame(globalDisplayNotes, midiTime, finalCompositeBuff.BufferID);
+                            render.renderer.RenderFrame(globalDisplayNotes, midi.PlayerPosition, finalCompositeBuff.BufferID);
                             lastNC = render.renderer.LastNoteCount;
-                            if (lastNC == 0 && midi.unendedTracks == 0) noNoteFrames++;
+                            if (lastNC == 0 && midi.RemainingTracks == 0) noNoteFrames++;
                             else noNoteFrames = 0;
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show("The renderer has crashed\n" + ex.Message + "\n" + ex.StackTrace);
-                            break;
-                        }
-                    }
-                }
-                double mv = 1;
-                if (settings.realtimePlayback)
-                {
-                    mv = (DateTime.Now.Ticks - frameStartTime) / microsecondsPerTick / tempoFrameStep;
-                    if (mv > settings.fps / 4)
-                        mv = settings.fps / 4;
-                }
-                lastMV = mv;
-                if (!settings.Paused)
-                {
-                    lock (globalTempoEvents)
-                    {
-                        while (globalTempoEvents.First != null && midiTime + (tempoFrameStep * mv * settings.tempoMultiplier) > globalTempoEvents.First.pos)
-                        {
-                            var t = globalTempoEvents.Pop();
-                            if (t.tempo == 0)
-                            {
-                                Console.WriteLine("Zero tempo event encountered, ignoring");
-                                continue;
-                            }
-                            var _t = ((t.pos) - midiTime) / (tempoFrameStep * mv * settings.tempoMultiplier);
-                            mv *= 1 - _t;
-                            if (!settings.timeBasedNotes) tempoFrameStep = ((double)midi.division / t.tempo) * (1000000.0 / settings.fps);
-                            lastTempo = t.tempo;
-                            midiTime = t.pos;
-                        }
-                    }
-                    midiTime += mv * tempoFrameStep * settings.tempoMultiplier;
-                }
-                frameStartTime = DateTime.Now.Ticks;
-                if (settings.timeBasedNotes) microsecondsPerTick = 10000;
-                else microsecondsPerTick = (long)(lastTempo / midi.division * 10);
-
-                while (globalColorEvents.First != null && globalColorEvents.First.pos < midiTime)
-                {
-                    var c = globalColorEvents.Pop();
-                    var track = c.track;
-                    if (!settings.ignoreColorEvents)
-                    {
-                        if (c.channel == 0x7F)
-                        {
-                            for (int i = 0; i < 16; i++)
-                            {
-                                c.track.trkColors[i].left = c.col1;
-                                c.track.trkColors[i].right = c.col2;
-                                c.track.trkColors[i].isDefault = false;
-                            }
-                        }
-                        else
-                        {
-                            c.track.trkColors[c.channel].left = c.col1;
-                            c.track.trkColors[c.channel].right = c.col2;
-                            c.track.trkColors[c.channel].isDefault = false;
-                        }
+                        //}
+                        //catch (Exception ex)
+                        //{
+                        //    MessageBox.Show("The renderer has crashed\n" + ex.Message + "\n" + ex.StackTrace);
+                        //    break;
+                        //}
                     }
                 }
 
                 downscaleBuff.BindBuffer();
                 GL.Clear(ClearBufferMask.ColorBufferBit);
-                GL.Viewport(0, 0, settings.width / settings.downscale, settings.height / settings.downscale);
+                GL.Viewport(0, 0, settings.PixelWidth / settings.SSAA, settings.PixelHeight / settings.SSAA);
                 if (bgTexID != -1)
                 {
                     GL.UseProgram(postShaderFlip);
@@ -631,11 +570,11 @@ void main()
                     DrawScreenQuad();
                 }
 
-                if (settings.downscale > 1)
+                if (settings.SSAA > 1)
                 {
                     GL.UseProgram(postShaderDownscale);
-                    GL.Uniform1(uDownscaleFac, (int)settings.downscale);
-                    GL.Uniform2(uDownscaleRes, new Vector2(settings.width / settings.downscale, settings.height / settings.downscale));
+                    GL.Uniform1(uDownscaleFac, (int)settings.SSAA);
+                    GL.Uniform2(uDownscaleRes, new Vector2(settings.PixelWidth / settings.SSAA, settings.PixelHeight / settings.SSAA));
                 }
                 else
                 {
@@ -645,29 +584,29 @@ void main()
                 finalCompositeBuff.BindTexture();
                 DrawScreenQuad();
 
-                if (settings.ffRender)
+                if (settings.IsRendering)
                 {
-                    if (ffmpegvideo.HasExited || (settings.ffRenderMask && ffmpegmask.HasExited))
+                    if (ffmpegvideo.HasExited || (settings.IsRenderingMask && ffmpegmask.HasExited))
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("FFMPEG process closed unexpectedly!");
                         Console.WriteLine("Use 'ffmpeg debug' for more advanced info.");
                         Console.ResetColor();
-                        settings.running = false;
+                        settings.Running = false;
                     }
 
-                    if (!settings.ffRenderMask)
+                    if (!settings.IsRenderingMask)
                         GL.UseProgram(postShader);
                     else
                         GL.UseProgram(postShaderMaskColor);
                     finalCompositeBuff.BindTexture();
                     ffmpegOutputBuff.BindBuffer();
                     GL.Clear(ClearBufferMask.ColorBufferBit);
-                    GL.Viewport(0, 0, settings.width / settings.downscale, settings.height / settings.downscale);
+                    GL.Viewport(0, 0, settings.PixelWidth / settings.SSAA, settings.PixelHeight / settings.SSAA);
                     downscaleBuff.BindTexture();
                     DrawScreenQuad();
                     IntPtr unmanagedPointer = Marshal.AllocHGlobal(pixels.Length);
-                    GL.ReadPixels(0, 0, settings.width / settings.downscale, settings.height / settings.downscale, PixelFormat.Bgra, PixelType.UnsignedByte, unmanagedPointer);
+                    GL.ReadPixels(0, 0, settings.PixelWidth / settings.SSAA, settings.PixelHeight / settings.SSAA, PixelFormat.Bgra, PixelType.UnsignedByte, unmanagedPointer);
                     Marshal.Copy(unmanagedPointer, pixels, 0, pixels.Length);
 
                     if (lastRenderPush != null) lastRenderPush.GetAwaiter().GetResult();
@@ -677,17 +616,17 @@ void main()
                     });
                     Marshal.FreeHGlobal(unmanagedPointer);
 
-                    if (settings.ffRenderMask)
+                    if (settings.IsRenderingMask)
                     {
                         if (lastRenderPushMask != null) lastRenderPushMask.GetAwaiter().GetResult();
                         GL.UseProgram(postShaderMask);
                         ffmpegOutputBuff.BindBuffer();
                         GL.Clear(ClearBufferMask.ColorBufferBit);
-                        GL.Viewport(0, 0, settings.width / settings.downscale, settings.height / settings.downscale);
+                        GL.Viewport(0, 0, settings.PixelWidth / settings.SSAA, settings.PixelHeight / settings.SSAA);
                         downscaleBuff.BindTexture();
                         DrawScreenQuad();
                         unmanagedPointer = Marshal.AllocHGlobal(pixelsmask.Length);
-                        GL.ReadPixels(0, 0, settings.width / settings.downscale, settings.height / settings.downscale, PixelFormat.Bgra, PixelType.UnsignedByte, unmanagedPointer);
+                        GL.ReadPixels(0, 0, settings.PixelWidth / settings.SSAA, settings.PixelHeight / settings.SSAA, PixelFormat.Bgra, PixelType.UnsignedByte, unmanagedPointer);
                         Marshal.Copy(unmanagedPointer, pixelsmask, 0, pixelsmask.Length);
 
                         if (lastRenderPush != null) lastRenderPush.GetAwaiter().GetResult();
@@ -708,8 +647,8 @@ void main()
                 downscaleBuff.BindTexture();
                 DrawScreenQuad();
                 GLPostbuffer.UnbindTextures();
-                if (settings.ffRender) VSync = VSyncMode.Off;
-                else if (settings.vsync) VSync = VSyncMode.On;
+                if (settings.IsRendering) VSync = VSyncMode.Off;
+                else if (settings.VSync) VSync = VSyncMode.On;
                 else VSync = VSyncMode.Off;
                 try
                 {
@@ -721,18 +660,18 @@ void main()
                 }
                 ProcessEvents();
                 double fr = 10000000.0 / watch.ElapsedTicks;
-                settings.liveFps = (settings.liveFps * 2 + fr) / 3;
+                settings.CurrentFPS = (settings.CurrentFPS * 2 + fr) / 3;
                 watch.Reset();
                 watch.Start();
             }
             Console.WriteLine("Left render loop");
-            settings.running = false;
-            if (settings.ffRender)
+            settings.Running = false;
+            if (settings.IsRendering)
             {
                 if (lastRenderPush != null) lastRenderPush.GetAwaiter().GetResult();
                 ffmpegvideo.StandardInput.Close();
                 ffmpegvideo.Close();
-                if (settings.ffRenderMask)
+                if (settings.IsRenderingMask)
                 {
                     if (lastRenderPushMask != null) lastRenderPushMask.GetAwaiter().GetResult();
                     ffmpegmask.StandardInput.Close();
@@ -766,10 +705,10 @@ void main()
             globalColorEvents = null;
             pixels = null;
             pixelsmask = null;
-            if (settings.ffRender)
+            if (settings.IsRendering)
             {
                 ffmpegvideo.Dispose();
-                if (settings.ffRenderMask) ffmpegmask.Dispose();
+                if (settings.IsRenderingMask) ffmpegmask.Dispose();
             }
             ffmpegvideo = null;
             ffmpegmask = null;
@@ -799,47 +738,47 @@ void main()
         protected override void OnKeyDown(KeyboardKeyEventArgs e)
         {
             base.OnKeyDown(e);
-            if (e.Key == Key.Space && !settings.ffRender) settings.Paused = !settings.Paused;
-            if (e.Key == Key.Right && !settings.ffRender)
-            {
-                int skip = 5000;
-                if (e.Modifiers == KeyModifiers.Control) skip = 20000;
-                if (e.Modifiers == KeyModifiers.Shift) skip = 60000;
-                if (settings.timeBasedNotes) midiTime += skip;
-                else
-                {
-                    lock (midi)
-                    {
-                        double timeSkipped = 0;
-                        for (; timeSkipped < skip; midiTime++)
-                        {
-                            midi.ParseUpTo(midiTime);
-                            timeSkipped += 1 / midi.tempoTickMultiplier;
-                        }
-                    }
-                }
-            }
-            if (e.Key == Key.Enter)
-            {
-                if (WindowState != WindowState.Fullscreen)
-                    WindowState = WindowState.Fullscreen;
-                else
-                    WindowState = WindowState.Normal;
-            }
+            //if (e.Key == Key.Space && !settings.IsRendering) settings.Paused = !settings.Paused;
+            //if (e.Key == Key.Right && !settings.IsRendering)
+            //{
+            //    int skip = 5000;
+            //    if (e.Modifiers == KeyModifiers.Control) skip = 20000;
+            //    if (e.Modifiers == KeyModifiers.Shift) skip = 60000;
+            //    if (settings.TimeBased) midiTime += skip;
+            //    else
+            //    {
+            //        lock (midi)
+            //        {
+            //            double timeSkipped = 0;
+            //            for (; timeSkipped < skip; midiTime++)
+            //            {
+            //                midi.ParseUpTo(midiTime);
+            //                timeSkipped += 1 / midi.tempoTickMultiplier;
+            //            }
+            //        }
+            //    }
+            //}
+            //if (e.Key == Key.Enter)
+            //{
+            //    if (WindowState != WindowState.Fullscreen)
+            //        WindowState = WindowState.Fullscreen;
+            //    else
+            //        WindowState = WindowState.Normal;
+            //}
         }
 
         protected override void OnClosing(CancelEventArgs e)
         {
             base.OnClosing(e);
 
-            settings.running = false;
+            settings.Running = false;
         }
 
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
 
-            settings.running = false;
+            settings.Running = false;
         }
 
         void DrawScreenQuad()

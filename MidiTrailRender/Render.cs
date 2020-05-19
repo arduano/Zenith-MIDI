@@ -210,8 +210,6 @@ void main()
 
         public double Tempo { get; set; }
 
-        public MidiInfo CurrentMidi { get; set; }
-
         public double NoteScreenTime => settings.viewdist * settings.deltaTimeOnScreen;
 
         public NoteColor[][] NoteColors { get; set; }
@@ -375,7 +373,7 @@ void main()
             uNoteMVP = GL.GetUniformLocation(noteShader, "MVP");
             uCircleMVP = GL.GetUniformLocation(circleShader, "MVP");
 
-            GLUtils.GenFrameBufferTexture3d(renderSettings.width, renderSettings.height, out buffer3dbuf, out buffer3dtex, out buffer3dbufdepth);
+            GLUtils.GenFrameBufferTexture3d(renderSettings.PixelWidth, renderSettings.PixelHeight, out buffer3dbuf, out buffer3dtex, out buffer3dbufdepth);
 
             util = new Util();
             Initialized = true;
@@ -879,7 +877,7 @@ void main()
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, buffer3dbuf);
-            GL.Viewport(0, 0, renderSettings.width, renderSettings.height);
+            GL.Viewport(0, 0, renderSettings.PixelWidth, renderSettings.PixelHeight);
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
@@ -894,7 +892,7 @@ void main()
             useVel = settings.useVel;
             changeSize = settings.notesChangeSize;
             changeTint = settings.notesChangeTint;
-            tempoFrameStep = 1 / (60000000 / Tempo / CurrentMidi.division) * (1000000.0 / renderSettings.fps);
+            tempoFrameStep = 1 / (60000000 / Tempo / CurrentMidi.division) * (1000000.0 / renderSettings.FPS);
             eatNotes = settings.eatNotes;
             auraStrength = (float)settings.auraStrength;
             auraEnabled = settings.auraEnabled;
@@ -902,7 +900,7 @@ void main()
             tiltKeys = settings.tiltKeys;
 
             fov = settings.FOV;
-            aspect = (double)renderSettings.width / renderSettings.height;
+            aspect = (double)renderSettings.PixelWidth / renderSettings.PixelHeight;
             viewdist = settings.viewdist;
             viewback = settings.viewback;
             viewheight = settings.viewHeight;
@@ -993,7 +991,7 @@ void main()
 
             double renderCutoff = midiTime + deltaTimeOnScreen;
             double renderStart = midiTime + NoteCollectorOffset;
-            double maxAuraLen = tempoFrameStep * renderSettings.fps;
+            double maxAuraLen = tempoFrameStep * renderSettings.FPS;
 
             if (blockNotes)
             {
@@ -1006,8 +1004,8 @@ void main()
                             nc++;
                             int k = n.key;
                             if (!(k >= firstNote && k < lastNote)) continue;
-                            Color4 coll = n.color.left;
-                            Color4 colr = n.color.right;
+                            Color4 coll = n.color.Left;
+                            Color4 colr = n.color.Right;
                             float shade = 0;
                             x1d = x1array[k] - 0.5;
                             wdthd = wdtharray[k];
@@ -1118,8 +1116,8 @@ void main()
                             nc++;
                             int k = n.key;
                             if (!(k >= firstNote && k < lastNote)) continue;
-                            Color4 coll = n.color.left;
-                            Color4 colr = n.color.right;
+                            Color4 coll = n.color.Left;
+                            Color4 colr = n.color.Right;
                             float shade = 0;
                             x1d = x1array[k] - 0.5;
                             wdthd = wdtharray[k];
@@ -1226,8 +1224,8 @@ void main()
                             nc++;
                             int k = n.key;
                             if (!(k >= firstNote && k < lastNote)) continue;
-                            Color4 coll = n.color.left;
-                            Color4 colr = n.color.right;
+                            Color4 coll = n.color.Left;
+                            Color4 colr = n.color.Right;
                             float shade = 0;
 
                             x1d = x1array[k] - 0.5;
@@ -1779,8 +1777,8 @@ void main()
                 {
                     if (NoteColors[i][j].isDefault)
                     {
-                        NoteColors[i][j].left = cols[i * 32 + j * 2];
-                        NoteColors[i][j].right = cols[i * 32 + j * 2 + 1];
+                        NoteColors[i][j].Left = cols[i * 32 + j * 2];
+                        NoteColors[i][j].Right = cols[i * 32 + j * 2 + 1];
                     }
                 }
             }

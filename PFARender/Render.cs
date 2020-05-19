@@ -103,8 +103,6 @@ void main()
 
         public long LastNoteCount { get; private set; }
 
-        public MidiInfo CurrentMidi { get; set; }
-
         public NoteColor[][] NoteColors { get; set; }
 
         public double NoteScreenTime => settings.deltaTimeOnScreen;
@@ -224,7 +222,7 @@ void main()
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, finalCompositeBuff);
-            GL.Viewport(0, 0, renderSettings.width, renderSettings.height);
+            GL.Viewport(0, 0, renderSettings.PixelWidth, renderSettings.PixelHeight);
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
             GL.UseProgram(noteShader);
@@ -242,7 +240,7 @@ void main()
             double pianoHeight = settings.pianoHeight;
             bool sameWidth = settings.sameWidthNotes;
             bool blackNotesAbove = settings.blackNotesAbove;
-            double scwidth = renderSettings.width;
+            double scwidth = renderSettings.PixelWidth;
             Color4[] keyColors = new Color4[514];
             bool[] keyPressed = new bool[257];
             for (int i = 0; i < 514; i++) keyColors[i] = Color4.Transparent;
@@ -255,7 +253,7 @@ void main()
             double wdth;
             float r, g, b, a, r2, g2, b2, a2, r3, g3, b3, a3;
             double paddingx = 0.001 * settings.borderWidth;
-            double paddingy = paddingx * renderSettings.width / renderSettings.height;
+            double paddingy = paddingx * renderSettings.PixelWidth / renderSettings.PixelHeight;
 
             double[] x1array = new double[257];
             double[] wdtharray = new double[257];
@@ -323,8 +321,8 @@ void main()
                             int k = n.key;
                             if (!(k >= firstNote && k < lastNote) || (blackKeys[k] && blackNotesAbove)) continue;
                             nc++;
-                            Color4 coll = n.color.left;
-                            Color4 colr = n.color.right;
+                            Color4 coll = n.color.Left;
+                            Color4 colr = n.color.Right;
                             if (n.start < midiTime)
                             {
                                 Color4 origcoll = keyColors[k * 2];
@@ -473,8 +471,8 @@ void main()
                                 int k = n.key;
                                 if (!(k >= firstNote && k < lastNote) || !blackKeys[k]) continue;
                                 nc++;
-                                Color4 coll = n.color.left;
-                                Color4 colr = n.color.right;
+                                Color4 coll = n.color.Left;
+                                Color4 colr = n.color.Right;
                                 if (n.start < midiTime)
                                 {
                                     keyColors[k * 2] = coll;
@@ -1118,12 +1116,12 @@ void main()
                     if (keyPressed[n])
                     {
                         _y2 = wEndDownT + wdth / 4;
-                        _y1 = _y2 + _wdth / 4.0 * 2.0 / renderSettings.height * renderSettings.width;
+                        _y1 = _y2 + _wdth / 4.0 * 2.0 / renderSettings.PixelHeight * renderSettings.PixelWidth;
                     }
                     else
                     {
                         _y2 = wEndUpT + _wdth / 4;
-                        _y1 = _y2 + wdth / 4.0 * 2.0 / renderSettings.height * renderSettings.width;
+                        _y1 = _y2 + wdth / 4.0 * 2.0 / renderSettings.PixelHeight * renderSettings.PixelWidth;
                     }
                     //Key End Notch 
                     pos = quadBufferPos * 8;
@@ -1835,8 +1833,8 @@ void main()
                 {
                     if (NoteColors[i][j].isDefault)
                     {
-                        NoteColors[i][j].left = cols[i * 32 + j * 2];
-                        NoteColors[i][j].right = cols[i * 32 + j * 2 + 1];
+                        NoteColors[i][j].Left = cols[i * 32 + j * 2];
+                        NoteColors[i][j].Right = cols[i * 32 + j * 2 + 1];
                     }
                 }
             }

@@ -89,8 +89,6 @@ void main()
 
         public NoteColor[][] NoteColors { get; set; }
 
-        public MidiInfo CurrentMidi { get; set; }
-
         public bool ManualNoteDelete => false;
 
         public double NoteCollectorOffset => 0;
@@ -222,8 +220,8 @@ void main()
                 {
                     if (NoteColors[i][j].isDefault)
                     {
-                        NoteColors[i][j].left = cols[i * 32 + j * 2];
-                        NoteColors[i][j].right = cols[i * 32 + j * 2 + 1];
+                        NoteColors[i][j].Left = cols[i * 32 + j * 2];
+                        NoteColors[i][j].Right = cols[i * 32 + j * 2 + 1];
                     }
                 }
             }
@@ -248,7 +246,7 @@ void main()
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, finalCompositeBuff);
-            GL.Viewport(0, 0, renderSettings.width, renderSettings.height);
+            GL.Viewport(0, 0, renderSettings.PixelWidth, renderSettings.PixelHeight);
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
             GL.UseProgram(noteShader);
@@ -318,7 +316,7 @@ void main()
                 }
             }
             double paddingx = wdtharray[5] * 0.1;
-            double paddingy = paddingx * renderSettings.width / renderSettings.height;
+            double paddingy = paddingx * renderSettings.PixelWidth / renderSettings.PixelHeight;
 
             #endregion
 
@@ -344,8 +342,8 @@ void main()
                                 nc++;
                                 int k = n.key;
                                 if (!(k >= firstNote && k < lastNote)) continue;
-                                Color4 coll = n.color.left;
-                                Color4 colr = n.color.right;
+                                Color4 coll = n.color.Left;
+                                Color4 colr = n.color.Right;
                                 if (n.start <= midiTime)
                                 {
                                     Color4 origcoll = keyColors[k * 2];

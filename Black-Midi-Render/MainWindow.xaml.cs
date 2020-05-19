@@ -404,11 +404,11 @@ namespace Zenith_MIDI
 
         void InitialiseSettingsValues()
         {
-            viewWidth.Value = settings.width;
-            viewHeight.Value = settings.height;
-            viewFps.Value = settings.fps;
-            vsyncEnabled.IsChecked = settings.vsync;
-            tempoMultSlider.Value = settings.tempoMultiplier;
+            viewWidth.Value = settings.PixelWidth;
+            viewHeight.Value = settings.PixelHeight;
+            viewFps.Value = settings.FPS;
+            vsyncEnabled.IsChecked = settings.VSync;
+            tempoMultSlider.Value = settings.PreviewSpeed;
 
             ReloadPlugins();
         }
@@ -437,20 +437,21 @@ namespace Zenith_MIDI
             double lastWinTime = double.NaN;
             bool tryToParse()
             {
+                return true;
                 lock (midifile)
                 {
-                    return (midifile.ParseUpTo(
-                        (win.midiTime + win.lastDeltaTimeOnScreen +
-                        (win.tempoFrameStep * 20 * settings.tempoMultiplier * (win.lastMV > 1 ? win.lastMV : 1))))
-                        || nc != 0) && settings.running;
+                    //return (midifile.ParseUpTo(midifile.TimeSeconds + 10)
+                    //    || nc != 0) && settings.Running;
                 }
             }
             try
             {
                 while (tryToParse())
                 {
+                    Thread.Sleep(1000);
+                    continue;
                     //SpinWait.SpinUntil(() => lastWinTime != win.midiTime || render != renderer.renderer || !settings.running);
-                    if (!settings.running) break;
+                    if (!settings.Running) break;
                     Note n;
                     double cutoffTime = win.midiTime;
                     bool manualDelete = false;
@@ -465,9 +466,8 @@ namespace Zenith_MIDI
                         catch
                         { }
                     manualDelete = render.ManualNoteDelete;
-                    noteCollectorOffset = render.NoteCollectorOffset;
                     cutoffTime += noteCollectorOffset;
-                    if (!settings.running) break;
+                    if (!settings.Running) break;
                     lock (midifile.globalDisplayNotes)
                     {
                         var i = midifile.globalDisplayNotes.Iterate();
@@ -490,12 +490,12 @@ namespace Zenith_MIDI
                     }
                     try
                     {
-                        double progress = win.midiTime / midifile.maxTrackTime;
-                        if (settings.timeBasedNotes) progress = win.midiTime / 1000 / midifile.info.secondsLength;
+                        double progress = win.midiTime / midifile.TickLength;
+                        if (settings.TimeBased) progress = win.midiTime / 1000 / midifile.SecondsLength;
                         Console.WriteLine(
                             Math.Round(progress * 10000) / 100 +
                             "\tNotes drawn: " + renderer.renderer.LastNoteCount +
-                            "\tRender FPS: " + Math.Round(settings.liveFps) + "        "
+                            "\tRender FPS: " + Math.Round(settings.CurrentFPS) + "        "
                             );
                     }
                     catch
@@ -510,10 +510,10 @@ namespace Zenith_MIDI
                     s.Start();
                     SpinWait.SpinUntil(() =>
                     (
-                        (s.ElapsedMilliseconds > 1000.0 / settings.fps * 30 && false) ||
+                        (s.ElapsedMilliseconds > 1000.0 / settings.FPS * 30 && false) ||
                         (win.midiTime + win.lastDeltaTimeOnScreen +
-                        (win.tempoFrameStep * 10 * settings.tempoMultiplier * (win.lastMV > 1 ? win.lastMV : 1))) > midifile.currentSyncTime ||
-                        lastWinTime != win.midiTime || render != renderer.renderer || !settings.running
+                        (win.tempoFrameStep * 10 * settings.PreviewSpeed * (win.lastMV > 1 ? win.lastMV : 1))) > midifile.TimeTicksFractional ||
+                        lastWinTime != win.midiTime || render != renderer.renderer || !settings.Running
                     )
                     ); ;
                 }
@@ -521,10 +521,10 @@ namespace Zenith_MIDI
             catch (Exception ex)
             {
                 MessageBox.Show("An error occurred while opeining render window. Please try again.\n\n" + ex.Message + "\n" + ex.StackTrace);
-                settings.running = false;
+                settings.Running = false;
             }
             winthread.GetAwaiter().GetResult();
-            settings.running = false;
+            settings.Running = false;
             Console.WriteLine("Reset midi file");
             midifile.Reset();
             win.Dispose();
@@ -699,29 +699,29 @@ namespace Zenith_MIDI
 
             windowTabs.SelectedIndex = 4;
 
-            settings.realtimePlayback = (bool)realtimePlayback.IsChecked;
+            settings.RealtimePlayback = (bool)realtimePlayback.IsChecked;
 
-            settings.running = true;
-            settings.width = (int)viewWidth.Value * (int)SSAAFactor.Value;
-            settings.height = (int)viewHeight.Value * (int)SSAAFactor.Value;
-            settings.downscale = (int)SSAAFactor.Value;
-            settings.fps = (int)viewFps.Value;
-            settings.ffRender = false;
+            settings.Running = true;
+            settings.PixelWidth = (int)viewWidth.Value * (int)SSAAFactor.Value;
+            settings.PixelHeight = (int)viewHeight.Value * (int)SSAAFactor.Value;
+            settings.SSAA = (int)SSAAFactor.Value;
+            settings.FPS = (int)viewFps.Value;
+            settings.IsRendering = false;
             settings.Paused = false;
-            settings.renderSecondsDelay = 0;
+            settings.RenderStartDelay = 0;
             renderThread = Task.Factory.StartNew(RunRenderWindow, TaskCreationOptions.RunContinuationsAsynchronously | TaskCreationOptions.LongRunning);
             Resources["notPreviewing"] = false;
         }
 
         private void StopButton_Click(object sender, RoutedEventArgs e)
         {
-            if (settings.running == false)
+            if (settings.Running == false)
             {
                 Resources["notRendering"] = true;
                 Resources["notPreviewing"] = true;
             }
             else
-                settings.running = false;
+                settings.Running = false;
         }
 
         private void StartRenderButton_Click(object sender, RoutedEventArgs e)
@@ -749,41 +749,41 @@ namespace Zenith_MIDI
                     return;
             }
 
-            settings.realtimePlayback = false;
+            settings.RealtimePlayback = false;
 
-            settings.running = true;
-            settings.width = (int)viewWidth.Value * (int)SSAAFactor.Value;
-            settings.height = (int)viewHeight.Value * (int)SSAAFactor.Value;
-            settings.downscale = (int)SSAAFactor.Value;
-            settings.fps = (int)viewFps.Value;
-            settings.ffRender = true;
-            settings.ffPath = videoPath.Text;
-            settings.renderSecondsDelay = (double)secondsDelay.Value;
+            settings.Running = true;
+            settings.PixelWidth = (int)viewWidth.Value * (int)SSAAFactor.Value;
+            settings.PixelHeight = (int)viewHeight.Value * (int)SSAAFactor.Value;
+            settings.SSAA = (int)SSAAFactor.Value;
+            settings.FPS = (int)viewFps.Value;
+            settings.IsRendering = true;
+            settings.RenderOutput = videoPath.Text;
+            settings.RenderStartDelay = (double)secondsDelay.Value;
 
             settings.Paused = false;
             previewPaused.IsChecked = false;
-            settings.tempoMultiplier = 1;
+            settings.PreviewSpeed = 1;
             tempoMultSlider.Value = 1;
 
-            settings.ffmpegDebug = (bool)ffdebug.IsChecked;
+            settings.FFmpegDebug = (bool)ffdebug.IsChecked;
 
-            settings.useBitrate = (bool)bitrateOption.IsChecked;
+            settings.UseBitrate = (bool)bitrateOption.IsChecked;
             settings.CustomFFmpeg = (bool)FFmpeg.IsChecked;
-            if (settings.useBitrate) settings.bitrate = (int)bitrate.Value;
+            if (settings.UseBitrate) settings.Bitrate = (int)bitrate.Value;
             else if (settings.CustomFFmpeg)
             {
-                settings.ffoption = FFmpegOptions.Text;
+                settings.FFmpegCustomArgs = FFmpegOptions.Text;
             }
             else
             {
-                settings.crf = (int)crfFactor.Value;
-                settings.crfPreset = (string)((ComboBoxItem)crfPreset.SelectedItem).Content;
+                settings.RenderCRF = (int)crfFactor.Value;
+                settings.RenderCRFPreset = (string)((ComboBoxItem)crfPreset.SelectedItem).Content;
             }
 
-            settings.includeAudio = (bool)includeAudio.IsChecked;
-            settings.audioPath = audioPath.Text;
-            settings.ffRenderMask = (bool)includeAlpha.IsChecked;
-            settings.ffMaskPath = alphaPath.Text;
+            settings.IncludeAudio = (bool)includeAudio.IsChecked;
+            settings.AudioInputPath = audioPath.Text;
+            settings.IsRenderingMask = (bool)includeAlpha.IsChecked;
+            settings.RenderMaskOutput = alphaPath.Text;
             renderThread = Task.Factory.StartNew(RunRenderWindow);
             Resources["notPreviewing"] = false;
             Resources["notRendering"] = false;
@@ -829,7 +829,7 @@ namespace Zenith_MIDI
         private void VsyncEnabled_Checked(object sender, RoutedEventArgs e)
         {
             if (settings == null) return;
-            settings.vsync = (bool)vsyncEnabled.IsChecked;
+            settings.VSync = (bool)vsyncEnabled.IsChecked;
         }
 
         private void Grid_KeyDown(object sender, KeyEventArgs e)
@@ -916,7 +916,7 @@ namespace Zenith_MIDI
         private void Checkbox_Checked(object sender, RoutedEventArgs e)
         {
             if (settings == null) return;
-            if (sender == realtimePlayback) settings.realtimePlayback = (bool)realtimePlayback.IsChecked;
+            if (sender == realtimePlayback) settings.RealtimePlayback = (bool)realtimePlayback.IsChecked;
         }
 
         private void DisableKDMAPI_Click(object sender, RoutedEventArgs e)
@@ -925,7 +925,7 @@ namespace Zenith_MIDI
             {
                 disableKDMAPI.Content = Resources["disableKDMAPI"];
                 OmniMIDIDisabled = false;
-                settings.playbackEnabled = true;
+                settings.PreviewAudioEnabled = true;
                 try
                 {
                     Console.WriteLine("Loading KDMAPI...");
@@ -938,7 +938,7 @@ namespace Zenith_MIDI
             {
                 disableKDMAPI.Content = Resources["enableKDMAPI"];
                 OmniMIDIDisabled = true;
-                settings.playbackEnabled = false;
+                settings.PreviewAudioEnabled = false;
                 try
                 {
                     Console.WriteLine("Unloading KDMAPI");
@@ -951,14 +951,14 @@ namespace Zenith_MIDI
         private void NoteSizeStyle_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (settings == null) return;
-            if (noteSizeStyle.SelectedIndex == 0) settings.timeBasedNotes = false;
-            if (noteSizeStyle.SelectedIndex == 1) settings.timeBasedNotes = true;
+            if (noteSizeStyle.SelectedIndex == 0) settings.TimeBased = false;
+            if (noteSizeStyle.SelectedIndex == 1) settings.TimeBased = true;
         }
 
         private void IgnoreColorEvents_Checked(object sender, RoutedEventArgs e)
         {
             if (settings == null) return;
-            settings.ignoreColorEvents = (bool)ignoreColorEvents.IsChecked;
+            settings.IgnoreColorEvents = (bool)ignoreColorEvents.IsChecked;
         }
 
         private void UseBGImage_Checked(object sender, RoutedEventArgs e)
@@ -973,7 +973,7 @@ namespace Zenith_MIDI
                 {
                     settings.BGImage = null;
                 }
-                settings.lastBGChangeTime = DateTime.Now.Ticks;
+                settings.LastBGChangeTime = DateTime.Now.Ticks;
             }
             catch { }
         }
@@ -993,7 +993,7 @@ namespace Zenith_MIDI
                 {
                     settings.BGImage = null;
                 }
-                settings.lastBGChangeTime = DateTime.Now.Ticks;
+                settings.LastBGChangeTime = DateTime.Now.Ticks;
             }
         }
 
@@ -1019,7 +1019,7 @@ namespace Zenith_MIDI
 
         private void tempoMultSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (settings != null) settings.tempoMultiplier = tempoMultSlider.Value;
+            if (settings != null) settings.PreviewSpeed = tempoMultSlider.Value;
         }
 
         private void updateDownloaded_MouseDown(object sender, MouseButtonEventArgs e)

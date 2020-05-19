@@ -14,6 +14,9 @@ using System.Windows;
 using System.IO;
 using System.Windows.Media.Imaging;
 using System.Windows.Controls;
+using ZenithEngine.GLEngine;
+using System.Runtime.InteropServices;
+using ZenithEngine.ModuleUtil;
 
 namespace FlatRender
 {
@@ -89,35 +92,22 @@ void main()
 
         public NoteColor[][] NoteColors { get; set; }
 
-        public double NoteScreenTime => settings.deltaTimeOnScreen;
-
         public double Tempo { get; set; }
 
-        public MidiInfo CurrentMidi { get; set; }
+        public double StartOffset => settings.deltaTimeOnScreen;
 
         int noteShader;
 
-        int vertexBufferID;
-        int colorBufferID;
+        ShapeBuffer<VertType> quadBuffer;
 
-        int quadBufferLength = 2048 * 2;
-        double[] quadVertexbuff;
-        float[] quadColorbuff;
-        int quadBufferPos = 0;
-
-        int indexBufferId;
-        uint[] indexes = new uint[2048 * 4 * 6];
-
-        bool[] blackKeys = new bool[257];
-        int[] keynum = new int[257];
+        MidiFile midifile = null;
 
         public void Dispose()
         {
             if (!Initialized) return;
-            GL.DeleteBuffers(3, new int[] { vertexBufferID, colorBufferID });
+            midifile = null;
             GL.DeleteProgram(noteShader);
-            quadVertexbuff = null;
-            quadColorbuff = null;
+            quadBuffer.Dispose();
             Initialized = false;
             Console.WriteLine("Disposed of FlatRender");
         }
@@ -129,18 +119,31 @@ void main()
             PreviewImage = BitmapToImageSource(Properties.Resources.preview);
             settingsControl = new SettingsCtrl(this.settings);
             ((SettingsCtrl)SettingsControl).PaletteChanged += () => { ReloadTrackColors(); };
-            for (int i = 0; i < blackKeys.Length; i++) blackKeys[i] = isBlackNote(i);
-            int b = 0;
-            int w = 0;
-            for (int i = 0; i < keynum.Length; i++)
-            {
-                if (blackKeys[i]) keynum[i] = b++;
-                else keynum[i] = w++;
-            }
         }
 
-        public void Init()
+        [StructLayoutAttribute(LayoutKind.Sequential)]
+        struct VertType
         {
+            float x;
+            float y;
+            Color4 color;
+
+            public VertType(float x, float y, Color4 color)
+            {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+            }
+        }
+        public void Init(MidiFile file)
+        {
+            midifile = file;
+
+            quadBuffer = new ShapeBuffer<VertType>(100, ShapeTypes.Triangles, ShapePresets.Quads, new[] {
+                new InputAssemblyPart(2, VertexAttribPointerType.Float, 0),
+                new InputAssemblyPart(4, VertexAttribPointerType.Float, 8),
+            });
+
             int _vertexObj = GL.CreateShader(ShaderType.VertexShader);
             int _fragObj = GL.CreateShader(ShaderType.FragmentShader);
             int statusCode;
@@ -163,38 +166,15 @@ void main()
             GL.AttachShader(noteShader, _vertexObj);
             GL.LinkProgram(noteShader);
 
-            quadVertexbuff = new double[quadBufferLength * 8];
-            quadColorbuff = new float[quadBufferLength * 16];
-
-            GL.GenBuffers(1, out vertexBufferID);
-            GL.GenBuffers(1, out colorBufferID);
-            for (uint i = 0; i < indexes.Length / 6; i++)
-            {
-                indexes[i * 6 + 0] = i * 4 + 0;
-                indexes[i * 6 + 1] = i * 4 + 1;
-                indexes[i * 6 + 2] = i * 4 + 3;
-                indexes[i * 6 + 3] = i * 4 + 1;
-                indexes[i * 6 + 4] = i * 4 + 3;
-                indexes[i * 6 + 5] = i * 4 + 2;
-            }
-
-            GL.GenBuffers(1, out indexBufferId);
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferId);
-            GL.BufferData(
-                BufferTarget.ElementArrayBuffer,
-                (IntPtr)(indexes.Length * 4),
-                indexes,
-                BufferUsageHint.StaticDraw);
             Initialized = true;
             Console.WriteLine("Initialised FlatRender");
         }
 
         public void RenderFrame(FastList<Note> notes, double midiTime, int finalCompositeBuff)
         {
+            midifile.CheckParseDistance(settings.deltaTimeOnScreen);
+
             GL.Enable(EnableCap.Blend);
-            GL.EnableClientState(ArrayCap.VertexArray);
-            GL.EnableClientState(ArrayCap.ColorArray);
-            GL.Enable(EnableCap.Texture2D);
 
             GL.EnableVertexAttribArray(0);
             GL.EnableVertexAttribArray(1);
@@ -202,389 +182,104 @@ void main()
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, finalCompositeBuff);
-            GL.Viewport(0, 0, renderSettings.width, renderSettings.height);
+            GL.Viewport(0, 0, renderSettings.PixelWidth, renderSettings.PixelHeight);
             GL.Clear(ClearBufferMask.ColorBufferBit);
-            
+
             GL.UseProgram(noteShader);
 
             #region Vars
             long nc = 0;
             int firstNote = settings.firstNote;
             int lastNote = settings.lastNote;
+
+            var keyboard = new KeyboardState(firstNote, lastNote, new KeyboardParams()
+            {
+                SameWidthNotes = settings.sameWidthNotes,
+            });
+
             int kbfirstNote = settings.firstNote;
             int kblastNote = settings.lastNote;
-            if (blackKeys[firstNote]) kbfirstNote--;
-            if (blackKeys[lastNote - 1]) kblastNote++;
+            if (keyboard.BlackKey[firstNote]) kbfirstNote--;
+            if (keyboard.BlackKey[lastNote - 1]) kblastNote++;
 
-            double deltaTimeOnScreen = NoteScreenTime;
-            double pianoHeight = settings.pianoHeight;
-            bool sameWidth = settings.sameWidthNotes;
-            Color4[] keyColors = new Color4[514];
-            for (int i = 0; i < 514; i++) keyColors[i] = Color4.Transparent;
-            double wdth;
-            float r, g, b, a;
-            float r2, g2, b2, a2;
-            double x1;
-            double x2;
-            double y1;
-            double y2;
-            quadBufferPos = 0;
-
-            double[] x1array = new double[257];
-            double[] wdtharray = new double[257];
-            if (settings.sameWidthNotes)
-            {
-                for (int i = 0; i < 257; i++)
-                {
-                    x1array[i] = (float)(i - firstNote) / (lastNote - firstNote);
-                    wdtharray[i] = (float)(1.0 / (lastNote - firstNote)) + 0.0005;
-                }
-            }
-            else
-            {
-                double knmfn = keynum[firstNote];
-                double knmln = keynum[lastNote - 1];
-                if (blackKeys[firstNote]) knmfn = keynum[firstNote - 1] + 0.5;
-                if (blackKeys[lastNote - 1]) knmln = keynum[lastNote] - 0.5;
-                for (int i = 0; i < 257; i++)
-                {
-                    if (!blackKeys[i])
-                    {
-                        x1array[i] = (float)(keynum[i] - knmfn) / (knmln - knmfn + 1);
-                        wdtharray[i] = 1.0f / (knmln - knmfn + 1);
-                    }
-                    else
-                    {
-                        int _i = i + 1;
-                        wdth = 0.6f / (knmln - knmfn + 1);
-                        int bknum = keynum[i] % 5;
-                        double offset = wdth / 2;
-                        if (bknum == 0 || bknum == 2)
-                        {
-                            offset *= 1.3;
-                        }
-                        else if (bknum == 1 || bknum == 4)
-                        {
-                            offset *= 0.7;
-                        }
-                        x1array[i] = (float)(keynum[_i] - knmfn) / (knmln - knmfn + 1) - offset;
-                        wdtharray[i] = wdth + 0.0005;
-                    }
-                }
-            }
+            double screenTime = settings.deltaTimeOnScreen;
+            float pianoHeight = (float)settings.pianoHeight;
             #endregion
 
-            #region Notes
-            quadBufferPos = 0;
-            double notePosFactor = 1 / deltaTimeOnScreen * (1 - pianoHeight);
-            foreach (Note n in notes)
+            double notePosFactor = 1 / screenTime * (1 - pianoHeight);
+
+            var iter = notes.Iterate();
+            for (Note n = null; iter.MoveNext(out n);)
             {
-                double renderCutoff = midiTime + deltaTimeOnScreen;
-                if (n.end >= midiTime || !n.hasEnded)
-                { 
-                    if (n.start < renderCutoff)
-                    {
-                        if (n.key >= firstNote && n.key < lastNote)
-                        {
-                            unsafe
-                            {
-                                nc++;
-                                int k = n.key;
-                                if (!(k >= firstNote && k < lastNote)) continue;
-                                Color4 coll = n.color.left;
-                                Color4 colr = n.color.right;
-                                if (n.start < midiTime)
-                                {
-                                    Color4 origcoll = keyColors[k * 2];
-                                    Color4 origcolr = keyColors[k * 2 + 1];
-                                    float blendfac = coll.A;
-                                    float revblendfac = 1 - blendfac;
-                                    keyColors[k * 2] = new Color4(
-                                        coll.R * blendfac + origcoll.R * revblendfac,
-                                        coll.G * blendfac + origcoll.G * revblendfac,
-                                        coll.B * blendfac + origcoll.B * revblendfac,
-                                        1);
-                                    blendfac = colr.A;
-                                    revblendfac = 1 - blendfac;
-                                    keyColors[k * 2 + 1] = new Color4(
-                                        colr.R * blendfac + origcolr.R * revblendfac,
-                                        colr.G * blendfac + origcolr.G * revblendfac,
-                                        colr.B * blendfac + origcolr.B * revblendfac,
-                                        1);
-                                }
-                                x1 = x1array[k];
-                                wdth = wdtharray[k];
-                                x2 = x1 + wdth;
-                                y1 = 1 - (renderCutoff - n.end) * notePosFactor;
-                                y2 = 1 - (renderCutoff - n.start) * notePosFactor;
-                                if (!n.hasEnded)
-                                    y1 = 1;
-
-                                int pos = quadBufferPos * 8;
-                                quadVertexbuff[pos++] = x2;
-                                quadVertexbuff[pos++] = y2;
-                                quadVertexbuff[pos++] = x2;
-                                quadVertexbuff[pos++] = y1;
-                                quadVertexbuff[pos++] = x1;
-                                quadVertexbuff[pos++] = y1;
-                                quadVertexbuff[pos++] = x1;
-                                quadVertexbuff[pos++] = y2;
-
-                                pos = quadBufferPos * 16;
-                                r = coll.R;
-                                g = coll.G;
-                                b = coll.B;
-                                a = coll.A;
-                                quadColorbuff[pos++] = r;
-                                quadColorbuff[pos++] = g;
-                                quadColorbuff[pos++] = b;
-                                quadColorbuff[pos++] = a;
-                                quadColorbuff[pos++] = r;
-                                quadColorbuff[pos++] = g;
-                                quadColorbuff[pos++] = b;
-                                quadColorbuff[pos++] = a;
-                                r = colr.R;
-                                g = colr.G;
-                                b = colr.B;
-                                a = colr.A;
-                                quadColorbuff[pos++] = r;
-                                quadColorbuff[pos++] = g;
-                                quadColorbuff[pos++] = b;
-                                quadColorbuff[pos++] = a;
-                                quadColorbuff[pos++] = r;
-                                quadColorbuff[pos++] = g;
-                                quadColorbuff[pos++] = b;
-                                quadColorbuff[pos++] = a;
-
-                                quadBufferPos++;
-                            }
-                            FlushQuadBuffer();
-                        }
-                    }
-                    else break;
+                double renderCutoff = midiTime + screenTime;
+                if (n.end < midiTime && n.hasEnded)
+                {
+                    iter.Remove();
+                    continue;
                 }
+
+                if (n.start >= renderCutoff) break;
+                if (n.key < firstNote || n.key >= lastNote) continue;
+
+                if (n.start < midiTime)
+                {
+                    keyboard.BlendNote(n.key, n.color);
+                }
+
+                float left = (float)keyboard.Notes[n.key].Left;
+                float right = (float)keyboard.Notes[n.key].Right;
+                float end = (float)(1 - (renderCutoff - n.end) * notePosFactor);
+                float start = (float)(1 - (renderCutoff - n.start) * notePosFactor);
+                if (!n.hasEnded)
+                    end = 1;
+
+                quadBuffer.PushVertex(new VertType(right, start, n.color.Left));
+                quadBuffer.PushVertex(new VertType(right, end, n.color.Left));
+                quadBuffer.PushVertex(new VertType(left, end, n.color.Right));
+                quadBuffer.PushVertex(new VertType(left, start, n.color.Right));
+
+                nc++;
             }
-            FlushQuadBuffer(false);
-            quadBufferPos = 0;
 
             LastNoteCount = nc;
-            #endregion
-
-            #region Keyboard
-            y1 = pianoHeight;
-            y2 = 0;
-            Color4[] origColors = new Color4[257];
-            for (int k = kbfirstNote; k < kblastNote; k++)
-            {
-                if (isBlackNote(k))
-                    origColors[k] = Color4.Black;
-                else
-                    origColors[k] = Color4.White;
-            }
 
             for (int n = kbfirstNote; n < kblastNote; n++)
             {
-                x1 = x1array[n];
-                wdth = wdtharray[n];
-                x2 = x1 + wdth;
+                if (keyboard.BlackKey[n]) continue;
 
-                if (!blackKeys[n])
-                {
-                    y2 = 0;
-                    if (settings.sameWidthNotes)
-                    {
-                        int _n = n % 12;
-                        if (_n == 0)
-                            x2 += wdth * 0.666;
-                        else if (_n == 2)
-                        {
-                            x1 -= wdth / 3;
-                            x2 += wdth / 3;
-                        }
-                        else if (_n == 4)
-                            x1 -= wdth / 3 * 2;
-                        else if (_n == 5)
-                            x2 += wdth * 0.75;
-                        else if (_n == 7)
-                        {
-                            x1 -= wdth / 4;
-                            x2 += wdth / 2;
-                        }
-                        else if (_n == 9)
-                        {
-                            x1 -= wdth / 2;
-                            x2 += wdth / 4;
-                        }
-                        else if (_n == 11)
-                            x1 -= wdth * 0.75;
-                    }
-                }
-                else continue;
+                float left = (float)(keyboard.Keys[n].Left);
+                float right = (float)(keyboard.Keys[n].Right);
+                var coll = keyboard.Colors[n].Left;
+                var colr = keyboard.Colors[n].Right;
 
-                var coll = keyColors[n * 2];
-                var colr = keyColors[n * 2 + 1];
-                var origcol = origColors[n];
-                float blendfac = coll.A;
-                float revblendfac = 1 - blendfac;
-                coll = new Color4(
-                    coll.R * blendfac + origcol.R * revblendfac,
-                    coll.G * blendfac + origcol.G * revblendfac,
-                    coll.B * blendfac + origcol.B * revblendfac,
-                    1);
-                r = coll.R;
-                g = coll.G;
-                b = coll.B;
-                a = coll.A;
-                blendfac = colr.A;
-                revblendfac = 1 - blendfac;
-                colr = new Color4(
-                    colr.R * blendfac + origcol.R * revblendfac,
-                    colr.G * blendfac + origcol.G * revblendfac,
-                    colr.B * blendfac + origcol.B * revblendfac,
-                    1);
-                r2 = colr.R;
-                g2 = colr.G;
-                b2 = colr.B;
-                a2 = colr.A;
-
-                int pos = quadBufferPos * 8;
-                quadVertexbuff[pos++] = x1;
-                quadVertexbuff[pos++] = y2;
-                quadVertexbuff[pos++] = x2;
-                quadVertexbuff[pos++] = y2;
-                quadVertexbuff[pos++] = x2;
-                quadVertexbuff[pos++] = y1;
-                quadVertexbuff[pos++] = x1;
-                quadVertexbuff[pos++] = y1;
-
-                pos = quadBufferPos * 16;
-                quadColorbuff[pos++] = r;
-                quadColorbuff[pos++] = g;
-                quadColorbuff[pos++] = b;
-                quadColorbuff[pos++] = a;
-                quadColorbuff[pos++] = r;
-                quadColorbuff[pos++] = g;
-                quadColorbuff[pos++] = b;
-                quadColorbuff[pos++] = a;
-                quadColorbuff[pos++] = r2;
-                quadColorbuff[pos++] = g2;
-                quadColorbuff[pos++] = b2;
-                quadColorbuff[pos++] = a2;
-                quadColorbuff[pos++] = r2;
-                quadColorbuff[pos++] = g2;
-                quadColorbuff[pos++] = b2;
-                quadColorbuff[pos++] = a2;
-                quadBufferPos++;
-                FlushQuadBuffer();
+                quadBuffer.PushVertex(new VertType(left, 0, coll));
+                quadBuffer.PushVertex(new VertType(right, 0, coll));
+                quadBuffer.PushVertex(new VertType(right, pianoHeight, colr));
+                quadBuffer.PushVertex(new VertType(left, pianoHeight, colr));
             }
             for (int n = kbfirstNote; n < kblastNote; n++)
             {
-                x1 = x1array[n];
-                wdth = wdtharray[n];
-                x2 = x1 + wdth;
+                if (!keyboard.BlackKey[n]) continue;
 
-                if (blackKeys[n])
-                {
-                    y2 = pianoHeight / 10 * 3.7;
-                }
-                else continue;
+                float left = (float)(keyboard.Keys[n].Left);
+                float right = (float)(keyboard.Keys[n].Right);
+                var coll = keyboard.Colors[n].Left;
+                var colr = keyboard.Colors[n].Right;
+                float keyBottom = (float)(pianoHeight / 10 * 3.7);
 
-                var coll = keyColors[n * 2];
-                var colr = keyColors[n * 2 + 1];
-                var origcol = origColors[n];
-                float blendfac = coll.A;
-                float revblendfac = 1 - blendfac;
-                coll = new Color4(
-                    coll.R * blendfac + origcol.R * revblendfac,
-                    coll.G * blendfac + origcol.G * revblendfac,
-                    coll.B * blendfac + origcol.B * revblendfac,
-                    1);
-                r = coll.R;
-                g = coll.G;
-                b = coll.B;
-                a = coll.A;
-                blendfac = colr.A;
-                revblendfac = 1 - blendfac;
-                colr = new Color4(
-                    colr.R * blendfac + origcol.R * revblendfac,
-                    colr.G * blendfac + origcol.G * revblendfac,
-                    colr.B * blendfac + origcol.B * revblendfac,
-                    1);
-                r2 = colr.R;
-                g2 = colr.G;
-                b2 = colr.B;
-                a2 = colr.A;
-                
-                int pos = quadBufferPos * 8;
-                quadVertexbuff[pos++] = x1;
-                quadVertexbuff[pos++] = y2;
-                quadVertexbuff[pos++] = x2;
-                quadVertexbuff[pos++] = y2;
-                quadVertexbuff[pos++] = x2;
-                quadVertexbuff[pos++] = y1;
-                quadVertexbuff[pos++] = x1;
-                quadVertexbuff[pos++] = y1;
+                quadBuffer.PushVertex(new VertType(left, keyBottom, coll));
+                quadBuffer.PushVertex(new VertType(right, keyBottom, coll));
+                quadBuffer.PushVertex(new VertType(right, pianoHeight, colr));
+                quadBuffer.PushVertex(new VertType(left, pianoHeight, colr));
 
-                pos = quadBufferPos * 16;
-                quadColorbuff[pos++] = r;
-                quadColorbuff[pos++] = g;
-                quadColorbuff[pos++] = b;
-                quadColorbuff[pos++] = a;
-                quadColorbuff[pos++] = r;
-                quadColorbuff[pos++] = g;
-                quadColorbuff[pos++] = b;
-                quadColorbuff[pos++] = a;
-                quadColorbuff[pos++] = r2;
-                quadColorbuff[pos++] = g2;
-                quadColorbuff[pos++] = b2;
-                quadColorbuff[pos++] = a2;
-                quadColorbuff[pos++] = r2;
-                quadColorbuff[pos++] = g2;
-                quadColorbuff[pos++] = b2;
-                quadColorbuff[pos++] = a2;
-                quadBufferPos++;
-                FlushQuadBuffer();
             }
-            FlushQuadBuffer(false);
-            #endregion
-            
+
+            quadBuffer.Flush();
+
             GL.Disable(EnableCap.Blend);
-            GL.DisableClientState(ArrayCap.VertexArray);
-            GL.DisableClientState(ArrayCap.ColorArray);
-            GL.Disable(EnableCap.Texture2D);
 
             GL.DisableVertexAttribArray(0);
             GL.DisableVertexAttribArray(1);
-        }
-
-        void FlushQuadBuffer(bool check = true)
-        {
-            if (quadBufferPos < quadBufferLength && check) return;
-            if (quadBufferPos == 0) return;
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferID);
-            GL.BufferData(
-                BufferTarget.ArrayBuffer,
-                (IntPtr)(quadBufferPos * 8 * 8),
-                quadVertexbuff,
-                BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Double, false, 16, 0);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, colorBufferID);
-            GL.BufferData(
-                BufferTarget.ArrayBuffer,
-                (IntPtr)(quadBufferPos * 16 * 4),
-                quadColorbuff,
-                BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, 16, 0);
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferId);
-            GL.IndexPointer(IndexPointerType.Int, 1, 0);
-            GL.DrawElements(PrimitiveType.Triangles, quadBufferPos * 6, DrawElementsType.UnsignedInt, IntPtr.Zero);
-            quadBufferPos = 0;
-        }
-
-        bool isBlackNote(int n)
-        {
-            n = n % 12;
-            return n == 1 || n == 3 || n == 6 || n == 8 || n == 10;
         }
 
         public void ReloadTrackColors()
@@ -598,8 +293,8 @@ void main()
                 {
                     if (NoteColors[i][j].isDefault)
                     {
-                        NoteColors[i][j].left = cols[i * 32 + j * 2];
-                        NoteColors[i][j].right = cols[i * 32 + j * 2 + 1];
+                        NoteColors[i][j].Left = cols[i * 32 + j * 2];
+                        NoteColors[i][j].Right = cols[i * 32 + j * 2 + 1];
                     }
                 }
             }

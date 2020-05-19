@@ -250,7 +250,6 @@ void main()
         public NoteColor[][] NoteColors { get; set; }
 
         public double Tempo { get; set; }
-        public MidiInfo CurrentMidi { get; set; }
 
         public double NoteScreenTime => settings.deltaTimeOnScreen + maxTopCapSize;
 
@@ -514,7 +513,7 @@ void main()
             GL.BlendEquationSeparate(BlendEquationMode.FuncAdd, BlendEquationMode.Max);
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, finalCompositeBuff);
-            GL.Viewport(0, 0, renderSettings.width, renderSettings.height);
+            GL.Viewport(0, 0, renderSettings.PixelWidth, renderSettings.PixelHeight);
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
             #region Vars
@@ -527,7 +526,7 @@ void main()
             if (blackKeys[lastNote - 1] || (currPack.whiteKeysFullOctave && currPack.whiteKeyRightTex == null)) kblastNote++;
 
             double deltaTimeOnScreen = settings.deltaTimeOnScreen;
-            double viewAspect = (double)renderSettings.width / renderSettings.height;
+            double viewAspect = (double)renderSettings.PixelWidth / renderSettings.PixelHeight;
             double keyboardHeightFull = currPack.keyboardHeight / (lastNote - firstNote) * 128 / (1920.0 / 1080.0) * viewAspect;
             double keyboardHeight = keyboardHeightFull;
             double barHeight = keyboardHeightFull * currPack.barHeight;
@@ -543,7 +542,7 @@ void main()
             int pos;
             quadBufferPos = 0;
             bool interpolateUnendedNotes = currPack.interpolateUnendedNotes != 0;
-            float interpolateUnendedNotesVal = 1.0f / renderSettings.fps / currPack.interpolateUnendedNotes;
+            float interpolateUnendedNotesVal = 1.0f / renderSettings.FPS / currPack.interpolateUnendedNotes;
 
             if (sameWidth)
             {
@@ -658,8 +657,8 @@ void main()
                             if (blackabove && !black && blackKeys[k]) continue;
                             if (blackabove && black && !blackKeys[k]) continue;
                             if (!(k >= firstNote && k < lastNote)) continue;
-                            Color4 coll = n.color.left;
-                            Color4 colr = n.color.right;
+                            Color4 coll = n.color.Left;
+                            Color4 colr = n.color.Right;
                             if (n.start <= midiTime)
                             {
                                 Color4 origcoll = keyColors[k * 2];
@@ -1335,7 +1334,7 @@ void main()
                 else return wdtharrayKeys[0];
             }
 
-            double viewAspect = (double)renderSettings.width / renderSettings.height;
+            double viewAspect = (double)renderSettings.PixelWidth / renderSettings.PixelHeight;
             foreach (var o in currPack.OverlayTextures)
             {
                 if (o.overlayBelow != below) continue;
@@ -1450,8 +1449,8 @@ void main()
                 {
                     if (NoteColors[i][j].isDefault)
                     {
-                        NoteColors[i][j].left = cols[i * 32 + j * 2];
-                        NoteColors[i][j].right = cols[i * 32 + j * 2 + 1];
+                        NoteColors[i][j].Left = cols[i * 32 + j * 2];
+                        NoteColors[i][j].Right = cols[i * 32 + j * 2 + 1];
                     }
                 }
             }

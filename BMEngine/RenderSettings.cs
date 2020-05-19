@@ -1,6 +1,7 @@
 ﻿using OpenTK.Graphics;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -21,60 +22,52 @@ namespace ZenithEngine
         Flat
     }
 
-    public class RenderSettings
+    public class RenderSettings : INotifyPropertyChanged
     {
-        public int fps = 60;
+        public int FPS { get; set; } = 60;
 
-        public int width = 1920;
-        public int height = 1080;
-        public int downscale = 1;
+        public int PixelWidth { get; set; } = 1920;
+        public int PixelHeight { get; set; } = 1080;
+        public int SSAA { get; set; } = 1;
 
-        public bool ffRender = false;
-        public string ffPath = "";
-        public bool ffRenderMask = false;
-        public string ffMaskPath = "";
-        public bool vsync = true;
-        public double renderSecondsDelay = 0;
+        public bool IsRendering { get; set; } = false;
+        public string RenderOutput { get; set; } = "";
+        public bool IsRenderingMask { get; set; } = false;
+        public string RenderMaskOutput { get; set; } = "";
+        public bool VSync { get; set; } = true;
+        public double RenderStartDelay { get; set; } = 0;
 
-        private bool paused = false;
-        public bool forceReRender = true;
-        public double tempoMultiplier = 1;
+        public double PreviewSpeed { get; set; } = 1;
 
-        public bool includeAudio = false;
-        public string audioPath = "";
+        public bool IncludeAudio { get; set; } = false;
+        public string AudioInputPath { get; set; } = "";
 
-        public int maxTrackBufferSize = 100000;
+        public bool UseBitrate { get; set; } = true;
+        public bool CustomFFmpeg { get; set; } = false;
+        public int Bitrate { get; set; } = 20000;
+        public int RenderCRF { get; set; } = 17;
+        public string RenderCRFPreset { get; set; } = "medium";
+        public bool FFmpegDebug { get; set; } = false;
+        public string FFmpegCustomArgs { get; set; } = "";
 
-        public bool useBitrate = true;
-        public bool CustomFFmpeg = false;
-        public int bitrate = 20000;
-        public int crf = 17;
-        public string crfPreset = "medium";
-        public bool ffmpegDebug = false;
-        public string ffoption = "";
+        public bool Running { get; set; } = false;
 
-        public bool showNoteCount = false;
-        public bool showNotesRendered = false;
-        public int fontSize = 50;
-        public string font = "Arial";
+        public bool PreviewAudioEnabled { get; set; } = true;
 
-        public bool running = false;
+        public bool RealtimePlayback { get; set; } = true;
 
-        public bool playSound = true;
-        public bool playbackEnabled = true;
+        public double CurrentFPS { get; set; } = 0;
 
-        public bool realtimePlayback = true;
+        public bool TimeBased { get; set; } = false;
 
-        public double liveFps = 0;
+        public bool IgnoreColorEvents { get; set; } = false;
 
-        public bool timeBasedNotes = false;
+        public long LastBGChangeTime { get; set; } = -1;
+        public string BGImage { get; set; } = null;
 
-        public bool ignoreColorEvents = false;
-
-        public long lastBGChangeTime = -1;
-        public string BGImage = null;
 
         public event Action PauseToggled;
+        private bool paused = false;
         public bool Paused
         {
             get => paused;
@@ -84,5 +77,7 @@ namespace ZenithEngine
                 PauseToggled();
             }
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }
