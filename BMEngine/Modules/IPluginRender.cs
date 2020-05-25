@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace ZenithEngine
+namespace ZenithEngine.Modules
 {
     public interface IPluginRender : IDisposable
     {
@@ -27,7 +27,7 @@ namespace ZenithEngine
         Control SettingsControl { get; }
 
         void Init(MidiFile midi);
-        void RenderFrame(FastList<Note> notes, double midiTime, int finalCompositeBuff);
+        void RenderFrame(int finalCompositeBuff);
         void ReloadTrackColors();
     }
 }

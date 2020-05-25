@@ -28,6 +28,7 @@ using System.Windows.Interop;
 using ZenithShared;
 using System.IO;
 using System.IO.Compression;
+using ZenithEngine.Modules;
 
 namespace Zenith_MIDI
 {
@@ -468,26 +469,6 @@ namespace Zenith_MIDI
                     manualDelete = render.ManualNoteDelete;
                     cutoffTime += noteCollectorOffset;
                     if (!settings.Running) break;
-                    lock (midifile.globalDisplayNotes)
-                    {
-                        var i = midifile.globalDisplayNotes.Iterate();
-                        if (manualDelete)
-                            while (i.MoveNext(out n))
-                            {
-                                if (n.delete)
-                                    i.Remove();
-                                else
-                                    nc++;
-                            }
-                        else
-                            while (i.MoveNext(out n))
-                            {
-                                if (n.hasEnded && n.end < cutoffTime)
-                                    i.Remove();
-                                if (n.start > cutoffTime) break;
-                            }
-                        GC.Collect();
-                    }
                     try
                     {
                         double progress = win.midiTime / midifile.TickLength;

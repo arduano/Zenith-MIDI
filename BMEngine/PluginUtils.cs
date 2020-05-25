@@ -26,6 +26,5 @@ namespace ZenithEngine
                 return bitmapimage;
             }
         }
-
     }
 }

@@ -35,7 +35,14 @@ namespace ZenithEngine
     {
         public Color4 Left { get; set; }
         public Color4 Right { get; set; }
-        public bool isDefault { get; internal set; } = true;
+        internal bool isDefault { get; set; } = true;
+
+        public void Alter(Color4 left, Color4 right)
+        {
+            if (!isDefault) return;
+            Left = left;
+            Right = right;
+        }
     }
 
     public struct PlaybackEvent
@@ -102,12 +109,9 @@ namespace ZenithEngine
         public IEnumerable<TimeSignature> TimesigEvents { get => timesigEvents; }
 
         public NoteColor[] TrackColors { get; } = new NoteColor[16];
-        public NoteColor[] InitialTrackColors { get; } = new NoteColor[16];
+        NoteColor[] InitialTrackColors { get; } = new NoteColor[16];
         public double TrackSeconds { get; private set; } = 0;
 
-        FastList<Note> globalDisplayNotes;
-        FastList<ColorChange> globalColorEvents;
-        FastList<PlaybackEvent> globalPlaybackEvents;
         bool readDelta = false;
         FastList<Note>[] unendedNotes = null;
 
@@ -157,9 +161,6 @@ namespace ZenithEngine
         public MidiTrack(int id, BufferByteReader reader, MidiFile file, RenderSettings settings)
         {
             this.settings = settings;
-            globalDisplayNotes = file.globalDisplayNotes;
-            globalColorEvents = file.globalColorEvents;
-            globalPlaybackEvents = file.globalPlaybackEvents;
             midi = file;
             this.reader = reader;
             trackID = id;
@@ -300,7 +301,7 @@ namespace ZenithEngine
 
                     if (settings.PreviewAudioEnabled && (comm == 0x80 || vel > 10))
                     {
-                        globalPlaybackEvents.Add(new PlaybackEvent()
+                        midi.PlaybackEvents.Add(new PlaybackEvent()
                         {
                             time = TrackSeconds,
                             val = command | (note << 8) | (vel << 16)
@@ -333,7 +334,7 @@ namespace ZenithEngine
                         n.vel = vel;
                         n.track = trackID;
                         unendedNotes[note << 4 | channel].Add(n);
-                        globalDisplayNotes.Add(n);
+                        midi.Notes.Add(n);
                     }
                 }
                 else if (comm == 0xA0)
@@ -346,7 +347,7 @@ namespace ZenithEngine
 
                     if (settings.PreviewAudioEnabled)
                     {
-                        globalPlaybackEvents.Add(new PlaybackEvent()
+                        midi.PlaybackEvents.Add(new PlaybackEvent()
                         {
                             time = TrackSeconds,
                             val = command | (note << 8) | (vel << 16)
@@ -363,7 +364,7 @@ namespace ZenithEngine
 
                     if (settings.PreviewAudioEnabled)
                     {
-                        globalPlaybackEvents.Add(new PlaybackEvent()
+                        midi.PlaybackEvents.Add(new PlaybackEvent()
                         {
                             time = TrackSeconds,
                             val = command | (cc << 8) | (vv << 16)
@@ -379,7 +380,7 @@ namespace ZenithEngine
 
                     if (settings.PreviewAudioEnabled)
                     {
-                        globalPlaybackEvents.Add(new PlaybackEvent()
+                        midi.PlaybackEvents.Add(new PlaybackEvent()
                         {
                             time = TrackSeconds,
                             val = command | (program << 8)
@@ -395,7 +396,7 @@ namespace ZenithEngine
 
                     if (settings.PreviewAudioEnabled)
                     {
-                        globalPlaybackEvents.Add(new PlaybackEvent()
+                        midi.PlaybackEvents.Add(new PlaybackEvent()
                         {
                             time = TrackSeconds,
                             val = command | (pressure << 8)
@@ -412,7 +413,7 @@ namespace ZenithEngine
 
                     if (settings.PreviewAudioEnabled)
                     {
-                        globalPlaybackEvents.Add(new PlaybackEvent()
+                        midi.PlaybackEvents.Add(new PlaybackEvent()
                         {
                             time = TrackSeconds,
                             val = command | (l << 8) | (m << 16)
@@ -472,7 +473,7 @@ namespace ZenithEngine
                                     if (data[2] < 0x10 || data[2] == 0x7F)
                                     {
                                         var c = new ColorChange(TickTime, this, data[2], col1, col2);
-                                        globalColorEvents.Add(c);
+                                        midi.ColorChanges.Add(c);
                                     }
                                 }
                             }

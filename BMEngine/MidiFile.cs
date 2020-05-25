@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenTK.Graphics;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -27,7 +28,6 @@ namespace ZenithEngine
         public ushort Division { get; private set; }
         public int TrackCount { get; private set; }
         public ushort Format { get; private set; }
-        List<TrackPos> trackPositions = new List<TrackPos>();
 
         public MidiTrack[] Tracks { get; private set; }
 
@@ -38,12 +38,7 @@ namespace ZenithEngine
 
         RenderSettings settings;
 
-        // to delete later
-        public FastList<Note> globalDisplayNotes = new FastList<Note>();
-        public FastList<Tempo> globalTempoEvents = new FastList<Tempo>();
-        public FastList<ColorChange> globalColorEvents = new FastList<ColorChange>();
-        public FastList<PlaybackEvent> globalPlaybackEvents = new FastList<PlaybackEvent>();
-        // to delete later
+        List<TrackPos> trackPositions = new List<TrackPos>();
 
         internal double ParserTempoTickMultiplier { get; set; } = 0;
 
@@ -52,6 +47,7 @@ namespace ZenithEngine
 
         public FastList<Note> Notes { get; private set; }
         public FastList<ColorChange> ColorChanges { get; private set; }
+        public FastList<PlaybackEvent> PlaybackEvents { get; private set; }
         public Tempo Tempo { get; internal set; }
         public TimeSignature TimeSignature { get; internal set; }
 
@@ -61,8 +57,6 @@ namespace ZenithEngine
 
         public long TicksParsed { get; internal set; }
         public double SecondsParsed { get; internal set; }
-
-        public MidiFile Midi { get; internal set; }
 
         public long TickLength { get; private set; }
         public double SecondsLength { get; private set; }
@@ -233,7 +227,7 @@ namespace ZenithEngine
             while (completed.Count > 0 || tasks.Count > 0) TryTake();
         }
 
-        public void SetZeroColors()
+        void SetZeroColors()
         {
             foreach (var t in Tracks) t.SetZeroColors();
         }
@@ -247,9 +241,11 @@ namespace ZenithEngine
             EndPlaybackParse();
             Notes = new FastList<Note>();
             ColorChanges = new FastList<ColorChange>();
+            PlaybackEvents = new FastList<PlaybackEvent>();
             Tempo = TempoEvents[0];
             TimeSignature = TimeSignatureEvents[0];
             TimeSeconds = -startDelay;
+            SetZeroColors();
         }
 
         public bool ParseUpTo(double time)
@@ -323,6 +319,12 @@ namespace ZenithEngine
                 TimeSeconds += offset / multiplier;
             }
 
+            while (timesigEventId != TimeSignatureEvents.Length &&
+                TimeSignatureEvents[timesigEventId].Position < TimeTicksFractional)
+            {
+                TimeSignature = TimeSignatureEvents[timesigEventId++];
+            }
+
             return;
         }
 
@@ -330,6 +332,7 @@ namespace ZenithEngine
         {
             Notes = null;
             ColorChanges = null;
+            PlaybackEvents = null;
             Reset();
         }
         #endregion
@@ -342,6 +345,34 @@ namespace ZenithEngine
             ParseUpTo(PlayerPosition + parseDist);
         }
 
+        public int ColorCount => TrackCount * 32;
+        public void ApplyColors(Color4[] colors)
+        {
+            if (colors.Length != ColorCount) throw new Exception("Color count doesnt match");
+
+            for (int i = 0; i < Tracks.Length; i++)
+            {
+                for (int j = 0; j < Tracks[i].TrackColors.Length; j++)
+                {
+                    Tracks[i].TrackColors[j].Alter(colors[i * 32 + j * 2], colors[i * 32 + j * 2 + 1]);
+                }
+            }
+        }
+        public void ApplyColors(Color4[][] colors)
+        {
+            if (colors.Length != TrackCount) throw new Exception("Color count doesnt match");
+
+            for (int i = 0; i < Tracks.Length; i++)
+            {
+                var track = colors[i];
+                if(track.Length != 32) throw new Exception("Color count doesnt match");
+                for (int j = 0; j < 16; j++)
+                {
+                    Tracks[i].TrackColors[j].Alter(track[j * 2], track[j * 2 + 1]);
+                }
+            }
+        }
+
         #endregion
 
         #endregion
@@ -350,10 +381,6 @@ namespace ZenithEngine
         {
             tempoEventId = 0;
             timesigEventId = 0;
-            globalDisplayNotes.Unlink();
-            globalTempoEvents.Unlink();
-            globalColorEvents.Unlink();
-            globalPlaybackEvents.Unlink();
             RemainingTracks = TrackCount;
             ParserTempoTickMultiplier = (double)Division / 500000 * 1000;
             TimeSeconds = 0;

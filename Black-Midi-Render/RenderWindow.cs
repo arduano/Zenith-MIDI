@@ -210,10 +210,6 @@ void main()
             image.UnlockBits(data);
         }
 
-        FastList<Note> globalDisplayNotes;
-        FastList<Tempo> globalTempoEvents;
-        FastList<ColorChange> globalColorEvents;
-        FastList<PlaybackEvent> globalPlaybackEvents;
         MidiFile midi;
 
         RenderSettings settings;
@@ -354,10 +350,6 @@ void main()
                 midiTime -= tempoFrameStep * settings.RenderStartDelay * settings.FPS;
             }
 
-            globalDisplayNotes = midi.globalDisplayNotes;
-            globalTempoEvents = midi.globalTempoEvents;
-            globalColorEvents = midi.globalColorEvents;
-            globalPlaybackEvents = midi.globalPlaybackEvents;
             this.midi = midi;
             if (settings.IsRendering)
             {
@@ -404,52 +396,52 @@ void main()
 
         double microsecondsPerTick = 0;
         bool playbackLoopStarted = false;
-        void PlaybackLoop()
-        {
-            PlaybackEvent pe;
-            int timeJump;
-            long now;
-            playbackLoopStarted = true;
-            return;
-            if (settings.IsRendering) return;
-            if (settings.Paused || !settings.PreviewAudioEnabled)
-            {
-                SpinWait.SpinUntil(() => !(settings.Paused || !settings.PreviewAudioEnabled));
-            }
-            KDMAPI.ResetKDMAPIStream();
-            KDMAPI.SendDirectData(0x0);
-            while (settings.Running)
-            {
-                if (settings.Paused || !settings.PreviewAudioEnabled)
-                {
-                    SpinWait.SpinUntil(() => !(settings.Paused || !settings.PreviewAudioEnabled));
-                }
-                try
-                {
-                    if (globalPlaybackEvents.ZeroLen) continue;
-                    pe = globalPlaybackEvents.Pop();
-                    now = DateTime.Now.Ticks;
-                    if (now - 10000000 > frameStartTime)
-                    {
-                        SpinWait.SpinUntil(() => now - 10000000 < frameStartTime);
-                    }
-                    timeJump = (int)(((pe.time - midiTime) * microsecondsPerTick / settings.PreviewSpeed - now + frameStartTime) / 10000);
-                    if (timeJump < -1000)
-                        continue;
-                    if (timeJump > 0)
-                        Thread.Sleep(timeJump);
-                    if (settings.PreviewAudioEnabled)
-                        try
-                        {
-                            KDMAPI.SendDirectData((uint)pe.val);
-                        }
-                        catch { continue; }
-                }
-                catch { continue; }
-            }
-            KDMAPI.ResetKDMAPIStream();
-            KDMAPI.SendDirectData(0x0);
-        }
+        //void PlaybackLoop()
+        //{
+        //    PlaybackEvent pe;
+        //    int timeJump;
+        //    long now;
+        //    playbackLoopStarted = true;
+        //    return;
+        //    if (settings.IsRendering) return;
+        //    if (settings.Paused || !settings.PreviewAudioEnabled)
+        //    {
+        //        SpinWait.SpinUntil(() => !(settings.Paused || !settings.PreviewAudioEnabled));
+        //    }
+        //    KDMAPI.ResetKDMAPIStream();
+        //    KDMAPI.SendDirectData(0x0);
+        //    while (settings.Running)
+        //    {
+        //        if (settings.Paused || !settings.PreviewAudioEnabled)
+        //        {
+        //            SpinWait.SpinUntil(() => !(settings.Paused || !settings.PreviewAudioEnabled));
+        //        }
+        //        try
+        //        {
+        //            if (globalPlaybackEvents.ZeroLen) continue;
+        //            pe = globalPlaybackEvents.Pop();
+        //            now = DateTime.Now.Ticks;
+        //            if (now - 10000000 > frameStartTime)
+        //            {
+        //                SpinWait.SpinUntil(() => now - 10000000 < frameStartTime);
+        //            }
+        //            timeJump = (int)(((pe.time - midiTime) * microsecondsPerTick / settings.PreviewSpeed - now + frameStartTime) / 10000);
+        //            if (timeJump < -1000)
+        //                continue;
+        //            if (timeJump > 0)
+        //                Thread.Sleep(timeJump);
+        //            if (settings.PreviewAudioEnabled)
+        //                try
+        //                {
+        //                    KDMAPI.SendDirectData((uint)pe.val);
+        //                }
+        //                catch { continue; }
+        //        }
+        //        catch { continue; }
+        //    }
+        //    KDMAPI.ResetKDMAPIStream();
+        //    KDMAPI.SendDirectData(0x0);
+        //}
 
         double lastTempo;
         public double lastDeltaTimeOnScreen = 0;
@@ -461,8 +453,8 @@ void main()
         {
             midi.StartPlaybackParse(0);
 
-            Task.Factory.StartNew(() => PlaybackLoop(), TaskCreationOptions.LongRunning);
-            SpinWait.SpinUntil(() => playbackLoopStarted);
+            //Task.Factory.StartNew(() => PlaybackLoop(), TaskCreationOptions.LongRunning);
+            //SpinWait.SpinUntil(() => playbackLoopStarted);
             Stopwatch watch = new Stopwatch();
             watch.Start();
             if (!settings.TimeBased) tempoFrameStep = ((double)midi.Division / lastTempo) * (1000000.0 / settings.FPS);
@@ -507,50 +499,46 @@ void main()
                     {
                         //try
                         //{
-                            if (render.disposeQueue.Count != 0)
-                                try
-                                {
-                                    while (true)
-                                    {
-                                        var r = render.disposeQueue.Dequeue();
-                                        if (r.Initialized)
-                                        {
-                                            try
-                                            {
-                                                r.Dispose();
-                                            }
-                                            catch { }
-                                            GC.Collect();
-                                        }
-                                    }
-                                }
-                                catch (InvalidOperationException) { }
-                            if (!render.renderer.Initialized)
+                        if (render.disposeQueue.Count != 0)
+                            try
                             {
-                                render.renderer.Init(midi);
-                                render.renderer.NoteColors = midi.Tracks.Select(t => t.TrackColors).ToArray();
-                                render.renderer.ReloadTrackColors();
-                                if (firstRenderer)
+                                while (true)
                                 {
-                                    firstRenderer = false;
-                                    midi.SetZeroColors();
-                                }
-                                //render.renderer.CurrentMidi = midi.info;
-                                lock (globalDisplayNotes)
-                                {
-                                    foreach (Note n in globalDisplayNotes)
+                                    var r = render.disposeQueue.Dequeue();
+                                    if (r.Initialized)
                                     {
-                                        n.meta = null;
+                                        try
+                                        {
+                                            r.Dispose();
+                                        }
+                                        catch { }
+                                        GC.Collect();
                                     }
                                 }
                             }
-                            render.renderer.Tempo = 60000000.0 / lastTempo;
-                            if (!settings.Running) break;
+                            catch (InvalidOperationException) { }
+                        if (!render.renderer.Initialized)
+                        {
+                            render.renderer.Init(midi);
+                            render.renderer.NoteColors = midi.Tracks.Select(t => t.TrackColors).ToArray();
+                            render.renderer.ReloadTrackColors();
+                            if (firstRenderer)
+                            {
+                                firstRenderer = false;
+                            }
+                            //render.renderer.CurrentMidi = midi.info;
+                            foreach (Note n in midi.Notes)
+                            {
+                                n.meta = null;
+                            }
+                        }
+                        render.renderer.Tempo = 60000000.0 / lastTempo;
+                        if (!settings.Running) break;
 
-                            render.renderer.RenderFrame(globalDisplayNotes, midi.PlayerPosition, finalCompositeBuff.BufferID);
-                            lastNC = render.renderer.LastNoteCount;
-                            if (lastNC == 0 && midi.RemainingTracks == 0) noNoteFrames++;
-                            else noNoteFrames = 0;
+                        render.renderer.RenderFrame(finalCompositeBuff.BufferID);
+                        lastNC = render.renderer.LastNoteCount;
+                        if (lastNC == 0 && midi.RemainingTracks == 0) noNoteFrames++;
+                        else noNoteFrames = 0;
                         //}
                         //catch (Exception ex)
                         //{
@@ -700,9 +688,6 @@ void main()
             catch (InvalidOperationException) { }
             Console.WriteLine("Disposed of renderers");
 
-            globalDisplayNotes = null;
-            globalTempoEvents = null;
-            globalColorEvents = null;
             pixels = null;
             pixelsmask = null;
             if (settings.IsRendering)

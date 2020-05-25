@@ -117,20 +117,23 @@ namespace ZenithEngine.GLEngine
         {
             if (pos == 0) return;
             if (pos % vertsPerShape != 0) throw new Exception("Incomplete shapes");
-            GL.BindBuffer(BufferTarget.ArrayBuffer, bufferId);
-            GL.BufferData(
-                BufferTarget.ArrayBuffer,
-                (IntPtr)(pos * structByteSize),
-                verts,
-                BufferUsageHint.DynamicDraw);
-            int i = 0;
-            foreach (var part in inputParts)
+            using (new GLEnabler().UseAttribArrays(inputParts.Length))
             {
-                GL.VertexAttribPointer(i++, part.Size, part.Type, false, structByteSize, part.Offset);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, bufferId);
+                GL.BufferData(
+                    BufferTarget.ArrayBuffer,
+                    (IntPtr)(pos * structByteSize),
+                    verts,
+                    BufferUsageHint.DynamicDraw);
+                int i = 0;
+                foreach (var part in inputParts)
+                {
+                    GL.VertexAttribPointer(i++, part.Size, part.Type, false, structByteSize, part.Offset);
+                }
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferId);
+                GL.IndexPointer(IndexPointerType.Int, 1, 0);
+                GL.DrawElements(PrimitiveType.Triangles, pos * indicesPerShape, DrawElementsType.UnsignedInt, IntPtr.Zero);
             }
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferId);
-            GL.IndexPointer(IndexPointerType.Int, 1, 0);
-            GL.DrawElements(PrimitiveType.Triangles, pos * indicesPerShape, DrawElementsType.UnsignedInt, IntPtr.Zero);
             pos = 0;
         }
 

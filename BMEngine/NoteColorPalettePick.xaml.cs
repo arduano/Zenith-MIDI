@@ -186,7 +186,7 @@ namespace ZenithEngine
             PaletteChanged?.Invoke();
         }
 
-        public Color4[] GetColors(int tracks)
+        public Color4[][] GetColors(int tracks)
         {
             Random r = new Random(seed);
             double[] order = new double[tracks * 16];
@@ -200,10 +200,11 @@ namespace ZenithEngine
             {
                 Array.Sort(order, coords);
             }
-            List<Color4> cols = new List<Color4>();
+            List<Color4[]> cols = new List<Color4[]>();
             var img = images[selectedIndex];
             for (int i = 0; i < tracks; i++)
             {
+                Color4[] trackCols = new Color4[32];
                 for (int j = 0; j < 16; j++)
                 {
                     int y = coords[i * 16 + j];
@@ -212,15 +213,16 @@ namespace ZenithEngine
                     y /= 16;
                     if (img.Width == 16)
                     {
-                        cols.Add(img.GetPixel(x, y % img.Height));
-                        cols.Add(img.GetPixel(x, y % img.Height));
+                        trackCols[j * 2] = img.GetPixel(x, y % img.Height);
+                        trackCols[j * 2 + 1] = img.GetPixel(x, y % img.Height);
                     }
                     else
                     {
-                        cols.Add(img.GetPixel(x * 2, y % img.Height));
-                        cols.Add(img.GetPixel(x * 2 + 1, y % img.Height));
+                        trackCols[j * 2] = img.GetPixel(x * 2, y % img.Height);
+                        trackCols[j * 2 + 1] = img.GetPixel(x * 2 + 1, y % img.Height);
                     }
                 }
+                cols.Add(trackCols);
             }
             return cols.ToArray();
         }
