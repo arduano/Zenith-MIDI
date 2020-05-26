@@ -60,6 +60,7 @@ namespace ZenithEngine
 
         public long TickLength { get; private set; }
         public double SecondsLength { get; private set; }
+        public double TotalBars { get; private set; }
 
         public double ParserPosition => settings.TimeBased ? SecondsParsed : TicksParsed;
         public double PlayerPosition => settings.TimeBased ? TimeSeconds : TimeTicks;
@@ -322,7 +323,11 @@ namespace ZenithEngine
             while (timesigEventId != TimeSignatureEvents.Length &&
                 TimeSignatureEvents[timesigEventId].Position < TimeTicksFractional)
             {
-                TimeSignature = TimeSignatureEvents[timesigEventId++];
+                TimeSignature = TimeSignatureEvents[timesigEventId];
+                var diff = TimeSignatureEvents[timesigEventId].Position - ((timesigEventId == 0) ? TimeSignatureEvents[timesigEventId - 1].Position : 0);
+                double Bars = (double)diff / Division / TimeSignature.Numerator * TimeSignature.Denominator / 4;
+                TotalBars += Bars;
+                timesigEventId++;
             }
 
             return;
