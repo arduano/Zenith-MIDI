@@ -25,16 +25,6 @@ using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
 
 namespace Zenith_MIDI
 {
-    interface INoteRender : IDisposable
-    {
-        long Render(FastList<Note> notes, double midiTime);
-    }
-
-    interface IKeyboardRender : IDisposable
-    {
-        void Render();
-    }
-
     class RenderWindow : GameWindow
     {
         #region Shaders
@@ -343,7 +333,6 @@ void main()
             this.settings = settings;
             lock (render)
             {
-                render.renderer.Tempo = 60000000.0 / midi.TempoEvents[0].rawTempo;
                 midiTime = -render.renderer.StartOffset;
                 if (settings.TimeBased) tempoFrameStep = 1000.0 / settings.FPS;
                 else tempoFrameStep = ((double)midi.Division / lastTempo) * (1000000 / settings.FPS);

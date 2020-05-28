@@ -29,13 +29,14 @@ using ZenithShared;
 using System.IO;
 using System.IO.Compression;
 using ZenithEngine.Modules;
+using ZenithEngine.MIDI;
 
 namespace Zenith_MIDI
 {
     class CurrentRendererPointer
     {
-        public Queue<IPluginRender> disposeQueue = new Queue<IPluginRender>();
-        public IPluginRender renderer = null;
+        public Queue<IModuleRender> disposeQueue = new Queue<IModuleRender>();
+        public IModuleRender renderer = null;
     }
 
     public enum UpdateProgress
@@ -169,7 +170,7 @@ namespace Zenith_MIDI
 
         Control pluginControl = null;
 
-        List<IPluginRender> RenderPlugins = new List<IPluginRender>();
+        List<IModuleRender> RenderPlugins = new List<IModuleRender>();
 
         CurrentRendererPointer renderer = new CurrentRendererPointer();
 
@@ -180,7 +181,7 @@ namespace Zenith_MIDI
 
         string defaultPlugin = "Classic";
 
-        Settings metaSettings = new Settings();
+        InstallSettings metaSettings = new InstallSettings();
 
         void RunLanguageCheck()
         {
@@ -434,7 +435,7 @@ namespace Zenith_MIDI
             long ramSample = 0;
             Stopwatch timewatch = new Stopwatch();
             timewatch.Start();
-            IPluginRender render = null;
+            IModuleRender render = null;
             double lastWinTime = double.NaN;
             bool tryToParse()
             {
@@ -451,52 +452,6 @@ namespace Zenith_MIDI
                 {
                     Thread.Sleep(1000);
                     continue;
-                    //SpinWait.SpinUntil(() => lastWinTime != win.midiTime || render != renderer.renderer || !settings.running);
-                    if (!settings.Running) break;
-                    Note n;
-                    double cutoffTime = win.midiTime;
-                    bool manualDelete = false;
-                    double noteCollectorOffset = 0;
-                    bool receivedInfo = false;
-                    while (!receivedInfo)
-                        try
-                        {
-                            render = renderer.renderer;
-                            receivedInfo = true;
-                        }
-                        catch
-                        { }
-                    manualDelete = render.ManualNoteDelete;
-                    cutoffTime += noteCollectorOffset;
-                    if (!settings.Running) break;
-                    try
-                    {
-                        double progress = win.midiTime / midifile.TickLength;
-                        if (settings.TimeBased) progress = win.midiTime / 1000 / midifile.SecondsLength;
-                        Console.WriteLine(
-                            Math.Round(progress * 10000) / 100 +
-                            "\tNotes drawn: " + renderer.renderer.LastNoteCount +
-                            "\tRender FPS: " + Math.Round(settings.CurrentFPS) + "        "
-                            );
-                    }
-                    catch
-                    {
-                    }
-                    long ram = Process.GetCurrentProcess().PrivateMemorySize64;
-                    if (maxRam < ram) maxRam = ram;
-                    avgRam = (long)((double)avgRam * ramSample + ram) / (ramSample + 1);
-                    ramSample++;
-                    lastWinTime = win.midiTime;
-                    Stopwatch s = new Stopwatch();
-                    s.Start();
-                    SpinWait.SpinUntil(() =>
-                    (
-                        (s.ElapsedMilliseconds > 1000.0 / settings.FPS * 30 && false) ||
-                        (win.midiTime + win.lastDeltaTimeOnScreen +
-                        (win.tempoFrameStep * 10 * settings.PreviewSpeed * (win.lastMV > 1 ? win.lastMV : 1))) > midifile.TimeTicksFractional ||
-                        lastWinTime != win.midiTime || render != renderer.renderer || !settings.Running
-                    )
-                    ); ;
                 }
             }
             catch (Exception ex)
@@ -552,7 +507,7 @@ namespace Zenith_MIDI
                                 if (type.Name == "Render")
                                 {
                                     hasClass = true;
-                                    var instance = (IPluginRender)Activator.CreateInstance(type, new object[] { settings });
+                                    var instance = (IModuleRender)Activator.CreateInstance(type, new object[] { settings });
                                     RenderPlugins.Add(instance);
                                     Console.WriteLine("Loaded " + name);
                                 }

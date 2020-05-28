@@ -55,6 +55,7 @@ namespace ZenithEngine
         }
 
         public long Location => pos;
+        public long Length => streamLen;
 
         public int Pushback = -1;
 

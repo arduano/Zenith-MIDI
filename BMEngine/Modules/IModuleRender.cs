@@ -6,28 +6,25 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
+using ZenithEngine.GLEngine;
+using ZenithEngine.MIDI;
 
 namespace ZenithEngine.Modules
 {
-    public interface IPluginRender : IDisposable
+    public interface IModuleRender : IDisposable
     {
         string Name { get; }
         string Description { get; }
         bool Initialized { get; }
         ImageSource PreviewImage { get; }
-        bool ManualNoteDelete { get; }
 
-        NoteColor[][] NoteColors { set; }
-        double Tempo { set; }
-        
         string LanguageDictName { get; }
 
-        double StartOffset { get; }
-        long LastNoteCount { get; }
         Control SettingsControl { get; }
+        public double StartOffset { get; }
 
-        void Init(MidiFile midi);
-        void RenderFrame(int finalCompositeBuff);
+        void Init(MidiPlayback midi);
+        void RenderFrame(RenderSurface finalCompositeBuff);
         void ReloadTrackColors();
     }
 }

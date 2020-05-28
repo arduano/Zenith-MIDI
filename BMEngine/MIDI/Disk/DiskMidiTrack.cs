@@ -5,103 +5,34 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ZenithEngine
+namespace ZenithEngine.MIDI.Disk
 {
-    public abstract class PositionedEvent
+    public delegate void DiskTrackParseProgress(DiskMidiTrack track, double progress);
+
+    public class DiskMidiTrack : IMidiPlaybackTrack, IMidiTrack, IDisposable
     {
-        protected PositionedEvent(long position)
+        enum TrackMode
         {
-            Position = position;
+            Parse,
+            Playback
         }
 
-        public long Position { get; internal set; }
-    }
+        TrackMode Mode { get; }
+        internal bool IsParseMode => Mode == TrackMode.Parse;
+        internal bool IsPlaybackMode => Mode == TrackMode.Playback;
 
-    public class Note
-    {
-        public double start { get; internal set; }
-        public double end { get; internal set; }
-        public bool hasEnded { get; internal set; }
-        public byte channel { get; internal set; }
-        public byte key { get; internal set; }
-        public byte vel { get; internal set; }
-        public bool delete { get; internal set; } = false;
-        public object meta { get; set; } = null;
-        public int track { get; internal set; }
-        public NoteColor color { get; internal set; }
-    }
+        public int ID { get; }
 
-    public class NoteColor
-    {
-        public Color4 Left { get; set; }
-        public Color4 Right { get; set; }
-        internal bool isDefault { get; set; } = true;
-
-        public void Alter(Color4 left, Color4 right)
-        {
-            if (!isDefault) return;
-            Left = left;
-            Right = right;
-        }
-    }
-
-    public struct PlaybackEvent
-    {
-        public double time;
-        public int val;
-    }
-
-    public class Tempo
-    {
-        public Tempo(long pos, int rawTempo)
-        {
-            this.pos = pos;
-            this.rawTempo = rawTempo;
-            this.realTempo = 60000000.0 / rawTempo;
-        }
-
-        public long pos { get; internal set; }
-        public int rawTempo { get; internal set; }
-        public double realTempo { get; internal set; }
-    }
-
-    public class ColorChange : PositionedEvent
-    {
-        public ColorChange(long pos, MidiTrack track, byte channel, Color4 col1, Color4 col2) : base(pos)
-        {
-            this.track = track;
-            this.channel = channel;
-            this.col1 = col1;
-            this.col2 = col2;
-        }
-
-        public Color4 col1 { get; internal set; }
-        public Color4 col2 { get; internal set; }
-        public byte channel { get; internal set; }
-        public MidiTrack track { get; internal set; }
-    }
-
-    public class TimeSignature : PositionedEvent
-    {
-        public TimeSignature(long pos, int numerator, int denominator) : base(pos)
-        {
-            Numerator = numerator;
-            Denominator = denominator;
-        }
-
-        public int Numerator { get; internal set; }
-        public int Denominator { get; internal set; }
-    }
-
-    public class MidiTrack : IDisposable
-    {
-        int trackID;
         long lastStepTime = 0;
-        MidiFile midi;
 
         public bool Ended { get; private set; } = false;
         public long NoteCount { get; private set; } = 0;
-        public long TickTime { get; private set; } = 0;
+        public long ParseTimeTicks { get; private set; } = 0;
+        public double ParseTimeSeconds { get; private set; } = 0;
+
+        public long TickLength => ParseTimeTicks;
+
+        public MidiPlayback MidiPlayback { get; private set; }
 
         FastList<Tempo> tempoEvents = new FastList<Tempo>();
         FastList<TimeSignature> timesigEvents = new FastList<TimeSignature>();
@@ -109,33 +40,12 @@ namespace ZenithEngine
         public IEnumerable<TimeSignature> TimesigEvents { get => timesigEvents; }
 
         public NoteColor[] TrackColors { get; } = new NoteColor[16];
-        NoteColor[] InitialTrackColors { get; } = new NoteColor[16];
-        public double TrackSeconds { get; private set; } = 0;
+        public NoteColor[] InitialTrackColors { get; } = new NoteColor[16];
 
         bool readDelta = false;
         FastList<Note>[] unendedNotes = null;
 
         BufferByteReader reader;
-
-        public void Reset()
-        {
-            if (unendedNotes != null) foreach (var un in unendedNotes) un.Unlink();
-            reader.Reset();
-            ResetColors();
-            TickTime = 0;
-            lastStepTime = 0;
-            TrackSeconds = 0;
-            Ended = false;
-            readDelta = false;
-            NoteCount = 0;
-            unendedNotes = null;
-        }
-
-        public void ResetAndResize(int newSize)
-        {
-            reader.ResetAndResize(newSize);
-            reader.Reset();
-        }
 
         public void ResetColors()
         {
@@ -157,32 +67,73 @@ namespace ZenithEngine
             }
         }
 
-        RenderSettings settings;
-        public MidiTrack(int id, BufferByteReader reader, MidiFile file, RenderSettings settings)
-        {
-            this.settings = settings;
-            midi = file;
-            this.reader = reader;
-            trackID = id;
-
-            InitialTrackColors = new NoteColor[16];
-        }
-
-        public void InitialParse()
+        private DiskMidiTrack(int id, BufferByteReader reader, TrackMode mode, NoteColor[] initialTrackColors = null)
         {
             ResetColors();
+            Mode = mode;
+            this.reader = reader;
+            ID = id;
+
+            if (initialTrackColors == null)
+            {
+                InitialTrackColors = new NoteColor[16];
+            }
+            else
+            {
+                InitialTrackColors = initialTrackColors;
+            }
+        }
+
+        public static DiskMidiTrack NewParserTrack(
+            int id,
+            BufferByteReader reader,
+            DiskTrackParseProgress progressCallback,
+            int callbackRate)
+        {
+            var track = new DiskMidiTrack(id, reader, TrackMode.Parse);
+            track.InitialParse(progressCallback, callbackRate);
+            return track;
+        }
+
+        public static DiskMidiTrack NewParserTrack(
+            int id,
+            BufferByteReader reader)
+        {
+            return NewParserTrack(id, reader, null, 0);
+        }
+
+        public static DiskMidiTrack NewPlayerTrack(
+            int id,
+            BufferByteReader reader,
+            MidiPlayback playback)
+        {
+            var track = new DiskMidiTrack(id, reader, TrackMode.Playback);
+            track.MidiPlayback = playback;
+            return track;
+        }
+
+        void InitialParse(DiskTrackParseProgress progressCallback, int callbackRate)
+        {
+
             for (int i = 0; i < 16; i++) InitialTrackColors[i] = null;
             while (!Ended)
             {
                 try
                 {
-                    ParseNextEvent(true);
+                    ParseNextEvent();
                 }
                 catch
                 {
                     break;
                 }
+
+                if (NoteCount % callbackRate == 0)
+                {
+                    progressCallback?.Invoke(this, reader.Location / (double)reader.Length);
+                }
             }
+
+            progressCallback?.Invoke(this, 1);
         }
 
         long ReadVariableLen()
@@ -207,29 +158,28 @@ namespace ZenithEngine
 
         public void Step(long time)
         {
-            timebase = settings.TimeBased;
-            TrackSeconds += (time - lastStepTime) / midi.ParserTempoTickMultiplier;
+            ParseTimeSeconds += (time - lastStepTime) / MidiPlayback.ParserTempoTickMultiplier;
             lastStepTime = time;
             try
             {
-                if (time >= TickTime)
+                if (time >= ParseTimeTicks)
                 {
                     if (readDelta)
                     {
-                        long d = TickTime;
+                        long d = ParseTimeTicks;
                         do
                         {
-                            ParseNextEvent(false);
+                            ParseNextEvent();
                             if (Ended) return;
-                            TickTime += ReadVariableLen();
+                            ParseTimeTicks += ReadVariableLen();
                             readDelta = true;
                         }
-                        while (TickTime == d);
+                        while (ParseTimeTicks == d);
                     }
                     else
                     {
                         if (Ended) return;
-                        TickTime += ReadVariableLen();
+                        ParseTimeTicks += ReadVariableLen();
                         readDelta = true;
                     }
                 }
@@ -251,30 +201,32 @@ namespace ZenithEngine
                     Note n;
                     while (iter.MoveNext(out n))
                     {
-                        n.end = TickTime;
+                        n.end = ParseTimeTicks;
                         n.hasEnded = true;
                     }
                     un.Unlink();
                 }
             }
+            Dispose();
             unendedNotes = null;
         }
 
         byte prevCommand = 0;
-        bool timebase = false;
-        public void ParseNextEvent(bool loading)
+        public void ParseNextEvent()
         {
+            bool loading = IsParseMode;
+
             try
             {
                 if (!readDelta)
                 {
-                    TickTime += ReadVariableLen();
+                    ParseTimeTicks += ReadVariableLen();
                 }
                 readDelta = false;
 
-                double time = TickTime;
-                if (timebase)
-                    time = TrackSeconds;
+                double time = ParseTimeTicks;
+                if (MidiPlayback != null && MidiPlayback.TimeBased)
+                    time = ParseTimeSeconds;
 
                 byte command = reader.ReadFast();
                 if (command < 0x80)
@@ -299,11 +251,11 @@ namespace ZenithEngine
                         return;
                     }
 
-                    if (settings.PreviewAudioEnabled && (comm == 0x80 || vel > 10))
+                    if (MidiPlayback.PushPlaybackEvents && (comm == 0x80 || vel > 10))
                     {
-                        midi.PlaybackEvents.Add(new PlaybackEvent()
+                        MidiPlayback.PlaybackEvents.Add(new PlaybackEvent()
                         {
-                            time = TrackSeconds,
+                            time = ParseTimeSeconds,
                             val = command | (note << 8) | (vel << 16)
                         });
                     }
@@ -332,9 +284,9 @@ namespace ZenithEngine
                         n.color = TrackColors[channel];
                         n.channel = channel;
                         n.vel = vel;
-                        n.track = trackID;
+                        n.track = ID;
                         unendedNotes[note << 4 | channel].Add(n);
-                        midi.Notes.Add(n);
+                        MidiPlayback.Notes.Add(n);
                     }
                 }
                 else if (comm == 0xA0)
@@ -345,11 +297,11 @@ namespace ZenithEngine
 
                     if (loading) return;
 
-                    if (settings.PreviewAudioEnabled)
+                    if (MidiPlayback.PushPlaybackEvents)
                     {
-                        midi.PlaybackEvents.Add(new PlaybackEvent()
+                        MidiPlayback.PlaybackEvents.Add(new PlaybackEvent()
                         {
-                            time = TrackSeconds,
+                            time = ParseTimeSeconds,
                             val = command | (note << 8) | (vel << 16)
                         });
                     }
@@ -362,11 +314,11 @@ namespace ZenithEngine
 
                     if (loading) return;
 
-                    if (settings.PreviewAudioEnabled)
+                    if (MidiPlayback.PushPlaybackEvents)
                     {
-                        midi.PlaybackEvents.Add(new PlaybackEvent()
+                        MidiPlayback.PlaybackEvents.Add(new PlaybackEvent()
                         {
-                            time = TrackSeconds,
+                            time = ParseTimeSeconds,
                             val = command | (cc << 8) | (vv << 16)
                         });
                     }
@@ -378,11 +330,11 @@ namespace ZenithEngine
 
                     if (loading) return;
 
-                    if (settings.PreviewAudioEnabled)
+                    if (MidiPlayback.PushPlaybackEvents)
                     {
-                        midi.PlaybackEvents.Add(new PlaybackEvent()
+                        MidiPlayback.PlaybackEvents.Add(new PlaybackEvent()
                         {
-                            time = TrackSeconds,
+                            time = ParseTimeSeconds,
                             val = command | (program << 8)
                         });
                     }
@@ -394,11 +346,11 @@ namespace ZenithEngine
 
                     if (loading) return;
 
-                    if (settings.PreviewAudioEnabled)
+                    if (MidiPlayback.PushPlaybackEvents)
                     {
-                        midi.PlaybackEvents.Add(new PlaybackEvent()
+                        MidiPlayback.PlaybackEvents.Add(new PlaybackEvent()
                         {
-                            time = TrackSeconds,
+                            time = ParseTimeSeconds,
                             val = command | (pressure << 8)
                         });
                     }
@@ -411,11 +363,11 @@ namespace ZenithEngine
 
                     if (loading) return;
 
-                    if (settings.PreviewAudioEnabled)
+                    if (MidiPlayback.PushPlaybackEvents)
                     {
-                        midi.PlaybackEvents.Add(new PlaybackEvent()
+                        MidiPlayback.PlaybackEvents.Add(new PlaybackEvent()
                         {
-                            time = TrackSeconds,
+                            time = ParseTimeSeconds,
                             val = command | (l << 8) | (m << 16)
                         });
                     }
@@ -472,8 +424,8 @@ namespace ZenithEngine
                                 {
                                     if (data[2] < 0x10 || data[2] == 0x7F)
                                     {
-                                        var c = new ColorChange(TickTime, this, data[2], col1, col2);
-                                        midi.ColorChanges.Add(c);
+                                        var c = new ColorChange(ParseTimeTicks, this, data[2], col1, col2);
+                                        MidiPlayback.ColorChanges.Add(c);
                                     }
                                 }
                             }
@@ -500,11 +452,11 @@ namespace ZenithEngine
 
                         if (loading)
                         {
-                            tempoEvents.Add(new Tempo(TickTime, btempo));
+                            tempoEvents.Add(new Tempo(ParseTimeTicks, btempo));
                         }
                         else
                         {
-                            midi.ParserTempoTickMultiplier = ((double)midi.Division / btempo) * 1000;
+                            MidiPlayback.ParserTempoTickMultiplier = ((double)MidiPlayback.Midi.PPQ / btempo) * 1000;
                         }
                     }
                     else if (command == 0x58)
@@ -518,7 +470,7 @@ namespace ZenithEngine
                         if (loading)
                         {
                             dd = (int)Math.Pow(2, dd);
-                            timesigEvents.Add(new TimeSignature(TickTime, nn, dd));
+                            timesigEvents.Add(new TimeSignature(ParseTimeTicks, nn, dd));
                         }
                         reader.Skip(2);
                     }
@@ -536,8 +488,11 @@ namespace ZenithEngine
             { }
         }
 
+        bool disposed = false;
         public void Dispose()
         {
+            if (disposed) return;
+            disposed = true;
             reader.Dispose();
         }
     }

@@ -18,10 +18,11 @@ using ZenithEngine.GLEngine;
 using System.Runtime.InteropServices;
 using ZenithEngine.ModuleUtil;
 using ZenithEngine.Modules;
+using ZenithEngine.MIDI;
 
 namespace FlatRender
 {
-    public class Render : IPluginRender
+    public class Render : IModuleRender
     {
         #region Vertex
         [StructLayoutAttribute(LayoutKind.Sequential)]
@@ -88,11 +89,7 @@ void main()
 
         public Control SettingsControl { get { return settingsControl; } }
 
-        public double NoteCollectorOffset => 0;
-
         public bool ManualNoteDelete => false;
-
-        public NoteColor[][] NoteColors { get; set; }
 
         public double Tempo { get; set; }
 
@@ -101,7 +98,7 @@ void main()
         ShapeBuffer<VertType> quadBuffer;
         ShaderProgram flatShader;
 
-        MidiFile midifile = null;
+        MidiPlayback midi = null;
 
         DisposeGroup disposer;
 
@@ -114,9 +111,9 @@ void main()
             ((SettingsCtrl)SettingsControl).PaletteChanged += () => { ReloadTrackColors(); };
         }
 
-        public void Init(MidiFile file)
+        public void Init(MidiPlayback file)
         {
-            midifile = file;
+            midi = file;
 
             disposer = new DisposeGroup();
 
@@ -128,27 +125,25 @@ void main()
             flatShader = disposer.Add(new ShaderProgram(noteShaderVert, noteShaderFrag));
 
             Initialized = true;
-            Console.WriteLine("Initialised FlatRender");
         }
 
         public void Dispose()
         {
             if (!Initialized) return;
-            midifile = null;
+            midi = null;
             disposer.Dispose();
             Initialized = false;
-            Console.WriteLine("Disposed of FlatRender");
         }
 
-        public void RenderFrame(int finalCompositeBuff)
+        public void RenderFrame(RenderSurface renderSurface)
         {
-            midifile.CheckParseDistance(settings.deltaTimeOnScreen);
+            midi.CheckParseDistance(settings.deltaTimeOnScreen);
 
             using (new GLEnabler().Enable(EnableCap.Blend))
             {
                 GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, finalCompositeBuff);
+                renderSurface.BindSurface();
                 GL.Viewport(0, 0, renderSettings.PixelWidth, renderSettings.PixelHeight);
                 GL.Clear(ClearBufferMask.ColorBufferBit);
 
@@ -156,7 +151,7 @@ void main()
 
                 #region Vars
                 long nc = 0;
-                var midiTime = midifile.PlayerPosition;
+                var midiTime = midi.PlayerPosition;
                 int firstNote = settings.firstNote;
                 int lastNote = settings.lastNote;
 
@@ -176,7 +171,7 @@ void main()
 
                 double notePosFactor = 1 / screenTime * (1 - pianoHeight);
 
-                var iter = midifile.Notes.Iterate();
+                var iter = midi.Notes.Iterate();
                 for (Note n = null; iter.MoveNext(out n);)
                 {
                     double renderCutoff = midiTime + screenTime;
@@ -248,9 +243,8 @@ void main()
 
         public void ReloadTrackColors()
         {
-            if (NoteColors == null) return;
-            var cols = ((SettingsCtrl)SettingsControl).paletteList.GetColors(midifile.TrackCount);
-            midifile.ApplyColors(cols);
+            var cols = ((SettingsCtrl)SettingsControl).paletteList.GetColors(midi.TrackCount);
+            midi.ApplyColors(cols);
         }
     }
 }

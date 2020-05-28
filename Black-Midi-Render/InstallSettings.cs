@@ -10,7 +10,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Zenith_MIDI
 {
-    class Settings
+    class InstallSettings
     {
         public string PreviousVersion = "";
         public string VersionName = "2.1.3";
@@ -22,7 +22,7 @@ namespace Zenith_MIDI
 
         public static readonly string SettingsPath = "Settings\\meta.kvs";
 
-        public Settings()
+        public InstallSettings()
         {
             if (!File.Exists(SettingsPath))
             {
