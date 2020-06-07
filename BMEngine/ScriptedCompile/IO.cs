@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using OpenTK;
 using ZenithEngine;
 using OpenTK.Graphics;
+using ZenithEngine.MIDI;
 
 namespace ScriptedEngine
 {

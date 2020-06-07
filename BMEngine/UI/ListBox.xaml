@@ -7,7 +7,7 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="Colors.xaml"/>
     </ResourceDictionary.MergedDictionaries>
-    <media:Style TargetType="{x:Type media:ListBox}">
+    <media:Style TargetType="{x:Type media:ListBox}" x:Key="ListBoxStyle">
         <media:Setter Property="BorderThickness" Value="1"/>
         <media:Setter Property="media:ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
         <media:Setter Property="media:ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
@@ -27,7 +27,8 @@
             </media:Setter.Value>
         </media:Setter>
     </media:Style>
-    <media:Style TargetType="{x:Type media:ListBoxItem}">
+
+    <media:Style TargetType="{x:Type media:ListBoxItem}" x:Key="ListItemStyle">
         <media:Setter Property="SnapsToDevicePixels" Value="True"/>
         <media:Setter Property="Padding" Value="4,1"/>
         <media:Setter Property="HorizontalContentAlignment" Value="{media:Binding HorizontalContentAlignment, RelativeSource={media:RelativeSource AncestorType={x:Type media:ItemsControl}}}"/>
@@ -63,5 +64,10 @@
                 </media:ControlTemplate>
             </media:Setter.Value>
         </media:Setter>
+    </media:Style>
+    <media:Style TargetType="{x:Type media:ListBoxItem}" BasedOn="{StaticResource ListItemStyle}"/>
+    <media:Style TargetType="{x:Type media:ListBox}" BasedOn="{StaticResource ListBoxStyle}"/>
+    <media:Style TargetType="{x:Type media:ListView}" BasedOn="{StaticResource ListBoxStyle}">
+        <Setter Property="ItemContainerStyle" Value="{StaticResource ListItemStyle}"/>
     </media:Style>
 </ResourceDictionary>

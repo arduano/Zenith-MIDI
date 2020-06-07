@@ -231,7 +231,7 @@ void main()
         bool[] blackKeys = new bool[257];
         int[] keynum = new int[257];
 
-        RenderSettings renderSettings;
+        RenderStatus renderSettings;
         Settings settings;
 
         int buffer3dtex;
@@ -330,7 +330,7 @@ void main()
         }
 
         Util util;
-        public Render(RenderSettings settings)
+        public Render(RenderStatus settings)
         {
             this.settings = new Settings();
             this.renderSettings = settings;

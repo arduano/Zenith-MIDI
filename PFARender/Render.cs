@@ -76,7 +76,7 @@ void main()
         public double NoteCollectorOffset => 0;
         public bool ManualNoteDelete => false;
 
-        RenderSettings renderSettings;
+        RenderStatus renderSettings;
         Settings settings;
 
         SettingsCtrl settingsControl;
@@ -122,7 +122,7 @@ void main()
             Console.WriteLine("Disposed of PFARender");
         }
 
-        public Render(RenderSettings settings)
+        public Render(RenderStatus settings)
         {
             this.settings = new Settings();
             this.renderSettings = settings;

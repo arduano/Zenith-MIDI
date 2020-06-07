@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using ZenithShared;
 
-namespace Zenith_MIDI
+namespace Zenith
 {
     class Program
     {

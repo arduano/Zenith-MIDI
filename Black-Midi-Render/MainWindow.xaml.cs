@@ -30,8 +30,17 @@ using System.IO;
 using System.IO.Compression;
 using ZenithEngine.Modules;
 using ZenithEngine.MIDI;
+using ZenithEngine.MIDI.Disk;
+using ZenithEngine.Preview;
+using ZenithEngine.GLEngine;
+using ZenithEngine.GLEngine.Types;
+using System.Collections.ObjectModel;
+using ZenithEngine.UI;
+using OpenTK.Graphics;
+using System.Globalization;
+using ZenithEngine.MIDI.Audio;
 
-namespace Zenith_MIDI
+namespace Zenith
 {
     class CurrentRendererPointer
     {
@@ -83,11 +92,8 @@ namespace Zenith_MIDI
         [StructLayout(LayoutKind.Sequential)]
         public struct POINT
         {
-            /// <summary>x coordinate of point.</summary>
             public int x;
-            /// <summary>y coordinate of point.</summary>
             public int y;
-            /// <summary>Construct a point of coordinates (x,y).</summary>
             public POINT(int x, int y)
             {
                 this.x = x;
@@ -164,24 +170,137 @@ namespace Zenith_MIDI
         internal static extern IntPtr MonitorFromWindow(IntPtr handle, int flags);
         #endregion
 
-        RenderSettings settings;
+        #region Dependency Properties
+        public bool MidiLoaded
+        {
+            get { return (bool)GetValue(MidiLoadedProperty); }
+            set { SetValue(MidiLoadedProperty, value); }
+        }
+
+        public static readonly DependencyProperty MidiLoadedProperty =
+            DependencyProperty.Register("MidiLoaded", typeof(bool), typeof(MainWindow), new PropertyMetadata(false));
+
+
+        public RenderPipeline ActivePipeline
+        {
+            get { return (RenderPipeline)GetValue(ActivePipelineProperty); }
+            set { SetValue(ActivePipelineProperty, value); }
+        }
+
+        public static readonly DependencyProperty ActivePipelineProperty =
+            DependencyProperty.Register("ActivePipeline", typeof(RenderPipeline), typeof(MainWindow), new PropertyMetadata(null));
+
+
+        public bool Rendering
+        {
+            get { return (bool)GetValue(RenderingProperty); }
+            set { SetValue(RenderingProperty, value); }
+        }
+
+        public static readonly DependencyProperty RenderingProperty =
+            DependencyProperty.Register("Rendering", typeof(bool), typeof(MainWindow), new PropertyMetadata(false));
+
+
+        public bool RenderingOrPreviewing
+        {
+            get { return (bool)GetValue(RenderingOrPreviewingProperty); }
+            set { SetValue(RenderingOrPreviewingProperty, value); }
+        }
+
+        public static readonly DependencyProperty RenderingOrPreviewingProperty =
+            DependencyProperty.Register("RenderingOrPreviewing", typeof(bool), typeof(MainWindow), new PropertyMetadata(false));
+
+        public bool CanLoadMidi
+        {
+            get { return (bool)GetValue(CanLoadMidiProperty); }
+            set { SetValue(CanLoadMidiProperty, value); }
+        }
+
+        public static readonly DependencyProperty CanLoadMidiProperty =
+            DependencyProperty.Register("CanLoadMidi", typeof(bool), typeof(MainWindow), new PropertyMetadata(false));
+
+        public bool CanUnloadMidi
+        {
+            get { return (bool)GetValue(CanUnloadMidiProperty); }
+            set { SetValue(CanUnloadMidiProperty, value); }
+        }
+
+        public static readonly DependencyProperty CanUnloadMidiProperty =
+            DependencyProperty.Register("CanUnloadMidi", typeof(bool), typeof(MainWindow), new PropertyMetadata(false));
+
+        public bool CanStart
+        {
+            get { return (bool)GetValue(CanStartProperty); }
+            set { SetValue(CanStartProperty, value); }
+        }
+
+        public static readonly DependencyProperty CanStartProperty =
+            DependencyProperty.Register("CanStart", typeof(bool), typeof(MainWindow), new PropertyMetadata(true));
+
+        public bool CanChangeResolution
+        {
+            get { return (bool)GetValue(CanChangeResolutionProperty); }
+            set { SetValue(CanChangeResolutionProperty, value); }
+        }
+
+        public static readonly DependencyProperty CanChangeResolutionProperty =
+            DependencyProperty.Register("CanChangeResolution", typeof(bool), typeof(MainWindow), new PropertyMetadata(true));
+
+        void InitBindings()
+        {
+            new InplaceConverter<RenderPipeline, bool>(
+                new BBinding(ActivePipelineProperty, this),
+                (p) => p != null
+            ).Set(this, RenderingOrPreviewingProperty);
+
+            new InplaceConverter<bool, bool, bool>(
+                new BBinding(RenderingOrPreviewingProperty, this),
+                new BBinding(MidiLoadedProperty, this),
+                (r, m) => !r && !m
+            ).Set(this, CanLoadMidiProperty);
+
+            new InplaceConverter<bool, bool, bool>(
+                new BBinding(RenderingOrPreviewingProperty, this),
+                new BBinding(MidiLoadedProperty, this),
+                (r, m) => !r && m
+            ).Set(this, CanUnloadMidiProperty);
+
+            new InplaceConverter<bool, bool, bool>(
+                new BBinding(RenderingOrPreviewingProperty, this),
+                new BBinding(MidiLoadedProperty, this),
+                (r, m) => !r && m
+            ).Set(this, CanStartProperty);
+
+            new InplaceConverter<bool, bool>(
+                new BBinding(RenderingOrPreviewingProperty, this),
+                (r) => !r
+            ).Set(this, CanChangeResolutionProperty);
+        }
+
+        #endregion
+
+
         MidiFile midifile = null;
         string midipath = "";
 
         Control pluginControl = null;
 
-        List<IModuleRender> RenderPlugins = new List<IModuleRender>();
-
-        CurrentRendererPointer renderer = new CurrentRendererPointer();
+        ObservableCollection<IModuleRender> RenderPlugins { get; } = new ObservableCollection<IModuleRender>();
 
         List<Dictionary<string, ResourceDictionary>> Languages = new List<Dictionary<string, ResourceDictionary>>();
 
         bool foundOmniMIDI = true;
         bool OmniMIDIDisabled = false;
 
+        long lastBackgroundChangeTime = 0;
+
         string defaultPlugin = "Classic";
 
-        InstallSettings metaSettings = new InstallSettings();
+        ModuleManager ModuleRunner { get; } = new ModuleManager();
+        InstanceSettings Instance { get; } = new InstanceSettings();
+        InstallSettings InstallSettings { get; } = new InstallSettings();
+
+        RenderStatus CurrentRenderStatus { get; set; } = null;
 
         void RunLanguageCheck()
         {
@@ -191,15 +310,15 @@ namespace Zenith_MIDI
                 ver = ZenithLanguages.GetLatestVersion();
             }
             catch { return; }
-            if (ver != metaSettings.LanguagesVersion)
+            if (ver != InstallSettings.LanguagesVersion)
             {
                 try
                 {
                     Console.WriteLine("Update found for language packs, downloading...");
                     var latest = ZenithLanguages.DownloadLatestVersion();
                     ZenithLanguages.UnpackFromStream(latest);
-                    metaSettings.LanguagesVersion = ver;
-                    metaSettings.SaveConfig();
+                    InstallSettings.LanguagesVersion = ver;
+                    InstallSettings.SaveConfig();
                     Console.WriteLine("Updated language packs!");
                 }
                 catch { Console.WriteLine("Failed to update language packs"); }
@@ -208,15 +327,15 @@ namespace Zenith_MIDI
 
         void RunUpdateCheck()
         {
-            if (!metaSettings.AutoUpdate) return;
+            if (!InstallSettings.AutoUpdate) return;
 
             var requiredInstaller = ZenithUpdates.InstallerVer;
-            if (metaSettings.InstallerVer != requiredInstaller)
+            if (InstallSettings.InstallerVer != requiredInstaller)
             {
                 Console.WriteLine("Important update found for installer, updating...");
                 ZenithUpdates.UpdateInstaller();
-                metaSettings.InstallerVer = requiredInstaller;
-                metaSettings.SaveConfig();
+                InstallSettings.InstallerVer = requiredInstaller;
+                InstallSettings.SaveConfig();
             }
 
             string ver;
@@ -225,9 +344,9 @@ namespace Zenith_MIDI
                 ver = ZenithUpdates.GetLatestVersion();
             }
             catch { return; }
-            if (ver != metaSettings.VersionName)
+            if (ver != InstallSettings.VersionName)
             {
-                Console.WriteLine("Found Update! Current: " + metaSettings.VersionName + " Latest: " + ver);
+                Console.WriteLine("Found Update! Current: " + InstallSettings.VersionName + " Latest: " + ver);
                 try
                 {
                     Dispatcher.InvokeAsync(() => windowTabs.UpdaterProgress = UpdateProgress.Downloading).Wait();
@@ -250,14 +369,14 @@ namespace Zenith_MIDI
 
         void CheckUpdateDownloaded()
         {
-            if(metaSettings.PreviousVersion != metaSettings.VersionName)
+            if (InstallSettings.PreviousVersion != InstallSettings.VersionName)
             {
                 if (File.Exists("settings.json")) File.Delete("settings.json");
-                metaSettings.PreviousVersion = metaSettings.VersionName;
-                metaSettings.SaveConfig();
+                InstallSettings.PreviousVersion = InstallSettings.VersionName;
+                InstallSettings.SaveConfig();
             }
 
-            if (metaSettings.AutoUpdate)
+            if (InstallSettings.AutoUpdate)
             {
                 if (File.Exists(ZenithUpdates.DefaultUpdatePackagePath))
                 {
@@ -279,11 +398,15 @@ namespace Zenith_MIDI
 
         public MainWindow()
         {
+            InitBindings();
+
             CheckUpdateDownloaded();
 
             InitializeComponent();
 
-            windowTabs.VersionName = metaSettings.VersionName;
+            pluginsList.ItemsSource = RenderPlugins;
+
+            windowTabs.VersionName = InstallSettings.VersionName;
 
             SourceInitialized += (s, e) =>
             {
@@ -313,11 +436,9 @@ namespace Zenith_MIDI
                     try
                     {
                         bgImagePath.Text = sett.defaultBackground;
-                        settings.BGImage = bgImagePath.Text;
                     }
                     catch
                     {
-                        settings.BGImage = null;
                         if (bgImagePath.Text != "")
                             MessageBox.Show("Couldn't load default background image");
                     }
@@ -337,7 +458,7 @@ namespace Zenith_MIDI
                 {
                     try
                     {
-                        KDMAPI.InitializeKDMAPIStream();
+                        KDMAPIOutput.Init();
                         Console.WriteLine("Loaded KDMAPI!");
                     }
                     catch
@@ -351,12 +472,11 @@ namespace Zenith_MIDI
             {
                 disableKDMAPI.IsEnabled = false;
             }
-            settings = new RenderSettings();
-            settings.PauseToggled += ToggledPause;
+
             InitialiseSettingsValues();
             creditText.Text = "Video was rendered with Zenith\nhttps://arduano.github.io/Zenith-MIDI/start";
 
-            if(languageLoader != null) languageLoader.Wait();
+            if (languageLoader != null) languageLoader.Wait();
 
             var languagePacks = Directory.GetDirectories("Languages");
             foreach (var language in languagePacks)
@@ -392,177 +512,69 @@ namespace Zenith_MIDI
                 omnimidiLoader.Wait();
         }
 
-        void ToggledPause()
-        {
-            Dispatcher.Invoke(() =>
-            {
-                if ((bool)previewPaused.IsChecked ^ settings.Paused)
-                {
-                    previewPaused.IsChecked = settings.Paused;
-                }
-            });
-
-        }
-
         void InitialiseSettingsValues()
         {
-            viewWidth.Value = settings.PixelWidth;
-            viewHeight.Value = settings.PixelHeight;
-            viewFps.Value = settings.FPS;
-            vsyncEnabled.IsChecked = settings.VSync;
-            tempoMultSlider.Value = settings.PreviewSpeed;
-
             ReloadPlugins();
         }
 
         Task renderThread = null;
-        RenderWindow win = null;
-        void RunRenderWindow()
-        {
-            bool winStarted = false;
-            Task winthread = new Task(() =>
-            {
-                win = new RenderWindow(renderer, midifile, settings);
-                winStarted = true;
-                win.Run();
-            });
-            winthread.Start();
-            SpinWait.SpinUntil(() => winStarted);
-            double time = 0;
-            int nc = -1;
-            long maxRam = 0;
-            long avgRam = 0;
-            long ramSample = 0;
-            Stopwatch timewatch = new Stopwatch();
-            timewatch.Start();
-            IModuleRender render = null;
-            double lastWinTime = double.NaN;
-            bool tryToParse()
-            {
-                return true;
-                lock (midifile)
-                {
-                    //return (midifile.ParseUpTo(midifile.TimeSeconds + 10)
-                    //    || nc != 0) && settings.Running;
-                }
-            }
-            try
-            {
-                while (tryToParse())
-                {
-                    Thread.Sleep(1000);
-                    continue;
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("An error occurred while opeining render window. Please try again.\n\n" + ex.Message + "\n" + ex.StackTrace);
-                settings.Running = false;
-            }
-            winthread.GetAwaiter().GetResult();
-            settings.Running = false;
-            Console.WriteLine("Reset midi file");
-            midifile.Reset();
-            win.Dispose();
-            win = null;
-            GC.Collect();
-            GC.WaitForFullGCComplete();
-            Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine(
-                    "Finished render\nRAM usage (Private bytes)\nPeak: " + Math.Round((double)maxRam / 1000 / 1000 / 1000 * 100) / 100 +
-                    "GB\nAvg: " + Math.Round((double)avgRam / 1000 / 1000 / 1000 * 100) / 100 +
-                    "GB\nMinutes to render: " + Math.Round((double)timewatch.ElapsedMilliseconds / 1000 / 60 * 100) / 100);
-            Console.ResetColor();
-            Dispatcher.Invoke(() =>
-            {
-                Resources["notRendering"] = true;
-                Resources["notPreviewing"] = true;
-            });
-        }
 
         void ReloadPlugins()
         {
             previewImage.Source = null;
             pluginDescription.Text = "";
-            lock (renderer)
-            {
-                foreach (var p in RenderPlugins)
-                {
-                    if (p.Initialized) renderer.disposeQueue.Enqueue(p);
-                }
-                RenderPlugins.Clear();
-                var files = Directory.GetFiles("Plugins");
-                var dlls = files.Where((s) => s.EndsWith(".dll"));
-                foreach (var d in dlls)
-                {
-                    try
-                    {
-                        var DLL = Assembly.UnsafeLoadFrom(System.IO.Path.GetFullPath(d));
-                        bool hasClass = false;
-                        var name = System.IO.Path.GetFileName(d);
-                        try
-                        {
-                            foreach (Type type in DLL.GetExportedTypes())
-                            {
-                                if (type.Name == "Render")
-                                {
-                                    hasClass = true;
-                                    var instance = (IModuleRender)Activator.CreateInstance(type, new object[] { settings });
-                                    RenderPlugins.Add(instance);
-                                    Console.WriteLine("Loaded " + name);
-                                }
-                            }
-                            if (!hasClass)
-                            {
-                                MessageBox.Show("Could not load " + name + "\nDoesn't have render class");
-                            }
-                        }
-                        catch (RuntimeBinderException)
-                        {
-                            MessageBox.Show("Could not load " + name + "\nA binding error occured");
-                        }
-                        catch (InvalidCastException)
-                        {
-                            MessageBox.Show("Could not load " + name + "\nThe Render class was not a compatible with the interface");
-                        }
-                        catch (Exception e)
-                        {
-                            MessageBox.Show("An error occured while binfing " + name + "\n" + e.Message);
-                        }
-                    }
-                    catch { }
-                }
 
-                pluginsList.Items.Clear();
-                for (int i = 0; i < RenderPlugins.Count; i++)
+            RenderPlugins.Clear();
+            ModuleRunner.ClearModules();
+
+            RenderPlugins.Clear();
+            var files = Directory.GetFiles("Plugins");
+            var dlls = files.Where((s) => s.EndsWith(".dll"));
+            foreach (var d in dlls)
+            {
+                try
                 {
-                    pluginsList.Items.Add(new ListBoxItem() { Content = RenderPlugins[i].Name });
+                    RenderPlugins.Add(ModuleManager.LoadModule(d));
                 }
-                if (RenderPlugins.Count != 0)
+                catch (Exception e)
                 {
-                    SelectRenderer(0);
+                    MessageBox.Show(e.Message);
                 }
             }
+
+            SelectDefaultRenderer();
+        }
+
+        void SelectDefaultRenderer()
+        {
+            int i = 0;
+            foreach (var p in RenderPlugins)
+            {
+                if (p.Name == "Classic")
+                {
+                    SelectRenderer(i);
+                    return;
+                }
+                i++;
+            }
+            if (RenderPlugins.Count > 0) SelectRenderer(0);
         }
 
         void SelectRenderer(int id)
         {
-            (pluginsSettings as Panel).Children.Clear();
             pluginControl = null;
             if (id == -1)
             {
-                renderer.renderer = null;
+                ModuleRunner.ClearModules();
                 return;
             }
             pluginsList.SelectedIndex = id;
-            lock (renderer)
-            {
-                renderer.renderer = RenderPlugins[id];
-            }
-            previewImage.Source = renderer.renderer.PreviewImage;
-            pluginDescription.Text = renderer.renderer.Description;
+            ModuleRunner.UseModule(RenderPlugins[id]);
+            var module = ModuleRunner.CurrentModule;
+            previewImage.Source = module.PreviewImage;
+            pluginDescription.Text = module.Description;
 
-            var c = renderer.renderer.SettingsControl;
+            var c = module.SettingsControl;
             if (c == null) return;
             if (c.Parent != null)
                 (c.Parent as Panel).Children.Clear();
@@ -573,11 +585,11 @@ namespace Zenith_MIDI
             c.Height = double.NaN;
             c.Margin = new Thickness(0);
             pluginControl = c;
-            if (languageSelect.SelectedIndex != -1 && Languages[languageSelect.SelectedIndex].ContainsKey(renderer.renderer.LanguageDictName))
+            if (languageSelect.SelectedIndex != -1 && Languages[languageSelect.SelectedIndex].ContainsKey(module.LanguageDictName))
             {
                 c.Resources.MergedDictionaries[0].MergedDictionaries.Clear();
-                c.Resources.MergedDictionaries[0].MergedDictionaries.Add(Languages[0][renderer.renderer.LanguageDictName]);
-                c.Resources.MergedDictionaries[0].MergedDictionaries.Add(Languages[languageSelect.SelectedIndex][renderer.renderer.LanguageDictName]);
+                c.Resources.MergedDictionaries[0].MergedDictionaries.Add(Languages[0][module.LanguageDictName]);
+                c.Resources.MergedDictionaries[0].MergedDictionaries.Add(Languages[languageSelect.SelectedIndex][module.LanguageDictName]);
             }
         }
 
@@ -602,8 +614,8 @@ namespace Zenith_MIDI
                 midifile = null;
                 GC.Collect();
                 GC.WaitForFullGCComplete();
-                midifile = new MidiFile(midipath, settings);
-                Resources["midiLoaded"] = true;
+                midifile = new DiskMidiFile(midipath);
+                MidiLoaded = true;
                 browseMidiButton.Content = Path.GetFileName(midipath);
             }
             catch (Exception ex)
@@ -615,114 +627,117 @@ namespace Zenith_MIDI
 
         private void UnloadButton_Click(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("Unloading midi");
             midifile.Dispose();
             midifile = null;
             GC.Collect();
             GC.WaitForFullGCComplete();
-            Console.WriteLine("Unloaded");
-            Resources["midiLoaded"] = false;
-            browseMidiButton.SetResourceReference(Button.ContentProperty, "load");
+            MidiLoaded = false;
+            //browseMidiButton.SetResourceReference(Button.ContentProperty, "load");
+        }
+
+        void SetPipelineValues()
+        {
+            if (ActivePipeline == null) return;
+            if (!ActivePipeline.Rendering)
+            {
+                ActivePipeline.Paused = previewPaused.IsChecked;
+                ActivePipeline.PreviewSpeed = tempoMultSlider.Value;
+                ActivePipeline.VSync = vsyncEnabled.IsChecked;
+                ActivePipeline.Status.RealtimePlayback = realtimePlayback.IsChecked;
+                ActivePipeline.Status.FPS = (int)viewFps.Value;
+            }
+            else
+            {
+                ActivePipeline.Status.RealtimePlayback = false;
+            }
+        }
+
+        void StartPipeline(bool render)
+        {
+            var playback = midifile.GetMidiPlayback(0);
+            CurrentRenderStatus = new RenderStatus((int)viewWidth.Value, (int)viewHeight.Value, (int)SSAAFactor.Value);
+            ActivePipeline = new RenderPipeline(CurrentRenderStatus, playback, ModuleRunner, false);
+            SetPipelineValues();
+            ActivePipeline.Start();
         }
 
         private void StartButton_Click(object sender, RoutedEventArgs e)
         {
-            if (renderer.renderer == null)
-            {
-                MessageBox.Show("No renderer is selected");
-                return;
-            }
-
-            windowTabs.SelectedIndex = 4;
-
-            settings.RealtimePlayback = (bool)realtimePlayback.IsChecked;
-
-            settings.Running = true;
-            settings.PixelWidth = (int)viewWidth.Value * (int)SSAAFactor.Value;
-            settings.PixelHeight = (int)viewHeight.Value * (int)SSAAFactor.Value;
-            settings.SSAA = (int)SSAAFactor.Value;
-            settings.FPS = (int)viewFps.Value;
-            settings.IsRendering = false;
-            settings.Paused = false;
-            settings.RenderStartDelay = 0;
-            renderThread = Task.Factory.StartNew(RunRenderWindow, TaskCreationOptions.RunContinuationsAsynchronously | TaskCreationOptions.LongRunning);
-            Resources["notPreviewing"] = false;
+            StartPipeline(false);
         }
 
         private void StopButton_Click(object sender, RoutedEventArgs e)
         {
-            if (settings.Running == false)
+            if (ActivePipeline != null)
             {
-                Resources["notRendering"] = true;
-                Resources["notPreviewing"] = true;
+                ActivePipeline.Dispose();
+                ActivePipeline = null;
             }
-            else
-                settings.Running = false;
         }
 
         private void StartRenderButton_Click(object sender, RoutedEventArgs e)
         {
-            if (videoPath.Text == "")
-            {
-                MessageBox.Show("Please specify a destination path");
-                return;
-            }
+            //if (videoPath.Text == "")
+            //{
+            //    MessageBox.Show("Please specify a destination path");
+            //    return;
+            //}
 
-            if (renderer.renderer == null)
-            {
-                MessageBox.Show("No renderer is selected");
-                return;
-            }
+            //if (renderer.renderer == null)
+            //{
+            //    MessageBox.Show("No renderer is selected");
+            //    return;
+            //}
 
-            if (File.Exists(videoPath.Text))
-            {
-                if (MessageBox.Show("Are you sure you want to override " + Path.GetFileName(videoPath.Text), "Override", MessageBoxButton.YesNo) == MessageBoxResult.No)
-                    return;
-            }
-            if (File.Exists(alphaPath.Text))
-            {
-                if (MessageBox.Show("Are you sure you want to override " + Path.GetFileName(alphaPath.Text), "Override", MessageBoxButton.YesNo) == MessageBoxResult.No)
-                    return;
-            }
+            //if (File.Exists(videoPath.Text))
+            //{
+            //    if (MessageBox.Show("Are you sure you want to override " + Path.GetFileName(videoPath.Text), "Override", MessageBoxButton.YesNo) == MessageBoxResult.No)
+            //        return;
+            //}
+            //if (File.Exists(alphaPath.Text))
+            //{
+            //    if (MessageBox.Show("Are you sure you want to override " + Path.GetFileName(alphaPath.Text), "Override", MessageBoxButton.YesNo) == MessageBoxResult.No)
+            //        return;
+            //}
 
-            settings.RealtimePlayback = false;
+            //settings.RealtimePlayback = false;
 
-            settings.Running = true;
-            settings.PixelWidth = (int)viewWidth.Value * (int)SSAAFactor.Value;
-            settings.PixelHeight = (int)viewHeight.Value * (int)SSAAFactor.Value;
-            settings.SSAA = (int)SSAAFactor.Value;
-            settings.FPS = (int)viewFps.Value;
-            settings.IsRendering = true;
-            settings.RenderOutput = videoPath.Text;
-            settings.RenderStartDelay = (double)secondsDelay.Value;
+            //settings.Running = true;
+            //settings.PixelWidth = (int)viewWidth.Value * (int)SSAAFactor.Value;
+            //settings.PixelHeight = (int)viewHeight.Value * (int)SSAAFactor.Value;
+            //settings.SSAA = (int)SSAAFactor.Value;
+            //settings.FPS = (int)viewFps.Value;
+            //settings.IsRendering = true;
+            //settings.RenderOutput = videoPath.Text;
+            //settings.RenderStartDelay = (double)secondsDelay.Value;
 
-            settings.Paused = false;
-            previewPaused.IsChecked = false;
-            settings.PreviewSpeed = 1;
-            tempoMultSlider.Value = 1;
+            //settings.Paused = false;
+            //previewPaused.IsChecked = false;
+            //settings.PreviewSpeed = 1;
+            //tempoMultSlider.Value = 1;
 
-            settings.FFmpegDebug = (bool)ffdebug.IsChecked;
+            //settings.FFmpegDebug = (bool)ffdebug.IsChecked;
 
-            settings.UseBitrate = (bool)bitrateOption.IsChecked;
-            settings.CustomFFmpeg = (bool)FFmpeg.IsChecked;
-            if (settings.UseBitrate) settings.Bitrate = (int)bitrate.Value;
-            else if (settings.CustomFFmpeg)
-            {
-                settings.FFmpegCustomArgs = FFmpegOptions.Text;
-            }
-            else
-            {
-                settings.RenderCRF = (int)crfFactor.Value;
-                settings.RenderCRFPreset = (string)((ComboBoxItem)crfPreset.SelectedItem).Content;
-            }
+            //settings.UseBitrate = (bool)bitrateOption.IsChecked;
+            //settings.CustomFFmpeg = (bool)FFmpeg.IsChecked;
+            //if (settings.UseBitrate) settings.Bitrate = (int)bitrate.Value;
+            //else if (settings.CustomFFmpeg)
+            //{
+            //    settings.FFmpegCustomArgs = FFmpegOptions.Text;
+            //}
+            //else
+            //{
+            //    settings.RenderCRF = (int)crfFactor.Value;
+            //    settings.RenderCRFPreset = (string)((ComboBoxItem)crfPreset.SelectedItem).Content;
+            //}
 
-            settings.IncludeAudio = (bool)includeAudio.IsChecked;
-            settings.AudioInputPath = audioPath.Text;
-            settings.IsRenderingMask = (bool)includeAlpha.IsChecked;
-            settings.RenderMaskOutput = alphaPath.Text;
-            renderThread = Task.Factory.StartNew(RunRenderWindow);
-            Resources["notPreviewing"] = false;
-            Resources["notRendering"] = false;
+            //settings.IncludeAudio = (bool)includeAudio.IsChecked;
+            //settings.AudioInputPath = audioPath.Text;
+            //settings.IsRenderingMask = (bool)includeAlpha.IsChecked;
+            //settings.RenderMaskOutput = alphaPath.Text;
+            //renderThread = Task.Factory.StartNew(RunRenderWindow);
+            //Resources["notPreviewing"] = false;
+            //Resources["notRendering"] = false;
         }
 
         private void BrowseVideoSaveButton_Click(object sender, RoutedEventArgs e)
@@ -759,22 +774,21 @@ namespace Zenith_MIDI
 
         private void Paused_Checked(object sender, RoutedEventArgs e)
         {
-            settings.Paused = (bool)previewPaused.IsChecked;
+            SetPipelineValues();
         }
 
         private void VsyncEnabled_Checked(object sender, RoutedEventArgs e)
         {
-            if (settings == null) return;
-            settings.VSync = (bool)vsyncEnabled.IsChecked;
+            SetPipelineValues();
         }
 
         private void Grid_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Space)
-            {
-                previewPaused.IsChecked = !settings.Paused;
-                settings.Paused = (bool)previewPaused.IsChecked;
-            }
+            //if (e.Key == Key.Space)
+            //{
+            //    previewPaused.IsChecked = !settings.Paused;
+            //    settings.Paused = (bool)previewPaused.IsChecked;
+            //}
         }
 
         private void ReloadButton_Click(object sender, RoutedEventArgs e)
@@ -784,10 +798,6 @@ namespace Zenith_MIDI
 
         private void PluginsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            foreach (var p in RenderPlugins)
-            {
-                if (p.Initialized) renderer.disposeQueue.Enqueue(p);
-            }
             SelectRenderer(pluginsList.SelectedIndex);
         }
 
@@ -831,13 +841,13 @@ namespace Zenith_MIDI
 
         private void LanguageSelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (pluginControl != null)
-                lock (renderer)
-                {
-                    ((UserControl)pluginControl).Resources.MergedDictionaries[0].MergedDictionaries.Clear();
-                    ((UserControl)pluginControl).Resources.MergedDictionaries[0].MergedDictionaries.Add(Languages[0][renderer.renderer.LanguageDictName]);
-                    ((UserControl)pluginControl).Resources.MergedDictionaries[0].MergedDictionaries.Add(Languages[languageSelect.SelectedIndex][renderer.renderer.LanguageDictName]);
-                }
+            var renderer = ModuleRunner.CurrentModule;
+            if (renderer != null)
+            {
+                ((UserControl)pluginControl).Resources.MergedDictionaries[0].MergedDictionaries.Clear();
+                ((UserControl)pluginControl).Resources.MergedDictionaries[0].MergedDictionaries.Add(Languages[0][renderer.LanguageDictName]);
+                ((UserControl)pluginControl).Resources.MergedDictionaries[0].MergedDictionaries.Add(Languages[languageSelect.SelectedIndex][renderer.LanguageDictName]);
+            }
             Resources.MergedDictionaries[0].MergedDictionaries.Clear();
             Resources.MergedDictionaries[0].MergedDictionaries.Add(Languages[0]["window"]);
             Resources.MergedDictionaries[0].MergedDictionaries.Add(Languages[languageSelect.SelectedIndex]["window"]);
@@ -846,96 +856,96 @@ namespace Zenith_MIDI
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (foundOmniMIDI)
-                KDMAPI.TerminateKDMAPIStream();
+                KDMAPIOutput.Terminate();
         }
 
         private void Checkbox_Checked(object sender, RoutedEventArgs e)
         {
-            if (settings == null) return;
-            if (sender == realtimePlayback) settings.RealtimePlayback = (bool)realtimePlayback.IsChecked;
+            //if (settings == null) return;
+            //if (sender == realtimePlayback) settings.RealtimePlayback = (bool)realtimePlayback.IsChecked;
         }
 
         private void DisableKDMAPI_Click(object sender, RoutedEventArgs e)
         {
-            if (OmniMIDIDisabled)
-            {
-                disableKDMAPI.Content = Resources["disableKDMAPI"];
-                OmniMIDIDisabled = false;
-                settings.PreviewAudioEnabled = true;
-                try
-                {
-                    Console.WriteLine("Loading KDMAPI...");
-                    KDMAPI.InitializeKDMAPIStream();
-                    Console.WriteLine("Loaded!");
-                }
-                catch { }
-            }
-            else
-            {
-                disableKDMAPI.Content = Resources["enableKDMAPI"];
-                OmniMIDIDisabled = true;
-                settings.PreviewAudioEnabled = false;
-                try
-                {
-                    Console.WriteLine("Unloading KDMAPI");
-                    KDMAPI.TerminateKDMAPIStream();
-                }
-                catch { }
-            }
+            //if (OmniMIDIDisabled)
+            //{
+            //    disableKDMAPI.Content = Resources["disableKDMAPI"];
+            //    OmniMIDIDisabled = false;
+            //    settings.PreviewAudioEnabled = true;
+            //    try
+            //    {
+            //        Console.WriteLine("Loading KDMAPI...");
+            //        KDMAPI.InitializeKDMAPIStream();
+            //        Console.WriteLine("Loaded!");
+            //    }
+            //    catch { }
+            //}
+            //else
+            //{
+            //    disableKDMAPI.Content = Resources["enableKDMAPI"];
+            //    OmniMIDIDisabled = true;
+            //    settings.PreviewAudioEnabled = false;
+            //    try
+            //    {
+            //        Console.WriteLine("Unloading KDMAPI");
+            //        KDMAPI.TerminateKDMAPIStream();
+            //    }
+            //    catch { }
+            //}
         }
 
         private void NoteSizeStyle_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (settings == null) return;
-            if (noteSizeStyle.SelectedIndex == 0) settings.TimeBased = false;
-            if (noteSizeStyle.SelectedIndex == 1) settings.TimeBased = true;
+            //if (settings == null) return;
+            //if (noteSizeStyle.SelectedIndex == 0) settings.TimeBased = false;
+            //if (noteSizeStyle.SelectedIndex == 1) settings.TimeBased = true;
         }
 
         private void IgnoreColorEvents_Checked(object sender, RoutedEventArgs e)
         {
-            if (settings == null) return;
-            settings.IgnoreColorEvents = (bool)ignoreColorEvents.IsChecked;
+            //if (settings == null) return;
+            //settings.IgnoreColorEvents = (bool)ignoreColorEvents.IsChecked;
         }
 
         private void UseBGImage_Checked(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                if (useBGImage.IsChecked && bgImagePath.Text != "")
-                {
-                    settings.BGImage = bgImagePath.Text;
-                }
-                else
-                {
-                    settings.BGImage = null;
-                }
-                settings.LastBGChangeTime = DateTime.Now.Ticks;
-            }
-            catch { }
+            //try
+            //{
+            //    if (useBGImage.IsChecked && bgImagePath.Text != "")
+            //    {
+            //        settings.BGImage = bgImagePath.Text;
+            //    }
+            //    else
+            //    {
+            //        settings.BGImage = null;
+            //    }
+            //    settings.LastBGChangeTime = DateTime.Now.Ticks;
+            //}
+            //catch { }
         }
 
         private void BrowseBG_Click(object sender, RoutedEventArgs e)
         {
-            var open = new OpenFileDialog();
-            open.Filter = "Image files |*.png;*.bmp;*.jpg;*.jpeg";
-            if ((bool)open.ShowDialog())
-            {
-                bgImagePath.Text = open.FileName;
-                try
-                {
-                    settings.BGImage = bgImagePath.Text;
-                }
-                catch
-                {
-                    settings.BGImage = null;
-                }
-                settings.LastBGChangeTime = DateTime.Now.Ticks;
-            }
+            //var open = new OpenFileDialog();
+            //open.Filter = "Image files |*.png;*.bmp;*.jpg;*.jpeg";
+            //if ((bool)open.ShowDialog())
+            //{
+            //    bgImagePath.Text = open.FileName;
+            //    try
+            //    {
+            //        settings.BGImage = bgImagePath.Text;
+            //    }
+            //    catch
+            //    {
+            //        settings.BGImage = null;
+            //    }
+            //    settings.LastBGChangeTime = DateTime.Now.Ticks;
+            //}
         }
 
         private void Grid_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Space) settings.Paused = !settings.Paused;
+            // if (e.Key == Key.Space) settings.Paused = !settings.Paused;
         }
 
         private void ExitButton_Click(object sender, RoutedEventArgs e)
@@ -955,7 +965,7 @@ namespace Zenith_MIDI
 
         private void tempoMultSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (settings != null) settings.PreviewSpeed = tempoMultSlider.Value;
+            SetPipelineValues();
         }
 
         private void updateDownloaded_MouseDown(object sender, MouseButtonEventArgs e)
@@ -963,6 +973,21 @@ namespace Zenith_MIDI
             ZenithUpdates.KillAllProcesses();
             Process.Start(ZenithUpdates.InstallerPath, "update -Reopen");
             Close();
+        }
+
+        private void RealtimePreview_Checked(object sender, RoutedPropertyChangedEventArgs<bool> e)
+        {
+            SetPipelineValues();
+        }
+
+        private void VsyncEnabled_Checked(object sender, RoutedPropertyChangedEventArgs<bool> e)
+        {
+            SetPipelineValues();
+        }
+
+        private void viewFps_ValueChanged(object sender, RoutedPropertyChangedEventArgs<decimal> e)
+        {
+            SetPipelineValues();
         }
     }
 
@@ -1020,14 +1045,24 @@ namespace Zenith_MIDI
         }
     }
 
-    public class NotValueConverter : IMultiValueConverter
+    public class NotValueConverter : IMultiValueConverter, IValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            return !(bool)values[0];
+            return Convert(values[0], targetType, parameter, culture);
+        }
+
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return !(bool)value;
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }

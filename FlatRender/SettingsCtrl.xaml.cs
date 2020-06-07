@@ -15,6 +15,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using ZenithEngine.ModuleUI;
+
 namespace FlatRender
 {
     /// <summary>
@@ -43,11 +45,17 @@ namespace FlatRender
         public SettingsCtrl(Settings settings) : base()
         {
             InitializeComponent();
+            
             noteDeltaScreenTime.nudToSlider = v => Math.Log(v, 2);
             noteDeltaScreenTime.sliderToNud = v => Math.Pow(2, v);
             this.settings = settings;
             paletteList.SetPath("Plugins\\Assets\\Palettes");
             SetValues();
+
+            test.Children.Add(new UIDock(new { 
+                left = new UINumber(),
+                right = new UINumber(),
+            }));
         }
 
         private void Nud_ValueChanged(object sender, RoutedPropertyChangedEventArgs<decimal> e)

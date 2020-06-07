@@ -74,6 +74,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="OpenTK, Version=3.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>..\packages\OpenTK.3.1.0\lib\net20\OpenTK.dll</HintPath>
     </Reference>
@@ -102,23 +105,47 @@
     <Compile Include="BufferByteReader.cs" />
     <Compile Include="DisposeGroup.cs" />
     <Compile Include="FastList.cs" />
+    <Compile Include="ModuleUI\Docked.cs" />
+    <Compile Include="ModuleUI\Misc.cs" />
+    <Compile Include="GLEngine\RenderSurface.cs" />
+    <Compile Include="GLEngine\ShaderPresets.cs" />
+    <Compile Include="GLEngine\ShapeBufferTypes\BasicShapeBuffer.cs" />
+    <Compile Include="GLEngine\ShapeBufferTypes\TexturedShapeBuffer.cs" />
+    <Compile Include="GLEngine\Types\BasicVertexTypes.cs" />
+    <Compile Include="GLEngine\Compositor.cs" />
     <Compile Include="GLEngine\GLEnabler.cs" />
+    <Compile Include="GLEngine\BasicRenderSurface.cs" />
     <Compile Include="GLEngine\ShaderProgram.cs" />
     <Compile Include="GLEngine\ShapeBuffer.cs" />
+    <Compile Include="GLEngine\Texture.cs" />
     <Compile Include="GLTextEngine.cs" />
     <Compile Include="GLUtils.cs" />
+    <Compile Include="KDMAPI.cs" />
+    <Compile Include="MIDI\Audio\KDMAPIOutput.cs" />
+    <Compile Include="MIDI\Audio\MIDIAudio.cs" />
+    <Compile Include="MIDI\Disk\DiskMidiFile.cs" />
+    <Compile Include="MIDI\Disk\DiskMidiPlayback.cs" />
+    <Compile Include="MIDI\Disk\DiskMidiTrack.cs" />
+    <Compile Include="MIDI\IMidiPlaybackTrack.cs" />
+    <Compile Include="MIDI\IMidiTrack.cs" />
+    <Compile Include="MIDI\MidiFile.cs" />
+    <Compile Include="MIDI\MidiPlayback.cs" />
+    <Compile Include="MIDI\Misc.cs" />
+    <Compile Include="Modules\IModuleRender.cs" />
+    <Compile Include="Modules\ModuleManager.cs" />
+    <Compile Include="ModuleUI\UIDock.cs" />
+    <Compile Include="ModuleUI\UILabel.cs" />
+    <Compile Include="ModuleUI\UINumber.cs" />
     <Compile Include="ModuleUtil\KeyboardState.cs" />
+    <Compile Include="Preview\PreviewWindow.cs" />
     <Compile Include="ScriptedCompile\ExtraUI.cs" />
     <Compile Include="ScriptedCompile\IO.cs" />
-    <Compile Include="Modules\IPluginRender.cs" />
-    <Compile Include="MidiFile.cs" />
-    <Compile Include="MidiTrack.cs" />
     <Compile Include="NoteColorPalettePick.xaml.cs">
       <DependentUpon>NoteColorPalettePick.xaml</DependentUpon>
     </Compile>
     <Compile Include="PluginUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RenderSettings.cs" />
+    <Compile Include="RenderStatus.cs" />
     <Compile Include="UI\BBinding.cs" />
     <Compile Include="UI\BetterCheckbox.xaml.cs">
       <DependentUpon>BetterCheckbox.xaml</DependentUpon>

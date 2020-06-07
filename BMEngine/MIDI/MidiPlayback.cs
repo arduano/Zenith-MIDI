@@ -12,7 +12,7 @@ namespace ZenithEngine.MIDI
         public bool TimeBased { get; }
         public bool PreviewMode { get; }
 
-        public bool PushPlaybackEvents { get; set; }
+        public bool PushPlaybackEvents { get; set; } = false;
 
         public int TrackCount => Midi.TrackCount;
         public FastList<Note> Notes { get; protected set; }
@@ -25,6 +25,7 @@ namespace ZenithEngine.MIDI
 
         public abstract double ParserPosition { get; }
         public abstract double PlayerPosition { get; }
+        public abstract double PlayerPositionSeconds { get; }
 
         public abstract MidiFile Midi { get; }
 
@@ -32,9 +33,11 @@ namespace ZenithEngine.MIDI
 
         public abstract IMidiPlaybackTrack[] Tracks { get; }
 
+        public abstract long LastIterateNoteCount { get; }
+
         public MidiPlayback(MidiFile midi)
         {
-            ParserTempoTickMultiplier = (double)midi.PPQ / 500000 * 1000;
+            ParserTempoTickMultiplier = (500000.0 / midi.PPQ) / 1000000;
         }
 
         public void CheckParseDistance(double parseDist)
@@ -72,11 +75,18 @@ namespace ZenithEngine.MIDI
             }
         }
 
+        public void AdvancePlayback(double offset)
+        {
+            AdvancePlaybackTo(PlayerPositionSeconds + offset);
+        }
+        public abstract void AdvancePlaybackTo(double time);
+
         public abstract IEnumerable<Note> IterateNotes();
         public abstract IEnumerable<Note> IterateNotes(double topCutoffOffset);
         public abstract IEnumerable<Note> IterateNotesCustomDelete();
 
 
+        public abstract void ForceStop();
         public abstract void Dispose();
     }
 }

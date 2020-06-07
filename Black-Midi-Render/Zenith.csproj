@@ -34,7 +34,7 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Zenith_MIDI.Program</StartupObject>
+    <StartupObject>Zenith.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>icon.ico</ApplicationIcon>
@@ -141,9 +141,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GLPostbuffer.cs" />
     <Compile Include="GLUtils.cs" />
-    <Compile Include="KDMAPI.cs" />
+    <Compile Include="InstallSettings.cs" />
+    <Compile Include="InstanceSettings.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
@@ -154,8 +154,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="RenderPipeline.cs" />
     <Compile Include="RenderWindow.cs" />
-    <Compile Include="Settings.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

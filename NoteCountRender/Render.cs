@@ -58,7 +58,7 @@ namespace NoteCountRender
 
         public System.Windows.Controls.Control SettingsControl { get; set; }
 
-        RenderSettings renderSettings;
+        RenderStatus renderSettings;
         Settings settings;
 
         GLTextEngine textEngine;
@@ -102,7 +102,7 @@ namespace NoteCountRender
             Console.WriteLine("Initialised NoteCountRender");
         }
 
-        public Render(RenderSettings settings)
+        public Render(RenderStatus settings)
         {
             this.renderSettings = settings;
             this.settings = new Settings();

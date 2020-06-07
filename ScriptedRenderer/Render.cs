@@ -263,7 +263,7 @@ void main()
 
         public long lastScriptChangeTime = 0;
 
-        RenderSettings renderSettings;
+        RenderStatus renderSettings;
         Settings settings;
 
         SettingsCtrl settingsControl;
@@ -274,7 +274,7 @@ void main()
         BlendFunc currentBlendFunc;
         #endregion
 
-        public Render(RenderSettings settings)
+        public Render(RenderStatus settings)
         {
             renderSettings = settings;
 

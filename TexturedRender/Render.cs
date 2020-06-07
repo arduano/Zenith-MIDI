@@ -273,7 +273,7 @@ void main()
         float[] quadTexIDbuff;
         int quadBufferPos = 0;
 
-        RenderSettings renderSettings;
+        RenderStatus renderSettings;
         Settings settings;
 
         int indexBufferId;
@@ -398,7 +398,7 @@ void main()
             Console.WriteLine("Disposed of TextureRender");
         }
 
-        public Render(RenderSettings settings)
+        public Render(RenderStatus settings)
         {
             this.settings = new Settings();
             this.renderSettings = settings;

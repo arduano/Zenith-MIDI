@@ -7,7 +7,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace ZenithEngine.GLEngine
 {
-    public class ShaderProgram : IDisposable
+    public partial class ShaderProgram : IDisposable
     {
         string vert = null;
         string geo = null;
@@ -18,6 +18,8 @@ namespace ZenithEngine.GLEngine
         int fragId = -1;
 
         int programId = -1;
+
+        Dictionary<string, string> defines = new Dictionary<string, string>();
 
         public ShaderProgram(string vert, string frag)
         {
@@ -48,10 +50,27 @@ namespace ZenithEngine.GLEngine
 
             programId = GL.CreateProgram();
 
+            string prepend = "";
+
+            foreach(var k in defines)
+            {
+                prepend += $"#define {k.Key} {k.Value}\n";
+            }
+
             void Check(string code, ShaderType type, ref int id)
             {
                 if (code != null)
                 {
+                    var lines = code.Split('\n');
+                    var versionLine = Array.FindIndex(lines, (l) => l.Contains("#version"));
+                    if(versionLine == -1) throw new ApplicationException("Versin line missing in shader");
+
+                    code = string.Join("\n", 
+                        lines.Take(versionLine + 1)
+                        .Concat(new[] { "", prepend, "" })
+                        .Concat(lines.Skip(versionLine + 1))
+                    );
+
                     id = CompileSingleShader(code, type);
                     GL.AttachShader(programId, id);
                     GL.LinkProgram(id);
@@ -79,10 +98,41 @@ namespace ZenithEngine.GLEngine
             }
 
             GL.DeleteProgram(programId);
+            programId = -1;
+
             DeleteIfExists(ref vertId);
             DeleteIfExists(ref geoId);
             DeleteIfExists(ref fragId);
         }
+
+        public ShaderProgram SetDefine(string define) => SetDefine(define, "");
+        public ShaderProgram SetDefine(string define, int value) => SetDefine(define, value.ToString());
+        public ShaderProgram SetDefine(string define, float value) => SetDefine(define, value.ToString());
+        public ShaderProgram SetDefine(string define, string value)
+        {
+            if (defines.ContainsKey(define))
+            {
+                if (defines[define] == value) return this;
+                defines[define] = value;
+            }
+            else
+            {
+                defines.Add(define, value);
+            }
+
+            Dispose();
+            
+            return this;
+        }
+
+        public ShaderProgram RemoveDefine(string define)
+        {
+            if (!defines.ContainsKey(define)) return this;
+            defines.Remove(define);
+            Dispose();
+            return this;
+        }
+
 
         public void Bind()
         {

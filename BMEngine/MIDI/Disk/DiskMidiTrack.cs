@@ -42,6 +42,8 @@ namespace ZenithEngine.MIDI.Disk
         public NoteColor[] TrackColors { get; } = new NoteColor[16];
         public NoteColor[] InitialTrackColors { get; } = new NoteColor[16];
 
+        public long LastNoteTick { get; private set; }
+
         bool readDelta = false;
         FastList<Note>[] unendedNotes = null;
 
@@ -92,6 +94,7 @@ namespace ZenithEngine.MIDI.Disk
         {
             var track = new DiskMidiTrack(id, reader, TrackMode.Parse);
             track.InitialParse(progressCallback, callbackRate);
+            reader.Dispose();
             return track;
         }
 
@@ -99,7 +102,7 @@ namespace ZenithEngine.MIDI.Disk
             int id,
             BufferByteReader reader)
         {
-            return NewParserTrack(id, reader, null, 0);
+            return NewParserTrack(id, reader, null, int.MaxValue);
         }
 
         public static DiskMidiTrack NewPlayerTrack(
@@ -158,7 +161,7 @@ namespace ZenithEngine.MIDI.Disk
 
         public void Step(long time)
         {
-            ParseTimeSeconds += (time - lastStepTime) / MidiPlayback.ParserTempoTickMultiplier;
+            ParseTimeSeconds += (time - lastStepTime) * MidiPlayback.ParserTempoTickMultiplier;
             lastStepTime = time;
             try
             {
@@ -242,6 +245,8 @@ namespace ZenithEngine.MIDI.Disk
                     byte note = reader.Read();
                     byte vel = reader.ReadFast();
 
+                    LastNoteTick = ParseTimeTicks;
+
                     if (loading)
                     {
                         if (comm == 0x90 && vel != 0)
@@ -251,13 +256,16 @@ namespace ZenithEngine.MIDI.Disk
                         return;
                     }
 
-                    if (MidiPlayback.PushPlaybackEvents && (comm == 0x80 || vel > 10))
+                    void sendEv()
                     {
-                        MidiPlayback.PlaybackEvents.Add(new PlaybackEvent()
+                        if (MidiPlayback.PushPlaybackEvents)
                         {
-                            time = ParseTimeSeconds,
-                            val = command | (note << 8) | (vel << 16)
-                        });
+                            MidiPlayback.PlaybackEvents.Add(new PlaybackEvent()
+                            {
+                                time = ParseTimeSeconds,
+                                val = command | (note << 8) | (vel << 16)
+                            });
+                        }
                     }
 
                     if (unendedNotes == null)
@@ -274,10 +282,12 @@ namespace ZenithEngine.MIDI.Disk
                             Note n = l.Pop();
                             n.end = time;
                             n.hasEnded = true;
+                            if (n.vel > 10) sendEv();
                         }
                     }
                     else
                     {
+                        if (vel > 10) sendEv();
                         Note n = new Note();
                         n.start = time;
                         n.key = note;
@@ -456,7 +466,7 @@ namespace ZenithEngine.MIDI.Disk
                         }
                         else
                         {
-                            MidiPlayback.ParserTempoTickMultiplier = ((double)MidiPlayback.Midi.PPQ / btempo) * 1000;
+                            MidiPlayback.ParserTempoTickMultiplier = ((double)btempo / MidiPlayback.Midi.PPQ) / 1000000;
                         }
                     }
                     else if (command == 0x58)

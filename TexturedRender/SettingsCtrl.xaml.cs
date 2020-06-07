@@ -549,7 +549,7 @@ namespace TexturedRender
                 {
                     pack.interpolateUnendedNotes = parseType<float>(pack, data.interpolateUnendedNotes);
                 }
-                catch (RuntimeBinderException) { }
+                catch (RuntimeBinderException) { } 
                 #endregion
 
                 #region Shaders

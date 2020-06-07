@@ -24,6 +24,7 @@ namespace ZenithEngine.MIDI.Disk
     public class DiskMidiFile : MidiFile
     {
         Stream MidiFileReader;
+        DiskReadProvider FileReadProvider;
         public ushort Format { get; private set; }
 
         public IMidiTrack[] Tracks { get; private set; }
@@ -101,7 +102,7 @@ namespace ZenithEngine.MIDI.Disk
         public void LoadAndParseAll()
         {
             int p = 0;
-            var diskReader = new DiskReadProvider(MidiFileReader);
+            FileReadProvider = new DiskReadProvider(MidiFileReader);
             int[] trackOrder = new int[Tracks.Length];
             for (int i = 0; i < trackOrder.Length; i++) trackOrder[i] = i;
             Array.Sort(TrackPositions.Select(t => t.length).ToArray(), trackOrder);
@@ -110,16 +111,17 @@ namespace ZenithEngine.MIDI.Disk
             ParallelFor(0, Tracks.Length, Environment.ProcessorCount * 3, (_i) =>
             {
                 int i = trackOrder[_i];
-                var reader = new BufferByteReader(diskReader, 10000000, TrackPositions[i].start, TrackPositions[i].length);
+                var reader = new BufferByteReader(FileReadProvider, 10000000, TrackPositions[i].start, TrackPositions[i].length);
                 var t = DiskMidiTrack.NewParserTrack(i, reader);
                 NoteCount += t.NoteCount;
                 Tracks[i] = t;
+                t.Dispose();
                 lock (l)
                 {
                     Console.WriteLine("Loaded track " + p++ + "/" + Tracks.Length);
                 }
             });
-            TickLength = Tracks.Select(t => t.TickLength).Max();
+            TickLength = Tracks.Select(t => t.LastNoteTick).Max();
             Console.WriteLine("Processing Tempos");
 
             var temposMerge = ZipMerger<Tempo>.MergeMany(Tracks.Select(t => t.TempoEvents).ToArray(), e => e.pos).ToArray();
@@ -143,6 +145,7 @@ namespace ZenithEngine.MIDI.Disk
             foreach (var t in TempoEvents)
             {
                 var offset = t.pos - lastt;
+                if (offset > ticks) break;
                 time += offset * multiplier;
                 ticks -= offset;
                 lastt = t.pos;
@@ -190,6 +193,11 @@ namespace ZenithEngine.MIDI.Disk
         {
             foreach (var t in Tracks) t.Dispose();
             MidiFileReader.Dispose();
+        }
+
+        public override MidiPlayback GetMidiPlayback(double startOffset)
+        {
+            return new DiskMidiPlayback(this, FileReadProvider, startOffset);
         }
     }
 }

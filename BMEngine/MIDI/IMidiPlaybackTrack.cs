@@ -9,11 +9,11 @@ namespace ZenithEngine.MIDI
     public interface IMidiPlaybackTrack : IDisposable
     {
         int ID { get; }
-        public bool Ended { get; }
-        public long NoteCount { get; }
-        public long ParseTimeTicks { get; }
-        public double ParseTimeSeconds { get; }
-        public NoteColor[] TrackColors { get; }
+        bool Ended { get; }
+        long NoteCount { get; }
+        long ParseTimeTicks { get; }
+        double ParseTimeSeconds { get; }
+        NoteColor[] TrackColors { get; }
 
         MidiPlayback MidiPlayback { get; }
 

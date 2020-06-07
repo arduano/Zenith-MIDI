@@ -37,6 +37,7 @@
                 <ui:NumberSelect x:Name="pianoHeight" Value="1" Maximum="100" Minimum="1" Margin="6,0,0,2" HorizontalAlignment="Left" Width="80" ValueChanged="Nud_ValueChanged"  />
             </DockPanel>
             <ui:BetterCheckbox x:Name="sameWidth" Text="{DynamicResource sameWidthNotes}" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" IsChecked="True" CheckToggled="SameWidth_Checked"/>
+            <Grid Name="test"/>
         </StackPanel>
         <bme:NoteColorPalettePick x:FieldModifier="public" x:Name="paletteList" Margin="0,10,10,10" HorizontalAlignment="Right" Width="184"/>
     </DockPanel>

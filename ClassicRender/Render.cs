@@ -78,7 +78,7 @@ void main()
 ";
         #endregion
 
-        RenderSettings renderSettings;
+        RenderStatus renderSettings;
         Settings settings;
 
         public long LastNoteCount { get; private set; }
@@ -122,7 +122,7 @@ void main()
             Console.WriteLine("Disposed of ClassicRender");
         }
 
-        public Render(RenderSettings settings)
+        public Render(RenderStatus settings)
         {
             this.settings = new Settings();
             this.renderSettings = settings;

@@ -39,4 +39,25 @@ namespace ZenithEngine.UI
             o.SetBinding(p, b);
         }
     }
+
+    public class InplaceConverter<T1, R1> : InplaceConverter
+    {
+        public InplaceConverter(Binding binding1, Func<T1, R1> func)
+            : base(new[] { binding1 }, (d) => func((T1)d[0]))
+        { }
+    }
+
+    public class InplaceConverter<T1, T2, R1> : InplaceConverter
+    {
+        public InplaceConverter(Binding binding1, Binding binding2, Func<T1, T2, R1> func)
+            : base(new[] { binding1, binding2 }, (d) => func((T1)d[0], (T2)d[1]))
+        { }
+    }
+
+    public class InplaceConverter<T1, T2, T3, R1> : InplaceConverter
+    {
+        public InplaceConverter(Binding binding1, Binding binding2, Binding binding3, Func<T1, T2, T3, R1> func)
+            : base(new[] { binding1, binding2, binding3 }, (d) => func((T1)d[0], (T2)d[1], (T3)d[2]))
+        { }
+    }
 }

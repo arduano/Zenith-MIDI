@@ -24,23 +24,6 @@ namespace FlatRender
 {
     public class Render : IModuleRender
     {
-        #region Vertex
-        [StructLayoutAttribute(LayoutKind.Sequential)]
-        struct VertType
-        {
-            float x;
-            float y;
-            Color4 color;
-
-            public VertType(float x, float y, Color4 color)
-            {
-                this.x = x;
-                this.y = y;
-                this.color = color;
-            }
-        }
-        #endregion
-
         #region Info
         public string Name { get; } = "Flat";
         public string Description { get; } = "Flat renderer, requested by SquareWaveMidis for his channel";
@@ -49,80 +32,40 @@ namespace FlatRender
         public string LanguageDictName { get; } = "flat";
         #endregion
 
-        #region Shaders
-        string noteShaderVert = @"
-#version 330 compatibility
-
-layout(location = 0) in vec3 position;
-layout(location = 1) in vec4 glColor;
-
-out vec4 color;
-
-void main()
-{
-    gl_Position = vec4(position.x * 2 - 1, position.y * 2 - 1, 1.0f, 1.0f);
-    color = glColor;
-}
-";
-        string noteShaderFrag = @"
-#version 330 compatibility
- 
-in vec4 color;
- 
-out vec4 outputF;
-layout(location = 0) out vec4 texOut;
-
-void main()
-{
-    outputF = color;
-	texOut = outputF;
-}
-";
-        #endregion
-
-        RenderSettings renderSettings;
+        RenderStatus renderStatus;
         Settings settings;
 
         SettingsCtrl settingsControl;
 
-        public long LastNoteCount { get; private set; }
-
         public Control SettingsControl { get { return settingsControl; } }
-
-        public bool ManualNoteDelete => false;
-
-        public double Tempo { get; set; }
-
+        
         public double StartOffset => settings.deltaTimeOnScreen;
 
-        ShapeBuffer<VertType> quadBuffer;
+        BasicShapeBuffer quadBuffer;
         ShaderProgram flatShader;
 
         MidiPlayback midi = null;
 
         DisposeGroup disposer;
 
-        public Render(RenderSettings settings)
+        public Render()
         {
-            this.renderSettings = settings;
             this.settings = new Settings();
             PreviewImage = PluginUtils.BitmapToImageSource(Properties.Resources.preview);
             settingsControl = new SettingsCtrl(this.settings);
             ((SettingsCtrl)SettingsControl).PaletteChanged += () => { ReloadTrackColors(); };
         }
 
-        public void Init(MidiPlayback file)
+        public void Init(MidiPlayback file, RenderStatus status)
         {
             midi = file;
 
             disposer = new DisposeGroup();
 
-            quadBuffer = disposer.Add(new ShapeBuffer<VertType>(1024 * 64, ShapeTypes.Triangles, ShapePresets.Quads, new[] {
-                new InputAssemblyPart(2, VertexAttribPointerType.Float, 0),
-                new InputAssemblyPart(4, VertexAttribPointerType.Float, 8),
-            }));
+            quadBuffer = disposer.Add(new BasicShapeBuffer(1024 * 64, ShapePresets.Quads));
+            flatShader = disposer.Add(BasicShapeBuffer.GetBasicShader());
 
-            flatShader = disposer.Add(new ShaderProgram(noteShaderVert, noteShaderFrag));
+            ReloadTrackColors();
 
             Initialized = true;
         }
@@ -143,14 +86,11 @@ void main()
             {
                 GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-                renderSurface.BindSurface();
-                GL.Viewport(0, 0, renderSettings.PixelWidth, renderSettings.PixelHeight);
-                GL.Clear(ClearBufferMask.ColorBufferBit);
+                renderSurface.BindSurfaceAndClear();
 
                 flatShader.Bind();
 
                 #region Vars
-                long nc = 0;
                 var midiTime = midi.PlayerPosition;
                 int firstNote = settings.firstNote;
                 int lastNote = settings.lastNote;
@@ -171,16 +111,9 @@ void main()
 
                 double notePosFactor = 1 / screenTime * (1 - pianoHeight);
 
-                var iter = midi.Notes.Iterate();
-                for (Note n = null; iter.MoveNext(out n);)
+                double renderCutoff = midiTime + screenTime;
+                foreach (var n in midi.IterateNotes(renderCutoff))
                 {
-                    double renderCutoff = midiTime + screenTime;
-                    if (n.end < midiTime && n.hasEnded)
-                    {
-                        iter.Remove();
-                        continue;
-                    }
-
                     if (n.start >= renderCutoff) break;
                     if (n.key < firstNote || n.key >= lastNote) continue;
 
@@ -196,15 +129,11 @@ void main()
                     if (!n.hasEnded)
                         end = 1;
 
-                    quadBuffer.PushVertex(new VertType(right, start, n.color.Left));
-                    quadBuffer.PushVertex(new VertType(right, end, n.color.Left));
-                    quadBuffer.PushVertex(new VertType(left, end, n.color.Right));
-                    quadBuffer.PushVertex(new VertType(left, start, n.color.Right));
-
-                    nc++;
+                    quadBuffer.PushVertex(right, start, n.color.Left);
+                    quadBuffer.PushVertex(right, end, n.color.Left);
+                    quadBuffer.PushVertex(left, end, n.color.Right);
+                    quadBuffer.PushVertex(left, start, n.color.Right);
                 }
-
-                LastNoteCount = nc;
 
                 for (int n = kbfirstNote; n < kblastNote; n++)
                 {
@@ -215,10 +144,10 @@ void main()
                     var coll = keyboard.Colors[n].Left;
                     var colr = keyboard.Colors[n].Right;
 
-                    quadBuffer.PushVertex(new VertType(left, 0, coll));
-                    quadBuffer.PushVertex(new VertType(right, 0, coll));
-                    quadBuffer.PushVertex(new VertType(right, pianoHeight, colr));
-                    quadBuffer.PushVertex(new VertType(left, pianoHeight, colr));
+                    quadBuffer.PushVertex(left, 0, coll);
+                    quadBuffer.PushVertex(right, 0, coll);
+                    quadBuffer.PushVertex(right, pianoHeight, colr);
+                    quadBuffer.PushVertex(left, pianoHeight, colr);
                 }
                 for (int n = kbfirstNote; n < kblastNote; n++)
                 {
@@ -230,10 +159,10 @@ void main()
                     var colr = keyboard.Colors[n].Right;
                     float keyBottom = (float)(pianoHeight / 10 * 3.7);
 
-                    quadBuffer.PushVertex(new VertType(left, keyBottom, coll));
-                    quadBuffer.PushVertex(new VertType(right, keyBottom, coll));
-                    quadBuffer.PushVertex(new VertType(right, pianoHeight, colr));
-                    quadBuffer.PushVertex(new VertType(left, pianoHeight, colr));
+                    quadBuffer.PushVertex(left, keyBottom, coll);
+                    quadBuffer.PushVertex(right, keyBottom, coll);
+                    quadBuffer.PushVertex(right, pianoHeight, colr);
+                    quadBuffer.PushVertex(left, pianoHeight, colr);
 
                 }
                 quadBuffer.Flush();

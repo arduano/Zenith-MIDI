@@ -1,6 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:ZenithEngine.UI"
+                    xmlns:module="clr-namespace:ZenithEngine.ModuleUI"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib"
                     xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2"
                     xmlns:media="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
@@ -14,6 +15,10 @@
         <Setter Property="Control.FontSize" Value="14"/>
     </Style>
     <Style TargetType="{x:Type Label}">
+        <Setter Property="Control.Foreground" Value="White"/>
+        <Setter Property="Control.FontSize" Value="14"/>
+    </Style>
+    <Style TargetType="{x:Type module:UILabel}">
         <Setter Property="Control.Foreground" Value="White"/>
         <Setter Property="Control.FontSize" Value="14"/>
     </Style>

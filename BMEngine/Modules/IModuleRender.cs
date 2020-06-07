@@ -23,7 +23,7 @@ namespace ZenithEngine.Modules
         Control SettingsControl { get; }
         public double StartOffset { get; }
 
-        void Init(MidiPlayback midi);
+        void Init(MidiPlayback midi, RenderStatus status);
         void RenderFrame(RenderSurface finalCompositeBuff);
         void ReloadTrackColors();
     }
