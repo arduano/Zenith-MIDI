@@ -9,14 +9,30 @@ using System.Windows;
 
 namespace ZenithEngine.ModuleUI
 {
-    public class UINumber : Docked<decimal>
+    public class UINumber : Docked<decimal>, IValueItem<decimal>
     {
+        public static implicit operator decimal(UINumber val) => val.Value;
+        public static implicit operator int(UINumber val) => (int)val.Value;
+        public static implicit operator double(UINumber val) => (double)val.Value;
+        public static implicit operator float(UINumber val) => (float)val.Value;
+
         NumberSelect numberItem = new NumberSelect() { MinWidth = 80 };
 
-        public override decimal Value
+        public decimal ValueInternal
         {
             get => numberItem.Value;
             set { if (numberItem.Value != value) numberItem.Value = value; }
+        }
+
+        decimal cacheValue = 0;
+        public override decimal Value
+        {
+            get => cacheValue;
+            set
+            {
+                cacheValue = value;
+                UITools.SyncValue(this);
+            }
         }
 
         public override event EventHandler<decimal> ValueChanged;
@@ -53,16 +69,19 @@ namespace ZenithEngine.ModuleUI
 
         public UINumber()
         {
-            HorizontalAlignment = HorizontalAlignment.Left;
             Children.Add(labelItem);
             Children.Add(numberItem);
             SetDock(labelItem, Dock.Left);
             SetDock(numberItem, Dock.Left);
 
+            Margin = new Thickness(0, 0, 10, 10);
+
             numberItem.ValueChanged += (s, e) =>
             {
                 ValueChanged?.Invoke(this, e.NewValue);
             };
+
+            UITools.BindValue(this);
         }
 
         public override void Parse(string value)

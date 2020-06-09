@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using ZenithEngine.GLEngine;
@@ -20,7 +21,7 @@ namespace ZenithEngine.Modules
 
         string LanguageDictName { get; }
 
-        Control SettingsControl { get; }
+        FrameworkElement SettingsControl { get; }
         public double StartOffset { get; }
 
         void Init(MidiPlayback midi, RenderStatus status);

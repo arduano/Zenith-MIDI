@@ -19,6 +19,7 @@ using System.Runtime.InteropServices;
 using ZenithEngine.ModuleUtil;
 using ZenithEngine.Modules;
 using ZenithEngine.MIDI;
+using ZenithEngine.ModuleUI;
 
 namespace FlatRender
 {
@@ -28,18 +29,81 @@ namespace FlatRender
         public string Name { get; } = "Flat";
         public string Description { get; } = "Flat renderer, requested by SquareWaveMidis for his channel";
         public bool Initialized { get; private set; } = false;
-        public ImageSource PreviewImage { get; private set; }
+        public ImageSource PreviewImage { get; } = ModuleUtils.BitmapToImageSource(Properties.Resources.preview);
         public string LanguageDictName { get; } = "flat";
         #endregion
 
+        #region UI
+        class UI : UIDockWithPalettes
+        {
+            public class Keys : UIDock
+            {
+                public Keys() : base(Dock.Left) { }
+
+                [UIChild]
+                public UINumber left = new UINumber()
+                {
+                    Label = "Left Key",
+                    Min = 0,
+                    Max = 255,
+                    Value = 0,
+                };
+
+                [UIChild]
+                public UINumber right = new UINumber()
+                {
+                    Label = "Right Key",
+                    Min = 1,
+                    Max = 256,
+                    Value = 128,
+                };
+            }
+
+            [UIChild]
+            public Keys keys = new Keys();
+
+            [UIChild]
+            public UINumberSlider noteScreenTime = new UINumberSlider()
+            {
+                Label = "Note Screen Time",
+                SliderMin = 2,
+                SliderMax = 4096,
+                Min = 0.1,
+                Max = 1000000,
+                DecimalPoints = 2,
+                Step = 1,
+                Value = 400,
+            };
+
+            [UIChild]
+            public UINumberSlider kbHeight = new UINumberSlider()
+            {
+                Label = "Keyboard Height %",
+                SliderMin = 0,
+                SliderMax = 100,
+                Min = 0,
+                Max = 100,
+                DecimalPoints = 2,
+                Step = 1,
+                Value = 16,
+                SliderWidth = 200,
+            };
+
+            [UIChild]
+            public UICheckbox sameWidthNotes = new UICheckbox()
+            {
+                Label = "Same Width Notes",
+                IsChecked = true,
+            };
+        }
+        #endregion
+
         RenderStatus renderStatus;
-        Settings settings;
 
-        SettingsCtrl settingsControl;
+        UI settings = new UI();
+        public FrameworkElement SettingsControl => settings;
 
-        public Control SettingsControl { get { return settingsControl; } }
-        
-        public double StartOffset => settings.deltaTimeOnScreen;
+        public double StartOffset => settings.noteScreenTime.Value;
 
         BasicShapeBuffer quadBuffer;
         ShaderProgram flatShader;
@@ -50,10 +114,7 @@ namespace FlatRender
 
         public Render()
         {
-            this.settings = new Settings();
-            PreviewImage = PluginUtils.BitmapToImageSource(Properties.Resources.preview);
-            settingsControl = new SettingsCtrl(this.settings);
-            ((SettingsCtrl)SettingsControl).PaletteChanged += () => { ReloadTrackColors(); };
+            settings.Palette.PaletteChanged += ReloadTrackColors;
         }
 
         public void Init(MidiPlayback file, RenderStatus status)
@@ -61,6 +122,7 @@ namespace FlatRender
             midi = file;
 
             disposer = new DisposeGroup();
+            renderStatus = status;
 
             quadBuffer = disposer.Add(new BasicShapeBuffer(1024 * 64, ShapePresets.Quads));
             flatShader = disposer.Add(BasicShapeBuffer.GetBasicShader());
@@ -80,7 +142,9 @@ namespace FlatRender
 
         public void RenderFrame(RenderSurface renderSurface)
         {
-            midi.CheckParseDistance(settings.deltaTimeOnScreen);
+            double screenTime = settings.noteScreenTime;
+
+            midi.CheckParseDistance(screenTime);
 
             using (new GLEnabler().Enable(EnableCap.Blend))
             {
@@ -90,29 +154,27 @@ namespace FlatRender
 
                 flatShader.Bind();
 
-                #region Vars
                 var midiTime = midi.PlayerPosition;
-                int firstNote = settings.firstNote;
-                int lastNote = settings.lastNote;
+                int firstNote = settings.keys.left;
+                int lastNote = settings.keys.right;
+                bool sameWidth = settings.sameWidthNotes;
 
                 var keyboard = new KeyboardState(firstNote, lastNote, new KeyboardParams()
                 {
-                    SameWidthNotes = settings.sameWidthNotes,
+                    SameWidthNotes = sameWidth,
                 });
 
-                int kbfirstNote = settings.firstNote;
-                int kblastNote = settings.lastNote;
+                int kbfirstNote = firstNote;
+                int kblastNote = lastNote;
                 if (keyboard.BlackKey[firstNote]) kbfirstNote--;
                 if (keyboard.BlackKey[lastNote - 1]) kblastNote++;
 
-                double screenTime = settings.deltaTimeOnScreen;
-                float pianoHeight = (float)settings.pianoHeight;
-                #endregion
+                float pianoHeight = settings.kbHeight / 100;
 
                 double notePosFactor = 1 / screenTime * (1 - pianoHeight);
 
                 double renderCutoff = midiTime + screenTime;
-                foreach (var n in midi.IterateNotes(renderCutoff))
+                foreach (var n in midi.IterateNotes(renderCutoff).BlackNotesAbove(!sameWidth))
                 {
                     if (n.start >= renderCutoff) break;
                     if (n.key < firstNote || n.key >= lastNote) continue;
@@ -163,16 +225,14 @@ namespace FlatRender
                     quadBuffer.PushVertex(right, keyBottom, coll);
                     quadBuffer.PushVertex(right, pianoHeight, colr);
                     quadBuffer.PushVertex(left, pianoHeight, colr);
-
                 }
                 quadBuffer.Flush();
-
             }
         }
 
         public void ReloadTrackColors()
         {
-            var cols = ((SettingsCtrl)SettingsControl).paletteList.GetColors(midi.TrackCount);
+            var cols = settings.Palette.GetColors(midi.TrackCount);
             midi.ApplyColors(cols);
         }
     }

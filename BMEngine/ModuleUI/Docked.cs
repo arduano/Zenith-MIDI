@@ -8,7 +8,7 @@ using System.Windows;
 
 namespace ZenithEngine.ModuleUI
 {
-    public abstract class Docked<T> : DockPanel, IFieldItem<T>
+    public abstract class Docked<T> : DockPanel, ISerializableItem
     {
         protected UILabel labelItem = new UILabel() { Visibility = Visibility.Collapsed, Margin = new Thickness(0, 0, 5, 0) };
 
@@ -24,6 +24,12 @@ namespace ZenithEngine.ModuleUI
             }
         }
 
+        public double MinLabelWidth
+        {
+            get => labelItem.MinWidth;
+            set => labelItem.MinWidth = value;
+        }
+
         public abstract T Value { get; set; }
         public abstract event EventHandler<T> ValueChanged;
 
@@ -32,7 +38,7 @@ namespace ZenithEngine.ModuleUI
 
         public Docked()
         {
-            Margin = new Thickness(0, 0, 0, 10);
+            Margin = new Thickness(0, 0, 5, 5);
         }
     }
 }

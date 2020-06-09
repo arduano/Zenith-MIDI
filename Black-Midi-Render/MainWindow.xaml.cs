@@ -283,7 +283,7 @@ namespace Zenith
         MidiFile midifile = null;
         string midipath = "";
 
-        Control pluginControl = null;
+        FrameworkElement pluginControl = null;
 
         ObservableCollection<IModuleRender> RenderPlugins { get; } = new ObservableCollection<IModuleRender>();
 
@@ -536,7 +536,11 @@ namespace Zenith
                 {
                     RenderPlugins.Add(ModuleManager.LoadModule(d));
                 }
+#if DEBUG
+                catch (ModuleLoadFailedException e)
+#else
                 catch (Exception e)
+#endif
                 {
                     MessageBox.Show(e.Message);
                 }
@@ -654,6 +658,8 @@ namespace Zenith
 
         void StartPipeline(bool render)
         {
+            //ModuleRunner.CurrentModule
+
             var playback = midifile.GetMidiPlayback(0);
             CurrentRenderStatus = new RenderStatus((int)viewWidth.Value, (int)viewHeight.Value, (int)SSAAFactor.Value);
             ActivePipeline = new RenderPipeline(CurrentRenderStatus, playback, ModuleRunner, false);
@@ -844,9 +850,9 @@ namespace Zenith
             var renderer = ModuleRunner.CurrentModule;
             if (renderer != null)
             {
-                ((UserControl)pluginControl).Resources.MergedDictionaries[0].MergedDictionaries.Clear();
-                ((UserControl)pluginControl).Resources.MergedDictionaries[0].MergedDictionaries.Add(Languages[0][renderer.LanguageDictName]);
-                ((UserControl)pluginControl).Resources.MergedDictionaries[0].MergedDictionaries.Add(Languages[languageSelect.SelectedIndex][renderer.LanguageDictName]);
+                pluginControl.Resources.MergedDictionaries.Clear();
+                pluginControl.Resources.MergedDictionaries.Add(Languages[0][renderer.LanguageDictName]);
+                pluginControl.Resources.MergedDictionaries.Add(Languages[languageSelect.SelectedIndex][renderer.LanguageDictName]);
             }
             Resources.MergedDictionaries[0].MergedDictionaries.Clear();
             Resources.MergedDictionaries[0].MergedDictionaries.Add(Languages[0]["window"]);

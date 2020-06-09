@@ -44,6 +44,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>bin\Release\</OutputPath>
@@ -133,9 +134,13 @@
     <Compile Include="MIDI\Misc.cs" />
     <Compile Include="Modules\IModuleRender.cs" />
     <Compile Include="Modules\ModuleManager.cs" />
+    <Compile Include="ModuleUI\UICheckbox.cs" />
     <Compile Include="ModuleUI\UIDock.cs" />
+    <Compile Include="ModuleUI\UIDockWithPalettes.cs" />
     <Compile Include="ModuleUI\UILabel.cs" />
     <Compile Include="ModuleUI\UINumber.cs" />
+    <Compile Include="ModuleUI\UINumberSlider.cs" />
+    <Compile Include="ModuleUtil\Extensions.cs" />
     <Compile Include="ModuleUtil\KeyboardState.cs" />
     <Compile Include="Preview\PreviewWindow.cs" />
     <Compile Include="ScriptedCompile\ExtraUI.cs" />
@@ -143,7 +148,7 @@
     <Compile Include="NoteColorPalettePick.xaml.cs">
       <DependentUpon>NoteColorPalettePick.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PluginUtils.cs" />
+    <Compile Include="ModuleUtil\ModuleUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenderStatus.cs" />
     <Compile Include="UI\BBinding.cs" />

@@ -4,28 +4,36 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace ZenithEngine.ModuleUI
 {
-    public class UIDock<T> : DockPanel, IContainerItem<T>
+    public class UIDock : DockPanel, ISerializableContainer
     {
-        public T items { get; private set; }
-        T IContainerItem<T>.Children => items;
+        UIContainerData childData;
 
-        public UIDock(T children)
+        public UIDock(Dock stack)
         {
-            items = children;
+            childData = UITools.GetChildren(this);
+            HorizontalAlignment = HorizontalAlignment.Left;
+            VerticalAlignment = VerticalAlignment.Top;
+            foreach (var c in childData.Elements)
+            {
+                Children.Add(c);
+                SetDock(c, stack);
+            }
         }
+        public UIDock() : this(Dock.Top) { }
 
         public void Parse(JObject container)
         {
-            throw new NotImplementedException();
+            UITools.ParseContainer(container, childData);
         }
 
         public JObject Serialize()
         {
-            throw new NotImplementedException();
+            return UITools.SerializeContainer(childData);
         }
     }
 }

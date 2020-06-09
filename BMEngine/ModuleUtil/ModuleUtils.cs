@@ -7,9 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
-namespace ZenithEngine
+namespace ZenithEngine.ModuleUtil
 {
-    public static class PluginUtils
+    public static class ModuleUtils
     {
         public static BitmapImage BitmapToImageSource(Bitmap bitmap)
         {

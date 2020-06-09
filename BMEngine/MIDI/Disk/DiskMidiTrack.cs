@@ -229,7 +229,9 @@ namespace ZenithEngine.MIDI.Disk
 
                 double time = ParseTimeTicks;
                 if (MidiPlayback != null && MidiPlayback.TimeBased)
-                    time = ParseTimeSeconds;
+                {
+                    time = ParseTimeSeconds * 1000;
+                }
 
                 byte command = reader.ReadFast();
                 if (command < 0x80)

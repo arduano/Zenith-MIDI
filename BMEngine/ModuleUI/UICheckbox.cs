@@ -1,0 +1,78 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using ZenithEngine.UI;
+
+namespace ZenithEngine.ModuleUI
+{
+    public class UICheckbox : BetterCheckbox, ISerializableItem, IValueItem<bool>
+    {
+        public static implicit operator bool(UICheckbox val) => val.Value;
+
+        public bool ValueInternal
+        {
+            get => IsChecked;
+            set { if (IsChecked != value) IsChecked = value; }
+        }
+
+        bool cacheValue = false;
+        public bool Value
+        {
+            get => cacheValue;
+            set
+            {
+                cacheValue = value;
+                UITools.SyncValue(this);
+            }
+        }
+
+        object label = null;
+
+        public event EventHandler<bool> ValueChanged;
+
+        public object Label
+        {
+            get => label; set
+            {
+                label = value;
+                if (label is DynamicResourceExtension)
+                {
+                    var l = (DynamicResourceExtension)label;
+                    SetResourceReference(TextProperty, l.ResourceKey);
+                }
+                else
+                {
+                    if (label is string) Text = (string)label;
+                    else Text = label.ToString();
+                }
+            }
+        }
+
+        public UICheckbox()
+        {
+            Margin = new Thickness(0, 5, 10, 10);
+            HorizontalAlignment = HorizontalAlignment.Left;
+            VerticalAlignment = VerticalAlignment.Top;
+
+            CheckToggled += (s, e) =>
+            {
+                ValueChanged?.Invoke(this, e.NewValue);
+            };
+
+            UITools.BindValue(this);
+        }
+
+        public void Parse(string data)
+        {
+            IsChecked = Convert.ToBoolean(data);
+        }
+
+        public string Serialize()
+        {
+            return IsChecked.ToString();
+        }
+    }
+}

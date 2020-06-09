@@ -176,11 +176,13 @@ namespace ZenithEngine.Modules
             {
                 throw new ModuleLoadFailedException("Could not load " + name + "\nThe Render class was not a compatible with the interface");
             }
+#if !DEBUG
             catch (Exception e)
             {
-                throw new ModuleLoadFailedException("An error occured while bining " + name + "\n" + e.Message);
+                throw new ModuleLoadFailedException("An error occured while binding " + name + "\n" + e.Message);
             }
-            throw new ModuleLoadFailedException("An error occured while bining " + name);
+#endif
+            throw new ModuleLoadFailedException("An error occured while binding " + name);
         }
     }
 }

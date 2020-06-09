@@ -8,8 +8,8 @@ namespace ZenithEngine.MIDI.Disk
 {
     class DiskMidiPlayback : MidiPlayback
     {
-        public override double ParserPosition => TimeBased ? SecondsParsed : TicksParsed;
-        public override double PlayerPosition => TimeBased ? TimeSeconds : TimeTicksFractional;
+        public override double ParserPosition => TimeBased ? SecondsParsed * 1000 : TicksParsed;
+        public override double PlayerPosition => TimeBased ? TimeSeconds * 1000 : TimeTicksFractional;
         public override double PlayerPositionSeconds => TimeSeconds;
 
         public double TimeSeconds { get; internal set; }

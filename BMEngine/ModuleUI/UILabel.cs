@@ -8,7 +8,7 @@ using System.Windows;
 
 namespace ZenithEngine.ModuleUI
 {
-    public class UILabel : Label, IUIItem
+    public class UILabel : Label
     {
         object label = null;
         public object Label
@@ -27,6 +27,13 @@ namespace ZenithEngine.ModuleUI
                     Content = label;
                 }
             }
+        }
+
+        public UILabel()
+        {
+            Margin = new Thickness(0, 0, 5, 5);
+            HorizontalAlignment = HorizontalAlignment.Left;
+            VerticalAlignment = VerticalAlignment.Top;
         }
     }
 }
