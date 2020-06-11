@@ -7,7 +7,7 @@ using ZenithEngine.Modules;
 using ZenithEngine.MIDI;
 using ZenithEngine;
 using ZenithEngine.MIDI.Disk;
-using ZenithEngine.Preview;
+using ZenithEngine.Output;
 using ZenithEngine.GLEngine;
 using ZenithEngine.GLEngine.Types;
 using OpenTK.Graphics;

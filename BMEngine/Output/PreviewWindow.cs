@@ -9,7 +9,7 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Platform;
 using ZenithEngine.GLEngine;
 
-namespace ZenithEngine.Preview
+namespace ZenithEngine.Output
 {
     public class PreviewWindow : NativeWindow, IDisposable
     {

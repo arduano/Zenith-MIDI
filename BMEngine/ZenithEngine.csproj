@@ -142,7 +142,8 @@
     <Compile Include="ModuleUI\UINumberSlider.cs" />
     <Compile Include="ModuleUtil\Extensions.cs" />
     <Compile Include="ModuleUtil\KeyboardState.cs" />
-    <Compile Include="Preview\PreviewWindow.cs" />
+    <Compile Include="Output\FFMpeg.cs" />
+    <Compile Include="Output\PreviewWindow.cs" />
     <Compile Include="ScriptedCompile\ExtraUI.cs" />
     <Compile Include="ScriptedCompile\IO.cs" />
     <Compile Include="NoteColorPalettePick.xaml.cs">

@@ -1,4 +1,5 @@
 ﻿using Microsoft.CSharp.RuntimeBinder;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ZenithEngine.GLEngine;
 using ZenithEngine.MIDI;
+using ZenithEngine.ModuleUI;
 
 namespace ZenithEngine.Modules
 {
@@ -62,6 +64,20 @@ namespace ZenithEngine.Modules
             }
             if(glRunning) initQueue.Enqueue(module);
             CurrentModule = module;
+        }
+
+        public JObject SerializeModule()
+        {
+            var contianer = CurrentModule?.SettingsControl as ISerializableContainer;
+            if (contianer == null) return new JObject();
+            else return contianer.Serialize();
+        }
+
+        public void ParseModule(JObject data)
+        {
+            var contianer = CurrentModule?.SettingsControl as ISerializableContainer;
+            if (contianer == null) return;
+            else contianer.Parse(data);
         }
 
         public void StartRender(MidiPlayback file, RenderStatus status)

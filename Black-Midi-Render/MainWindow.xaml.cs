@@ -31,7 +31,6 @@ using System.IO.Compression;
 using ZenithEngine.Modules;
 using ZenithEngine.MIDI;
 using ZenithEngine.MIDI.Disk;
-using ZenithEngine.Preview;
 using ZenithEngine.GLEngine;
 using ZenithEngine.GLEngine.Types;
 using System.Collections.ObjectModel;
@@ -285,7 +284,7 @@ namespace Zenith
 
         FrameworkElement pluginControl = null;
 
-        ObservableCollection<IModuleRender> RenderPlugins { get; } = new ObservableCollection<IModuleRender>();
+        ObservableCollection<IModuleRender> RenderModules { get; } = new ObservableCollection<IModuleRender>();
 
         List<Dictionary<string, ResourceDictionary>> Languages = new List<Dictionary<string, ResourceDictionary>>();
 
@@ -404,7 +403,7 @@ namespace Zenith
 
             InitializeComponent();
 
-            pluginsList.ItemsSource = RenderPlugins;
+            pluginsList.ItemsSource = RenderModules;
 
             windowTabs.VersionName = InstallSettings.VersionName;
 
@@ -524,17 +523,17 @@ namespace Zenith
             previewImage.Source = null;
             pluginDescription.Text = "";
 
-            RenderPlugins.Clear();
+            RenderModules.Clear();
             ModuleRunner.ClearModules();
 
-            RenderPlugins.Clear();
+            RenderModules.Clear();
             var files = Directory.GetFiles("Plugins");
             var dlls = files.Where((s) => s.EndsWith(".dll"));
             foreach (var d in dlls)
             {
                 try
                 {
-                    RenderPlugins.Add(ModuleManager.LoadModule(d));
+                    RenderModules.Add(ModuleManager.LoadModule(d));
                 }
 #if DEBUG
                 catch (ModuleLoadFailedException e)
@@ -552,7 +551,7 @@ namespace Zenith
         void SelectDefaultRenderer()
         {
             int i = 0;
-            foreach (var p in RenderPlugins)
+            foreach (var p in RenderModules)
             {
                 if (p.Name == "Classic")
                 {
@@ -561,7 +560,7 @@ namespace Zenith
                 }
                 i++;
             }
-            if (RenderPlugins.Count > 0) SelectRenderer(0);
+            if (RenderModules.Count > 0) SelectRenderer(0);
         }
 
         void SelectRenderer(int id)
@@ -573,7 +572,7 @@ namespace Zenith
                 return;
             }
             pluginsList.SelectedIndex = id;
-            ModuleRunner.UseModule(RenderPlugins[id]);
+            ModuleRunner.UseModule(RenderModules[id]);
             var module = ModuleRunner.CurrentModule;
             previewImage.Source = module.PreviewImage;
             pluginDescription.Text = module.Description;
@@ -658,8 +657,6 @@ namespace Zenith
 
         void StartPipeline(bool render)
         {
-            //ModuleRunner.CurrentModule
-
             var playback = midifile.GetMidiPlayback(0);
             CurrentRenderStatus = new RenderStatus((int)viewWidth.Value, (int)viewHeight.Value, (int)SSAAFactor.Value);
             ActivePipeline = new RenderPipeline(CurrentRenderStatus, playback, ModuleRunner, false);
