@@ -34,7 +34,7 @@ namespace ZenithEngine.MIDI.Disk
         long lastNoteCount = 0;
         public override long LastIterateNoteCount => lastNoteCount;
 
-        public DiskMidiPlayback(DiskMidiFile file, DiskReadProvider reader, double startDelay) : base(file)
+        public DiskMidiPlayback(DiskMidiFile file, DiskReadProvider reader, double startDelay, bool timeBased) : base(file, file.TempoEvents[0].rawTempo, timeBased)
         {
             midi = file;
 
@@ -51,6 +51,7 @@ namespace ZenithEngine.MIDI.Disk
             Tempo = midi.TempoEvents[0];
             TimeSignature = midi.TimeSignatureEvents[0];
             TimeSeconds = -startDelay;
+            TimeTicksFractional = -startDelay / ParserTempoTickMultiplier;
         }
 
         public override bool ParseUpTo(double time)
@@ -156,7 +157,6 @@ namespace ZenithEngine.MIDI.Disk
         {
             long nc = 0;
             var iter = Notes.Iterate();
-            var cutoff = topCutoffOffset + PlayerPosition;
             for (Note n = null; iter.MoveNext(out n);)
             {
                 if (stopped) break;
@@ -165,7 +165,7 @@ namespace ZenithEngine.MIDI.Disk
                     iter.Remove();
                     continue;
                 }
-                if (n.start > cutoff) 
+                if (n.start > topCutoffOffset) 
                     break;
                 nc++;
                 yield return n;

@@ -14,9 +14,10 @@ namespace ZenithEngine
         public int FPS { get; set; } = 60;
 
         public int OutputWidth { get; } = 1920;
-        public int OutputHeight { get;  } = 1080;
-        public int RenderWidth { get => OutputWidth * SSAA; }
-        public int RenderHeight { get => OutputHeight * SSAA; }
+        public int OutputHeight { get; } = 1080;
+        public int RenderWidth => OutputWidth * SSAA;
+        public int RenderHeight => OutputHeight * SSAA;
+        public float AspectRatio => (float)OutputWidth / OutputHeight;
         public int SSAA { get; } = 1;
 
         public bool Running { get; set; } = true;

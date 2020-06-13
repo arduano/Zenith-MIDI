@@ -22,7 +22,10 @@ namespace ZenithEngine.MIDI
         public long TickLength { get; internal set; }
         public double SecondsLength { get; internal set; }
 
-        public abstract MidiPlayback GetMidiPlayback(double startOffset);
+        public abstract MidiPlayback GetMidiPlayback(double startOffset, bool timeBased);
+        public abstract MidiPlayback GetMidiPlayback(double startOffsetTicks, double startOffsetSeconds, bool timeBased);
+        
+        public abstract double StartTicksToSeconds(double startOffset, bool timeBased);
 
         public abstract void Dispose();
     }

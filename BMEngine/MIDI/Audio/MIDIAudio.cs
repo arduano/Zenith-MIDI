@@ -24,10 +24,13 @@ namespace ZenithEngine.MIDI.Audio
 
         public bool Paused { get; set; }
 
+        public double PlaybackSpeed { get; set; }
+
         public MIDIAudio(MidiPlayback playback, IMidiOutput output)
         {
             this.output = output;
             this.playback = playback;
+            output.Reset();
             runner = Task.Run(Loop);
         }
 
@@ -49,7 +52,7 @@ namespace ZenithEngine.MIDI.Audio
             double lastTime = playback.PlayerPositionSeconds;
             var watch = new Stopwatch();
             watch.Start();
-            double time() => watch.Elapsed.TotalSeconds + lastTime;
+            double time() => watch.Elapsed.TotalSeconds * PlaybackSpeed + lastTime;
 
             void testSync(bool force = false)
             {
@@ -83,8 +86,11 @@ namespace ZenithEngine.MIDI.Audio
                 var t = time();
                 if (ev.time > t)
                 {
-                    wait(() => time() > ev.time - 0.2);
-                    var ms = (ev.time - time()) * 1000;
+                    wait(() => 
+                        time() > ev.time - 0.2 * PlaybackSpeed
+                    );
+                    if (ended) continue;
+                    var ms = (ev.time - time()) * 1000 / PlaybackSpeed;
                     if (ms > 0) Thread.Sleep((int)ms);
                 }
                 else
@@ -100,6 +106,7 @@ namespace ZenithEngine.MIDI.Audio
                 {
                     SendNotesOff();
                     wait(() => !Paused, true);
+                    if (ended) continue;
                     testSync(true);
                     continue;
                 }
@@ -108,6 +115,7 @@ namespace ZenithEngine.MIDI.Audio
                 {
                     events.Unlink();
                     wait(() => playback.PushPlaybackEvents);
+                    if (ended) continue;
                     testSync(true);
                     continue;
                 }
@@ -115,11 +123,13 @@ namespace ZenithEngine.MIDI.Audio
                 output.SendEvent((uint)ev.val);
             }
             SendNotesOff();
+            output.Reset();
         }
 
         public void Dispose()
         {
             ended = true;
+            output.Dispose();
             if (!runner.IsCompleted) runner.Wait();
         }
     }

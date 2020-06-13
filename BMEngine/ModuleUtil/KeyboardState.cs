@@ -180,26 +180,20 @@ namespace ZenithEngine.ModuleUtil
             }
         }
 
-        static Color4 BlendColors(Color4 col1, Color4 col2)
-        {
-            float blendfac = col2.A;
-            float revblendfac = 1 - blendfac;
-            return new Color4(
-                col2.R * blendfac + col1.R * revblendfac,
-                col2.G * blendfac + col1.G * revblendfac,
-                col2.B * blendfac + col1.B * revblendfac,
-                col1.A + (1 - col1.A) * blendfac);
-        }
-
         public void BlendNote(int key, Color4 left, Color4 right)
         {
-            Colors[key].Left = BlendColors(Colors[key].Left, left);
-            Colors[key].Right = BlendColors(Colors[key].Right, right);
+            Colors[key].Left = Colors[key].Left.BlendWith(left);
+            Colors[key].Right = Colors[key].Right.BlendWith(right);
         }
 
         public void BlendNote(int key, NoteColor color)
         {
             BlendNote(key, color.Left, color.Right);
+        }
+
+        public void PressKey(int key)
+        {
+            Pressed[key] = true;
         }
 
         public static bool IsBlackKey(int n)
@@ -220,5 +214,6 @@ namespace ZenithEngine.ModuleUtil
         public double WhiteNoteWidth { get; }
 
         public Col[] Colors { get; } = new Col[257]; 
+        public bool[] Pressed { get; } = new bool[257]; 
     }
 }

@@ -25,7 +25,7 @@ namespace ZenithEngine.Modules
         public double StartOffset { get; }
 
         void Init(MidiPlayback midi, RenderStatus status);
-        void RenderFrame(RenderSurface finalCompositeBuff);
+        void RenderFrame(RenderSurface renderSurface);
         void ReloadTrackColors();
     }
 }

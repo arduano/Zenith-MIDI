@@ -270,6 +270,11 @@ namespace Zenith
                 (r, m) => !r && m
             ).Set(this, CanStartProperty);
 
+            new InplaceConverter<RenderPipeline, bool>(
+                new BBinding(ActivePipelineProperty, this),
+                (p) => p != null && p.Rendering
+            ).Set(this, RenderingProperty);
+
             new InplaceConverter<bool, bool>(
                 new BBinding(RenderingOrPreviewingProperty, this),
                 (r) => !r
@@ -402,6 +407,7 @@ namespace Zenith
             CheckUpdateDownloaded();
 
             InitializeComponent();
+            SetCustomFFMPEGOptions();
 
             pluginsList.ItemsSource = RenderModules;
 
@@ -579,8 +585,7 @@ namespace Zenith
 
             var c = module.SettingsControl;
             if (c == null) return;
-            if (c.Parent != null)
-                (c.Parent as Panel).Children.Clear();
+            pluginsSettings.Children.Clear();
             pluginsSettings.Children.Add(c);
             c.VerticalAlignment = VerticalAlignment.Stretch;
             c.HorizontalAlignment = HorizontalAlignment.Stretch;
@@ -590,9 +595,9 @@ namespace Zenith
             pluginControl = c;
             if (languageSelect.SelectedIndex != -1 && Languages[languageSelect.SelectedIndex].ContainsKey(module.LanguageDictName))
             {
-                c.Resources.MergedDictionaries[0].MergedDictionaries.Clear();
-                c.Resources.MergedDictionaries[0].MergedDictionaries.Add(Languages[0][module.LanguageDictName]);
-                c.Resources.MergedDictionaries[0].MergedDictionaries.Add(Languages[languageSelect.SelectedIndex][module.LanguageDictName]);
+                c.Resources.MergedDictionaries.Clear();
+                c.Resources.MergedDictionaries.Add(Languages[0][module.LanguageDictName]);
+                c.Resources.MergedDictionaries.Add(Languages[languageSelect.SelectedIndex][module.LanguageDictName]);
             }
         }
 
@@ -635,7 +640,7 @@ namespace Zenith
             GC.Collect();
             GC.WaitForFullGCComplete();
             MidiLoaded = false;
-            //browseMidiButton.SetResourceReference(Button.ContentProperty, "load");
+            browseMidiButton.SetResourceReference(Button.ContentProperty, "load");
         }
 
         void SetPipelineValues()
@@ -647,19 +652,59 @@ namespace Zenith
                 ActivePipeline.PreviewSpeed = tempoMultSlider.Value;
                 ActivePipeline.VSync = vsyncEnabled.IsChecked;
                 ActivePipeline.Status.RealtimePlayback = realtimePlayback.IsChecked;
-                ActivePipeline.Status.FPS = (int)viewFps.Value;
             }
             else
             {
+                ActivePipeline.Paused = false;
+                ActivePipeline.PreviewSpeed = 1;
+                ActivePipeline.VSync = false;
                 ActivePipeline.Status.RealtimePlayback = false;
+            }
+            ActivePipeline.Status.FPS = (int)viewFps.Value;
+        }
+
+        void SetCustomFFMPEGOptions()
+        {
+            if (!IsInitialized) return;
+            if (customFFmpegArgs.IsChecked) return;
+            if (crfOption.IsChecked)
+            {
+                ffmpegOptions.Text = $"-vf vflip -pix_fmt yuv420p -vcodec libx264 -crf {crfFactor.Value}";
+            }
+            if (bitrateOption.IsChecked)
+            {
+                ffmpegOptions.Text = $"-vf vflip -pix_fmt yuv420p -vcodec libx264 -b:v {bitrate.Value}";
             }
         }
 
         void StartPipeline(bool render)
         {
-            var playback = midifile.GetMidiPlayback(0);
+            var timeBased = noteSizeStyle.SelectedIndex == 1;
+            var startOffset = midifile.StartTicksToSeconds(ModuleRunner.CurrentModule.StartOffset, timeBased) + 
+                              (render ? (double)secondsDelay.Value : 0);
+
+            var playback = midifile.GetMidiPlayback(
+                startOffset,
+                timeBased
+            );
+
             CurrentRenderStatus = new RenderStatus((int)viewWidth.Value, (int)viewHeight.Value, (int)SSAAFactor.Value);
-            ActivePipeline = new RenderPipeline(CurrentRenderStatus, playback, ModuleRunner, false);
+
+            if (render)
+            {
+                var ffmpegArgs = ffmpegOptions.Text;
+                if (includeAudio.IsChecked)
+                {
+                    ffmpegArgs = $"-itsoffset {startOffset.ToString().Replace(",", ".")} -i \"{audioPath.Text}\" -acodec aac {ffmpegArgs}";
+                }
+                var args = new OutputSettings(ffmpegArgs, videoPath.Text, alphaPath.Text != "" ? alphaPath.Text : null);
+                ActivePipeline = new RenderPipeline(CurrentRenderStatus, playback, ModuleRunner, args);
+            }
+            else
+            {
+                ActivePipeline = new RenderPipeline(CurrentRenderStatus, playback, ModuleRunner);
+            }
+
             SetPipelineValues();
             ActivePipeline.Start();
         }
@@ -669,6 +714,44 @@ namespace Zenith
             StartPipeline(false);
         }
 
+        private void StartRenderButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (videoPath.Text == "")
+            {
+                MessageBox.Show("Please specify a destination path");
+                return;
+            }
+
+            if (File.Exists(videoPath.Text))
+            {
+                if (MessageBox.Show("Are you sure you want to override " + Path.GetFileName(videoPath.Text), "Override", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                    return;
+            }
+            if (includeAlpha.IsChecked)
+            {
+                if (File.Exists(alphaPath.Text))
+                {
+                    if (MessageBox.Show("Are you sure you want to override " + Path.GetFileName(alphaPath.Text), "Override", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                        return;
+                }
+                if (alphaPath.Text == "")
+                {
+                    MessageBox.Show("Please specify transparency mask destination path");
+                    return;
+                }
+            }
+            if (includeAudio.IsChecked)
+            {
+                if (audioPath.Text == "")
+                {
+                    MessageBox.Show("Please specify audio source path");
+                    return;
+                }
+            }
+
+            StartPipeline(true);
+        }
+
         private void StopButton_Click(object sender, RoutedEventArgs e)
         {
             if (ActivePipeline != null)
@@ -676,71 +759,6 @@ namespace Zenith
                 ActivePipeline.Dispose();
                 ActivePipeline = null;
             }
-        }
-
-        private void StartRenderButton_Click(object sender, RoutedEventArgs e)
-        {
-            //if (videoPath.Text == "")
-            //{
-            //    MessageBox.Show("Please specify a destination path");
-            //    return;
-            //}
-
-            //if (renderer.renderer == null)
-            //{
-            //    MessageBox.Show("No renderer is selected");
-            //    return;
-            //}
-
-            //if (File.Exists(videoPath.Text))
-            //{
-            //    if (MessageBox.Show("Are you sure you want to override " + Path.GetFileName(videoPath.Text), "Override", MessageBoxButton.YesNo) == MessageBoxResult.No)
-            //        return;
-            //}
-            //if (File.Exists(alphaPath.Text))
-            //{
-            //    if (MessageBox.Show("Are you sure you want to override " + Path.GetFileName(alphaPath.Text), "Override", MessageBoxButton.YesNo) == MessageBoxResult.No)
-            //        return;
-            //}
-
-            //settings.RealtimePlayback = false;
-
-            //settings.Running = true;
-            //settings.PixelWidth = (int)viewWidth.Value * (int)SSAAFactor.Value;
-            //settings.PixelHeight = (int)viewHeight.Value * (int)SSAAFactor.Value;
-            //settings.SSAA = (int)SSAAFactor.Value;
-            //settings.FPS = (int)viewFps.Value;
-            //settings.IsRendering = true;
-            //settings.RenderOutput = videoPath.Text;
-            //settings.RenderStartDelay = (double)secondsDelay.Value;
-
-            //settings.Paused = false;
-            //previewPaused.IsChecked = false;
-            //settings.PreviewSpeed = 1;
-            //tempoMultSlider.Value = 1;
-
-            //settings.FFmpegDebug = (bool)ffdebug.IsChecked;
-
-            //settings.UseBitrate = (bool)bitrateOption.IsChecked;
-            //settings.CustomFFmpeg = (bool)FFmpeg.IsChecked;
-            //if (settings.UseBitrate) settings.Bitrate = (int)bitrate.Value;
-            //else if (settings.CustomFFmpeg)
-            //{
-            //    settings.FFmpegCustomArgs = FFmpegOptions.Text;
-            //}
-            //else
-            //{
-            //    settings.RenderCRF = (int)crfFactor.Value;
-            //    settings.RenderCRFPreset = (string)((ComboBoxItem)crfPreset.SelectedItem).Content;
-            //}
-
-            //settings.IncludeAudio = (bool)includeAudio.IsChecked;
-            //settings.AudioInputPath = audioPath.Text;
-            //settings.IsRenderingMask = (bool)includeAlpha.IsChecked;
-            //settings.RenderMaskOutput = alphaPath.Text;
-            //renderThread = Task.Factory.StartNew(RunRenderWindow);
-            //Resources["notPreviewing"] = false;
-            //Resources["notRendering"] = false;
         }
 
         private void BrowseVideoSaveButton_Click(object sender, RoutedEventArgs e)
@@ -991,6 +1009,34 @@ namespace Zenith
         private void viewFps_ValueChanged(object sender, RoutedPropertyChangedEventArgs<decimal> e)
         {
             SetPipelineValues();
+        }
+
+        private void includeAlpha_CheckToggled(object sender, RoutedPropertyChangedEventArgs<bool> e)
+        {
+            if (alphaPath.Text == "" && videoPath.Text != "")
+            {
+                alphaPath.Text = Path.Combine(
+                        Path.GetDirectoryName(videoPath.Text),
+                        Path.GetFileNameWithoutExtension(videoPath.Text) +
+                        ".mask" +
+                        Path.GetExtension(videoPath.Text)
+                    );
+            }
+        }
+
+        private void outputTypeChanged(object sender, RoutedEventArgs e)
+        {
+            SetCustomFFMPEGOptions();
+        }
+
+        private void crfFactor_ValueChanged(object sender, RoutedPropertyChangedEventArgs<decimal> e)
+        {
+            SetCustomFFMPEGOptions();
+        }
+
+        private void bitrate_ValueChanged(object sender, RoutedPropertyChangedEventArgs<decimal> e)
+        {
+            SetCustomFFMPEGOptions();
         }
     }
 

@@ -195,9 +195,25 @@ namespace ZenithEngine.MIDI.Disk
             MidiFileReader.Dispose();
         }
 
-        public override MidiPlayback GetMidiPlayback(double startOffset)
+        public override MidiPlayback GetMidiPlayback(double startOffset, bool timeBased)
         {
-            return new DiskMidiPlayback(this, FileReadProvider, startOffset);
+            return new DiskMidiPlayback(this, FileReadProvider, startOffset, timeBased);
+        }
+
+        public override MidiPlayback GetMidiPlayback(double startOffsetTicks, double startOffsetSeconds, bool timeBased)
+        {
+            double startOffset = startOffsetSeconds + StartTicksToSeconds(startOffsetTicks, timeBased);
+            return GetMidiPlayback(startOffset, timeBased);
+        }
+
+        public override double StartTicksToSeconds(double startOffset, bool timeBased)
+        {
+            double multiplier = ((double)TempoEvents[0].rawTempo / PPQ) / 1000000;
+            if (timeBased)
+            {
+                multiplier = 1.0 / 1000;
+            }
+            return startOffset * multiplier;
         }
     }
 }

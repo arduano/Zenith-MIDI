@@ -190,6 +190,7 @@ namespace ZenithEngine.Output
         /// </summary>
         public void SwapBuffers()
         {
+            if (IsDisposed || isExiting) return;
             EnsureUndisposed();
             this.Context.SwapBuffers();
         }

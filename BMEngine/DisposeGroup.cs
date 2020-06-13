@@ -15,7 +15,8 @@ namespace ZenithEngine
         public void Dispose()
         {
             if (disposed) return;
-            foreach (var i in items) i.Dispose();
+            foreach (var i in items)
+                i.Dispose();
             disposed = true;
         }
 

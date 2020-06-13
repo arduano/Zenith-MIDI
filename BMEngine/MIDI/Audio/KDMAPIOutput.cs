@@ -37,6 +37,7 @@ namespace ZenithEngine.MIDI.Audio
                 var command = 0b10110000 & i;
                 SendEvent((uint)(command | (cc << 8) | (vv << 16)));
             }
+            Reset();
         }
 
         public void SendEvent(uint e)

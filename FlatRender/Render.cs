@@ -43,7 +43,7 @@ namespace FlatRender
                 [UIChild]
                 public UINumber left = new UINumber()
                 {
-                    Label = "Left Key",
+                    Label = new DynamicResourceExtension("firstNote"),
                     Min = 0,
                     Max = 255,
                     Value = 0,
@@ -52,7 +52,7 @@ namespace FlatRender
                 [UIChild]
                 public UINumber right = new UINumber()
                 {
-                    Label = "Right Key",
+                    Label = new DynamicResourceExtension("lastNote"),
                     Min = 1,
                     Max = 256,
                     Value = 128,
@@ -65,7 +65,7 @@ namespace FlatRender
             [UIChild]
             public UINumberSlider noteScreenTime = new UINumberSlider()
             {
-                Label = "Note Screen Time",
+                Label = new DynamicResourceExtension("noteScreenTime"),
                 SliderMin = 2,
                 SliderMax = 4096,
                 Min = 0.1,
@@ -78,7 +78,7 @@ namespace FlatRender
             [UIChild]
             public UINumberSlider kbHeight = new UINumberSlider()
             {
-                Label = "Keyboard Height %",
+                Label = new DynamicResourceExtension("pianoHeight"),
                 SliderMin = 0,
                 SliderMax = 100,
                 Min = 0,
@@ -92,7 +92,7 @@ namespace FlatRender
             [UIChild]
             public UICheckbox sameWidthNotes = new UICheckbox()
             {
-                Label = "Same Width Notes",
+                Label = new DynamicResourceExtension("sameWidthNotes"),
                 IsChecked = true,
             };
         }
@@ -101,6 +101,7 @@ namespace FlatRender
         RenderStatus renderStatus;
 
         UI settings = new UI();
+
         public FrameworkElement SettingsControl => settings;
 
         public double StartOffset => settings.noteScreenTime.Value;

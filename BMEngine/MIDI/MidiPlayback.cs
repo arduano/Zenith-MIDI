@@ -35,9 +35,10 @@ namespace ZenithEngine.MIDI
 
         public abstract long LastIterateNoteCount { get; }
 
-        public MidiPlayback(MidiFile midi)
+        public MidiPlayback(MidiFile midi, double initialTempo, bool timeBased)
         {
-            ParserTempoTickMultiplier = (500000.0 / midi.PPQ) / 1000000;
+            TimeBased = timeBased;
+            ParserTempoTickMultiplier = (initialTempo / midi.PPQ) / 1000000;
         }
 
         public void CheckParseDistance(double parseDist)

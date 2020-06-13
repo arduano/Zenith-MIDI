@@ -30,5 +30,21 @@ namespace ZenithEngine.GLEngine
         {
             PushVertex(new Vertex2d(pos, col));
         }
+
+        public void PushQuad(float left, float top, float right, float bottom, Color4 col)
+        {
+            PushVertex(left, top, col);
+            PushVertex(right, top, col);
+            PushVertex(right, bottom, col);
+            PushVertex(left, bottom, col);
+        }
+
+        public void PushQuad(float left, float top, float right, float bottom, Color4 topLeft, Color4 topRight, Color4 bottomRight, Color4 bottomLeft)
+        {
+            PushVertex(left, top, topLeft);
+            PushVertex(right, top, topRight);
+            PushVertex(right, bottom, bottomRight);
+            PushVertex(left, bottom, bottomLeft);
+        }
     }
 }

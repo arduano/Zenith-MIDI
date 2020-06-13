@@ -4,14 +4,10 @@
     xmlns:local="using:MSDNSample"
     xmlns:system="clr-namespace:System;assembly=mscorlib">
 
-    <!--Other settings-->
-    <system:String x:Key="firstNote">First Note</system:String>
-    <system:String x:Key="lastNote">Last Note</system:String>
-    <system:String x:Key="pianoHeight">Piano Height %</system:String>
+    <system:String x:Key="firstNote">First Key</system:String>
+    <system:String x:Key="lastNote">Last Key</system:String>
+    <system:String x:Key="pianoHeight">Keyboard Height %</system:String>
     <system:String x:Key="noteScreenTime">Note screen time</system:String>
     <system:String x:Key="sameWidthNotes">Same Width Notes</system:String>
-    <system:String x:Key="save">Save</system:String>
-    <system:String x:Key="loadSaved">Load Saved</system:String>
-    <system:String x:Key="setDefaults">Defaults</system:String>
 
 </ResourceDictionary>
