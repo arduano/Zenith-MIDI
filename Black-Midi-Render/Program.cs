@@ -31,6 +31,11 @@ namespace Zenith
                 {
                     window.LoadMidi(args[0]);
                 }
+                if(args.Length > 1)
+                {
+                    window.SelectModule(args[1]);
+                    window.StartPipeline(false);
+                }
             };
 
             app.Run(window);

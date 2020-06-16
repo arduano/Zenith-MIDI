@@ -10,7 +10,7 @@ namespace ZenithEngine.ModuleUtil
 {
     public class KeyboardParams
     {
-        public bool SameWidthNotes = false;
+        public bool SameWidthNotes { get; set; } = false;
 
         public double BlackKey2setOffset { get; set; } = 0.3;
         public double BlackKey3setOffset { get; set; } = 0.5;

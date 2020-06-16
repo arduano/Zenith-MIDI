@@ -597,15 +597,37 @@ namespace Zenith
             {
                 if (p.Name == "Classic")
                 {
-                    SelectRenderer(i);
+                    SelectModule(i);
                     return;
                 }
                 i++;
             }
-            if (RenderModules.Count > 0) SelectRenderer(0);
+            if (RenderModules.Count > 0) SelectModule(0);
         }
 
-        void SelectRenderer(int id)
+        public void SelectModule(string name)
+        {
+            int instant = -1;
+            int close = -1;
+            int far = -1;
+
+            for(int i = 0; i < RenderModules.Count; i++)
+            {
+                var n = RenderModules[RenderModules.Count - i - 1].Name;
+                if(n == name)
+                    instant = i;
+                if (n.ToLower() == name.ToLower())
+                    close = i;
+                if (n.ToLower().Replace(" ", "") == name.ToLower().Replace(" ", ""))
+                    far = i;
+            }
+            if (instant != -1) SelectModule(instant);
+            else if (close != -1) SelectModule(close);
+            else if (far != -1) SelectModule(far);
+            else MessageBox.Show($"Could not find module with name similar to {name}");
+        }
+
+        public void SelectModule(int id)
         {
             pluginControl = null;
             if (id == -1)
@@ -688,7 +710,7 @@ namespace Zenith
             }
         }
 
-        void StartPipeline(bool render)
+        public void StartPipeline(bool render)
         {
             var timeBased = noteSizeStyle.SelectedIndex == 1;
             var startOffset = midifile.StartTicksToSeconds(ModuleRunner.CurrentModule.StartOffset, timeBased) +
@@ -830,7 +852,7 @@ namespace Zenith
 
         private void PluginsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            SelectRenderer(pluginsList.SelectedIndex);
+            SelectModule(pluginsList.SelectedIndex);
         }
 
         private void ResolutionPreset_SelectionChanged(object sender, SelectionChangedEventArgs e)
