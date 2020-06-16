@@ -15,6 +15,7 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK;
 using System.Diagnostics;
 using ZenithEngine.MIDI.Audio;
+using System.Windows;
 
 namespace Zenith
 {
@@ -202,8 +203,16 @@ namespace Zenith
                 win.VSync = VSyncMode.Off;
                 Playback.PushPlaybackEvents = Status.PreviewAudioEnabled && !Rendering;
 
-                // Let the module handle frame rendering
-                Module.RenderFrame(surface);
+                try
+                {
+                    // Let the module handle frame rendering
+                    Module.RenderFrame(surface);
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show("Module render call crashed!\n\n" + e.Message + "\n" + e.StackTrace, "Render crashed");
+                    break;
+                }
 
                 using (new GLEnabler().Enable(EnableCap.Blend))
                 {

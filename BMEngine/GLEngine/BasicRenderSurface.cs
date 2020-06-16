@@ -11,6 +11,7 @@ namespace ZenithEngine.GLEngine
     {
         public virtual int BufferID { get; private set; }
         public virtual int TextureID { get; private set; }
+        public virtual int DepthBufferID { get; private set; } = -1;
 
         public BasicRenderSurface(int width, int height, bool depth)
         {
@@ -24,6 +25,16 @@ namespace ZenithEngine.GLEngine
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
             GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, rtexture, 0);
+
+            if (depth)
+            {
+                int depthrenderbuffer = GL.GenRenderbuffer();
+                GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, depthrenderbuffer);
+                GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, width, height);
+                GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, depthrenderbuffer);
+                DepthBufferID = depthrenderbuffer;
+            }
+
             if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete) throw new Exception();
             Width = width;
             Height = height;
@@ -46,6 +57,7 @@ namespace ZenithEngine.GLEngine
         {
             GL.DeleteFramebuffer(BufferID);
             GL.DeleteTexture(TextureID);
+            if(DepthBufferID != -1) GL.DeleteTexture(DepthBufferID);
         }
     }
 }

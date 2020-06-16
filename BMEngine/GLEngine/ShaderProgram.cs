@@ -20,6 +20,22 @@ namespace ZenithEngine.GLEngine
         int programId = -1;
 
         Dictionary<string, string> defines = new Dictionary<string, string>();
+        Dictionary<string, int> uniforms = new Dictionary<string, int>();
+
+        public int this[string uniform]
+        {
+            get => Uniform(uniform);
+        }
+
+        public int Uniform(string uniform)
+        {
+            if (!uniforms.ContainsKey(uniform))
+            {
+                var u = GL.GetUniformLocation(programId, uniform);
+                uniforms.Add(uniform, u);
+            }
+            return uniforms[uniform];
+        }
 
         public ShaderProgram(string vert, string frag)
         {

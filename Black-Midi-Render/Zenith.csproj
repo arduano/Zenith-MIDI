@@ -179,6 +179,10 @@
       <Project>{ae59479c-9d0d-464c-a4d3-8fdd7e1f3786}</Project>
       <Name>FlatRender</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MidiTrailRender\MidiTrailRender.csproj">
+      <Project>{991e132a-a56d-49ab-bbee-9828359bb307}</Project>
+      <Name>MidiTrailRender</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PFARender\PFARender.csproj">
       <Project>{84e13869-0d33-4a56-a1a8-0b6f12c76081}</Project>
       <Name>PFARender</Name>
@@ -246,6 +250,8 @@ del Plugins\OpenTK.dll
 del Plugins\Xceed.Wpf.Toolkit.dll
 del Plugins\ZenithEngine.dll
 del Plugins\SharpCompress.dll
+del Plugins\CjClutter.ObjLoader.Loader.dll
+del Plugins\System.Diagnostics.DiagnosticSource.dll
 del Plugins\Jint.dll
 del Plugins\Languages /s /q
 FOR /D %25%25p IN ("Plugins\Languages") DO rmdir "%25%25p" /s /q</PostBuildEvent>

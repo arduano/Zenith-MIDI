@@ -9,33 +9,12 @@ using System.Threading.Tasks;
 
 namespace ZenithEngine.GLEngine
 {
-    public enum ShapeTypes
-    {
-        Points,
-        Lines,
-        Triangles
-    }
-
     public enum ShapePresets
     {
         Points,
         Lines,
         Triangles,
         Quads,
-    }
-
-    public struct InputAssemblyPart
-    {
-        public InputAssemblyPart(int size, VertexAttribPointerType type, int offset)
-        {
-            Size = size;
-            Type = type;
-            Offset = offset;
-        }
-
-        public int Size { get; }
-        public VertexAttribPointerType Type { get; }
-        public int Offset { get; }
     }
 
     public class ShapeBuffer<T> : IDisposable
@@ -93,11 +72,7 @@ namespace ZenithEngine.GLEngine
             indexBufferId = GL.GenBuffer();
 
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferId);
-            GL.BufferData(
-                BufferTarget.ElementArrayBuffer,
-                (IntPtr)(indexArray.Length * 4),
-                indexArray,
-                BufferUsageHint.StaticDraw);
+            BufferTools.BindIndices(indexArray, indexArray.Length, sizeof(int));
 
             this.inputParts = inputParts;
 
