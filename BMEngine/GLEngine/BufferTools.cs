@@ -16,16 +16,36 @@ namespace ZenithEngine.GLEngine
 
     public struct InputAssemblyPart
     {
-        public InputAssemblyPart(int size, VertexAttribPointerType type, int offset)
+        public InputAssemblyPart(int size, VertexAttribPointerType type)
         {
             Size = size;
             Type = type;
-            Offset = offset;
         }
 
         public int Size { get; }
         public VertexAttribPointerType Type { get; }
-        public int Offset { get; }
+
+        public int TypeSize
+        {
+            get
+            {
+                switch (Type)
+                {
+                    case VertexAttribPointerType.Byte: return 1;
+                    case VertexAttribPointerType.Double: return 8;
+                    case VertexAttribPointerType.Float: return 4;
+                    case VertexAttribPointerType.Int: return 4;
+                    case VertexAttribPointerType.Short: return 2;
+                    case VertexAttribPointerType.UnsignedInt: return 4;
+                    case VertexAttribPointerType.UnsignedShort: return 2;
+                    case VertexAttribPointerType.UnsignedByte: return 1;
+                    case VertexAttribPointerType.HalfFloat: return 2;
+                    default: throw new Exception("Other vertex attribute types aren't implemented yet");
+                }
+            }
+        }
+
+        public int AttributeSize => TypeSize * Size;
     }
 
     public static class BufferTools
@@ -33,9 +53,11 @@ namespace ZenithEngine.GLEngine
         public static void BindBufferParts(InputAssemblyPart[] inputParts, int structByteSize)
         {
             int i = 0;
+            int offset = 0;
             foreach (var part in inputParts)
             {
-                GL.VertexAttribPointer(i++, part.Size, part.Type, false, structByteSize, part.Offset);
+                GL.VertexAttribPointer(i++, part.Size, part.Type, false, structByteSize, offset);
+                offset += part.AttributeSize;
             }
         }
 

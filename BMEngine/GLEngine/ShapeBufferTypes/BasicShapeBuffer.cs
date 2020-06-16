@@ -16,8 +16,8 @@ namespace ZenithEngine.GLEngine
 
         public BasicShapeBuffer(int length, ShapePresets preset)
             : base(length, ShapeTypes.Triangles, preset, new[] {
-                new InputAssemblyPart(2, VertexAttribPointerType.Float, 0),
-                new InputAssemblyPart(4, VertexAttribPointerType.Float, 8),
+                new InputAssemblyPart(2, VertexAttribPointerType.Float),
+                new InputAssemblyPart(4, VertexAttribPointerType.Float),
             })
         { }
 

@@ -38,6 +38,8 @@ namespace ZenithEngine.GLEngine
             bufferId = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, bufferId);
             BufferTools.BindData(data, data.Length, structByteSize);
+
+            initialized = true;
         }
 
         public void DrawSingle()

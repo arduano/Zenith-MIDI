@@ -23,7 +23,17 @@ namespace Zenith
 #endif
             Console.Title = "Zenith";
             Application app = new Application();
-            app.Run(new MainWindow());
+            var window = new MainWindow();
+
+            window.Loaded += (s, e) =>
+            {
+                if(args.Length > 0)
+                {
+                    window.LoadMidi(args[0]);
+                }
+            };
+
+            app.Run(window);
 #if !DEBUG
             }
             catch (Exception e)

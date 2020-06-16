@@ -400,6 +400,42 @@ namespace Zenith
             }
         }
 
+        public void LoadMidi(string path)
+        {
+            if (midifile != null) UnloadMidi();
+
+            if (!File.Exists(path))
+            {
+                MessageBox.Show("Midi file doesn't exist");
+                return;
+            }
+            try
+            {
+                if (midifile != null) midifile.Dispose();
+                midifile = null;
+                GC.Collect();
+                GC.WaitForFullGCComplete();
+                midifile = new DiskMidiFile(path);
+                MidiLoaded = true;
+                browseMidiButton.Content = Path.GetFileName(path);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message + "\n" + ex.StackTrace);
+                MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
+            }
+        }
+
+        public void UnloadMidi()
+        {
+            midifile.Dispose();
+            midifile = null;
+            GC.Collect();
+            GC.WaitForFullGCComplete();
+            MidiLoaded = false;
+            browseMidiButton.SetResourceReference(Button.ContentProperty, "load");
+        }
+
         public MainWindow()
         {
             InitBindings();
@@ -607,40 +643,15 @@ namespace Zenith
             open.Filter = "Midi files (*.mid)|*.mid";
             if ((bool)open.ShowDialog())
             {
-                midipath = open.FileName;
+                LoadMidi(open.FileName);
             }
             else return;
 
-            if (!File.Exists(midipath))
-            {
-                MessageBox.Show("Midi file doesn't exist");
-                return;
-            }
-            try
-            {
-                if (midifile != null) midifile.Dispose();
-                midifile = null;
-                GC.Collect();
-                GC.WaitForFullGCComplete();
-                midifile = new DiskMidiFile(midipath);
-                MidiLoaded = true;
-                browseMidiButton.Content = Path.GetFileName(midipath);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message + "\n" + ex.StackTrace);
-                MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
-            }
         }
 
         private void UnloadButton_Click(object sender, RoutedEventArgs e)
         {
-            midifile.Dispose();
-            midifile = null;
-            GC.Collect();
-            GC.WaitForFullGCComplete();
-            MidiLoaded = false;
-            browseMidiButton.SetResourceReference(Button.ContentProperty, "load");
+            UnloadMidi();
         }
 
         void SetPipelineValues()
@@ -680,7 +691,7 @@ namespace Zenith
         void StartPipeline(bool render)
         {
             var timeBased = noteSizeStyle.SelectedIndex == 1;
-            var startOffset = midifile.StartTicksToSeconds(ModuleRunner.CurrentModule.StartOffset, timeBased) + 
+            var startOffset = midifile.StartTicksToSeconds(ModuleRunner.CurrentModule.StartOffset, timeBased) +
                               (render ? (double)secondsDelay.Value : 0);
 
             var playback = midifile.GetMidiPlayback(

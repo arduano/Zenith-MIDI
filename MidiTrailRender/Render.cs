@@ -53,11 +53,13 @@ namespace MIDITrailRender
 
             Vector3 pos;
             Color4 color;
+            Vector3 normal;
             float side;
 
-            public Vert(Vector3 pos, Color4 color, float side)
+            public Vert(Vector3 pos, Vector3 normal, Color4 color, float side)
             {
                 this.pos = pos;
+                this.normal = normal;
                 this.color = color;
                 this.side = side;
             }
@@ -72,7 +74,7 @@ namespace MIDITrailRender
 
         ShaderProgram keyShader;
 
-        BasicRenderSurface depthSurface ;
+        BasicRenderSurface depthSurface;
         Compositor compositor;
         ShaderProgram compositeShader;
 
@@ -98,24 +100,29 @@ namespace MIDITrailRender
             var o = obj.Groups[0];
 
             var verts = new List<Vert>();
-            var norms = new List<int>();
+            var indices = new List<int>();
             foreach (var f in o.Faces)
             {
                 if (f.Count != 3) throw new Exception("Non triangle faces not supported");
-                for(int i = 0; i < 3; i++)
+                for (int i = 0; i < 3; i++)
                 {
                     var v = f[i];
-                    var vert = obj.Vertices[v.VertexIndex];
-                    var norm = obj.Normals[v.NormalIndex];
-                    verts.Add(new Vert(new Vector3(vert.X / 5, vert.Y / 5, vert.Z / 5), Color4.White, 1));
-                    norms.Add(norms.Count);
+                    var vert = obj.Vertices[v.VertexIndex - 1];
+                    var norm = obj.Normals[v.NormalIndex - 1];
+                    verts.Add(new Vert(
+                        new Vector3(vert.X / 5, vert.Y / 5, vert.Z / 5),
+                        new Vector3(norm.X / 5, norm.Y / 5, norm.Z / 5),
+                        Color4.White,
+                        1));
+                    indices.Add(indices.Count);
                 }
             }
 
-            shape = new ModelBuffer<Vert>(verts.ToArray(), norms.ToArray(), new[] { 
-                new InputAssemblyPart(3, VertexAttribPointerType.Float, 0),
-                new InputAssemblyPart(4, VertexAttribPointerType.Float, 3 * 4),
-                new InputAssemblyPart(1, VertexAttribPointerType.Float, 7 * 4),
+            shape = new ModelBuffer<Vert>(verts.ToArray(), indices.ToArray(), new[] {
+                new InputAssemblyPart(3, VertexAttribPointerType.Float),
+                new InputAssemblyPart(4, VertexAttribPointerType.Float),
+                new InputAssemblyPart(3, VertexAttribPointerType.Float),
+                new InputAssemblyPart(1, VertexAttribPointerType.Float),
             });
 
             var resources = assembly.GetManifestResourceNames();
@@ -131,6 +138,7 @@ namespace MIDITrailRender
             this.midi = midi;
 
             disposer = new DisposeGroup();
+            disposer.Add(keyShader);
             disposer.Add(shape);
             shape.Init();
 
@@ -140,7 +148,6 @@ namespace MIDITrailRender
 
             quadShader = disposer.Add(BasicShapeBuffer.GetBasicShader());
             quadBuffer = disposer.Add(new BasicShapeBuffer(100, ShapePresets.Quads));
-
 
             Initialized = true;
         }
@@ -153,24 +160,35 @@ namespace MIDITrailRender
 
         public void RenderFrame(RenderSurface renderSurface)
         {
-            depthSurface.BindSurfaceAndClear();
+            using (new GLEnabler().Enable(EnableCap.Blend))
+            {
 
-            Matrix4 view = Matrix4.Identity *
-                Matrix4.CreateRotationX(MathHelper.Pi / 2 * 0.3f) *
-                Matrix4.CreateRotationY(MathHelper.Pi / 2 * 0.3f) *
-                Matrix4.CreateRotationZ(MathHelper.Pi / 2 * 0.3f) *
-                Matrix4.CreateTranslation(0, -1, -1) *
-            Matrix4.CreatePerspectiveFieldOfView(MathHelper.Pi / 2, renderStatus.AspectRatio, 0.01f, 400);
-            //Matrix4 view = Matrix4.Identity;
-            Matrix4 model = Matrix4.Identity;
+                using (new GLEnabler().Enable(EnableCap.DepthTest).Enable(EnableCap.CullFace))
+                {
+                    GL.DepthFunc(DepthFunction.Less);
 
-            keyShader.Bind();
-            GL.UniformMatrix4(keyShader.Uniform("view"), false, ref view);
-            GL.UniformMatrix4(keyShader.Uniform("model"), false, ref model);
+                    depthSurface.BindSurfaceAndClear();
+                    GL.Clear(ClearBufferMask.DepthBufferBit);
 
-            shape.DrawSingle();
+                    Matrix4 view = Matrix4.Identity *
+                        Matrix4.CreateRotationX(MathHelper.Pi / 2 * 0.3f) *
+                        Matrix4.CreateRotationY(MathHelper.Pi / 2 * (float)midi.PlayerPositionSeconds) *
+                        //Matrix4.CreateRotationZ(MathHelper.Pi / 2 * 0.3f) *
+                        Matrix4.CreateTranslation(0, 0, -1) *
+                        Matrix4.CreatePerspectiveFieldOfView(MathHelper.Pi / 2, renderStatus.AspectRatio, 0.01f, 400);
+                    //Matrix4 view = Matrix4.Identity;
+                    Matrix4 model = Matrix4.Identity;
 
-            compositor.Composite(depthSurface, compositeShader, renderSurface);
+                    keyShader.Bind();
+                    GL.UniformMatrix4(keyShader.Uniform("view"), false, ref view);
+                    GL.UniformMatrix4(keyShader.Uniform("model"), false, ref model);
+
+                    shape.DrawSingle();
+
+                }
+
+                compositor.Composite(depthSurface, compositeShader, renderSurface);
+            }
         }
 
         public void ReloadTrackColors()

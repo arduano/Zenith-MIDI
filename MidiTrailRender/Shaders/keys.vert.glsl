@@ -3,9 +3,11 @@
 uniform mat4 view;
 uniform mat4 model;
 
+
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec4 glColor;
-layout(location = 2) in float side;
+layout(location = 2) in vec3 normal;
+layout(location = 4) in float side;
 
 out vec4 color;
 
@@ -15,5 +17,7 @@ void main()
     pos = model * pos;
     pos = view * pos;
     gl_Position = pos;
-    color = glColor;
+    float col = dot(normal, vec3(1, 1, 1));
+    //color = vec4(col, col, col, 1.0f);
+    color = vec4(normal, 1.0f);
 }

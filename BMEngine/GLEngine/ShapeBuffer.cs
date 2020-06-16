@@ -95,16 +95,13 @@ namespace ZenithEngine.GLEngine
             using (new GLEnabler().UseAttribArrays(inputParts.Length))
             {
                 GL.BindBuffer(BufferTarget.ArrayBuffer, bufferId);
-                GL.BufferData(
-                    BufferTarget.ArrayBuffer,
-                    (IntPtr)(pos * structByteSize),
-                    verts,
-                    BufferUsageHint.DynamicDraw);
-                int i = 0;
-                foreach (var part in inputParts)
-                {
-                    GL.VertexAttribPointer(i++, part.Size, part.Type, false, structByteSize, part.Offset);
-                }
+                //GL.BufferData(
+                //    BufferTarget.ArrayBuffer,
+                //    (IntPtr)(pos * structByteSize),
+                //    verts,
+                //    BufferUsageHint.DynamicDraw);
+                BufferTools.BindData(verts, pos, structByteSize);
+                BufferTools.BindBufferParts(inputParts, structByteSize);
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferId);
                 GL.IndexPointer(IndexPointerType.Int, 1, 0);
                 GL.DrawElements(PrimitiveType.Triangles, pos * indicesPerShape, DrawElementsType.UnsignedInt, IntPtr.Zero);
