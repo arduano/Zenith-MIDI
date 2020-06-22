@@ -14,6 +14,8 @@ namespace ZenithEngine.GLEngine
 
         List<EnableCap> enabled = new List<EnableCap>();
 
+        List<int> instancedBuffers = new List<int>();
+
         public GLEnabler UseAttribArrays(int count)
         {
             for (int i = 0; i < count; i++)
@@ -21,6 +23,19 @@ namespace ZenithEngine.GLEngine
                 GL.EnableVertexAttribArray(i);
             }
             attribArrays = count;
+            return this;
+        }
+
+        public GLEnabler UseInstancedBuffers(int start, int count)
+        {
+            for(int i = start; i < count + start; i++)
+            {
+                if (!instancedBuffers.Contains(i))
+                {
+                    instancedBuffers.Add(i);
+                    GL.VertexAttribDivisor(i, 1);
+                }
+            }
             return this;
         }
 
@@ -41,6 +56,7 @@ namespace ZenithEngine.GLEngine
                 GL.DisableVertexAttribArray(i);
             }
             foreach (var e in enabled) GL.Disable(e);
+            foreach (var i in instancedBuffers) GL.VertexAttribDivisor(i, 0);
         }
 
         public void Dispose()

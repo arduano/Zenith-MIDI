@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using OpenTK.Graphics.OpenGL;
@@ -12,6 +14,18 @@ namespace ZenithEngine.GLEngine
         Points,
         Lines,
         Triangles
+    }
+
+    public class AssemblyPart : Attribute
+    {
+        public InputAssemblyPart Part { get; }
+        public int Order { get; }
+
+        public AssemblyPart(int size, VertexAttribPointerType type, [CallerLineNumber]int order = 0)
+        {
+            Part = new InputAssemblyPart(size, type);
+            Order = order;
+        }
     }
 
     public struct InputAssemblyPart
@@ -50,9 +64,12 @@ namespace ZenithEngine.GLEngine
 
     public static class BufferTools
     {
-        public static void BindBufferParts(InputAssemblyPart[] inputParts, int structByteSize)
+        public static void BindBufferParts(InputAssemblyPart[] inputParts, int structByteSize) =>
+            BindBufferParts(inputParts, structByteSize, 0);
+
+        public static void BindBufferParts(InputAssemblyPart[] inputParts, int structByteSize, int start)
         {
-            int i = 0;
+            int i = start;
             int offset = 0;
             foreach (var part in inputParts)
             {
@@ -87,6 +104,19 @@ namespace ZenithEngine.GLEngine
             if (type == ShapeTypes.Points) return PrimitiveType.Points;
             if (type == ShapeTypes.Triangles) return PrimitiveType.Triangles;
             throw new Exception();
+        }
+
+        public static InputAssemblyPart[] GetAssemblyParts(Type type)
+        {
+            List<MemberInfo> members = new List<MemberInfo>();
+            members.AddRange(type.GetFields());
+            members.AddRange(type.GetProperties());
+            var parts = members.Where(p => Attribute.IsDefined(p, typeof(AssemblyPart)))
+                .Select(p => (AssemblyPart)p.GetCustomAttributes(typeof(AssemblyPart), false).Single())
+                .OrderBy(a => a.Order)
+                .Select(a => a.Part)
+                .ToArray();
+            return parts;
         }
     }
 }

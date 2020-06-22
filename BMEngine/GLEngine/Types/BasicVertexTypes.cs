@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK;
 using OpenTK.Graphics;
+using OpenTK.Graphics.OpenGL;
 
 namespace ZenithEngine.GLEngine.Types
 {
@@ -15,13 +16,16 @@ namespace ZenithEngine.GLEngine.Types
         public static ShaderProgram GetBasicShader() =>
             ShaderProgram.Presets.Basic();
 
-        Vector2 pos;
-        Color4 color;
+        [AssemblyPart(2, VertexAttribPointerType.Float)]
+        public Vector2 Pos;
+
+        [AssemblyPart(4, VertexAttribPointerType.Float)]
+        public Color4 Col;
 
         public Vertex2d(Vector2 pos, Color4 color)
         {
-            this.pos = pos;
-            this.color = color;
+            Pos = pos;
+            Col = color;
         }
 
         public Vertex2d(float x, float y, Color4 color) : this(new Vector2(x, y), color)
@@ -35,15 +39,20 @@ namespace ZenithEngine.GLEngine.Types
         public static ShaderProgram GetBasicShader() =>
              ShaderProgram.Presets.BasicTextured();
 
-        Vector2 pos;
-        Vector2 uv;
-        Color4 color;
+        [AssemblyPart(2, VertexAttribPointerType.Float)]
+        public Vector2 Pos;
+
+        [AssemblyPart(2, VertexAttribPointerType.Float)]
+        public Vector2 UV;
+
+        [AssemblyPart(4, VertexAttribPointerType.Float)]
+        public Color4 Color;
 
         public VertexTextured2d(Vector2 pos, Vector2 uv, Color4 color)
         {
-            this.pos = pos;
-            this.color = color;
-            this.uv = uv;
+            Pos = pos;
+            Color = color;
+            UV = uv;
         }
 
         public VertexTextured2d(float x, float y, float u, float v, Color4 color) : this(new Vector2(x, y), new Vector2(u, v), color)

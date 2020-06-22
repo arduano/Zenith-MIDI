@@ -50,6 +50,9 @@ namespace ZenithEngine.GLEngine
         public ShapeBuffer(int length, ShapeTypes type, ShapePresets preset, InputAssemblyPart[] inputParts)
             : this(length, type, IndicesFromPreset(preset), inputParts) { }
 
+        public ShapeBuffer(int length, ShapeTypes type, ShapePresets preset)
+            : this(length, type, IndicesFromPreset(preset), BufferTools.GetAssemblyParts(typeof(T))) { }
+
         public ShapeBuffer(int length, ShapeTypes type, int[] indices, InputAssemblyPart[] inputParts)
         {
             structByteSize = Marshal.SizeOf(default(T));
@@ -76,6 +79,8 @@ namespace ZenithEngine.GLEngine
 
             this.inputParts = inputParts;
 
+            Shape = type;
+
             verts = new T[length];
         }
 
@@ -95,16 +100,11 @@ namespace ZenithEngine.GLEngine
             using (new GLEnabler().UseAttribArrays(inputParts.Length))
             {
                 GL.BindBuffer(BufferTarget.ArrayBuffer, bufferId);
-                //GL.BufferData(
-                //    BufferTarget.ArrayBuffer,
-                //    (IntPtr)(pos * structByteSize),
-                //    verts,
-                //    BufferUsageHint.DynamicDraw);
                 BufferTools.BindData(verts, pos, structByteSize);
                 BufferTools.BindBufferParts(inputParts, structByteSize);
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferId);
                 GL.IndexPointer(IndexPointerType.Int, 1, 0);
-                GL.DrawElements(PrimitiveType.Triangles, pos * indicesPerShape, DrawElementsType.UnsignedInt, IntPtr.Zero);
+                GL.DrawElements(BufferTools.ShapeType(Shape), pos * indicesPerShape, DrawElementsType.UnsignedInt, IntPtr.Zero);
             }
             pos = 0;
         }

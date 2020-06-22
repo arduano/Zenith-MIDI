@@ -36,11 +36,11 @@ namespace ZenithEngine.MIDI.Audio
 
         void SendNotesOff()
         {
-            byte cc = 120;
+            byte cc = 123;
             byte vv = 0;
             for (int i = 0; i < 16; i++)
             {
-                var command = 0b10110000 & i;
+                var command = 0xB0 & i;
                 output.SendEvent((uint)(command | (cc << 8) | (vv << 16)));
             }
         }

@@ -6,7 +6,6 @@ uniform mat3 matModelNorm;
 uniform mat3 matViewNorm;
 
 uniform vec3 viewPos;
-uniform float pressDepth;
 
 in vec4 color;
 in vec3 fragPos;
@@ -19,6 +18,7 @@ out vec4 outputF;
 const float sunShadowStrength = 0.98;
 const float specularPower = 16;
 const float pressKeyGlow = 0;
+const float pressDepth = 0;
 
 void main()
 {

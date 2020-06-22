@@ -244,7 +244,9 @@
     <Compile Include="SettingsCtrl.xaml.cs">
       <DependentUpon>SettingsCtrl.xaml</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Shaders\notes.frag.glsl" />
     <Compile Include="Util.cs" />
+    <EmbeddedResource Include="Shaders\notes.vert.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BMEngine\ZenithEngine.csproj">

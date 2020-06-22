@@ -5,28 +5,35 @@ uniform mat4 matModel;
 uniform mat3 matModelNorm;
 uniform mat3 matViewNorm;
 
-uniform vec3 mainColor;
-uniform vec3 sideColor1;
-uniform vec3 sideColor2;
+uniform vec4 mainColor;
+uniform vec4 sideColor1;
+uniform vec4 sideColor2;
 
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec3 normal;
 layout(location = 2) in float side;
 
 out vec4 color;
+out vec3 fragPos;
+
+out vec3 normModel;
+out vec3 normView;
 
 void main()
 {
     vec4 pos = vec4(position, 1.0f);
-    pos = matModel * pos;
-    pos = matView * pos;
-    gl_Position = pos;
+    vec4 worldPos = matModel * pos;
+    vec4 screenPos = matView * worldPos;
+    gl_Position = screenPos;
 
-    vec3 normModel = normalize(matModelNorm * normal);
-    vec3 normView = normalize(matViewNorm * normModel);
+    normModel = normalize(matModelNorm * normal);
+    normView = normalize(matViewNorm * normModel);
 
-    //float col = dot(normView, vec3(1, 1, 1));
-    //float col = dot(normView, vec3(0, 0, -1));
-    //color = vec4(col, col, col, 1.0f);
-    color = vec4(abs(normView), 1.0f);
+    fragPos = worldPos.xyz;
+
+    vec4 blendCol = sideColor1 * side + sideColor2 * (1 - side);
+    vec4 vecCol = mainColor * (1 - blendCol.a) + blendCol * blendCol.a;
+    vecCol.a = 1;
+
+    color = sideColor1;
 }

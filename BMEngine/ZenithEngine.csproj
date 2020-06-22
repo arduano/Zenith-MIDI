@@ -73,6 +73,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CjClutter.ObjLoader.Loader, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -240,6 +241,7 @@
     <Compile Include="DisposeGroup.cs" />
     <Compile Include="FastList.cs" />
     <Compile Include="GLEngine\BufferTools.cs" />
+    <Compile Include="GLEngine\InstancedModelBuffer.cs" />
     <Compile Include="GLEngine\ModelBuffer.cs" />
     <Compile Include="ModuleUI\Docked.cs" />
     <Compile Include="ModuleUI\Misc.cs" />

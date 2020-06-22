@@ -155,17 +155,23 @@ namespace ZenithEngine.MIDI.Disk
 
         public override IEnumerable<Note> IterateNotes(double topCutoffOffset)
         {
+            return IterateNotes(PlayerPosition, topCutoffOffset);
+        }
+
+        public override IEnumerable<Note> IterateNotes(double bottomCutoffOffset, double topCutoffOffset)
+        {
+            CheckParseDistance(topCutoffOffset);
             long nc = 0;
             var iter = Notes.Iterate();
             for (Note n = null; iter.MoveNext(out n);)
             {
                 if (stopped) break;
-                if (n.end < PlayerPosition && n.hasEnded)
+                if (n.end < bottomCutoffOffset && n.hasEnded)
                 {
                     iter.Remove();
                     continue;
                 }
-                if (n.start > topCutoffOffset) 
+                if (n.start > topCutoffOffset)
                     break;
                 nc++;
                 yield return n;

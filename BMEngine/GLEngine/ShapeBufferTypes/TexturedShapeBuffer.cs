@@ -15,11 +15,7 @@ namespace ZenithEngine.GLEngine
         public static ShaderProgram GetBasicShader() => VertexTextured2d.GetBasicShader();
 
         public TexturedShapeBuffer(int length, ShapePresets preset)
-            : base(length, ShapeTypes.Triangles, preset, new[] {
-                new InputAssemblyPart(2, VertexAttribPointerType.Float),
-                new InputAssemblyPart(2, VertexAttribPointerType.Float),
-                new InputAssemblyPart(4, VertexAttribPointerType.Float),
-            })
+            : base(length, ShapeTypes.Triangles, preset)
         { }
 
         public void PushVertex(float x, float y, float u, float v, Color4 col)

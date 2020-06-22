@@ -30,13 +30,13 @@ namespace ZenithEngine.MIDI.Audio
 
         public void Dispose()
         {
-            byte cc = 120;
-            byte vv = 0;
-            for(int i = 0; i < 16; i++)
-            {
-                var command = 0b10110000 & i;
-                SendEvent((uint)(command | (cc << 8) | (vv << 16)));
-            }
+            //byte cc = 120;
+            //byte vv = 0;
+            //for(int i = 0; i < 16; i++)
+            //{
+            //    var command = 0xB0 & i;
+            //    SendEvent((uint)(command | (cc << 8) | (vv << 16)));
+            //}
             Reset();
         }
 

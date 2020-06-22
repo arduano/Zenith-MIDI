@@ -16,10 +16,13 @@ namespace ZenithEngine.GLEngine
         InputAssemblyPart[] inputParts;
         int structByteSize;
 
-        T[] data;
-        int[] indices;
+        internal T[] data;
+        internal int[] indices;
 
         bool initialized = false;
+
+        public ModelBuffer(T[] data, int[] indices)
+            : this(data, indices, BufferTools.GetAssemblyParts(typeof(T))) { }
 
         public ModelBuffer(T[] data, int[] indices, InputAssemblyPart[] inputParts)
         {
@@ -31,6 +34,8 @@ namespace ZenithEngine.GLEngine
 
         public void Init()
         {
+            if (initialized) return;
+
             indexBufferId = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferId);
             BufferTools.BindIndices(indices, indices.Length, sizeof(int));
@@ -44,13 +49,14 @@ namespace ZenithEngine.GLEngine
 
         public void DrawSingle()
         {
+            Init();
             using (new GLEnabler().UseAttribArrays(inputParts.Length))
             {
                 GL.BindBuffer(BufferTarget.ArrayBuffer, bufferId);
                 BufferTools.BindBufferParts(inputParts, structByteSize);
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferId);
                 GL.IndexPointer(IndexPointerType.Int, 1, 0);
-                GL.DrawElements(PrimitiveType.Triangles, indices.Length, DrawElementsType.UnsignedInt, IntPtr.Zero);
+                GL.DrawArrays(PrimitiveType.Triangles, 0, indices.Length);
             }
         }
 
@@ -59,6 +65,7 @@ namespace ZenithEngine.GLEngine
             if (!initialized) return;
             GL.DeleteBuffer(bufferId);
             GL.DeleteBuffer(indexBufferId);
+            initialized = false;
         }
     }
 }

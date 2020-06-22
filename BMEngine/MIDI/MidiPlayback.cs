@@ -84,6 +84,7 @@ namespace ZenithEngine.MIDI
 
         public abstract IEnumerable<Note> IterateNotes();
         public abstract IEnumerable<Note> IterateNotes(double topCutoffOffset);
+        public abstract IEnumerable<Note> IterateNotes(double bottomCutoffOffset, double topCutoffOffset);
         public abstract IEnumerable<Note> IterateNotesCustomDelete();
 
 
