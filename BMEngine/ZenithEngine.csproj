@@ -108,6 +108,9 @@
     <Reference Include="SharpDX.Desktop, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpDX.Desktop.4.2.0\lib\net45\SharpDX.Desktop.dll</HintPath>
     </Reference>
+    <Reference Include="SharpDX.Direct2D1, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.Direct2D1.4.2.0\lib\net45\SharpDX.Direct2D1.dll</HintPath>
+    </Reference>
     <Reference Include="SharpDX.Direct3D11, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpDX.Direct3D11.4.2.0\lib\net45\SharpDX.Direct3D11.dll</HintPath>
     </Reference>
@@ -258,6 +261,13 @@
   <ItemGroup>
     <Compile Include="BufferByteReader.cs" />
     <Compile Include="DisposeGroup.cs" />
+    <Compile Include="DXHelper\DeviceInitiable.cs" />
+    <Compile Include="DXHelper\IDeviceInitiable.cs" />
+    <Compile Include="DXHelper\AssemblyElement.cs" />
+    <Compile Include="DXHelper\Initiator.cs" />
+    <Compile Include="DXHelper\ModelBuffer.cs" />
+    <Compile Include="DXHelper\ShaderProgram.cs" />
+    <Compile Include="DXHelper\ShapeBuffer.cs" />
     <Compile Include="FastList.cs" />
     <Compile Include="GLEngine\BufferTools.cs" />
     <Compile Include="GLEngine\InstancedModelBuffer.cs" />
@@ -308,6 +318,7 @@
     <Compile Include="ModuleUtil\ModuleUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenderStatus.cs" />
+    <Compile Include="test2.cs" />
     <Compile Include="UI\BBinding.cs" />
     <Compile Include="UI\BetterCheckbox.xaml.cs">
       <DependentUpon>BetterCheckbox.xaml</DependentUpon>

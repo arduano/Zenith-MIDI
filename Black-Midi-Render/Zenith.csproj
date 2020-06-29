@@ -134,6 +134,9 @@
     <Reference Include="SharpDX.Desktop, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpDX.Desktop.4.2.0\lib\net45\SharpDX.Desktop.dll</HintPath>
     </Reference>
+    <Reference Include="SharpDX.Direct2D1, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.Direct2D1.4.2.0\lib\net45\SharpDX.Direct2D1.dll</HintPath>
+    </Reference>
     <Reference Include="SharpDX.Direct3D11, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpDX.Direct3D11.4.2.0\lib\net45\SharpDX.Direct3D11.dll</HintPath>
     </Reference>
@@ -174,6 +177,8 @@
     </Compile>
     <Compile Include="RenderPipeline.cs" />
     <Compile Include="RenderWindow.cs" />
+    <Compile Include="test.cs" />
+    <Compile Include="test2.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -196,14 +201,6 @@
     <ProjectReference Include="..\FlatRender\FlatRender.csproj">
       <Project>{ae59479c-9d0d-464c-a4d3-8fdd7e1f3786}</Project>
       <Name>FlatRender</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MidiTrailRender\MidiTrailRender.csproj">
-      <Project>{991e132a-a56d-49ab-bbee-9828359bb307}</Project>
-      <Name>MidiTrailRender</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PFARender\PFARender.csproj">
-      <Project>{84e13869-0d33-4a56-a1a8-0b6f12c76081}</Project>
-      <Name>PFARender</Name>
     </ProjectReference>
     <ProjectReference Include="..\ZenithShared\ZenithShared.csproj">
       <Project>{019e4ce1-547f-4a32-b02c-f190943713eb}</Project>

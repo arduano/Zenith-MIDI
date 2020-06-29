@@ -17,6 +17,8 @@ namespace Zenith
         [STAThread]
         static void Main(string[] args)
         {
+            new test();
+            return;
 #if !DEBUG
             try
             {
