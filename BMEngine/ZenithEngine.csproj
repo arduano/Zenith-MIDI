@@ -261,13 +261,28 @@
   <ItemGroup>
     <Compile Include="BufferByteReader.cs" />
     <Compile Include="DisposeGroup.cs" />
+    <Compile Include="DXHelper\BlendStateKeeper.cs" />
+    <Compile Include="DXHelper\Compositor.cs" />
     <Compile Include="DXHelper\DeviceInitiable.cs" />
     <Compile Include="DXHelper\IDeviceInitiable.cs" />
     <Compile Include="DXHelper\AssemblyElement.cs" />
     <Compile Include="DXHelper\Initiator.cs" />
+    <Compile Include="DXHelper\IRenderSurface.cs" />
+    <Compile Include="DXHelper\ManagedRenderWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DXHelper\ManagedSwapChain.cs" />
     <Compile Include="DXHelper\ModelBuffer.cs" />
+    <Compile Include="DXHelper\CompositeRenderSurface.cs" />
+    <Compile Include="DXHelper\Presets\Shaders.cs" />
+    <Compile Include="DXHelper\Presets\ShapeBuffers.cs" />
+    <Compile Include="DXHelper\Presets\Vertices.cs" />
+    <Compile Include="DXHelper\RenderSurface.cs" />
+    <Compile Include="DXHelper\RenderTexture.cs" />
+    <Compile Include="DXHelper\ShaderHelper.cs" />
     <Compile Include="DXHelper\ShaderProgram.cs" />
     <Compile Include="DXHelper\ShapeBuffer.cs" />
+    <Compile Include="DXHelper\TextureSampler.cs" />
     <Compile Include="FastList.cs" />
     <Compile Include="GLEngine\BufferTools.cs" />
     <Compile Include="GLEngine\InstancedModelBuffer.cs" />
@@ -393,7 +408,12 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="DXHelper\Presets\Shaders\basicTextured.fx" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="DXHelper\Presets\Shaders\basicFlat.fx" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

@@ -8,7 +8,10 @@ using SharpDX.Windows;
 using Buffer = SharpDX.Direct3D11.Buffer;
 using Device = SharpDX.Direct3D11.Device;
 using ZenithEngine.DXHelper;
+using ZenithEngine.DXHelper.Presets;
 using System.Runtime.InteropServices;
+using System.Drawing;
+using Color = SharpDX.Color;
 
 namespace Zenith
 {
@@ -30,60 +33,24 @@ namespace Zenith
             }
         }
 
-        string shader = @"
-struct VS_IN
-{
-	float2 pos : POSITION;
-	float4 col : COLOR;
-};
-
-struct PS_IN
-{
-	float4 pos : SV_POSITION;
-	float4 col : COLOR;
-};
-
-PS_IN VS( VS_IN input )
-{
-	PS_IN output = (PS_IN)0;
-	
-	output.pos = float4(input.pos, 0, 1);
-	output.col = input.col;
-	
-	return output;
-}
-
-float4 PS( PS_IN input ) : SV_Target
-{
-	return input.col;
-}
-
-technique10 Render
-{
-	pass P0
-	{
-		SetGeometryShader( 0 );
-		SetVertexShader( CompileShader( vs_4_0, VS() ) );
-		SetPixelShader( CompileShader( ps_4_0, PS() ) );
-	}
-}
-";
-
         public test()
         {
             var init = new Initiator();
 
             var form = new RenderForm("SharpDX - MiniTri Direct3D 11 Sample");
 
-            ref RenderForm a = ref form;
+            form.IsFullscreen = true;
 
             // SwapChain description
             var desc = new SwapChainDescription()
             {
                 BufferCount = 1,
-                ModeDescription =
-                                   new ModeDescription(form.ClientSize.Width, form.ClientSize.Height,
-                                                       new Rational(60, 1), Format.R8G8B8A8_UNorm),
+                ModeDescription = new ModeDescription(
+                    form.ClientSize.Width,
+                    form.ClientSize.Height,
+                    new Rational(60, 1), 
+                    Format.R8G8B8A8_UNorm
+                ),
                 IsWindowed = true,
                 OutputHandle = form.Handle,
                 SampleDescription = new SampleDescription(1, 0),
@@ -97,6 +64,8 @@ technique10 Render
             Device.CreateWithSwapChain(DriverType.Hardware, DeviceCreationFlags.None, desc, out device, out swapChain);
             var context = device.ImmediateContext;
 
+            Shaders.BasicFlat();
+
             // Ignore all windows events
             var factory = swapChain.GetParent<Factory>();
             factory.MakeWindowAssociation(form.Handle, WindowAssociationFlags.IgnoreAll);
@@ -105,47 +74,73 @@ technique10 Render
             var backBuffer = Texture2D.FromSwapChain<Texture2D>(swapChain, 0);
             var renderView = new RenderTargetView(device, backBuffer);
 
-            var shaderProgram = init.Add(new ShaderProgram<Vert>(shader, "4_0", "VS", "PS"));
+            //var shaderProgram = init.Add(Shaders.BasicFlat());
+            var shaderProgram2 = init.Add(Shaders.BasicTextured());
+            var sampler = init.Add(new TextureSampler());
+            var texture = init.Add(RenderTexture.FromBitmap((Bitmap)Bitmap.FromFile("icon.png")));
+            var blendState = init.Add(new BlendStateKeeper());
 
             var vertsTriangle = new[]
             {
-                new Vert(new Vector2(0.0f, 0.5f), new Vector4(1.0f, 0.0f, 0.0f, 1.0f)),
-                new Vert(new Vector2(0.5f, -0.5f), new Vector4(0.0f, 1.0f, 0.0f, 1.0f)),
-                new Vert(new Vector2(-0.5f, -0.5f), new Vector4(0.0f, 0.0f, 1.0f, 1.0f))
+                new Vert2D(new Vector2(0.0f, 0.5f), new Color4(1.0f, 0.0f, 0.0f, 1.0f)),
+                new Vert2D(new Vector2(0.5f, -0.5f), new Color4(0.0f, 1.0f, 0.0f, 1.0f)),
+                new Vert2D(new Vector2(-0.5f, -0.5f), new Color4(0.0f, 0.0f, 1.0f, 1.0f))
             };
 
             var vertsQuad = new[]
             {
-                new Vert(new Vector2(0.5f, 0.5f), new Vector4(1.0f, 0.0f, 0.0f, 1.0f)),
-                new Vert(new Vector2(0.5f, -0.5f), new Vector4(0.0f, 1.0f, 0.0f, 1.0f)),
-                new Vert(new Vector2(-0.5f, -0.5f), new Vector4(0.0f, 0.0f, 1.0f, 1.0f)),
-                new Vert(new Vector2(-0.5f, 0.5f), new Vector4(1.0f, 1.0f, 0.0f, 1.0f)),
+                new Vert2D(new Vector2(0.5f, 0.5f), new Color4(1.0f, 0.0f, 0.0f, 1.0f)),
+                new Vert2D(new Vector2(0.5f, -0.5f), new Color4(0.0f, 1.0f, 0.0f, 1.0f)),
+                new Vert2D(new Vector2(-0.5f, -0.5f), new Color4(0.0f, 0.0f, 1.0f, 1.0f)),
+                new Vert2D(new Vector2(-0.5f, 0.5f), new Color4(1.0f, 1.0f, 0.0f, 1.0f)),
+            };
+
+            var vertsQuadTex = new[]
+            {
+                new VertTex2D(new Vector2(0.5f, 0.5f), new Vector2(1, 1), new Color4(1.0f, 0.0f, 0.0f, 1.0f)),
+                new VertTex2D(new Vector2(0.5f, -0.5f), new Vector2(1, 0), new Color4(0.0f, 1.0f, 0.0f, 1.0f)),
+                new VertTex2D(new Vector2(-0.5f, -0.5f), new Vector2(0, 0), new Color4(0.0f, 0.0f, 1.0f, 1.0f)),
+                new VertTex2D(new Vector2(-0.5f, 0.5f), new Vector2(0, 1), new Color4(1.0f, 1.0f, 0.0f, 1.0f)),
+            };
+
+            var vertsQuadTex2 = new[]
+            {
+                new VertTex2D(new Vector2(0.5f, 0.5f), new Vector2(1, 1), new Color4(1.0f)),
+                new VertTex2D(new Vector2(0.5f, -0.5f), new Vector2(1, 0), new Color4(1.0f)),
+                new VertTex2D(new Vector2(-0.5f, -0.5f), new Vector2(0, 0), new Color4(1.0f)),
+                new VertTex2D(new Vector2(-0.5f, 0.5f), new Vector2(0, 1), new Color4(1.0f)),
             };
 
             var indicesQuad = new[] { 0, 1, 2, 0, 2, 3 };
 
-            var shapeBuffer = init.Add(new ShapeBuffer<Vert>(100, PrimitiveTopology.TriangleList, ShapePresets.Quads));
+            var shapeBuffer = init.Add(new ShapeBuffer<VertTex2D>(100, PrimitiveTopology.TriangleList, ShapePresets.Quads));
 
             // Instantiate Vertex buiffer from vertex data
-            var vertices = init.Add(new ModelBuffer<Vert>(vertsQuad, indicesQuad));
+            var vertices = init.Add(new ModelBuffer<VertTex2D>(vertsQuadTex, indicesQuad));
 
             init.Init(device);
 
             // Prepare All the stages
             context.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
             vertices.Bind(context);
-            context.Rasterizer.SetViewport(new Viewport(0, 0, form.ClientSize.Width, form.ClientSize.Height, 0.0f, 1.0f));
-            shaderProgram.Bind(context);
+            shaderProgram2.Bind(context);
             context.OutputMerger.SetTargets(renderView);
+
+            context.PixelShader.SetSampler(0, sampler);
+            context.PixelShader.SetShaderResource(0, texture);
+
+            context.OutputMerger.BlendState = blendState;
 
             // Main loop
             RenderLoop.Run(form, () =>
             {
+                //form.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+                context.Rasterizer.SetViewport(new Viewport(0, 0, form.ClientSize.Width, form.ClientSize.Height, 0.0f, 1.0f));
                 context.ClearRenderTargetView(renderView, Color.Black);
                 //context.Draw(3, 0);
                 //context.DrawIndexed(6, 0, 0);
                 shapeBuffer.UseContext(context);
-                foreach (var v in vertsQuad) shapeBuffer.Push(v);
+                foreach (var v in vertsQuadTex2) shapeBuffer.Push(v);
                 shapeBuffer.Flush();
                 swapChain.Present(0, PresentFlags.None);
             });

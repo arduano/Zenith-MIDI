@@ -27,5 +27,20 @@ namespace ZenithEngine.DXHelper
         {
             foreach (var i in items) i.Init(Device);
         }
+        
+        public T Replace<T>(IDeviceInitiable prevItem, T newItem) where T : IDeviceInitiable
+        {
+            if (!items.Contains(prevItem)) throw new ArgumentException("Previous item not found in items array");
+            items.Remove(prevItem);
+            items.Add(newItem);
+
+            if (Initialized)
+            {
+                prevItem.Dispose();
+                newItem.Init(Device);
+            }
+
+            return newItem;
+        }
     }
 }

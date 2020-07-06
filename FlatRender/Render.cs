@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using OpenTK;
-using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
 using ZenithEngine;
 using System.Windows.Media;
 using System.Drawing;
@@ -14,7 +11,7 @@ using System.Windows;
 using System.IO;
 using System.Windows.Media.Imaging;
 using System.Windows.Controls;
-using ZenithEngine.GLEngine;
+using ZenithEngine.DXHelper;
 using System.Runtime.InteropServices;
 using ZenithEngine.ModuleUtil;
 using ZenithEngine.Modules;
@@ -141,7 +138,7 @@ namespace FlatRender
             Initialized = false;
         }
 
-        public void RenderFrame(RenderSurface renderSurface)
+        public void RenderFrame(CompositeRenderSurface renderSurface)
         {
             double screenTime = settings.noteScreenTime;
 

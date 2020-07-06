@@ -28,17 +28,20 @@ namespace ZenithEngine.DXHelper
             Order = order;
         }
 
-        public static InputElement[] GetLayout(Type type)
+        public static AssemblyElement GetAttributeFromMember(MemberInfo member)
+        {
+            return (AssemblyElement)member.GetCustomAttributes(typeof(AssemblyElement), false).Single();
+        }
+
+        public static MemberInfo[] GetMembersOnType(Type type)
         {
             List<MemberInfo> members = new List<MemberInfo>();
             members.AddRange(type.GetFields());
             members.AddRange(type.GetProperties());
-            var parts = members.Where(p => Attribute.IsDefined(p, typeof(AssemblyElement)))
-                .Select(p => (AssemblyElement)p.GetCustomAttributes(typeof(AssemblyElement), false).Single())
-                .OrderBy(a => a.Order)
-                .Select(a => a.Layout)
+            var parts = members.Where(p => IsDefined(p, typeof(AssemblyElement)))
+                .OrderBy(p => GetAttributeFromMember(p).Order)
                 .ToArray();
-            return parts;
+            return members.ToArray();
         }
     }
 }

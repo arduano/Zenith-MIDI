@@ -26,5 +26,14 @@ namespace ZenithEngine
             items.Add(item);
             return item;
         }
+
+        public T Replace<T>(IDisposable prevItem, T newItem) where T : IDisposable
+        {
+            if (!items.Contains(prevItem)) throw new ArgumentException("Previous item not found in items array");
+            items.Remove(prevItem);
+            prevItem.Dispose();
+            items.Add(newItem);
+            return newItem;
+        }
     }
 }

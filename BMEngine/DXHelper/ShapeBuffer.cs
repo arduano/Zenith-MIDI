@@ -16,6 +16,7 @@ namespace ZenithEngine.DXHelper
 {
     public enum ShapePresets
     {
+        Sequential,
         Quads,
     }
 
@@ -40,6 +41,8 @@ namespace ZenithEngine.DXHelper
 
         static int[] IndicesFromPreset(ShapePresets preset)
         {
+            if (preset == ShapePresets.Sequential)
+                return null;
             if (preset == ShapePresets.Quads)
                 return new[] { 0, 1, 2, 0, 2, 3 };
             throw new Exception("Unknown preset");

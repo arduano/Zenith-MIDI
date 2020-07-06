@@ -1,5 +1,6 @@
 ﻿using SharpDX;
 using SharpDX.D3DCompiler;
+using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
 using System;
 using System.Collections.Generic;
@@ -10,8 +11,7 @@ using Buffer = SharpDX.Direct3D11.Buffer;
 
 namespace ZenithEngine.DXHelper
 {
-    public class ShaderProgram<T, U> : ShaderProgram<T>
-        where T : struct
+    public class ShaderProgram<U> : ShaderProgram
         where U : struct
     {
         U lastData;
@@ -20,13 +20,17 @@ namespace ZenithEngine.DXHelper
 
         Buffer dynamicConstantBuffer;
 
-        public ShaderProgram(string shader, string version, string vertEntry, string fragEntry, string geoEntry = null)
-            : base(shader, version, vertEntry, fragEntry, geoEntry)
-        { }
+        public ShaderProgram(string shader, Type inputType, string version, string vertEntry, string fragEntry, string geoEntry = null)
+            : base(shader, inputType, version, vertEntry, fragEntry, geoEntry) { }
 
-        public ShaderProgram(string shader, string version, InputElement[] layoutParts, string vertEntry, string fragEntry, string geoEntry = null)
-            : base(shader, version, layoutParts, vertEntry, fragEntry, geoEntry)
-        { }
+        public ShaderProgram(string shader, string inputTypeName, Type inputType, Type instanceType, string version, string vertEntry, string fragEntry, string geoEntry = null)
+            : base(shader, inputTypeName, inputType, instanceType, version, vertEntry, fragEntry, geoEntry) { }
+
+        public ShaderProgram(string shader, Type inputType, Type instanceType, string version, string vertEntry, string fragEntry, string geoEntry = null)
+            : base(shader, inputType, instanceType, version, vertEntry, fragEntry, geoEntry) { }
+
+        public ShaderProgram(string shader, InputElement[] layoutParts, string version, string vertEntry, string fragEntry, string geoEntry = null)
+         : base(shader, layoutParts, version, vertEntry, fragEntry, geoEntry) { }
 
         public void SetConstant(U data)
         {
@@ -36,7 +40,13 @@ namespace ZenithEngine.DXHelper
         protected override void InitInternal()
         {
             base.InitInternal();
-            var dynamicConstantBuffer = new Buffer(Device, Utilities.SizeOf<U>(), ResourceUsage.Dynamic, BindFlags.ConstantBuffer, CpuAccessFlags.Write, ResourceOptionFlags.None, 0);
+            dynamicConstantBuffer = new Buffer(Device, Utilities.SizeOf<U>(), ResourceUsage.Dynamic, BindFlags.ConstantBuffer, CpuAccessFlags.Write, ResourceOptionFlags.None, 0);
+        }
+
+        protected override void DisposeInternal()
+        {
+            base.DisposeInternal();
+            dynamicConstantBuffer.Dispose();
         }
 
         public override void Bind(DeviceContext context)
@@ -57,8 +67,7 @@ namespace ZenithEngine.DXHelper
         }
     }
 
-    public class ShaderProgram<T> : DeviceInitiable
-        where T : struct
+    public class ShaderProgram : DeviceInitiable
     {
         public ShaderBytecode VertexShaderByteCode { get; private set; }
         public VertexShader VertexShader { get; private set; }
@@ -79,30 +88,55 @@ namespace ZenithEngine.DXHelper
 
         InputElement[] layoutParts;
 
-        public ShaderProgram(string shader, string version, string vertEntry, string fragEntry, string geoEntry = null)
-            : this(shader, version, new InputElement[0], vertEntry, fragEntry, geoEntry) { }
-        public ShaderProgram(string shader, string version, InputElement[] extraLayoutParts, string vertEntry, string fragEntry, string geoEntry = null)
+        List<string> basicPrepend = new List<string>();
+
+        public ShaderProgram(string shader, Type inputType, string version, string vertEntry, string fragEntry, string geoEntry = null)
+            : this(shader, ShaderHelper.GetLayout(inputType), version, vertEntry, fragEntry, geoEntry)
         {
-            this.shader = shader;
+            basicPrepend.Add(ShaderHelper.BuildStructDefinition(inputType));
+        }
+
+        public ShaderProgram(string shader, string inputTypeName, Type inputType, Type instanceType, string version, string vertEntry, string fragEntry, string geoEntry = null)
+            : this(shader, ShaderHelper.GetLayout(inputType).Concat(ShaderHelper.GetLayout(instanceType)).ToArray(), version, vertEntry, fragEntry, geoEntry)
+        {
+            basicPrepend.Add(ShaderHelper.BuildStructDefinition(inputTypeName, inputType, instanceType));
+        }
+
+        public ShaderProgram(string shader, Type inputType, Type instanceType, string version, string vertEntry, string fragEntry, string geoEntry = null)
+            : this(shader, inputType.Name, inputType, instanceType, version, vertEntry, fragEntry, geoEntry)
+        { }
+
+        public ShaderProgram(string shader, InputElement[] layoutParts, string version, string vertEntry, string fragEntry, string geoEntry = null)
+        {
+            this.shader = shader.Replace("\t", "    ");
             this.version = version;
             this.fragEntry = fragEntry;
             this.vertEntry = vertEntry;
             this.geoEntry = geoEntry;
-            this.layoutParts = AssemblyElement.GetLayout(typeof(T)).Concat(extraLayoutParts).ToArray();
+            this.layoutParts = layoutParts;
+        }
+
+        public string GetPreparedCode()
+        {
+            return String.Join("\n\n", basicPrepend) + "\n\n" + shader;
         }
 
         protected override void InitInternal()
         {
             dispose = new DisposeGroup();
 
-            VertexShaderByteCode = dispose.Add(ShaderBytecode.Compile(shader, vertEntry, "vs_" + version, ShaderFlags.None, EffectFlags.None));
+            var code = GetPreparedCode();
+
+            Console.WriteLine(code);
+
+            VertexShaderByteCode = dispose.Add(ShaderBytecode.Compile(code, vertEntry, "vs_" + version, ShaderFlags.None, EffectFlags.None));
             VertexShader = dispose.Add(new VertexShader(Device, VertexShaderByteCode));
-            PixelShaderByteCode = dispose.Add(ShaderBytecode.Compile(shader, fragEntry, "ps_" + version, ShaderFlags.None, EffectFlags.None));
+            PixelShaderByteCode = dispose.Add(ShaderBytecode.Compile(code, fragEntry, "ps_" + version, ShaderFlags.None, EffectFlags.None));
             PixelShader = dispose.Add(new PixelShader(Device, PixelShaderByteCode));
 
             if (geoEntry != null)
             {
-                GeometryShaderByteCode = dispose.Add(ShaderBytecode.Compile(shader, geoEntry, "gs_" + version, ShaderFlags.None, EffectFlags.None));
+                GeometryShaderByteCode = dispose.Add(ShaderBytecode.Compile(code, geoEntry, "gs_" + version, ShaderFlags.None, EffectFlags.None));
                 GeometryShader = dispose.Add(new GeometryShader(Device, GeometryShaderByteCode));
             }
 
