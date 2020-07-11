@@ -1,4 +1,5 @@
-﻿using SharpDX.Direct3D11;
+﻿using SharpDX;
+using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ZenithEngine.DXHelper
 {
-    public class CompositeRenderSurface : DeviceInitiable, IRenderSurface
+    public class CompositeRenderSurface : DeviceInitiable, IRenderSurface, ITextureResource
     {
         public ShaderResourceView TextureResource { get; private set; }
         public Texture2D Texture { get; private set; }

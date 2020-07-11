@@ -570,9 +570,15 @@ namespace Zenith
 
             RenderModules.Clear();
             var files = Directory.GetFiles("Plugins");
+            var libfiles = Directory.GetFiles("lib").Select(p => Path.GetFileName(p));
             var dlls = files.Where((s) => s.EndsWith(".dll"));
             foreach (var d in dlls)
             {
+                if (libfiles.Contains(Path.GetFileName(d)))
+                {
+                    File.Delete(d);
+                    continue;
+                }
                 try
                 {
                     RenderModules.Add(ModuleManager.LoadModule(d));
@@ -713,8 +719,10 @@ namespace Zenith
         public void StartPipeline(bool render)
         {
             var timeBased = noteSizeStyle.SelectedIndex == 1;
-            var startOffset = midifile.StartTicksToSeconds(ModuleRunner.CurrentModule.StartOffset, timeBased) +
-                              (render ? (double)secondsDelay.Value : 0);
+            // var startOffset = midifile.StartTicksToSeconds(ModuleRunner.CurrentModule.StartOffset, timeBased) +
+            //                (render ? (double)secondsDelay.Value : 0);
+            var startOffset = 0;
+
 
             var playback = midifile.GetMidiPlayback(
                 startOffset,

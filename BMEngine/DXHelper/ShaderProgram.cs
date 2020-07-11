@@ -49,9 +49,9 @@ namespace ZenithEngine.DXHelper
             dynamicConstantBuffer.Dispose();
         }
 
-        public override void Bind(DeviceContext context)
+        public override IDisposable UseOn(DeviceContext context)
         {
-            base.Bind(context);
+            var applier = base.UseOn(context);
 
             if (!lastData.Equals(UniformData))
             {
@@ -64,11 +64,29 @@ namespace ZenithEngine.DXHelper
             context.VertexShader.SetConstantBuffer(0, dynamicConstantBuffer);
             context.PixelShader.SetConstantBuffer(0, dynamicConstantBuffer);
             context.GeometryShader?.SetConstantBuffer(0, dynamicConstantBuffer);
+            
+            return applier;
         }
     }
 
     public class ShaderProgram : DeviceInitiable
     {
+        struct ShaderKeep
+        {
+            public ShaderKeep(VertexShader vert, PixelShader pixel, GeometryShader geo, InputLayout input)
+            {
+                Vert = vert;
+                Pixel = pixel;
+                Geo = geo;
+                Input = input;
+            }
+
+            public VertexShader Vert { get; }
+            public PixelShader Pixel { get; }
+            public GeometryShader Geo { get; }
+            public InputLayout Input { get; }
+        }
+
         public ShaderBytecode VertexShaderByteCode { get; private set; }
         public VertexShader VertexShader { get; private set; }
         public ShaderBytecode PixelShaderByteCode { get; private set; }
@@ -148,12 +166,18 @@ namespace ZenithEngine.DXHelper
             dispose.Dispose();
         }
 
-        public virtual void Bind(DeviceContext context)
+        public virtual IDisposable UseOn(DeviceContext context)
         {
-            context.InputAssembler.InputLayout = InputLayout;
-            context.VertexShader.Set(VertexShader);
-            context.PixelShader.Set(PixelShader);
-            context.GeometryShader.Set(GeometryShader);
+            return new Applier<ShaderKeep>(
+                new ShaderKeep(VertexShader, PixelShader, GeometryShader, InputLayout),
+                () => new ShaderKeep(context.VertexShader.Get(), context.PixelShader.Get(), context.GeometryShader.Get(), context.InputAssembler.InputLayout),
+                (val) =>
+                {
+                    context.InputAssembler.InputLayout = val.Input;
+                    context.VertexShader.Set(val.Vert);
+                    context.PixelShader.Set(val.Pixel); 
+                    context.GeometryShader.Set(val.Geo);
+                });
         }
     }
 }

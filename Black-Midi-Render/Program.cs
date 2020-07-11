@@ -17,8 +17,8 @@ namespace Zenith
         [STAThread]
         static void Main(string[] args)
         {
-            new test();
-            return;
+            //new test();
+            //return;
 #if !DEBUG
             try
             {
@@ -35,7 +35,7 @@ namespace Zenith
                 }
                 if(args.Length > 1)
                 {
-                    window.SelectModule(args[1]);
+                    //window.SelectModule(args[1]);
                     window.StartPipeline(false);
                 }
             };

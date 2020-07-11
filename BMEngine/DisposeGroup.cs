@@ -27,13 +27,39 @@ namespace ZenithEngine
             return item;
         }
 
-        public T Replace<T>(IDisposable prevItem, T newItem) where T : IDisposable
+        public T Replace<T>(T prevItem, T newItem) where T : IDisposable
         {
-            if (!items.Contains(prevItem)) throw new ArgumentException("Previous item not found in items array");
-            items.Remove(prevItem);
-            prevItem.Dispose();
+            if (disposed) throw new Exception("Can't add items to a disposed DisposeGroup");
+            if (prevItem != null)
+            {
+                if (!items.Contains(prevItem)) throw new ArgumentException("Previous item not found in items array");
+                items.Remove(prevItem);
+                prevItem.Dispose();
+            }
             items.Add(newItem);
             return newItem;
+        }
+
+        public T Replace<T>(ref T prevItem, T newItem) where T : IDisposable
+        {
+            prevItem = Replace(prevItem, newItem);
+            return newItem;
+        }
+
+        public void Remove<T>(T item) where T : IDisposable
+        {
+            if (item != null)
+            {
+                if (!items.Contains(item)) throw new ArgumentException("Item not found in items array");
+                items.Remove(item);
+                item.Dispose();
+            }
+        }
+
+        public void Remove<T>(ref T item) where T : IDisposable
+        {
+            Remove(item);
+            item = default(T);
         }
     }
 }

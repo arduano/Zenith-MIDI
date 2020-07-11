@@ -12,7 +12,7 @@ using Rectangle = System.Drawing.Rectangle;
 
 namespace ZenithEngine.DXHelper
 {
-    public class RenderTexture : DeviceInitiable
+    public class RenderTexture : DeviceInitiable, ITextureResource
     {
         public static implicit operator Texture2D(RenderTexture texture) => texture.Texture;
         public static implicit operator ShaderResourceView(RenderTexture texture) => texture.TextureResource;

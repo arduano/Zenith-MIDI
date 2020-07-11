@@ -49,6 +49,7 @@ namespace ZenithEngine.DXHelper
         }
 
         public ShapeBuffer(int length, PrimitiveTopology topology, ShapePresets indicesType) : this(length, topology, IndicesFromPreset(indicesType)) { }
+        public ShapeBuffer(int length) : this(length, PrimitiveTopology.TriangleList, ShapePresets.Quads) { }
         public ShapeBuffer(int length, PrimitiveTopology topology) : this(length, topology, null) { }
         public ShapeBuffer(int length, PrimitiveTopology topology, int[] indices)
         {

@@ -7,6 +7,7 @@ using Buffer = SharpDX.Direct3D11.Buffer;
 using SharpDX.Direct3D11;
 using SharpDX;
 using SharpDX.DXGI;
+using SharpDX.Direct3D;
 
 namespace ZenithEngine.DXHelper
 {
@@ -20,6 +21,8 @@ namespace ZenithEngine.DXHelper
         int[] indices = null;
 
         int structSize;
+
+        public PrimitiveTopology Topology { get; private set; } = PrimitiveTopology.TriangleList;
 
         public Buffer Buffer { get; private set; }
         public Buffer IndexBuffer { get; private set; }
@@ -49,10 +52,24 @@ namespace ZenithEngine.DXHelper
 
         public void Bind(DeviceContext context, int slot = 0)
         {
-            context.InputAssembler.SetVertexBuffers(0, this);
+            context.InputAssembler.SetVertexBuffers(slot, this);
             if (IndexBuffer != null)
             {
                 context.InputAssembler.SetIndexBuffer(IndexBuffer, Format.R32_UInt, 0);
+            }
+        }
+
+        public void BindAndDraw(DeviceContext context)
+        {
+            Bind(context);
+            context.InputAssembler.PrimitiveTopology = Topology;
+            if (IndexBuffer != null)
+            {
+                context.DrawIndexed(indices.Length, 0, 0);
+            }
+            else
+            {
+                context.Draw(verts.Length, 0);
             }
         }
     }

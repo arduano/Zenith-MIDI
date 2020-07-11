@@ -16,7 +16,7 @@ using MapFlags = SharpDX.Direct3D11.MapFlags;
 
 namespace ZenithEngine.DXHelper
 {
-    class ManagedRenderWindow : RenderForm
+    public class ManagedRenderWindow : RenderForm, IRenderSurface, IDisposable
     {
         private bool hasResized = true;
 
@@ -41,6 +41,73 @@ namespace ZenithEngine.DXHelper
 
         public Device Device => device;
 
+        public Texture2D Texture => backBuffer;
+        public RenderTargetView RenderTarget => renderView;
+
+        DisposeGroup dispose = new DisposeGroup();
+
+        public new int Width
+        {
+            get => ClientSize.Width;
+            set
+            {
+                ClientSize = new Size(value, ClientSize.Height);
+            }
+        }
+
+        public new int Height
+        {
+            get => ClientSize.Height;
+            set
+            {
+                ClientSize = new Size(ClientSize.Width, value);
+            }
+        }
+
+        bool fullscreen = false;
+        public bool Fullscreen
+        {
+            get => fullscreen;
+            set
+            {
+                if (fullscreen == value) return;
+                fullscreen = value;
+                if (fullscreen)
+                {
+                    if (fullscreen)
+                    {
+                        BringToFront();
+                        Focus();
+                    }
+                    else
+                    {
+                        WindowState = FormWindowState.Normal;
+                    }
+                }
+                TestWindowState();
+            }
+        }
+
+        void TestWindowState()
+        {
+            if (fullscreen)
+            {
+                FormBorderStyle = FormBorderStyle.None;
+                if (Focused)
+                {
+                    WindowState = FormWindowState.Maximized;
+                }
+                else
+                {
+                    WindowState = FormWindowState.Minimized;
+                }
+            }
+            else
+            {
+                FormBorderStyle = FormBorderStyle.Sizable;
+            }
+        }
+
         public ManagedRenderWindow(int width, int height)
         {
             ClientSize = new Size(width, height);
@@ -49,12 +116,19 @@ namespace ZenithEngine.DXHelper
             desc.OutputHandle = Handle;
 
             Device.CreateWithSwapChain(DriverType.Hardware, DeviceCreationFlags.None, desc, out device, out swapChain);
+            dispose.Add(device);
+            dispose.Add(swapChain);
             var context = device.ImmediateContext;
 
             var factory = swapChain.GetParent<Factory>();
             factory.MakeWindowAssociation(Handle, WindowAssociationFlags.IgnoreAll);
+            dispose.Add(factory);
 
+            CheckResize();
             UserResized += (sender, args) => hasResized = true;
+
+            GotFocus += (s, e) => TestWindowState();
+            LostFocus += (s, e) => TestWindowState();
         }
 
         void CheckResize()
@@ -66,12 +140,17 @@ namespace ZenithEngine.DXHelper
 
                 swapChain.ResizeBuffers(desc.BufferCount, ClientSize.Width, ClientSize.Height, Format.Unknown, SwapChainFlags.None);
 
-                backBuffer = Texture2D.FromSwapChain<Texture2D>(swapChain, 0);
-
-                renderView = new RenderTargetView(device, backBuffer);
+                dispose.Replace(ref backBuffer, Texture2D.FromSwapChain<Texture2D>(swapChain, 0));
+                dispose.Replace(ref renderView, new RenderTargetView(device, backBuffer));
 
                 hasResized = false;
             }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            dispose.Dispose();
         }
 
         public void Present(bool vsync)

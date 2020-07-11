@@ -12,7 +12,7 @@ namespace ZenithEngine.DXHelper
         public static implicit operator BlendState(BlendStateKeeper keeper) => keeper.BlendState;
 
         public BlendState BlendState { get; private set; }
-        public BlendStateDescription Description { get; }
+        public BlendStateDescription Description;
 
         public static BlendStateDescription BasicBlendDescription()
         {
@@ -50,5 +50,8 @@ namespace ZenithEngine.DXHelper
         {
             BlendState.Dispose();
         }
+
+        public IDisposable UseOn(DeviceContext ctx) =>
+            new Applier<BlendState>(this, () => ctx.OutputMerger.BlendState, val => ctx.OutputMerger.BlendState = val);
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ZenithEngine.DXHelper
 {
-    interface IRenderSurface
+    public interface IRenderSurface
     {
         public Texture2D Texture { get;  }
         public RenderTargetView RenderTarget { get;  }

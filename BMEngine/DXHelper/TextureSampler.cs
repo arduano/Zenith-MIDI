@@ -41,5 +41,20 @@ namespace ZenithEngine.DXHelper
         {
             Sampler = new SamplerState(Device, Description);
         }
+
+        public IDisposable UseOnPS(DeviceContext ctx, int slot) =>
+            new Applier<SamplerState>(this, () => ctx.PixelShader.GetSamplers(slot, 1)[0], val => ctx.PixelShader.SetSampler(slot, val));
+        public IDisposable UseOnVS(DeviceContext ctx, int slot) =>
+            new Applier<SamplerState>(this, () => ctx.VertexShader.GetSamplers(slot, 1)[0], val => ctx.VertexShader.SetSampler(slot, val));
+        public IDisposable UseOnGS(DeviceContext ctx, int slot) =>
+            new Applier<SamplerState>(this, () => ctx.GeometryShader.GetSamplers(slot, 1)[0], val => ctx.GeometryShader.SetSampler(slot, val));
+
+        public IDisposable UseOnPS(DeviceContext ctx) =>
+            UseOnPS(ctx, 0);
+        public IDisposable UseOnVS(DeviceContext ctx) =>
+            UseOnVS(ctx, 0);
+        public IDisposable UseOnGS(DeviceContext ctx) =>
+            UseOnGS(ctx, 0);
+
     }
 }
