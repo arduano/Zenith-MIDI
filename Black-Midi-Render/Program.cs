@@ -35,7 +35,7 @@ namespace Zenith
                 }
                 if(args.Length > 1)
                 {
-                    //window.SelectModule(args[1]);
+                    window.SelectModule(args[1]);
                     window.StartPipeline(false);
                 }
             };

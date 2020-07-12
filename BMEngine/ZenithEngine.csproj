@@ -262,7 +262,9 @@
     <Compile Include="BufferByteReader.cs" />
     <Compile Include="DisposeGroup.cs" />
     <Compile Include="DXHelper\Applier.cs" />
+    <Compile Include="DXHelper\AspectRatioComposite.cs" />
     <Compile Include="DXHelper\BlendStateKeeper.cs" />
+    <Compile Include="DXHelper\BufferFlusher.cs" />
     <Compile Include="DXHelper\Compositor.cs" />
     <Compile Include="DXHelper\DeviceInitiable.cs" />
     <Compile Include="DXHelper\Extensions.cs" />
@@ -281,6 +283,7 @@
     <Compile Include="DXHelper\Presets\Vertices.cs" />
     <Compile Include="DXHelper\RasterizerStateKeeper.cs" />
     <Compile Include="DXHelper\RenderSurface.cs" />
+    <Compile Include="DXHelper\RenderSurfaceExtensions.cs" />
     <Compile Include="DXHelper\RenderTexture.cs" />
     <Compile Include="DXHelper\ShaderHelper.cs" />
     <Compile Include="DXHelper\ShaderProgram.cs" />
@@ -324,8 +327,10 @@
     <Compile Include="ModuleUI\UILabel.cs" />
     <Compile Include="ModuleUI\UINumber.cs" />
     <Compile Include="ModuleUI\UINumberSlider.cs" />
+    <Compile Include="ModuleUtil\ColorUtil.cs" />
     <Compile Include="ModuleUtil\Extensions.cs" />
     <Compile Include="ModuleUtil\KeyboardState.cs" />
+    <Compile Include="ModuleUtil\ThreadedKeysLoop.cs" />
     <Compile Include="Output\FFMpeg.cs" />
     <Compile Include="Output\PreviewWindow.cs" />
     <Compile Include="ScriptedCompile\ExtraUI.cs" />

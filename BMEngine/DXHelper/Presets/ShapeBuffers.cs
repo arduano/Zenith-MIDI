@@ -37,9 +37,9 @@ namespace ZenithEngine.DXHelper.Presets
         public void PushQuad(Vector2 topLeft, Vector2 bottomRight, Color4 col)
         {
             Push(topLeft.X, topLeft.Y, col);
-            Push(topLeft.X, bottomRight.Y, col);
-            Push(bottomRight.X, bottomRight.Y, col);
             Push(bottomRight.X, topLeft.Y, col);
+            Push(bottomRight.X, bottomRight.Y, col);
+            Push(topLeft.X, bottomRight.Y, col);
         }
     }
 

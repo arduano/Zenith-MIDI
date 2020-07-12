@@ -198,6 +198,10 @@
       <Project>{60f2212a-d56c-4776-836f-6a49453cdbc4}</Project>
       <Name>ZenithEngine</Name>
     </ProjectReference>
+    <ProjectReference Include="..\FlatRender\FlatRender.csproj">
+      <Project>{ae59479c-9d0d-464c-a4d3-8fdd7e1f3786}</Project>
+      <Name>FlatRender</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ZenithShared\ZenithShared.csproj">
       <Project>{019e4ce1-547f-4a32-b02c-f190943713eb}</Project>
       <Name>ZenithShared</Name>
@@ -264,6 +268,10 @@ del Plugins\SharpCompress.dll
 del Plugins\CjClutter.ObjLoader.Loader.dll
 del Plugins\System.Diagnostics.DiagnosticSource.dll
 del Plugins\Jint.dll
+
+del Plugins\SharpDX.*.dll
+del Plugins\SharpDX.dll
+
 del Plugins\Languages /s /q
 FOR /D %25%25p IN ("Plugins\Languages") DO rmdir "%25%25p" /s /q</PostBuildEvent>
   </PropertyGroup>

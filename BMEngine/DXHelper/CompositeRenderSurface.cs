@@ -15,6 +15,7 @@ namespace ZenithEngine.DXHelper
         public ShaderResourceView TextureResource { get; private set; }
         public Texture2D Texture { get; private set; }
         public RenderTargetView RenderTarget { get; private set; }
+        public DepthStencilView RenderTargetDepth => null;
 
         public int Width { get; }
         public int Height { get; }

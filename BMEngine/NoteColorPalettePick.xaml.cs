@@ -1,4 +1,4 @@
-﻿using OpenTK.Graphics;
+﻿using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,6 +18,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml;
+using ZenithEngine.ModuleUtil;
 using Brushes = System.Windows.Media.Brushes;
 using Color = System.Drawing.Color;
 using Path = System.IO.Path;
@@ -61,7 +62,7 @@ namespace ZenithEngine
             {
                 for (int i = 0; i < 16 * 8; i++)
                 {
-                    palette.SetPixel(i % 16, (i - i % 16) / 16, (Color)Color4.FromHsv(new OpenTK.Vector4(i * mult % 1, defS, defV, 1)));
+                    palette.SetPixel(i % 16, (i - i % 16) / 16, ColorUtil.FromHsv(i * mult % 1, defS, defV, 1).ToDrawing());
                 }
                 palette.Save(Path.Combine(searchPath, "Random.png"));
             }
@@ -69,9 +70,9 @@ namespace ZenithEngine
             {
                 for (int i = 0; i < 32 * 8; i++)
                 {
-                    palette.SetPixel(i % 32, (i - i % 32) / 32, (Color)Color4.FromHsv(new OpenTK.Vector4(i * mult % 1, defS, defV, 1)));
+                    palette.SetPixel(i % 32, (i - i % 32) / 32, ColorUtil.FromHsv(i * mult % 1, defS, defV, 1).ToDrawing());
                     i++;
-                    palette.SetPixel(i % 32, (i - i % 32) / 32, (Color)Color4.FromHsv(new OpenTK.Vector4(((i - 1) * mult + 0.166f) % 1, defS, defV, 1)));
+                    palette.SetPixel(i % 32, (i - i % 32) / 32, ColorUtil.FromHsv(((i - 1) * mult + 0.166f) % 1, defS, defV, 1).ToDrawing());
                 }
                 palette.Save(Path.Combine(searchPath, "Random Gradients.png"));
             }
@@ -79,9 +80,9 @@ namespace ZenithEngine
             {
                 for (int i = 0; i < 32 * 8; i++)
                 {
-                    palette.SetPixel(i % 32, (i - i % 32) / 32, (Color)Color4.FromHsv(new OpenTK.Vector4(i * mult % 1, defS, defV, 0.8f)));
+                    palette.SetPixel(i % 32, (i - i % 32) / 32, ColorUtil.FromHsv(i * mult % 1, defS, defV, 0.8f).ToDrawing());
                     i++;
-                    palette.SetPixel(i % 32, (i - i % 32) / 32, (Color)Color4.FromHsv(new OpenTK.Vector4(((i - 1) * mult + 0.166f) % 1, defS, defV, 0.8f)));
+                    palette.SetPixel(i % 32, (i - i % 32) / 32, ColorUtil.FromHsv(((i - 1) * mult + 0.166f) % 1, defS, defV, 0.8f).ToDrawing());
                 }
                 palette.Save(Path.Combine(searchPath, "Random Alpha Gradients.png"));
             }
@@ -89,7 +90,7 @@ namespace ZenithEngine
             {
                 for (int i = 0; i < 16 * 8; i++)
                 {
-                    palette.SetPixel(i % 16, (i - i % 16) / 16, (Color)Color4.FromHsv(new OpenTK.Vector4(i * mult % 1, defS, defV, 0.8f)));
+                    palette.SetPixel(i % 16, (i - i % 16) / 16, ColorUtil.FromHsv(i * mult % 1, defS, defV, 0.8f).ToDrawing());
                 }
                 palette.Save(Path.Combine(searchPath, "Random with Alpha.png"));
             }
@@ -213,13 +214,13 @@ namespace ZenithEngine
                     y /= 16;
                     if (img.Width == 16)
                     {
-                        trackCols[j * 2] = img.GetPixel(x, y % img.Height);
-                        trackCols[j * 2 + 1] = img.GetPixel(x, y % img.Height);
+                        trackCols[j * 2] = img.GetPixel(x, y % img.Height).ToDX();
+                        trackCols[j * 2 + 1] = img.GetPixel(x, y % img.Height).ToDX();
                     }
                     else
                     {
-                        trackCols[j * 2] = img.GetPixel(x * 2, y % img.Height);
-                        trackCols[j * 2 + 1] = img.GetPixel(x * 2 + 1, y % img.Height);
+                        trackCols[j * 2] = img.GetPixel(x * 2, y % img.Height).ToDX();
+                        trackCols[j * 2 + 1] = img.GetPixel(x * 2 + 1, y % img.Height).ToDX();
                     }
                 }
                 cols.Add(trackCols);

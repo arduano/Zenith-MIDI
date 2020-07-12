@@ -1,4 +1,4 @@
-﻿using OpenTK.Graphics;
+﻿using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -30,13 +30,13 @@ namespace ZenithEngine.ModuleUtil
 
         public static Color4 BlendColors(Color4 col1, Color4 col2)
         {
-            float blendfac = col2.A;
+            float blendfac = col2.Alpha;
             float revblendfac = 1 - blendfac;
             return new Color4(
-                col2.R * blendfac + col1.R * revblendfac,
-                col2.G * blendfac + col1.G * revblendfac,
-                col2.B * blendfac + col1.B * revblendfac,
-                col1.A + (1 - col1.A) * blendfac);
+                col2.Red * blendfac + col1.Red * revblendfac,
+                col2.Green * blendfac + col1.Green * revblendfac,
+                col2.Blue * blendfac + col1.Blue * revblendfac,
+                col1.Alpha + (1 - col1.Alpha) * blendfac);
         }
 
         public static Color4 BlendWith(this Color4 col1, Color4 col2)

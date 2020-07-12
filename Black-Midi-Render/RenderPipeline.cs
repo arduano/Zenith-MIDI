@@ -17,6 +17,7 @@ using SharpDX.Direct3D11;
 using SharpDX.Direct3D;
 using SharpDX;
 using ZenithEngine.DXHelper.Presets;
+using System.Threading;
 
 namespace Zenith
 {
@@ -52,81 +53,36 @@ namespace Zenith
         interface IPreview : IDeviceInitiable
         {
             void RenderFrame(DeviceContext context, IRenderSurface outputSurface);
+            public CompositeRenderSurface RenderTarget { get; }
         }
 
         abstract class PreviewBase : IPreview
         {
             protected RenderPipeline pipeline;
             protected Initiator init = new Initiator();
-            protected CompositeRenderSurface output;
+            protected DisposeGroup disposer = new DisposeGroup();
 
-            protected ShaderProgram solidShader;
-            protected ShaderProgram textureShader;
-            protected Flat2dShapeBuffer solidFill;
-            protected Textured2dShapeBuffer texFill;
+            public CompositeRenderSurface RenderTarget { get; }
 
-            protected TextureSampler sampler;
-            protected BlendStateKeeper blendstate;
+            protected AspectRatioComposite aspectComposite;
 
             public PreviewBase(RenderPipeline pipeline)
             {
                 this.pipeline = pipeline;
-                output = init.Add(new CompositeRenderSurface(pipeline.Status.OutputWidth, pipeline.Status.OutputHeight));
-                solidShader = init.Add(Shaders.BasicFlat());
-                textureShader = init.Add(Shaders.BasicTextured());
-                sampler = init.Add(new TextureSampler());
-                blendstate = init.Add(new BlendStateKeeper());
-                solidFill = init.Add(new Flat2dShapeBuffer(16));
-                texFill = init.Add(new Textured2dShapeBuffer(16));
+                RenderTarget = init.Add(new CompositeRenderSurface(pipeline.Status.OutputWidth, pipeline.Status.OutputHeight));
+                aspectComposite = init.Add(new AspectRatioComposite());
             }
 
             public virtual void Dispose()
             {
-                init.Dispose();
+                disposer.Dispose();
             }
 
             public virtual void Init(Device device)
             {
+                disposer = new DisposeGroup();
                 init.Init(device);
-            }
-
-            protected void FlushOutput(DeviceContext context, IRenderSurface outputSurface)
-            {
-                float winAspect = (float)outputSurface.Width / outputSurface.Height;
-                float fromAspect = (float)output.Width / output.Height;
-                var size = (winAspect - fromAspect) / winAspect;
-                var offset = size / 2;
-
-                Vector2 tl = new Vector2(offset, 0);
-                Vector2 br = new Vector2(1 - offset, 1);
-
-                if (size < 0)
-                {
-                    size = ((1 / winAspect) - (1 / fromAspect)) / (1 / winAspect);
-                    offset = size / 2;
-
-                    tl = new Vector2(0, offset);
-                    br = new Vector2(1, 1 - offset);
-                }
-
-                outputSurface.BindViewAndClear(context);
-
-                using (solidShader.UseOn(context))
-                {
-                    solidFill.UseContext(context);
-                    solidFill.PushQuad(0, 1, 1, 0, new Color4(0.5f, 0.5f, 0.5f, 1));
-                    solidFill.PushQuad(tl, br, new Color4(0, 0, 0, 1));
-                    solidFill.Flush();
-                }
-
-                using (textureShader.UseOn(context))
-                using (sampler.UseOnPS(context))
-                using (output.UseOnPS(context))
-                {
-                    texFill.UseContext(context);
-                    texFill.PushQuad(tl, br);
-                    texFill.Flush();
-                }
+                disposer.Add(init);
             }
 
             public abstract void RenderFrame(DeviceContext context, IRenderSurface outputSurface);
@@ -136,9 +92,14 @@ namespace Zenith
         {
             public BasicPreview(RenderPipeline pipeline) : base(pipeline) { }
 
+            public override void Init(Device device)
+            {
+                base.Init(device);
+            }
+
             public override void RenderFrame(DeviceContext context, IRenderSurface outputSurface)
             {
-                FlushOutput(context, outputSurface);
+                aspectComposite.Composite(context, RenderTarget, outputSurface);
             }
         }
 
@@ -179,7 +140,7 @@ namespace Zenith
         public bool Rendering => RenderArgs != null;
         public OutputSettings RenderArgs { get; }
 
-        Task renderTask = null;
+        Thread renderTask = null;
 
         public EventHandler RenderStarted;
         public EventHandler<RenderProgress> RenderProgress;
@@ -202,7 +163,8 @@ namespace Zenith
 
         public void Start()
         {
-            renderTask = Task.Run(Runner);
+            renderTask = new Thread(new ThreadStart(Runner));
+            renderTask.Start();
         }
 
         void Runner()
@@ -213,21 +175,41 @@ namespace Zenith
             var dispose = new DisposeGroup();
             var init = dispose.Add(new Initiator());
 
-            IPreview preview = new BasicPreview(this);
-            preview.Init(form.Device);
+            IPreview preview = init.Add(new BasicPreview(this));
+
+            Module.StartRender(form.Device, Playback, Status);
+
+            init.Init(form.Device);
+
+            Stopwatch time = new Stopwatch();
+
+            if (!Rendering) midiAudio = dispose.Add(new MIDIAudio(Playback, new KDMAPIOutput()));
 
             RenderLoop.Run(form, () =>
             {
-                try
+                var context = form.Device.ImmediateContext;
+                Module.RenderFrame(context, preview.RenderTarget);
+                preview.RenderFrame(context, form);
+                form.Present(false);
+
+                if (!Paused)
                 {
-                    preview.RenderFrame(form.Device.ImmediateContext, form);
-                    form.Present(false);
+                    if (Status.RealtimePlayback)
+                        Playback.AdvancePlayback(Math.Min(time.Elapsed.TotalSeconds, 5) * PreviewSpeed);
+                    else
+                        Playback.AdvancePlayback(1.0 / Status.FPS * PreviewSpeed);
                 }
-                catch (Exception e)
-                { }
+                time.Reset();
+                time.Start();
+
+                if (Playback.PlayerPositionSeconds > Playback.Midi.SecondsLength + 5)
+                    form.Close();
+                if (!Status.Running) form.Close();
             });
 
-            preview.Dispose();
+            Module.EndRender();
+
+            dispose.Dispose();
 
             //var win = new PreviewWindow(1280, 720, GraphicsMode.Default, "test", GameWindowFlags.Default, DisplayDevice.Default, 1, 0, GraphicsContextFlags.Default);
             //win.Run();
@@ -398,7 +380,7 @@ namespace Zenith
         public void Dispose()
         {
             Status.Running = false;
-            renderTask.Wait();
+            renderTask.Join();
         }
     }
 }

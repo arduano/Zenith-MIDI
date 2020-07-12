@@ -363,12 +363,12 @@ namespace ScriptedEngine
         {
             foreach (var n in notes)
             {
-                if (!IsBlackKey(n.key)) yield return n;
+                if (!IsBlackKey(n.Key)) yield return n;
             }
 
             foreach (var n in notes)
             {
-                if (IsBlackKey(n.key)) yield return n;
+                if (IsBlackKey(n.Key)) yield return n;
             }
         }
 

@@ -4,8 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OpenTK;
-using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
 using ZenithEngine;
 using System.Windows.Media;
 using System.Drawing;
@@ -14,12 +12,14 @@ using System.Windows;
 using System.IO;
 using System.Windows.Media.Imaging;
 using System.Windows.Controls;
-using ZenithEngine.GLEngine;
+using ZenithEngine.DXHelper;
+using ZenithEngine.DXHelper.Presets;
 using System.Runtime.InteropServices;
 using ZenithEngine.ModuleUtil;
 using ZenithEngine.Modules;
 using ZenithEngine.MIDI;
 using ZenithEngine.ModuleUI;
+using SharpDX.Direct3D11;
 
 namespace PFARender
 {
@@ -126,7 +126,7 @@ namespace PFARender
             Initialized = false;
         }
 
-        public void Init(MidiPlayback midi, RenderStatus status)
+        public void Init(Device device, MidiPlayback midi, RenderStatus status)
         {
             this.midi = midi;
 
@@ -157,7 +157,7 @@ namespace PFARender
             return col;
         }
 
-        public void RenderFrame(RenderSurface renderSurface)
+        public void RenderFrame(DeviceContext context, IRenderSurface renderSurface)
         {
             double screenTime = settings.noteScreenTime;
 
@@ -202,24 +202,24 @@ namespace PFARender
                 double renderCutoff = midiTime + screenTime;
                 foreach (var n in midi.IterateNotes(renderCutoff).BlackNotesAbove(!sameWidth))
                 {
-                    if (n.start >= renderCutoff) break;
-                    if (n.key < firstNote || n.key >= lastNote) continue;
+                    if (n.Start >= renderCutoff) break;
+                    if (n.Key < firstNote || n.Key >= lastNote) continue;
 
-                    if (n.start < midiTime)
+                    if (n.Start < midiTime)
                     {
-                        keyboard.BlendNote(n.key, n.color);
-                        keyboard.PressKey(n.key);
+                        keyboard.BlendNote(n.Key, n.Color);
+                        keyboard.PressKey(n.Key);
                     }
 
-                    float left = (float)keyboard.Notes[n.key].Left;
-                    float right = (float)keyboard.Notes[n.key].Right;
-                    float end = (float)(1 - (renderCutoff - n.end) * notePosFactor);
-                    float start = (float)(1 - (renderCutoff - n.start) * notePosFactor);
-                    if (!n.hasEnded)
+                    float left = (float)keyboard.Notes[n.Key].Left;
+                    float right = (float)keyboard.Notes[n.Key].Right;
+                    float end = (float)(1 - (renderCutoff - n.End) * notePosFactor);
+                    float start = (float)(1 - (renderCutoff - n.Start) * notePosFactor);
+                    if (!n.HasEnded)
                         end = 1.2f;
 
-                    var leftCol = MultCol(n.color.Left, 0.2f);
-                    var rightCol = MultCol(n.color.Right, 0.2f);
+                    var leftCol = MultCol(n.Color.Left, 0.2f);
+                    var rightCol = MultCol(n.Color.Right, 0.2f);
                     quadBuffer.PushQuad(left, end, right, start, leftCol, rightCol, rightCol, leftCol);
 
                     if (end - start > paddingy * 2)
@@ -229,8 +229,8 @@ namespace PFARender
                         right -= paddingx;
                         left += paddingx;
 
-                        leftCol = MultCol(n.color.Left, 0.5f);
-                        rightCol = n.color.Right;
+                        leftCol = MultCol(n.Color.Left, 0.5f);
+                        rightCol = n.Color.Right;
                         quadBuffer.PushQuad(left, end, right, start, leftCol, rightCol, rightCol, leftCol);
                     }
                 }

@@ -12,11 +12,13 @@ using System.IO;
 using System.Windows.Media.Imaging;
 using System.Windows.Controls;
 using ZenithEngine.DXHelper;
+using ZenithEngine.DXHelper.Presets;
 using System.Runtime.InteropServices;
 using ZenithEngine.ModuleUtil;
 using ZenithEngine.Modules;
 using ZenithEngine.MIDI;
 using ZenithEngine.ModuleUI;
+using SharpDX.Direct3D11;
 
 namespace FlatRender
 {
@@ -103,27 +105,28 @@ namespace FlatRender
 
         public double StartOffset => settings.noteScreenTime.Value;
 
-        BasicShapeBuffer quadBuffer;
+        Flat2dShapeBuffer quadBuffer;
         ShaderProgram flatShader;
 
         MidiPlayback midi = null;
 
-        DisposeGroup disposer;
+        Initiator init = new Initiator();
 
         public Render()
         {
             settings.Palette.PaletteChanged += ReloadTrackColors;
+
+            quadBuffer = init.Add(new Flat2dShapeBuffer(1024 * 64));
+            flatShader = init.Add(Shaders.BasicFlat());
         }
 
-        public void Init(MidiPlayback file, RenderStatus status)
+        public void Init(Device device, MidiPlayback file, RenderStatus status)
         {
             midi = file;
 
-            disposer = new DisposeGroup();
             renderStatus = status;
 
-            quadBuffer = disposer.Add(new BasicShapeBuffer(1024 * 64, ShapePresets.Quads));
-            flatShader = disposer.Add(BasicShapeBuffer.GetBasicShader());
+            init.Init(device);
 
             ReloadTrackColors();
 
@@ -134,23 +137,18 @@ namespace FlatRender
         {
             if (!Initialized) return;
             midi = null;
-            disposer.Dispose();
+            init.Dispose();
             Initialized = false;
         }
 
-        public void RenderFrame(CompositeRenderSurface renderSurface)
+        public void RenderFrame(DeviceContext context, IRenderSurface renderSurface)
         {
             double screenTime = settings.noteScreenTime;
 
             midi.CheckParseDistance(screenTime);
 
-            using (new GLEnabler().Enable(EnableCap.Blend))
+            using (flatShader.UseOn(context))
             {
-                GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-
-                renderSurface.BindSurfaceAndClear();
-
-                flatShader.Bind();
 
                 var midiTime = midi.PlayerPosition;
                 int firstNote = settings.keys.left;
@@ -171,28 +169,32 @@ namespace FlatRender
 
                 double notePosFactor = 1 / screenTime * (1 - pianoHeight);
 
-                double renderCutoff = midiTime + screenTime;
-                foreach (var n in midi.IterateNotes(renderCutoff).BlackNotesAbove(!sameWidth))
-                {
-                    if (n.start >= renderCutoff) break;
-                    if (n.key < firstNote || n.key >= lastNote) continue;
+                quadBuffer.UseContext(context);
 
-                    if (n.start < midiTime)
+                double renderCutoff = midiTime + screenTime;
+
+                foreach(var key in midi.IterateNotesKeyed(renderCutoff))
+                foreach (var n in key)
+                {
+                    if (n.Start >= renderCutoff) break;
+                    if (n.Key < firstNote || n.Key >= lastNote) continue;
+
+                    if (n.Start < midiTime)
                     {
-                        keyboard.BlendNote(n.key, n.color);
+                        keyboard.BlendNote(n.Key, n.Color);
                     }
 
-                    float left = (float)keyboard.Notes[n.key].Left;
-                    float right = (float)keyboard.Notes[n.key].Right;
-                    float end = (float)(1 - (renderCutoff - n.end) * notePosFactor);
-                    float start = (float)(1 - (renderCutoff - n.start) * notePosFactor);
-                    if (!n.hasEnded)
+                    float left = (float)keyboard.Notes[n.Key].Left;
+                    float right = (float)keyboard.Notes[n.Key].Right;
+                    float end = (float)(1 - (renderCutoff - n.End) * notePosFactor);
+                    float start = (float)(1 - (renderCutoff - n.Start) * notePosFactor);
+                    if (!n.HasEnded)
                         end = 1;
 
-                    quadBuffer.PushVertex(right, start, n.color.Left);
-                    quadBuffer.PushVertex(right, end, n.color.Left);
-                    quadBuffer.PushVertex(left, end, n.color.Right);
-                    quadBuffer.PushVertex(left, start, n.color.Right);
+                    quadBuffer.Push(left, start, n.Color.Right);
+                    quadBuffer.Push(left, end, n.Color.Right);
+                    quadBuffer.Push(right, end, n.Color.Left);
+                    quadBuffer.Push(right, start, n.Color.Left);
                 }
 
                 for (int n = kbfirstNote; n < kblastNote; n++)
@@ -204,10 +206,10 @@ namespace FlatRender
                     var coll = keyboard.Colors[n].Left;
                     var colr = keyboard.Colors[n].Right;
 
-                    quadBuffer.PushVertex(left, 0, coll);
-                    quadBuffer.PushVertex(right, 0, coll);
-                    quadBuffer.PushVertex(right, pianoHeight, colr);
-                    quadBuffer.PushVertex(left, pianoHeight, colr);
+                    quadBuffer.Push(left, pianoHeight, colr);
+                    quadBuffer.Push(right, pianoHeight, colr);
+                    quadBuffer.Push(right, 0, coll);
+                    quadBuffer.Push(left, 0, coll);
                 }
                 for (int n = kbfirstNote; n < kblastNote; n++)
                 {
@@ -219,10 +221,10 @@ namespace FlatRender
                     var colr = keyboard.Colors[n].Right;
                     float keyBottom = (float)(pianoHeight / 10 * 3.7);
 
-                    quadBuffer.PushVertex(left, keyBottom, coll);
-                    quadBuffer.PushVertex(right, keyBottom, coll);
-                    quadBuffer.PushVertex(right, pianoHeight, colr);
-                    quadBuffer.PushVertex(left, pianoHeight, colr);
+                    quadBuffer.Push(left, pianoHeight, colr);
+                    quadBuffer.Push(right, pianoHeight, colr);
+                    quadBuffer.Push(right, keyBottom, coll);
+                    quadBuffer.Push(left, keyBottom, coll);
                 }
                 quadBuffer.Flush();
             }

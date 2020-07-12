@@ -26,12 +26,11 @@ namespace ZenithEngine.MIDI.Disk
         DiskMidiTrack[] tracks;
         public override IMidiPlaybackTrack[] Tracks => tracks;
 
-        bool stopped = false;
         bool disposed = false;
 
         int remainingTracks = 0;
 
-        long lastNoteCount = 0;
+        protected long lastNoteCount = 0;
         public override long LastIterateNoteCount => lastNoteCount;
 
         public DiskMidiPlayback(DiskMidiFile file, DiskReadProvider reader, double startDelay, bool timeBased) : base(file, file.TempoEvents[0].rawTempo, timeBased)
@@ -45,7 +44,6 @@ namespace ZenithEngine.MIDI.Disk
                 tracks[i] = DiskMidiTrack.NewPlayerTrack(i, trackReader, this);
             }
 
-            Notes = new FastList<Note>();
             ColorChanges = new FastList<ColorChange>();
             PlaybackEvents = new FastList<PlaybackEvent>();
             Tempo = midi.TempoEvents[0];
@@ -140,68 +138,55 @@ namespace ZenithEngine.MIDI.Disk
             return;
         }
 
-        public override IEnumerable<Note> IterateNotes()
+        IEnumerable<Note> SingleNoteListFromSource(Func<IEnumerable<Note>> getNotes)
         {
+            NotesKeysSeparated = false;
+            var notes = getNotes();
             long nc = 0;
-            foreach (var n in Notes)
+            foreach (var n in notes)
             {
-                if (stopped) break;
                 nc++;
                 yield return n;
             }
-            if (remainingTracks == 0 && nc == 0) Ended = true;
             lastNoteCount = nc;
+            CheckEnded();
         }
 
-        public override IEnumerable<Note> IterateNotes(double topCutoffOffset)
-        {
-            return IterateNotes(PlayerPosition, topCutoffOffset);
-        }
+        public override IEnumerable<Note> IterateNotes() =>
+            SingleNoteListFromSource(() => IterateNotesList(NotesSingle));
 
-        public override IEnumerable<Note> IterateNotes(double bottomCutoffOffset, double topCutoffOffset)
+        public override IEnumerable<Note> IterateNotes(double bottomCutoffOffset, double topCutoffOffset) =>
+            SingleNoteListFromSource(() => IterateNotesListWithCutoffs(NotesSingle, bottomCutoffOffset, topCutoffOffset));
+
+        public override IEnumerable<Note> IterateNotesCustomDelete() =>
+            SingleNoteListFromSource(() => IterateNotesListWithCustomDelete(NotesSingle));
+
+        IEnumerable<Note>[] KeyedNoteListFromSource(Func<int, IEnumerable<Note>> getNotes)
         {
-            CheckParseDistance(topCutoffOffset);
+            NotesKeysSeparated = true;
             long nc = 0;
-            var iter = Notes.Iterate();
-            for (Note n = null; iter.MoveNext(out n);)
-            {
-                if (stopped) break;
-                if (n.end < bottomCutoffOffset && n.hasEnded)
+            return GenerateNotesListArrays(
+                getNotes,
+                n => nc += n,
+                () =>
                 {
-                    iter.Remove();
-                    continue;
-                }
-                if (n.start > topCutoffOffset)
-                    break;
-                nc++;
-                yield return n;
-            }
-            if (remainingTracks == 0 && nc == 0) Ended = true;
-            lastNoteCount = nc;
+                    lastNoteCount = nc;
+                    CheckEnded();
+                });
         }
 
-        public override IEnumerable<Note> IterateNotesCustomDelete()
-        {
-            long nc = 0;
-            var iter = Notes.Iterate();
-            for (Note n = null; iter.MoveNext(out n);)
-            {
-                if (stopped) break;
-                if (n.delete)
-                {
-                    iter.Remove();
-                    continue;
-                }
-                nc++;
-                yield return n;
-            }
-            if (remainingTracks == 0 && nc == 0) Ended = true;
-            lastNoteCount = nc;
-        }
+        public override IEnumerable<Note>[] IterateNotesKeyed() =>
+            KeyedNoteListFromSource(key => IterateNotesList(NotesKeyed[key]));
 
-        public override void ForceStop()
+        public override IEnumerable<Note>[] IterateNotesKeyed(double bottomCutoffOffset, double topCutoffOffset) =>
+            KeyedNoteListFromSource(key => IterateNotesListWithCutoffs(NotesKeyed[key], bottomCutoffOffset, topCutoffOffset));
+
+        public override IEnumerable<Note>[] IterateNotesCustomDeleteKeyed() =>
+            KeyedNoteListFromSource(key => IterateNotesListWithCustomDelete(NotesKeyed[key]));
+
+        void CheckEnded()
         {
-            stopped = true;
+            if (remainingTracks == 0 && lastNoteCount == 0) Ended = true;
         }
 
         public override void Dispose()
@@ -210,10 +195,10 @@ namespace ZenithEngine.MIDI.Disk
             ForceStop();
             disposed = true;
 
-            Notes.Unlink();
+            NotesKeyed = null;
+            NotesSingle = null;
             ColorChanges.Unlink();
             PlaybackEvents.Unlink();
-            Notes = null;
             ColorChanges = null;
             PlaybackEvents = null;
 

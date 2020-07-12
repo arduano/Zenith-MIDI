@@ -1,4 +1,4 @@
-﻿using OpenTK.Graphics;
+﻿using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,16 +19,16 @@ namespace ZenithEngine.MIDI
 
     public class Note
     {
-        public double start { get; internal set; }
-        public double end { get; internal set; }
-        public bool hasEnded { get; internal set; }
-        public byte channel { get; internal set; }
-        public byte key { get; internal set; }
-        public byte vel { get; internal set; }
-        public bool delete { get; internal set; } = false;
-        public object meta { get; set; } = null;
-        public int track { get; internal set; }
-        public NoteColor color { get; internal set; }
+        public double Start { get; internal set; }
+        public double End { get; internal set; }
+        public bool HasEnded { get; internal set; }
+        public byte Channel { get; internal set; }
+        public byte Key { get; internal set; }
+        public byte Vel { get; internal set; }
+        public bool Delete { get; internal set; } = false;
+        public object Meta { get; set; } = null;
+        public int Track { get; internal set; }
+        public NoteColor Color { get; internal set; }
     }
 
     public class NoteColor

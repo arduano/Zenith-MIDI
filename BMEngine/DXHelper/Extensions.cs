@@ -10,21 +10,10 @@ namespace ZenithEngine.DXHelper
 {
     public static class Extensions
     {
+
         public static void ClearRenderTargetView(this DeviceContext ctx, RenderTargetView view)
         {
             ctx.ClearRenderTargetView(view, new Color4(0, 0, 0, 0));
-        }
-
-        public static void BindView(this IRenderSurface surface, DeviceContext context)
-        {
-            context.OutputMerger.SetTargets(surface.RenderTarget);
-            context.Rasterizer.SetViewport(new Viewport(0, 0, surface.Width, surface.Height, 0.0f, 1.0f));
-        }
-
-        public static void BindViewAndClear(this IRenderSurface surface, DeviceContext context)
-        {
-            surface.BindView(context);
-            context.ClearRenderTargetView(surface.RenderTarget, new Color4(0, 0, 0, 0));
         }
 
         public static IDisposable UseOnPS(this ITextureResource tex, DeviceContext ctx, int slot) =>

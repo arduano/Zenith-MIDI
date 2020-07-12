@@ -589,29 +589,29 @@ namespace MIDITrailRender
 
                     void renderNote(Note n)
                     {
-                        if (n.start < time && (n.end > time || !n.hasEnded))
+                        if (n.Start < time && (n.End > time || !n.HasEnded))
                         {
-                            keyboard.PressKey(n.key);
-                            keyboard.BlendNote(n.key, n.color);
+                            keyboard.PressKey(n.Key);
+                            keyboard.BlendNote(n.Key, n.Color);
                         }
 
-                        var key = keyboard.Notes[n.key];
+                        var key = keyboard.Notes[n.Key];
 
-                        var noteStart = (float)(n.start - midi.PlayerPosition) / noteScale;
-                        var noteEnd = (float)(n.end - midi.PlayerPosition) / noteScale;
+                        var noteStart = (float)(n.Start - midi.PlayerPosition) / noteScale;
+                        var noteEnd = (float)(n.End - midi.PlayerPosition) / noteScale;
 
-                        if (!n.hasEnded || noteEnd > frontMax) noteEnd = frontMax;
+                        if (!n.HasEnded || noteEnd > frontMax) noteEnd = frontMax;
 
                         if (useZFight)
                         {
-                            var stack = zNoteEnds[n.key];
-                            while (stack.Count != 0 && stack.Peek() - 0.0001 < n.start)
+                            var stack = zNoteEnds[n.Key];
+                            while (stack.Count != 0 && stack.Peek() - 0.0001 < n.Start)
                                 stack.Pop();
-                            stack.Push(n.hasEnded ? n.end : double.PositiveInfinity);
+                            stack.Push(n.HasEnded ? n.End : double.PositiveInfinity);
                             if (!sameWidth)
                             {
-                                if (zNoteMaximums[n.key] < stack.Count)
-                                    zNoteMaximums[n.key] = stack.Count;
+                                if (zNoteMaximums[n.Key] < stack.Count)
+                                    zNoteMaximums[n.Key] = stack.Count;
                             }
                         }
 
@@ -620,10 +620,10 @@ namespace MIDITrailRender
                             (float)key.Right - 0.5f,
                             noteStart,
                             noteEnd,
-                            n.color.Left,
-                            n.color.Right,
+                            n.Color.Left,
+                            n.Color.Right,
                             1,
-                            useZFight ? (zNoteEnds[n.key].Count + zNoteExtra[n.key]) * zFightStrength : 0
+                            useZFight ? (zNoteEnds[n.Key].Count + zNoteExtra[n.Key]) * zFightStrength : 0
                         ));
                     }
 
@@ -637,7 +637,7 @@ namespace MIDITrailRender
                     {
                         foreach (var n in iterator)
                         {
-                            if(!keyboard.BlackKey[n.key]) renderNote(n);
+                            if(!keyboard.BlackKey[n.Key]) renderNote(n);
                         }
 
                         for (int i = 0; i < 256; i++) 
@@ -651,7 +651,7 @@ namespace MIDITrailRender
 
                         foreach (var n in iterator)
                         {
-                            if (keyboard.BlackKey[n.key]) renderNote(n);
+                            if (keyboard.BlackKey[n.Key]) renderNote(n);
                         }
                     }
 

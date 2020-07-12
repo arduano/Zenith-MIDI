@@ -570,15 +570,9 @@ namespace Zenith
 
             RenderModules.Clear();
             var files = Directory.GetFiles("Plugins");
-            var libfiles = Directory.GetFiles("lib").Select(p => Path.GetFileName(p));
             var dlls = files.Where((s) => s.EndsWith(".dll"));
             foreach (var d in dlls)
             {
-                if (libfiles.Contains(Path.GetFileName(d)))
-                {
-                    File.Delete(d);
-                    continue;
-                }
                 try
                 {
                     RenderModules.Add(ModuleManager.LoadModule(d));

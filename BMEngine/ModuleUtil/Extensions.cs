@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SharpDX;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -29,12 +30,12 @@ namespace ZenithEngine.ModuleUtil
             {
                 foreach (var n in notes)
                 {
-                    if (whiteKeys[n.key]) yield return n;
+                    if (whiteKeys[n.Key]) yield return n;
                 }
 
                 foreach (var n in notes)
                 {
-                    if (blackKeys[n.key]) yield return n;
+                    if (blackKeys[n.Key]) yield return n;
                 }
             }
             else
@@ -45,6 +46,5 @@ namespace ZenithEngine.ModuleUtil
                 }
             }
         }
-
     }
 }

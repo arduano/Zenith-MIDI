@@ -1,4 +1,4 @@
-﻿using OpenTK.Graphics;
+﻿using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,9 +51,10 @@ namespace ZenithEngine.MIDI.Disk
 
         public void ResetColors()
         {
+            var col = new Color4(0.5f, 0.5f, 0.5f, 1);
             for (int i = 0; i < 16; i++)
             {
-                TrackColors[i] = new NoteColor() { Left = Color4.Gray, Right = Color4.Gray, isDefault = true };
+                TrackColors[i] = new NoteColor() { Left = col, Right = col, isDefault = true };
             }
         }
 
@@ -204,8 +205,8 @@ namespace ZenithEngine.MIDI.Disk
                     Note n;
                     while (iter.MoveNext(out n))
                     {
-                        n.end = ParseTimeTicks;
-                        n.hasEnded = true;
+                        n.End = ParseTimeTicks;
+                        n.HasEnded = true;
                     }
                     un.Unlink();
                 }
@@ -282,23 +283,31 @@ namespace ZenithEngine.MIDI.Disk
                         if (!l.ZeroLen)
                         {
                             Note n = l.Pop();
-                            n.end = time;
-                            n.hasEnded = true;
-                            if (n.vel > 10) sendEv();
+                            n.End = time;
+                            n.HasEnded = true;
+                            if (n.Vel > 10) sendEv();
                         }
                     }
                     else
                     {
                         if (vel > 10) sendEv();
                         Note n = new Note();
-                        n.start = time;
-                        n.key = note;
-                        n.color = TrackColors[channel];
-                        n.channel = channel;
-                        n.vel = vel;
-                        n.track = ID;
+                        n.Start = time;
+                        n.Key = note;
+                        n.Color = TrackColors[channel];
+                        n.Channel = channel;
+                        n.Vel = vel;
+                        n.Track = ID;
                         unendedNotes[note << 4 | channel].Add(n);
-                        MidiPlayback.Notes.Add(n);
+                        
+                        if (MidiPlayback.NotesKeysSeparated)
+                        {
+                            MidiPlayback.NotesKeyed[note].Add(n);
+                        }
+                        else
+                        {
+                            MidiPlayback.NotesSingle.Add(n);
+                        }
                     }
                 }
                 else if (comm == 0xA0)

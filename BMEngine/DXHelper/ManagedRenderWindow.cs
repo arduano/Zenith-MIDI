@@ -88,6 +88,8 @@ namespace ZenithEngine.DXHelper
             }
         }
 
+        public DepthStencilView RenderTargetDepth => null;
+
         void TestWindowState()
         {
             if (fullscreen)

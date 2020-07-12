@@ -1,12 +1,13 @@
 ﻿using Microsoft.CSharp.RuntimeBinder;
 using Newtonsoft.Json.Linq;
+using SharpDX.Direct3D11;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using ZenithEngine.GLEngine;
+using ZenithEngine.DXHelper;
 using ZenithEngine.MIDI;
 using ZenithEngine.ModuleUI;
 
@@ -17,7 +18,7 @@ namespace ZenithEngine.Modules
         public ModuleLoadFailedException(string msg) : base(msg) { }
     }
 
-    public class ModuleManager : IDisposable
+    public class ModuleManager
     {
         public IModuleRender CurrentModule { get; private set; } = null;
 
@@ -31,15 +32,21 @@ namespace ZenithEngine.Modules
         event EventHandler<IModuleRender> ModuleInitialized;
 
         RenderSurface fullSizeFrame;
+        BlendStateKeeper blendState;
+
         ShaderProgram downscale;
         Compositor composite;
-        DisposeGroup disposer;
 
-        bool glRunning = false;
+        Initiator init = new Initiator();
+
+        RasterizerStateKeeper raster;
+
+        Device device = null;
 
         public ModuleManager()
         {
-
+            blendState = init.Add(new BlendStateKeeper());
+            raster = init.Add(new RasterizerStateKeeper());
         }
 
         public ModuleManager(IModuleRender module) : this()
@@ -47,22 +54,22 @@ namespace ZenithEngine.Modules
             UseModule(module);
         }
 
-        public ModuleManager(IModuleRender module, MidiPlayback midi, RenderStatus status) : this(module)
+        public ModuleManager(IModuleRender module, Device device, MidiPlayback midi, RenderStatus status) : this(module)
         {
-            StartRender(midi, status);
+            StartRender(device, midi, status);
         }
 
         public void UseModule(IModuleRender module)
         {
-            while(initQueue.Count != 0)
+            while (initQueue.Count != 0)
             {
                 var m = initQueue.Dequeue();
-                if(m.Initialized)
+                if (m.Initialized)
                 {
                     disposeQueue.Enqueue(m);
                 }
             }
-            if(glRunning) initQueue.Enqueue(module);
+            if (device != null) initQueue.Enqueue(module);
             CurrentModule = module;
         }
 
@@ -80,10 +87,11 @@ namespace ZenithEngine.Modules
             else contianer.Parse(data);
         }
 
-        public void StartRender(MidiPlayback file, RenderStatus status)
+        public void StartRender(Device device, MidiPlayback file, RenderStatus status)
         {
             currentMidi = file;
             currentStatus = status;
+            Init(device);
         }
 
         void ProcessQueues()
@@ -97,43 +105,46 @@ namespace ZenithEngine.Modules
             while (initQueue.Count != 0)
             {
                 var m = initQueue.Dequeue();
-                m.Init(currentMidi, currentStatus);
+                m.Init(device, currentMidi, currentStatus);
                 ModuleInitialized?.Invoke(this, m);
             }
         }
 
-        public void RenderFrame(RenderSurface outputSurface)
+        public void RenderFrame(DeviceContext context, IRenderSurface outputSurface)
         {
             if (CurrentModule == null) return;
-            InitGL();
 
-            fullSizeFrame.BindSurface();
-            CurrentModule.RenderFrame(fullSizeFrame);
+            using (outputSurface.UseViewAndClear(context))
+            using (blendState.UseOn(context))
+            //using (raster.UseOn(context))
+            {
+                CurrentModule.RenderFrame(context, outputSurface);
+            }
 
-            composite.Composite(fullSizeFrame, downscale, outputSurface);
+            //fullSizeFrame.BindSurface();
+            //CurrentModule.RenderFrame(fullSizeFrame);
+
+            //composite.Composite(fullSizeFrame, downscale, outputSurface);
         }
 
-        public void DisposeGL()
+        void Dispose()
         {
-            glRunning = false;
+            device = null;
 
-            if(disposer != null) disposer.Dispose();
+            init.Dispose();
 
             if (CurrentModule != null && CurrentModule.Initialized) disposeQueue.Enqueue(CurrentModule);
             ProcessQueues();
         }
 
-        public void InitGL()
+        void Init(Device device)
         {
-            if (!glRunning)
-            {
-                disposer = new DisposeGroup();
-                fullSizeFrame = disposer.Add(RenderSurface.BasicFrame(currentStatus.RenderWidth, currentStatus.RenderHeight));
-                downscale = disposer.Add(ShaderProgram.Presets.SSAA(currentStatus.OutputWidth, currentStatus.OutputHeight, currentStatus.SSAA));
-                composite = disposer.Add(new Compositor());
-            }
+            this.device = device;
 
-            glRunning = true;
+            init.Init(device);
+            //fullSizeFrame = disposer.Add(RenderSurface.BasicFrame(currentStatus.RenderWidth, currentStatus.RenderHeight));
+            //downscale = disposer.Add(ShaderProgram.Presets.SSAA(currentStatus.OutputWidth, currentStatus.OutputHeight, currentStatus.SSAA));
+            //composite = disposer.Add(new Compositor());
 
             if (CurrentModule != null && !CurrentModule.Initialized) initQueue.Enqueue(CurrentModule);
             ProcessQueues();
@@ -141,21 +152,15 @@ namespace ZenithEngine.Modules
 
         public void ClearModules()
         {
-            DisposeGL();
+            Dispose();
             CurrentModule = null;
         }
 
         public void EndRender()
         {
-            DisposeGL();
+            Dispose();
             currentMidi = null;
             currentStatus = null;
-        }
-
-        public void Dispose()
-        {
-            EndRender();
-            CurrentModule = null;
         }
 
         public static IModuleRender LoadModule(string path)

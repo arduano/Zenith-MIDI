@@ -1,4 +1,4 @@
-﻿using OpenTK.Graphics;
+﻿using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,8 +14,65 @@ namespace ZenithEngine.MIDI
 
         public bool PushPlaybackEvents { get; set; } = false;
 
+        protected bool stopped = false;
+
+        bool notesKeysSeparated = true;
+        public bool NotesKeysSeparated
+        {
+            get => notesKeysSeparated;
+            set
+            {
+                if (notesKeysSeparated != value)
+                {
+                    notesKeysSeparated = value;
+                    MoveNotesToType(notesKeysSeparated);
+                }
+            }
+        }
+
+        void MoveNotesToType(bool keysSeparated)
+        {
+            if (keysSeparated)
+            {
+                NotesKeyed = new FastList<Note>[256];
+                for (int i = 0; i < NotesKeyed.Length; i++) NotesKeyed[i] = new FastList<Note>();
+                if (NotesSingle != null)
+                {
+                    foreach (var n in NotesSingle)
+                    {
+                        NotesKeyed[n.Key].Add(n);
+                    }
+                    NotesSingle = null;
+                }
+            }
+            else
+            {
+                NotesSingle = new FastList<Note>();
+                if (NotesKeyed != null)
+                {
+                    var zip = ZipMerger<Note>.MergeMany(NotesKeyed, n => n.Start);
+                    foreach (var n in zip) NotesSingle.Add(n);
+                    NotesKeyed = null;
+                }
+            }
+        }
+
+        public void ClearNoteMeta()
+        {
+            if (NotesSingle != null)
+            {
+                foreach (var n in NotesSingle) n.Meta = null;
+            }
+            if (NotesKeyed != null)
+            {
+                foreach (var k in NotesKeyed)
+                    foreach (var n in k) n.Meta = null;
+            }
+        }
+
         public int TrackCount => Midi.TrackCount;
-        public FastList<Note> Notes { get; protected set; }
+        public FastList<Note> NotesSingle { get; protected set; }
+        public FastList<Note>[] NotesKeyed { get; protected set; }
         public FastList<ColorChange> ColorChanges { get; protected set; }
         public FastList<PlaybackEvent> PlaybackEvents { get; protected set; }
         public Tempo Tempo { get; internal set; }
@@ -39,6 +96,7 @@ namespace ZenithEngine.MIDI
         {
             TimeBased = timeBased;
             ParserTempoTickMultiplier = (initialTempo / midi.PPQ) / 1000000;
+            MoveNotesToType(notesKeysSeparated);
         }
 
         public void CheckParseDistance(double parseDist)
@@ -83,12 +141,93 @@ namespace ZenithEngine.MIDI
         public abstract void AdvancePlaybackTo(double time);
 
         public abstract IEnumerable<Note> IterateNotes();
-        public abstract IEnumerable<Note> IterateNotes(double topCutoffOffset);
+        public IEnumerable<Note> IterateNotes(double topCutoffOffset) => IterateNotes(PlayerPosition, topCutoffOffset);
         public abstract IEnumerable<Note> IterateNotes(double bottomCutoffOffset, double topCutoffOffset);
         public abstract IEnumerable<Note> IterateNotesCustomDelete();
 
+        public abstract IEnumerable<Note>[] IterateNotesKeyed();
+        public IEnumerable<Note>[] IterateNotesKeyed(double topCutoffOffset) => IterateNotesKeyed(PlayerPosition, topCutoffOffset);
+        public abstract IEnumerable<Note>[] IterateNotesKeyed(double bottomCutoffOffset, double topCutoffOffset);
+        public abstract IEnumerable<Note>[] IterateNotesCustomDeleteKeyed();
 
-        public abstract void ForceStop();
+        protected IEnumerable<Note> IterateNotesListWithCutoffs(FastList<Note> notes, double bottomCutoffOffset, double topCutoffOffset)
+        {
+            var iter = notes.Iterate();
+            for (Note n = null; iter.MoveNext(out n);)
+            {
+                if (stopped) break;
+                if (n.End < bottomCutoffOffset && n.HasEnded)
+                {
+                    iter.Remove();
+                    continue;
+                }
+                if (n.Start > topCutoffOffset)
+                    break;
+                yield return n;
+            }
+        }
+
+        protected IEnumerable<Note> IterateNotesListWithCustomDelete(FastList<Note> notes)
+        {
+            var iter = notes.Iterate();
+            for (Note n = null; iter.MoveNext(out n);)
+            {
+                if (stopped) break;
+                if (n.Delete)
+                {
+                    iter.Remove();
+                    continue;
+                }
+                yield return n;
+            }
+        }
+
+        protected IEnumerable<Note> IterateNotesList(FastList<Note> notes)
+        {
+
+            foreach (var n in notes)
+            {
+                if (stopped) break;
+                yield return n;
+            }
+        }
+
+        protected static IEnumerable<Note>[] GenerateNotesListArrays(Func<int, IEnumerable<Note>> listFromKey, Action<long> addNotes, Action onComplete)
+        {
+            object l = new object();
+            int completed = 0;
+            IEnumerable<Note> fromKey(int key)
+            {
+                long nc = 0;
+                foreach (var n in listFromKey(key))
+                {
+                    yield return n;
+                    nc++;
+                }
+                lock (l)
+                {
+                    addNotes(nc);
+                    completed++;
+                    if (completed == 256) onComplete();
+                }
+            }
+
+            IEnumerable<IEnumerable<Note>> allKeys()
+            {
+                for (int i = 0; i < 255; i++)
+                {
+                    yield return fromKey(i);
+                }
+            }
+
+            return allKeys().ToArray();
+        }
+
+        public virtual void ForceStop()
+        {
+            stopped = true;
+        }
+
         public abstract void Dispose();
     }
 }
