@@ -79,7 +79,7 @@ namespace ZenithEngine.GLEngine
                 {
                     var lines = code.Split('\n');
                     var versionLine = Array.FindIndex(lines, (l) => l.Contains("#version"));
-                    if(versionLine == -1) throw new ApplicationException("Versin line missing in shader");
+                    if(versionLine == -1) throw new ApplicationException("Version line missing in shader");
 
                     code = string.Join("\n", 
                         lines.Take(versionLine + 1)

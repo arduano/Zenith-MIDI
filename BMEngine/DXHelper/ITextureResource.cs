@@ -15,4 +15,13 @@ namespace ZenithEngine.DXHelper
         public int Width { get; }
         public int Height { get; }
     }
+
+    public interface IDepthTextureResource
+    {
+        public ShaderResourceView DepthTextureResource { get; }
+        public Texture2D DepthTexture { get; }
+
+        public int Width { get; }
+        public int Height { get; }
+    }
 }

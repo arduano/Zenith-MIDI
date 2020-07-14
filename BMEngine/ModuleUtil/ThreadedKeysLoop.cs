@@ -1,19 +1,10 @@
-﻿using SharpDX;
-using SharpDX.D3DCompiler;
-using SharpDX.Direct3D;
+﻿using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
-using SharpDX.DXGI;
 using System;
-using System.Collections.Generic;
 using System.Collections.Concurrent;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using ZenithEngine.DXHelper;
-using Buffer = SharpDX.Direct3D11.Buffer;
-using MapFlags = SharpDX.Direct3D11.MapFlags;
-using ZenithEngine.MIDI;
 
 namespace ZenithEngine.ModuleUtil
 {
@@ -29,12 +20,13 @@ namespace ZenithEngine.ModuleUtil
 
         int threads;
 
-        public ThreadedKeysLoop(int length, int threads, PrimitiveTopology topology, ShapePresets indicesType) : this(length, threads, topology, IndicesFromPreset(indicesType)) { }
-        public ThreadedKeysLoop(int length, int threads) : this(length, threads, PrimitiveTopology.TriangleList, ShapePresets.Quads) { }
-        public ThreadedKeysLoop(int length, int threads, PrimitiveTopology topology) : this(length, threads, topology, null) { }
-        public ThreadedKeysLoop(int length, int threads, PrimitiveTopology topology, int[] indices) : base(length, topology, indices)
+        public ThreadedKeysLoop(int length, PrimitiveTopology topology, ShapePresets indicesType) : this(length, topology, IndicesFromPreset(indicesType)) { }
+        public ThreadedKeysLoop(int length) : this(length, PrimitiveTopology.TriangleList, ShapePresets.Quads) { }
+        public ThreadedKeysLoop(int length, PrimitiveTopology topology) : this(length, topology, null) { }
+        public ThreadedKeysLoop(int length, PrimitiveTopology topology, int[] indices) : base(length, topology, indices)
         {
-            this.threads = threads;
+            this.threads = Environment.ProcessorCount;
+            if (threads > 8) threads = 8;
         }
 
         protected override void InitInternal()
@@ -60,25 +52,30 @@ namespace ZenithEngine.ModuleUtil
             void RenderKeyArray(IEnumerable<int> keys)
             {
                 object l = new object();
-                Parallel.ForEach(keys, new ParallelOptions() { MaxDegreeOfParallelism = threads }, key =>
-                   {
-                       int pos = 0;
-                       var arr = arrays.Take();
-                       renderKey(key, vert =>
-                       {
-                           arr[pos++] = vert;
-                           if (pos == arr.Length)
-                           {
-                               lock (l)
-                               {
-                                   FlushArray(context, arr, pos);
-                               }
-                               pos = 0;
-                           }
-                           FlushArray(context, arr, pos);
-                       });
-                       arrays.Add(arr);
-                   });
+
+                void renderKeyWrapper(int key)
+                {
+                    int pos = 0;
+                    var arr = arrays.Take();
+                    renderKey(key, vert =>
+                    {
+                        arr[pos++] = vert;
+                        if (pos == arr.Length)
+                        {
+                            lock (l)
+                                FlushArray(context, arr, pos);
+                            pos = 0;
+                        }
+                    });
+                    if (pos != 0)
+                    {
+                        lock (l)
+                            FlushArray(context, arr, pos);
+                    }
+                    arrays.Add(arr);
+                }
+
+                Parallel.ForEach(keys, new ParallelOptions() { MaxDegreeOfParallelism = threads }, renderKeyWrapper);
             }
 
             IEnumerable<int> iterateAllKeys()
@@ -103,24 +100,6 @@ namespace ZenithEngine.ModuleUtil
             {
                 RenderKeyArray(iterateAllKeys());
             }
-        }
-
-        public void Push(T vert)
-        {
-            verts[pos++] = vert;
-            if (pos >= verts.Length)
-            {
-                Flush();
-            }
-        }
-
-        public unsafe void Flush()
-        {
-            if (Context == null) throw new Exception("Device context was not initialised on this shape buffer");
-
-            FlushArray(Context, verts, pos);
-
-            pos = 0;
         }
     }
 }

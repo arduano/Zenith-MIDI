@@ -300,6 +300,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="preview.png" />
+    <EmbeddedResource Include="Shaders\keys.fx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

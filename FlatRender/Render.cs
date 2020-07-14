@@ -107,6 +107,7 @@ namespace FlatRender
 
         Flat2dShapeBuffer quadBuffer;
         ShaderProgram flatShader;
+        ThreadedKeysLoop<Vert2D> multithread;
 
         MidiPlayback midi = null;
 
@@ -118,18 +119,17 @@ namespace FlatRender
 
             quadBuffer = init.Add(new Flat2dShapeBuffer(1024 * 64));
             flatShader = init.Add(Shaders.BasicFlat());
+            multithread = init.Add(new ThreadedKeysLoop<Vert2D>(1 << 12));
         }
 
         public void Init(Device device, MidiPlayback file, RenderStatus status)
         {
             midi = file;
-
             renderStatus = status;
 
             init.Init(device);
 
             ReloadTrackColors();
-
             Initialized = true;
         }
 
@@ -149,7 +149,6 @@ namespace FlatRender
 
             using (flatShader.UseOn(context))
             {
-
                 var midiTime = midi.PlayerPosition;
                 int firstNote = settings.keys.left;
                 int lastNote = settings.keys.right;
@@ -173,29 +172,29 @@ namespace FlatRender
 
                 double renderCutoff = midiTime + screenTime;
 
-                foreach(var key in midi.IterateNotesKeyed(renderCutoff))
-                foreach (var n in key)
+                var keyed = midi.IterateNotesKeyed(midiTime, renderCutoff);
+                multithread.Render(context, firstNote, lastNote, !sameWidth, (key, push) =>
                 {
-                    if (n.Start >= renderCutoff) break;
-                    if (n.Key < firstNote || n.Key >= lastNote) continue;
-
-                    if (n.Start < midiTime)
+                    float left = (float)keyboard.Notes[key].Left;
+                    float right = (float)keyboard.Notes[key].Right;
+                    foreach (var n in keyed[key])
                     {
-                        keyboard.BlendNote(n.Key, n.Color);
+                        if (n.Start < midiTime)
+                        {
+                            keyboard.BlendNote(key, n.Color);
+                        }
+
+                        float end = (float)(1 - (renderCutoff - n.End) * notePosFactor);
+                        float start = (float)(1 - (renderCutoff - n.Start) * notePosFactor);
+                        if (!n.HasEnded)
+                            end = 1;
+
+                        push(new Vert2D(left, start, n.Color.Right));
+                        push(new Vert2D(left, end, n.Color.Right));
+                        push(new Vert2D(right, end, n.Color.Left));
+                        push(new Vert2D(right, start, n.Color.Left));
                     }
-
-                    float left = (float)keyboard.Notes[n.Key].Left;
-                    float right = (float)keyboard.Notes[n.Key].Right;
-                    float end = (float)(1 - (renderCutoff - n.End) * notePosFactor);
-                    float start = (float)(1 - (renderCutoff - n.Start) * notePosFactor);
-                    if (!n.HasEnded)
-                        end = 1;
-
-                    quadBuffer.Push(left, start, n.Color.Right);
-                    quadBuffer.Push(left, end, n.Color.Right);
-                    quadBuffer.Push(right, end, n.Color.Left);
-                    quadBuffer.Push(right, start, n.Color.Left);
-                }
+                });
 
                 for (int n = kbfirstNote; n < kblastNote; n++)
                 {
@@ -211,6 +210,7 @@ namespace FlatRender
                     quadBuffer.Push(right, 0, coll);
                     quadBuffer.Push(left, 0, coll);
                 }
+
                 for (int n = kbfirstNote; n < kblastNote; n++)
                 {
                     if (!keyboard.BlackKey[n]) continue;

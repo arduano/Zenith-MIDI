@@ -14,11 +14,17 @@ namespace ZenithEngine.DXHelper
         public RasterizerState RasterizerState { get; private set; }
         public RasterizerStateDescription Description;
 
+        public RasterizerStateKeeper CullMode(CullMode mode)
+        {
+            Description.CullMode = mode;
+            return this;
+        }
+
         public static RasterizerStateDescription BasicRasterizerDescription()
         {
             RasterizerStateDescription renderStateDesc = new RasterizerStateDescription
             {
-                CullMode = CullMode.None,
+                CullMode = SharpDX.Direct3D11.CullMode.None,
                 DepthBias = 0,
                 DepthBiasClamp = 0,
                 FillMode = FillMode.Solid,

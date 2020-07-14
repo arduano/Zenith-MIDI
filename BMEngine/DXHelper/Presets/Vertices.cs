@@ -23,6 +23,12 @@ namespace ZenithEngine.DXHelper.Presets
             Pos = pos;
             Col = col;
         }
+
+        public Vert2D(float x, float y, Color4 col)
+        {
+            Pos = new Vector2(x, y);
+            Col = col;
+        }
     }
 
     [StructLayoutAttribute(LayoutKind.Sequential)]

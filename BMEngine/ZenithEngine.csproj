@@ -266,6 +266,7 @@
     <Compile Include="DXHelper\BlendStateKeeper.cs" />
     <Compile Include="DXHelper\BufferFlusher.cs" />
     <Compile Include="DXHelper\Compositor.cs" />
+    <Compile Include="DXHelper\DepthStencilStateKeeper.cs" />
     <Compile Include="DXHelper\DeviceInitiable.cs" />
     <Compile Include="DXHelper\Extensions.cs" />
     <Compile Include="DXHelper\IDeviceInitiable.cs" />
@@ -421,6 +422,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="DXHelper\Presets\Shaders\basicFlat.fx" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="DXHelper\Presets\Shaders\compositeSSAA.fx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

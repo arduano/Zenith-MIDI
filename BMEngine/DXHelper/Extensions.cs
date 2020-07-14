@@ -29,5 +29,8 @@ namespace ZenithEngine.DXHelper
             tex.UseOnVS(ctx, 0);
         public static IDisposable UseOnGS(this ITextureResource tex, DeviceContext ctx) =>
             tex.UseOnGS(ctx, 0);
+
+        public static Matrix3x3 To3x3(this Matrix mat) =>
+            new Matrix3x3(mat.M11, mat.M12, mat.M13, mat.M21, mat.M22, mat.M23, mat.M31, mat.M32, mat.M33);
     }
 }

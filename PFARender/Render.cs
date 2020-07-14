@@ -20,6 +20,7 @@ using ZenithEngine.Modules;
 using ZenithEngine.MIDI;
 using ZenithEngine.ModuleUI;
 using SharpDX.Direct3D11;
+using SharpDX;
 
 namespace PFARender
 {
@@ -106,54 +107,55 @@ namespace PFARender
 
         public double StartOffset => settings.noteScreenTime.Value;
 
-        BasicShapeBuffer quadBuffer;
+        Flat2dShapeBuffer quadBuffer;
         ShaderProgram flatShader;
+        ThreadedKeysLoop<Vert2D> multithread;
 
         MidiPlayback midi = null;
 
-        DisposeGroup disposer;
+        Initiator init = new Initiator();
 
         public Render()
         {
             settings.Palette.PaletteChanged += ReloadTrackColors;
+
+            quadBuffer = init.Add(new Flat2dShapeBuffer(1024 * 64));
+            flatShader = init.Add(Shaders.BasicFlat());
+            multithread = init.Add(new ThreadedKeysLoop<Vert2D>(1 << 12));
+        }
+
+        public void Init(Device device, MidiPlayback file, RenderStatus status)
+        {
+            midi = file;
+            renderStatus = status;
+
+            init.Init(device);
+
+            ReloadTrackColors();
+            Initialized = true;
         }
 
         public void Dispose()
         {
             if (!Initialized) return;
             midi = null;
-            disposer.Dispose();
+            init.Dispose();
             Initialized = false;
-        }
-
-        public void Init(Device device, MidiPlayback midi, RenderStatus status)
-        {
-            this.midi = midi;
-
-            disposer = new DisposeGroup();
-            renderStatus = status;
-
-            quadBuffer = disposer.Add(new BasicShapeBuffer(1024 * 64, ShapePresets.Quads));
-            flatShader = disposer.Add(BasicShapeBuffer.GetBasicShader());
-
-            ReloadTrackColors();
-
-            Initialized = true;
         }
 
         Color4 MultCol(Color4 col, float fac)
         {
-            col.R *= fac;
-            col.G *= fac;
-            col.B *= fac;
+            col.Red *= fac;
+            col.Green *= fac;
+            col.Blue *= fac;
             return col;
         }
 
         Color4 AddCol(Color4 col, float fac)
         {
-            col.R += fac;
-            col.G += fac;
-            col.B += fac;
+            col.Red += fac;
+            col.Green += fac;
+            col.Blue += fac;
             return col;
         }
 
@@ -163,14 +165,8 @@ namespace PFARender
 
             midi.CheckParseDistance(screenTime);
 
-            using (new GLEnabler().Enable(EnableCap.Blend))
+            using (flatShader.UseOn(context))
             {
-                GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-
-                renderSurface.BindSurfaceAndClear();
-
-                flatShader.Bind();
-
                 var midiTime = midi.PlayerPosition;
                 int firstNote = settings.keys.left;
                 int lastNote = settings.keys.right;
@@ -200,40 +196,50 @@ namespace PFARender
                 float paddingy = paddingx * renderStatus.OutputWidth / renderStatus.OutputHeight;
 
                 double renderCutoff = midiTime + screenTime;
-                foreach (var n in midi.IterateNotes(renderCutoff).BlackNotesAbove(!sameWidth))
+
+                var keyed = midi.IterateNotesKeyed(midiTime, renderCutoff);
+                multithread.Render(context, firstNote, lastNote, !sameWidth, (key, push) =>
                 {
-                    if (n.Start >= renderCutoff) break;
-                    if (n.Key < firstNote || n.Key >= lastNote) continue;
-
-                    if (n.Start < midiTime)
+                    foreach (var n in keyed[key])
                     {
-                        keyboard.BlendNote(n.Key, n.Color);
-                        keyboard.PressKey(n.Key);
+                        void pushQuad(float left, float top, float right, float bottom, Color4 topLeft, Color4 topRight, Color4 bottomRight, Color4 bottomLeft)
+                        {
+                            push(new Vert2D(left, top, topLeft));
+                            push(new Vert2D(right, top, topRight));
+                            push(new Vert2D(right, bottom, bottomRight));
+                            push(new Vert2D(left, bottom, bottomLeft));
+                        }
+                        
+                        if (n.Start < midiTime)
+                        {
+                            keyboard.BlendNote(n.Key, n.Color);
+                            keyboard.PressKey(n.Key);
+                        }
+
+                        float left = (float)keyboard.Notes[key].Left;
+                        float right = (float)keyboard.Notes[key].Right;
+                        float end = (float)(1 - (renderCutoff - n.End) * notePosFactor);
+                        float start = (float)(1 - (renderCutoff - n.Start) * notePosFactor);
+                        if (!n.HasEnded)
+                            end = 1.2f;
+
+                        var leftCol = MultCol(n.Color.Left, 0.2f);
+                        var rightCol = MultCol(n.Color.Right, 0.2f);
+                        pushQuad(left, end, right, start, leftCol, rightCol, rightCol, leftCol);
+
+                        if (end - start > paddingy * 2)
+                        {
+                            end -= paddingy;
+                            start += paddingy;
+                            right -= paddingx;
+                            left += paddingx;
+
+                            leftCol = MultCol(n.Color.Left, 0.5f);
+                            rightCol = n.Color.Right;
+                            pushQuad(left, end, right, start, leftCol, rightCol, rightCol, leftCol);
+                        }
                     }
-
-                    float left = (float)keyboard.Notes[n.Key].Left;
-                    float right = (float)keyboard.Notes[n.Key].Right;
-                    float end = (float)(1 - (renderCutoff - n.End) * notePosFactor);
-                    float start = (float)(1 - (renderCutoff - n.Start) * notePosFactor);
-                    if (!n.HasEnded)
-                        end = 1.2f;
-
-                    var leftCol = MultCol(n.Color.Left, 0.2f);
-                    var rightCol = MultCol(n.Color.Right, 0.2f);
-                    quadBuffer.PushQuad(left, end, right, start, leftCol, rightCol, rightCol, leftCol);
-
-                    if (end - start > paddingy * 2)
-                    {
-                        end -= paddingy;
-                        start += paddingy;
-                        right -= paddingx;
-                        left += paddingx;
-
-                        leftCol = MultCol(n.Color.Left, 0.5f);
-                        rightCol = n.Color.Right;
-                        quadBuffer.PushQuad(left, end, right, start, leftCol, rightCol, rightCol, leftCol);
-                    }
-                }
+                });
 
                 float topRedStart = pianoHeight * .99f;
                 float topRedEnd = pianoHeight * .94f;
@@ -320,6 +326,8 @@ namespace PFARender
                     }
                 }
 
+                quadBuffer.UseContext(context);
+
                 for (int i = kbfirstNote; i < kblastNote; i++)
                 {
                     if (keyboard.BlackKey[i])
@@ -334,10 +342,10 @@ namespace PFARender
                         Color4 rightCol = new Color4(0, 0, 0, 255).BlendWith(keyboard.Colors[i].Right);
 
                         Color4 middleCol = new Color4(
-                            (leftCol.R + rightCol.R) / 2,
-                            (leftCol.G + rightCol.G) / 2,
-                            (leftCol.B + rightCol.B) / 2,
-                            (leftCol.A + rightCol.A) / 2
+                            (leftCol.Red + rightCol.Red) / 2,
+                            (leftCol.Green + rightCol.Green) / 2,
+                            (leftCol.Blue + rightCol.Blue) / 2,
+                            (leftCol.Alpha + rightCol.Alpha) / 2
                             );
 
                         if (!keyboard.Pressed[i])
@@ -347,35 +355,35 @@ namespace PFARender
                             col3 = AddCol(leftCol, 0.0f);
                             col4 = AddCol(leftCol, 0.3f);
 
-                            quadBuffer.PushVertex(ileft, bKeyUSplitLT, col1);
-                            quadBuffer.PushVertex(iright, bKeyUSplitRT, col1);
-                            quadBuffer.PushVertex(iright, bKeyUpT, col2);
-                            quadBuffer.PushVertex(ileft, bKeyUpT, col2);
+                            quadBuffer.Push(ileft, bKeyUSplitLT, col1);
+                            quadBuffer.Push(iright, bKeyUSplitRT, col1);
+                            quadBuffer.Push(iright, bKeyUpT, col2);
+                            quadBuffer.Push(ileft, bKeyUpT, col2);
 
-                            quadBuffer.PushVertex(ileft, bKeyUSplitLB, col3);
-                            quadBuffer.PushVertex(iright, bKeyUSplitRB, col3);
-                            quadBuffer.PushVertex(iright, bKeyUSplitRT, col1);
-                            quadBuffer.PushVertex(ileft, bKeyUSplitLT, col1);
+                            quadBuffer.Push(ileft, bKeyUSplitLB, col3);
+                            quadBuffer.Push(iright, bKeyUSplitRB, col3);
+                            quadBuffer.Push(iright, bKeyUSplitRT, col1);
+                            quadBuffer.Push(ileft, bKeyUSplitLT, col1);
 
-                            quadBuffer.PushVertex(ileft, bKeyUpB, col3);
-                            quadBuffer.PushVertex(iright, bKeyUpB, col3);
-                            quadBuffer.PushVertex(iright, bKeyUSplitRB, col3);
-                            quadBuffer.PushVertex(ileft, bKeyUSplitLB, col3);
+                            quadBuffer.Push(ileft, bKeyUpB, col3);
+                            quadBuffer.Push(iright, bKeyUpB, col3);
+                            quadBuffer.Push(iright, bKeyUSplitRB, col3);
+                            quadBuffer.Push(ileft, bKeyUSplitLB, col3);
 
-                            quadBuffer.PushVertex(left, bKeyEnd, col3);
-                            quadBuffer.PushVertex(ileft, bKeyUpB, col4);
-                            quadBuffer.PushVertex(ileft, bKeyUpT, col4);
-                            quadBuffer.PushVertex(left, topBarEnd, col3);
+                            quadBuffer.Push(left, bKeyEnd, col3);
+                            quadBuffer.Push(ileft, bKeyUpB, col4);
+                            quadBuffer.Push(ileft, bKeyUpT, col4);
+                            quadBuffer.Push(left, topBarEnd, col3);
 
-                            quadBuffer.PushVertex(right, bKeyEnd, col3);
-                            quadBuffer.PushVertex(iright, bKeyUpB, col4);
-                            quadBuffer.PushVertex(iright, bKeyUpT, col4);
-                            quadBuffer.PushVertex(right, topBarEnd, col3);
+                            quadBuffer.Push(right, bKeyEnd, col3);
+                            quadBuffer.Push(iright, bKeyUpB, col4);
+                            quadBuffer.Push(iright, bKeyUpT, col4);
+                            quadBuffer.Push(right, topBarEnd, col3);
 
-                            quadBuffer.PushVertex(left, bKeyEnd, col3);
-                            quadBuffer.PushVertex(right, bKeyEnd, col3);
-                            quadBuffer.PushVertex(iright, bKeyUpB, col4);
-                            quadBuffer.PushVertex(ileft, bKeyUpB, col4);
+                            quadBuffer.Push(left, bKeyEnd, col3);
+                            quadBuffer.Push(right, bKeyEnd, col3);
+                            quadBuffer.Push(iright, bKeyUpB, col4);
+                            quadBuffer.Push(ileft, bKeyUpB, col4);
                         }
                         else
                         {
@@ -384,38 +392,38 @@ namespace PFARender
                             col3 = MultCol(middleCol, 0.7f);
                             col4 = MultCol(leftCol, 0.7f);
 
-                            quadBuffer.PushVertex(ileft, bKeyUSplitLT, col1);
-                            quadBuffer.PushVertex(iright, bKeyUSplitRT, col1);
-                            quadBuffer.PushVertex(iright, bKeyDownT, col2);
-                            quadBuffer.PushVertex(ileft, bKeyDownT, col2);
+                            quadBuffer.Push(ileft, bKeyUSplitLT, col1);
+                            quadBuffer.Push(iright, bKeyUSplitRT, col1);
+                            quadBuffer.Push(iright, bKeyDownT, col2);
+                            quadBuffer.Push(ileft, bKeyDownT, col2);
 
-                            quadBuffer.PushVertex(ileft, bKeyUSplitLB, col3);
-                            quadBuffer.PushVertex(iright, bKeyUSplitRB, col3);
-                            quadBuffer.PushVertex(iright, bKeyUSplitRT, col1);
-                            quadBuffer.PushVertex(ileft, bKeyUSplitLT, col1);
+                            quadBuffer.Push(ileft, bKeyUSplitLB, col3);
+                            quadBuffer.Push(iright, bKeyUSplitRB, col3);
+                            quadBuffer.Push(iright, bKeyUSplitRT, col1);
+                            quadBuffer.Push(ileft, bKeyUSplitLT, col1);
 
-                            quadBuffer.PushVertex(ileft, bKeyDownB, col4);
-                            quadBuffer.PushVertex(iright, bKeyDownB, col4);
-                            quadBuffer.PushVertex(iright, bKeyUSplitRB, col3);
-                            quadBuffer.PushVertex(ileft, bKeyUSplitLB, col3);
+                            quadBuffer.Push(ileft, bKeyDownB, col4);
+                            quadBuffer.Push(iright, bKeyDownB, col4);
+                            quadBuffer.Push(iright, bKeyUSplitRB, col3);
+                            quadBuffer.Push(ileft, bKeyUSplitLB, col3);
 
                             col1 = MultCol(leftCol, 0.7f);
                             col2 = MultCol(rightCol, 0.7f);
 
-                            quadBuffer.PushVertex(left, bKeyEnd, col1);
-                            quadBuffer.PushVertex(ileft, bKeyDownB, leftCol);
-                            quadBuffer.PushVertex(ileft, bKeyDownT, rightCol);
-                            quadBuffer.PushVertex(left, topBarEnd, col2);
+                            quadBuffer.Push(left, bKeyEnd, col1);
+                            quadBuffer.Push(ileft, bKeyDownB, leftCol);
+                            quadBuffer.Push(ileft, bKeyDownT, rightCol);
+                            quadBuffer.Push(left, topBarEnd, col2);
 
-                            quadBuffer.PushVertex(right, bKeyEnd, col1);
-                            quadBuffer.PushVertex(iright, bKeyDownB, leftCol);
-                            quadBuffer.PushVertex(iright, bKeyDownT, rightCol);
-                            quadBuffer.PushVertex(right, topBarEnd, col2);
+                            quadBuffer.Push(right, bKeyEnd, col1);
+                            quadBuffer.Push(iright, bKeyDownB, leftCol);
+                            quadBuffer.Push(iright, bKeyDownT, rightCol);
+                            quadBuffer.Push(right, topBarEnd, col2);
 
-                            quadBuffer.PushVertex(left, bKeyEnd, col1);
-                            quadBuffer.PushVertex(right, bKeyEnd, col1);
-                            quadBuffer.PushVertex(iright, bKeyDownB, leftCol);
-                            quadBuffer.PushVertex(ileft, bKeyDownB, leftCol);
+                            quadBuffer.Push(left, bKeyEnd, col1);
+                            quadBuffer.Push(right, bKeyEnd, col1);
+                            quadBuffer.Push(iright, bKeyDownB, leftCol);
+                            quadBuffer.Push(ileft, bKeyDownB, leftCol);
                         }
                     }
                 }

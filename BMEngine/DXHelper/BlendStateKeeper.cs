@@ -21,7 +21,7 @@ namespace ZenithEngine.DXHelper
             renderTargetDesc.SourceBlend = BlendOption.SourceAlpha;
             renderTargetDesc.DestinationBlend = BlendOption.InverseSourceAlpha;
             renderTargetDesc.BlendOperation = BlendOperation.Add;
-            renderTargetDesc.SourceAlphaBlend = BlendOption.One;
+            renderTargetDesc.SourceAlphaBlend = BlendOption.InverseDestinationAlpha;
             renderTargetDesc.DestinationAlphaBlend = BlendOption.One;
             renderTargetDesc.AlphaBlendOperation = BlendOperation.Add;
             renderTargetDesc.RenderTargetWriteMask = ColorWriteMaskFlags.All;

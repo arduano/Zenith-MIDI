@@ -17,7 +17,7 @@ namespace ZenithEngine.DXHelper
                 new VertTex2D(new Vector2(1, 1), new Vector2(1, 0), new Color4(1.0f)),
                 new VertTex2D(new Vector2(0, 1), new Vector2(0, 0), new Color4(1.0f)),
                 new VertTex2D(new Vector2(0, 0), new Vector2(0, 1), new Color4(1.0f)),
-            }, 
+            },
             new[] { 0, 2, 1, 0, 3, 2 }
         );
 
@@ -34,11 +34,11 @@ namespace ZenithEngine.DXHelper
         public void Composite(DeviceContext context, ITextureResource[] sources, ShaderProgram shader, IRenderSurface destination)
         {
             using (shader.UseOn(context))
+            using (destination.UseView(context))
             {
-                context.OutputMerger.SetTargets(destination.RenderTarget);
-                context.Rasterizer.SetViewport(new Viewport(0, 0, destination.Width, destination.Height, 0.0f, 1.0f));
-                context.PixelShader.SetShaderResources(0, sources.Select(r => r.TextureResource).ToArray());
+                var srcDispose = sources.Select((s, i) => s.UseOnPS(context, i)).ToArray();
                 buffer.BindAndDraw(context);
+                foreach (var d in srcDispose) d.Dispose();
             }
         }
 

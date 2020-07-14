@@ -71,7 +71,7 @@ namespace ZenithEngine.DXHelper
             context.ClearRenderTargetView(surface.RenderTarget);
             if (surface.RenderTargetDepth != null)
             {
-                context.ClearDepthStencilView(surface.RenderTargetDepth, DepthStencilClearFlags.Depth, 0, 0);
+                context.ClearDepthStencilView(surface.RenderTargetDepth, DepthStencilClearFlags.Depth, 1.0f, 0);
             }
             return view;
         }

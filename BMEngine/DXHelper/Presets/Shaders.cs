@@ -28,5 +28,13 @@ namespace ZenithEngine.DXHelper.Presets
         {
             return new ShaderProgram(ReadShaderText("basicTextured.fx"), typeof(VertTex2D), "4_0", "VS", "PS");
         }
+
+        public static ShaderProgram CompositeSSAA(int width, int height, int ssaa)
+        {
+            return new ShaderProgram(ReadShaderText("compositeSSAA.fx"), typeof(VertTex2D), "4_0", "VS", "PS")
+                .SetDefine("WIDTH", width)
+                .SetDefine("HEIGHT", height)
+                .SetDefine("SSAA", ssaa);
+        }
     }
 }

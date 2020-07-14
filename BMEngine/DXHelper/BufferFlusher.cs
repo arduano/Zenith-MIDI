@@ -102,7 +102,8 @@ namespace ZenithEngine.DXHelper
         protected void FlushArray(DeviceContext context, T[] verts, int count)
         {
             if (count == 0) return;
-            if (count % vertsPerShape != 0) throw new Exception("Incomplete shapes");
+            if (count % vertsPerShape != 0) 
+                throw new Exception("Incomplete shapes");
 
             DataStream data;
             context.MapSubresource(Buffer, 0, MapMode.WriteDiscard, MapFlags.None, out data);

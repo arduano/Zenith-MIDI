@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using ZenithEngine.DXHelper;
+using ZenithEngine.DXHelper.Presets;
 using ZenithEngine.MIDI;
 using ZenithEngine.ModuleUI;
 
@@ -31,8 +32,9 @@ namespace ZenithEngine.Modules
         event EventHandler<IModuleRender> ModuleDisposed;
         event EventHandler<IModuleRender> ModuleInitialized;
 
-        RenderSurface fullSizeFrame;
+        CompositeRenderSurface fullSizeFrame;
         BlendStateKeeper blendState;
+        TextureSampler sampler;
 
         ShaderProgram downscale;
         Compositor composite;
@@ -47,6 +49,8 @@ namespace ZenithEngine.Modules
         {
             blendState = init.Add(new BlendStateKeeper());
             raster = init.Add(new RasterizerStateKeeper());
+            composite = init.Add(new Compositor());
+            sampler = init.Add(new TextureSampler());
         }
 
         public ModuleManager(IModuleRender module) : this()
@@ -89,6 +93,8 @@ namespace ZenithEngine.Modules
 
         public void StartRender(Device device, MidiPlayback file, RenderStatus status)
         {
+            init.Replace(ref fullSizeFrame, new CompositeRenderSurface(status.RenderWidth, status.RenderHeight));
+            init.Replace(ref downscale, Shaders.CompositeSSAA(status.OutputWidth, status.OutputHeight, status.SSAA));
             currentMidi = file;
             currentStatus = status;
             Init(device);
@@ -113,12 +119,16 @@ namespace ZenithEngine.Modules
         public void RenderFrame(DeviceContext context, IRenderSurface outputSurface)
         {
             if (CurrentModule == null) return;
+            ProcessQueues();
 
-            using (outputSurface.UseViewAndClear(context))
+            using (fullSizeFrame.UseViewAndClear(context))
             using (blendState.UseOn(context))
-            //using (raster.UseOn(context))
+            using (raster.UseOn(context))
+            using (sampler.UseOnPS(context))
             {
-                CurrentModule.RenderFrame(context, outputSurface);
+                CurrentModule.RenderFrame(context, fullSizeFrame);
+                context.ClearRenderTargetView(outputSurface.RenderTarget);
+                composite.Composite(context, fullSizeFrame, downscale, outputSurface);
             }
 
             //fullSizeFrame.BindSurface();

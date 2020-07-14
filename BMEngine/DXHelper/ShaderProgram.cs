@@ -16,7 +16,7 @@ namespace ZenithEngine.DXHelper
     {
         U lastData;
 
-        public U UniformData;
+        public U ConstData;
 
         Buffer dynamicConstantBuffer;
 
@@ -34,13 +34,15 @@ namespace ZenithEngine.DXHelper
 
         public void SetConstant(U data)
         {
-            UniformData = data;
+            ConstData = data;
         }
 
         protected override void InitInternal()
         {
             base.InitInternal();
-            dynamicConstantBuffer = new Buffer(Device, Utilities.SizeOf<U>(), ResourceUsage.Dynamic, BindFlags.ConstantBuffer, CpuAccessFlags.Write, ResourceOptionFlags.None, 0);
+            var size = Utilities.SizeOf<U>();
+            if (size % 16 != 0) size += 16 - (size % 16);
+            dynamicConstantBuffer = new Buffer(Device, size, ResourceUsage.Dynamic, BindFlags.ConstantBuffer, CpuAccessFlags.Write, ResourceOptionFlags.None, 0);
         }
 
         protected override void DisposeInternal()
@@ -49,22 +51,27 @@ namespace ZenithEngine.DXHelper
             dynamicConstantBuffer.Dispose();
         }
 
-        public override IDisposable UseOn(DeviceContext context)
+        public void UpdateConstBuffer(DeviceContext context)
         {
-            var applier = base.UseOn(context);
-
-            if (!lastData.Equals(UniformData))
+            if (!lastData.Equals(ConstData))
             {
                 var dataBox = context.MapSubresource(dynamicConstantBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
-                Utilities.Write(dataBox.DataPointer, ref UniformData);
+                Utilities.Write(dataBox.DataPointer, ref ConstData);
                 context.UnmapSubresource(dynamicConstantBuffer, 0);
-                lastData = UniformData;
+                lastData = ConstData;
             }
 
             context.VertexShader.SetConstantBuffer(0, dynamicConstantBuffer);
             context.PixelShader.SetConstantBuffer(0, dynamicConstantBuffer);
             context.GeometryShader?.SetConstantBuffer(0, dynamicConstantBuffer);
-            
+        }
+
+        public override IDisposable UseOn(DeviceContext context)
+        {
+            var applier = base.UseOn(context);
+
+            UpdateConstBuffer(context);
+
             return applier;
         }
     }
@@ -96,7 +103,9 @@ namespace ZenithEngine.DXHelper
 
         public InputLayout InputLayout { get; private set; }
 
-        protected DisposeGroup dispose = new DisposeGroup();
+        DisposeGroup dispose = new DisposeGroup();
+
+        bool initedShader = false;
 
         string fragEntry;
         string vertEntry;
@@ -107,6 +116,8 @@ namespace ZenithEngine.DXHelper
         InputElement[] layoutParts;
 
         List<string> basicPrepend = new List<string>();
+
+        Dictionary<string, string> defines = new Dictionary<string, string>();
 
         public ShaderProgram(string shader, Type inputType, string version, string vertEntry, string fragEntry, string geoEntry = null)
             : this(shader, ShaderHelper.GetLayout(inputType), version, vertEntry, fragEntry, geoEntry)
@@ -136,16 +147,36 @@ namespace ZenithEngine.DXHelper
 
         public string GetPreparedCode()
         {
-            return String.Join("\n\n", basicPrepend) + "\n\n" + shader;
+            string definesPrepend = "";
+
+            foreach (var k in defines)
+            {
+                definesPrepend += $"#define {k.Key} {k.Value}\n";
+            }
+
+            return String.Join("\n\n", basicPrepend) + "\n\n" + definesPrepend + "\n\n" + shader;
         }
 
         protected override void InitInternal()
         {
+            InitShader();
+        }
+
+        protected override void DisposeInternal()
+        {
+            DisposeShader();
+        }
+
+        void InitShader()
+        {
+            if (initedShader) return;
+            initedShader = true;
+
             dispose = new DisposeGroup();
 
             var code = GetPreparedCode();
 
-            Console.WriteLine(code);
+            Console.WriteLine(string.Join("\n", code.Split('\n').Select((s, i) => $"{i}. {s}").ToArray()));
 
             VertexShaderByteCode = dispose.Add(ShaderBytecode.Compile(code, vertEntry, "vs_" + version, ShaderFlags.None, EffectFlags.None));
             VertexShader = dispose.Add(new VertexShader(Device, VertexShaderByteCode));
@@ -161,13 +192,45 @@ namespace ZenithEngine.DXHelper
             InputLayout = dispose.Add(new InputLayout(Device, VertexShaderByteCode, layoutParts));
         }
 
-        protected override void DisposeInternal()
+        void DisposeShader()
         {
+            if (!initedShader) return;
+            initedShader = false;
+
             dispose.Dispose();
+        }
+
+        public ShaderProgram SetDefine(string define) => SetDefine(define, "");
+        public ShaderProgram SetDefine(string define, int value) => SetDefine(define, value.ToString());
+        public ShaderProgram SetDefine(string define, float value) => SetDefine(define, value.ToString());
+        public ShaderProgram SetDefine(string define, string value)
+        {
+            if (defines.ContainsKey(define))
+            {
+                if (defines[define] == value) return this;
+                defines[define] = value;
+            }
+            else
+            {
+                defines.Add(define, value);
+            }
+
+            DisposeShader();
+
+            return this;
+        }
+
+        public ShaderProgram RemoveDefine(string define)
+        {
+            if (!defines.ContainsKey(define)) return this;
+            defines.Remove(define);
+            DisposeShader();
+            return this;
         }
 
         public virtual IDisposable UseOn(DeviceContext context)
         {
+            InitShader();
             return new Applier<ShaderKeep>(
                 new ShaderKeep(VertexShader, PixelShader, GeometryShader, InputLayout),
                 () => new ShaderKeep(context.VertexShader.Get(), context.PixelShader.Get(), context.GeometryShader.Get(), context.InputAssembler.InputLayout),

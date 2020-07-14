@@ -621,9 +621,9 @@ namespace Zenith
                 if (n.ToLower().Replace(" ", "") == name.ToLower().Replace(" ", ""))
                     far = i;
             }
-            if (instant != -1) SelectModule(instant);
-            else if (close != -1) SelectModule(close);
-            else if (far != -1) SelectModule(far);
+            if (instant != -1) SelectModule(RenderModules.Count - 1 - instant);
+            else if (close != -1) SelectModule(RenderModules.Count - 1 - close);
+            else if (far != -1) SelectModule(RenderModules.Count - 1 - far);
             else MessageBox.Show($"Could not find module with name similar to {name}");
         }
 
