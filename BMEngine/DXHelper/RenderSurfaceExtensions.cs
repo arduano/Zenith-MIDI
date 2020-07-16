@@ -68,11 +68,7 @@ namespace ZenithEngine.DXHelper
         public static IDisposable UseViewAndClear(this IRenderSurface surface, DeviceContext context)
         {
             var view = surface.UseView(context);
-            context.ClearRenderTargetView(surface.RenderTarget);
-            if (surface.RenderTargetDepth != null)
-            {
-                context.ClearDepthStencilView(surface.RenderTargetDepth, DepthStencilClearFlags.Depth, 1.0f, 0);
-            }
+            context.ClearRenderTargetView(surface);
             return view;
         }
     }

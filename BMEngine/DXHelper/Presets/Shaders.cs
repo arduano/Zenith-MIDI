@@ -1,13 +1,24 @@
-﻿using System;
+﻿using SharpDX;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ZenithEngine.DXHelper.Presets
 {
+    [StructLayoutAttribute(LayoutKind.Sequential, Pack = 16)]
+    public struct GlowShaderParams
+    {
+        public int PixelCount;
+        public bool Horizontal;
+        public float Strength;
+        public float Brightness;
+    }
+
     public static class Shaders
     {
         static string ReadShaderText(string shaderName)
@@ -35,6 +46,21 @@ namespace ZenithEngine.DXHelper.Presets
                 .SetDefine("WIDTH", width)
                 .SetDefine("HEIGHT", height)
                 .SetDefine("SSAA", ssaa);
+        }
+
+        public static ShaderProgram Colorspace()
+        {
+            return new ShaderProgram(ReadShaderText("colorspace.fx"), typeof(VertTex2D), "4_0", "VS", "PS");
+        }
+
+        public static ShaderProgram<GlowShaderParams> PingPongGlow()
+        {
+            return new ShaderProgram<GlowShaderParams>(ReadShaderText("glow.fx"), typeof(VertTex2D), "4_0", "VS", "PS");
+        }
+
+        public static ShaderProgram ColorCutoff()
+        {
+            return new ShaderProgram<GlowShaderParams>(ReadShaderText("cutoffColor.fx"), typeof(VertTex2D), "4_0", "VS", "PS");
         }
     }
 }

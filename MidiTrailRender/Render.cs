@@ -92,12 +92,22 @@ namespace MIDITrailRender
     }
 
     [StructLayoutAttribute(LayoutKind.Sequential, Pack = 16)]
+    public struct FullColorData
+    {
+        public Color4 Diffuse;
+        public Color4 Emit;
+        public Color4 Specular;
+    }
+
+    [StructLayoutAttribute(LayoutKind.Sequential, Pack = 16)]
     public struct KeyShaderConstant
     {
         public Matrix Model;
         public Matrix View;
         public Vector3 ViewPos;
         public float PressDepth;
+        public FullColorData LeftColor;
+        public FullColorData RightColor;
     }
 
     //[StructLayoutAttribute(LayoutKind.Sequential)]
@@ -201,7 +211,7 @@ namespace MIDITrailRender
         }
     }
 
-    class RenderObject
+    abstract class RenderObject
     {
         public RenderObject(ModelBuffer<KeyVert> model, Matrix transform)
         {
@@ -214,16 +224,8 @@ namespace MIDITrailRender
         public ModelBuffer<KeyVert> Model { get; set; }
         public Vector3 Position { get; }
         public Matrix Transform { get; }
-    }
 
-    class KeyRenderObject : RenderObject
-    {
-        public int Key { get; }
-
-        public KeyRenderObject(ModelBuffer<KeyVert> model, Matrix transform, int key) : base(model, transform)
-        {
-            Key = key;
-        }
+        public abstract void Render(DeviceContext context);
     }
 
     public class Render : IModuleRender
@@ -302,6 +304,48 @@ namespace MIDITrailRender
         }
         #endregion
 
+        #region RenderObjects
+        class KeyRenderObject : RenderObject
+        {
+            public int Key { get; }
+            KeyboardState Keyboard { get; }
+
+            Render render;
+
+            public KeyRenderObject(Render render, KeyboardState keyboard, ModelBuffer<KeyVert> model, Matrix transform, int key) : base(model, transform)
+            {
+                Key = key;
+                this.render = render;
+                this.Keyboard = keyboard;
+            }
+
+            public override void Render(DeviceContext context)
+            {
+                var keyShader = render.keyShader;
+                keyShader.ConstData.Model = Transform;
+
+                keyShader.ConstData.LeftColor.Diffuse = Keyboard.Colors[Key].Left;
+                keyShader.ConstData.RightColor.Diffuse = Keyboard.Colors[Key].Right;
+
+                keyShader.ConstData.LeftColor.Emit.Alpha = 0;
+                keyShader.ConstData.RightColor.Emit.Alpha = 0;
+                
+                keyShader.ConstData.LeftColor.Emit = Keyboard.Colors[Key].Left;
+                keyShader.ConstData.RightColor.Emit = Keyboard.Colors[Key].Right;
+
+                float glowStrength = Math.Max(render.keyPressPos[Key], 0);
+
+                keyShader.ConstData.LeftColor.Emit.Alpha = 2 * glowStrength;
+                keyShader.ConstData.RightColor.Emit.Alpha = 2 * glowStrength;
+
+                keyShader.ConstData.LeftColor.Specular = new Color4(1, 1, 1, 1);
+                keyShader.ConstData.RightColor.Specular = new Color4(1, 1, 1, 1);
+
+                using (keyShader.UseOn(context))
+                    Model.BindAndDraw(context);
+            }
+        }
+        #endregion
 
         UI settings = new UI();
         public FrameworkElement SettingsControl => settings;
@@ -316,8 +360,16 @@ namespace MIDITrailRender
         ShaderProgram noteShader;
 
         CompositeRenderSurface depthSurface;
+        CompositeRenderSurface cutoffSurface;
+        CompositeRenderSurface preFinalSurface;
         Compositor compositor;
-        ShaderProgram compositeShader;
+        ShaderProgram plainShader;
+        ShaderProgram colorspaceShader;
+        ShaderProgram colorCutoffShader;
+
+        BlendStateKeeper addBlendState;
+
+        PingPongGlow pingPongGlow;
 
         ShaderProgram quadShader;
 
@@ -475,12 +527,17 @@ namespace MIDITrailRender
                 "PS"
             ));
 
+
             //noteShader = new ShaderProgram(
             //    ReadEmbed("MIDITrailRender.Shaders.notes.hlsl"),
             //);
 
-            compositeShader = init.Add(Shaders.BasicTextured());
+            plainShader = init.Add(Shaders.BasicTextured());
+            colorspaceShader = init.Add(Shaders.Colorspace());
+            colorCutoffShader = init.Add(Shaders.ColorCutoff());
             compositor = init.Add(new Compositor());
+
+            addBlendState = init.Add(new BlendStateKeeper(BlendPreset.Add));
 
             //flatNoteBuffer = new InstancedModelBuffer<NoteVert, NoteInstance>(1024 * 64, noteModels["note-flat"]);
             //cubeNoteBuffer = new InstancedModelBuffer<NoteVert, NoteInstance>(1024 * 64, noteModels["note-cube"]);
@@ -500,6 +557,9 @@ namespace MIDITrailRender
             init.Init(device);
 
             init.Replace(ref depthSurface, new CompositeRenderSurface(status.RenderWidth, status.RenderHeight, true));
+            init.Replace(ref cutoffSurface, new CompositeRenderSurface(status.RenderWidth, status.RenderHeight));
+            init.Replace(ref preFinalSurface, new CompositeRenderSurface(status.RenderWidth, status.RenderHeight));
+            init.Replace(ref pingPongGlow, new PingPongGlow(status.RenderWidth, status.RenderHeight));
 
             //depthSurface = disposer.Add(new BasicRenderSurface(status.RenderWidth, status.RenderHeight, true));
             //compositeShader = disposer.Add(ShaderProgram.Presets.BasicTextured());
@@ -527,26 +587,186 @@ namespace MIDITrailRender
 
         public void RenderFrame(DeviceContext context, IRenderSurface renderSurface)
         {
-            keyShader.ConstData.Model =
-                //Matrix.RotationZ(0.3f) *
-                Matrix.RotationY(0.2f) *
-                Matrix.RotationX((float)midi.PlayerPositionSeconds / 1);
+
+            int firstKey = settings.keys.left;
+            int lastKey = settings.keys.right;
+
+            bool sameWidth = settings.sameWidthNotes;
+
+            var keyboard = new KeyboardState(firstKey, lastKey, new KeyboardParams()
+            {
+                BlackKey2setOffset = 0.15 * 2,
+                BlackKey3setOffset = 0.3 * 2,
+                BlackKeyScale = 0.583,
+                SameWidthNotes = sameWidth,
+            });
+
+            float frontNoteCutoff = 10;
+            float backNoteCutoff = 0.3f;
+            float noteScale = 5000;
+
+            var time = midi.PlayerPosition;
+            var frontMax = frontNoteCutoff;
+
+
+
+
+            void renderNote(Note n)
+            {
+                if (n.Start < time && (n.End > time || !n.HasEnded))
+                {
+                    keyboard.PressKey(n.Key);
+                    keyboard.BlendNote(n.Key, n.Color);
+                }
+
+                var key = keyboard.Notes[n.Key];
+
+                var noteStart = (float)(n.Start - midi.PlayerPosition) / noteScale;
+                var noteEnd = (float)(n.End - midi.PlayerPosition) / noteScale;
+
+                if (!n.HasEnded || noteEnd > frontMax) noteEnd = frontMax;
+
+                //if (useZFight)
+                //{
+                //    var stack = zNoteEnds[n.Key];
+                //    while (stack.Count != 0 && stack.Peek() - 0.0001 < n.Start)
+                //        stack.Pop();
+                //    stack.Push(n.HasEnded ? n.End : double.PositiveInfinity);
+                //    if (!sameWidth)
+                //    {
+                //        if (zNoteMaximums[n.Key] < stack.Count)
+                //            zNoteMaximums[n.Key] = stack.Count;
+                //    }
+                //}
+
+                //noteBuffer.PushInstance(new NoteInstance(
+                //    (float)key.Left - 0.5f,
+                //    (float)key.Right - 0.5f,
+                //    noteStart,
+                //    noteEnd,
+                //    n.Color.Left,
+                //    n.Color.Right,
+                //    1,
+                //    useZFight ? (zNoteEnds[n.Key].Count + zNoteExtra[n.Key]) * zFightStrength : 0
+                //));
+            }
+
+            var iterator = midi.IterateNotes(midi.PlayerPosition - backNoteCutoff * noteScale, midi.PlayerPosition + frontNoteCutoff * noteScale);
+
+            foreach (var n in iterator) renderNote(n);
+
+            //if (sameWidth)
+            //{
+            //    foreach (var n in iterator) renderNote(n);
+            //}
+            //else
+            //{
+            //    foreach (var n in iterator)
+            //    {
+            //        if (!keyboard.BlackKey[n.Key]) renderNote(n);
+            //    }
+
+            //    for (int i = 0; i < 256; i++)
+            //    {
+            //        if (keyboard.BlackKey[i])
+            //        {
+            //            if (i != 0) zNoteExtra[i] = zNoteMaximums[i - 1];
+            //            if (i != 255 && zNoteMaximums[i + 1] > zNoteExtra[i]) zNoteExtra[i] = zNoteMaximums[i + 1];
+            //        }
+            //    }
+
+            //    foreach (var n in iterator)
+            //    {
+            //        if (keyboard.BlackKey[n.Key]) renderNote(n);
+            //    }
+            //}
+
+            float timeScale = (float)(midi.PlayerPositionSeconds - lastMidiTime) * 60;
+            for (int i = 0; i < 256; i++)
+            {
+                if (keyboard.Pressed[i])
+                {
+                    keyPressVel[i] += 0.1f * timeScale;
+                }
+                else
+                {
+                    keyPressVel[i] += -keyPressPos[i] / 1 * timeScale;
+                }
+                keyPressVel[i] *= (float)Math.Pow(0.5f, timeScale);
+                keyPressPos[i] += keyPressVel[i] * timeScale;
+
+                float maxPress = 1;
+                if (keyPressPos[i] > maxPress)
+                {
+                    keyPressPos[i] = maxPress;
+                    keyPressVel[i] = 0;
+                }
+            }
+
             keyShader.ConstData.View =
-                //Matrix.RotationX(-(float)midi.PlayerPositionSeconds / 1) *
-                Matrix.Translation(0, 0, 5) *
-                Matrix.PerspectiveFovLH((float)Math.PI / 3, renderStatus.AspectRatio, 0.1f, 100f)
+                Matrix.Translation(0, -0.2f, -0.7f) *
+                Matrix.Scaling(1, 1, -1)
                 ;
+            keyShader.ConstData.ViewPos = keyShader.ConstData.View.TranslationVector;
+            keyShader.ConstData.View *= Matrix.PerspectiveFovLH((float)Math.PI / 3, renderStatus.AspectRatio, 0.1f, 100f);
 
             //keyShader.ConstData.ViewNorm = keyShader.ConstData.View;
             //keyShader.ConstData.ModelNorm = keyShader.ConstData.Model;
 
-            using (depthSurface.UseViewAndClear(context))
-            using (keyShader.UseOn(context))
+            List<RenderObject> renderObjects = new List<RenderObject>();
+
+            var keySet = sameWidth ? keyModels.SameWidth : keyModels.DifferentWidth;
+
+            for (int i = firstKey; i < lastKey; i++)
             {
-                keyModels.SameWidth.Normal.Models[0].BindAndDraw(context);
+                var layoutKey = keyboard.Keys[i];
+
+                var width = layoutKey.Right - layoutKey.Left;
+                var middle = (layoutKey.Right + layoutKey.Left) / 2 - 0.5f;
+
+                Matrix model = Matrix.Identity *
+                Matrix.RotationX((float)Math.PI / 2 * keyPressPos[i] * 0.03f) *
+                Matrix.Translation(0, 0, -1) *
+                Matrix.Scaling((float)keyboard.BlackKeyWidth * 2 * 0.865f) *
+                Matrix.Translation((float)middle, 0, 0) *
+                Matrix.RotationY((float)Math.PI / 2 * 0) *
+                Matrix.Translation(0, 0, 0);
+
+                var isFirst = i == firstKey;
+                var isLast = i == lastKey - 1;
+
+                var keyPart = isFirst ? keySet.Right : isLast ? keySet.Left : keySet.Normal;
+
+                renderObjects.Add(new KeyRenderObject(this, keyboard, keyPart.GetKey(i), model, i));
             }
 
-            compositor.Composite(context, depthSurface, compositeShader, renderSurface);
+            using (depthSurface.UseViewAndClear(context))
+            {
+                foreach (var m in renderObjects)
+                {
+                    m.Render(context);
+                }
+            }
+
+            bool useGlow = true;
+
+            ITextureResource lastSurface;
+            if (useGlow)
+            {
+                compositor.Composite(context, depthSurface, colorCutoffShader, cutoffSurface);
+                pingPongGlow.GlowSigma = 20;
+                pingPongGlow.ApplyOn(context, cutoffSurface, 1, 1);
+                compositor.Composite(context, depthSurface, colorspaceShader, preFinalSurface);
+                using (addBlendState.UseOn(context))
+                    compositor.Composite(context, cutoffSurface, plainShader, preFinalSurface, false);
+                lastSurface = preFinalSurface;
+            }
+            else
+            {
+                lastSurface = depthSurface;
+            }
+
+            compositor.Composite(context, lastSurface, colorspaceShader, renderSurface);
 
             //using (new GLEnabler().Enable(EnableCap.Blend))
             //{
@@ -570,10 +790,6 @@ namespace MIDITrailRender
             //            BlackKeyScale = 0.583,
             //            SameWidthNotes = sameWidth,
             //        });
-
-            //        float frontNoteCutoff = 10;
-            //        float backNoteCutoff = 0.3f;
-            //        float noteScale = 5000;
 
             //        Matrix4 view = Matrix4.Identity *
             //            Matrix4.CreateTranslation(0, -0.1f, -0.3f);
@@ -618,8 +834,6 @@ namespace MIDITrailRender
             //        bool useZFight = true;
             //        float zFightStrength = 0.001f;
 
-            //        var time = midi.PlayerPosition;
-            //        var frontMax = frontNoteCutoff;
             //        Stack<double>[] zNoteEnds = null;
             //        int[] zNoteMaximums = null;
             //        int[] zNoteExtra = null;

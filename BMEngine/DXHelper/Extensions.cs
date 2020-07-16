@@ -10,10 +10,20 @@ namespace ZenithEngine.DXHelper
 {
     public static class Extensions
     {
-
         public static void ClearRenderTargetView(this DeviceContext ctx, RenderTargetView view)
         {
             ctx.ClearRenderTargetView(view, new Color4(0, 0, 0, 0));
+        }
+
+        public static void ClearDepthStencilView(this DeviceContext ctx, DepthStencilView view)
+        {
+            ctx.ClearDepthStencilView(view, DepthStencilClearFlags.Depth, 1.0f, 0);
+        }
+
+        public static void ClearRenderTargetView(this DeviceContext ctx, IRenderSurface view)
+        {
+            ClearRenderTargetView(ctx, view.RenderTarget);
+            if (view.RenderTargetDepth != null) ClearDepthStencilView(ctx, view.RenderTargetDepth);
         }
 
         public static IDisposable UseOnPS(this ITextureResource tex, DeviceContext ctx, int slot) =>

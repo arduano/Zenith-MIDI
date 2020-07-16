@@ -279,6 +279,7 @@
     </Compile>
     <Compile Include="DXHelper\ModelBuffer.cs" />
     <Compile Include="DXHelper\CompositeRenderSurface.cs" />
+    <Compile Include="DXHelper\Presets\PingPongGlow.cs" />
     <Compile Include="DXHelper\Presets\Shaders.cs" />
     <Compile Include="DXHelper\Presets\ShapeBuffers.cs" />
     <Compile Include="DXHelper\Presets\Vertices.cs" />
@@ -425,6 +426,15 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="DXHelper\Presets\Shaders\compositeSSAA.fx" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="DXHelper\Presets\Shaders\colorspace.fx" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="DXHelper\Presets\Shaders\glow.fx" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="DXHelper\Presets\Shaders\cutoffColor.fx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

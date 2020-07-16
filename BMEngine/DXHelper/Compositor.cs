@@ -31,10 +31,10 @@ namespace ZenithEngine.DXHelper
             buffer.Dispose();
         }
 
-        public void Composite(DeviceContext context, ITextureResource[] sources, ShaderProgram shader, IRenderSurface destination)
+        public void Composite(DeviceContext context, ITextureResource[] sources, ShaderProgram shader, IRenderSurface destination, bool clearDest = true)
         {
             using (shader.UseOn(context))
-            using (destination.UseView(context))
+            using (clearDest ? destination.UseViewAndClear(context) : destination.UseView(context))
             {
                 var srcDispose = sources.Select((s, i) => s.UseOnPS(context, i)).ToArray();
                 buffer.BindAndDraw(context);
@@ -42,9 +42,9 @@ namespace ZenithEngine.DXHelper
             }
         }
 
-        public void Composite(DeviceContext context, ITextureResource source, ShaderProgram shader, IRenderSurface destination)
+        public void Composite(DeviceContext context, ITextureResource source, ShaderProgram shader, IRenderSurface destination, bool clearDest = true)
         {
-            Composite(context, new[] { source }, shader, destination);
+            Composite(context, new[] { source }, shader, destination, clearDest);
         }
     }
 }

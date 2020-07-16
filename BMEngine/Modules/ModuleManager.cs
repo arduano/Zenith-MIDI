@@ -127,7 +127,7 @@ namespace ZenithEngine.Modules
             using (sampler.UseOnPS(context))
             {
                 CurrentModule.RenderFrame(context, fullSizeFrame);
-                context.ClearRenderTargetView(outputSurface.RenderTarget);
+                context.ClearRenderTargetView(outputSurface);
                 composite.Composite(context, fullSizeFrame, downscale, outputSurface);
             }
 

@@ -7,6 +7,12 @@ using System.Threading.Tasks;
 
 namespace ZenithEngine.DXHelper
 {
+    public enum BlendPreset
+    {
+        Blend,
+        Add,
+    }
+
     public class BlendStateKeeper : DeviceInitiable
     {
         public static implicit operator BlendState(BlendStateKeeper keeper) => keeper.BlendState;
@@ -14,7 +20,7 @@ namespace ZenithEngine.DXHelper
         public BlendState BlendState { get; private set; }
         public BlendStateDescription Description;
 
-        public static BlendStateDescription BasicBlendDescription()
+        public static RenderTargetBlendDescription BasicTargetBlendDescription()
         {
             var renderTargetDesc = new RenderTargetBlendDescription();
             renderTargetDesc.IsBlendEnabled = true;
@@ -25,7 +31,25 @@ namespace ZenithEngine.DXHelper
             renderTargetDesc.DestinationAlphaBlend = BlendOption.One;
             renderTargetDesc.AlphaBlendOperation = BlendOperation.Add;
             renderTargetDesc.RenderTargetWriteMask = ColorWriteMaskFlags.All;
+            return renderTargetDesc;
+        }
 
+        public static RenderTargetBlendDescription AddTargetBlendDescription()
+        {
+            var renderTargetDesc = new RenderTargetBlendDescription();
+            renderTargetDesc.IsBlendEnabled = true;
+            renderTargetDesc.SourceBlend = BlendOption.One;
+            renderTargetDesc.DestinationBlend = BlendOption.One;
+            renderTargetDesc.BlendOperation = BlendOperation.Add;
+            renderTargetDesc.SourceAlphaBlend = BlendOption.InverseDestinationAlpha;
+            renderTargetDesc.DestinationAlphaBlend = BlendOption.One;
+            renderTargetDesc.AlphaBlendOperation = BlendOperation.Add;
+            renderTargetDesc.RenderTargetWriteMask = ColorWriteMaskFlags.All;
+            return renderTargetDesc;
+        }
+
+        public static BlendStateDescription BasicBlendDescription(RenderTargetBlendDescription renderTargetDesc)
+        {
             BlendStateDescription blendDesc = new BlendStateDescription();
             blendDesc.AlphaToCoverageEnable = false;
             blendDesc.IndependentBlendEnable = false;
@@ -35,7 +59,15 @@ namespace ZenithEngine.DXHelper
             return blendDesc;
         }
 
-        public BlendStateKeeper() : this(BasicBlendDescription()) { }
+        public static RenderTargetBlendDescription TargetBlendDescriptionFromPreset(BlendPreset preset)
+        {
+            if (preset == BlendPreset.Blend) return BasicTargetBlendDescription();
+            if (preset == BlendPreset.Add) return AddTargetBlendDescription();
+            throw new NotImplementedException("Specified blend preset not implemented yet");
+        }
+
+        public BlendStateKeeper() : this(BasicBlendDescription(BasicTargetBlendDescription())) { }
+        public BlendStateKeeper(BlendPreset preset) : this(BasicBlendDescription(TargetBlendDescriptionFromPreset(preset))) { }
         public BlendStateKeeper(BlendStateDescription desc)
         {
             Description = desc;

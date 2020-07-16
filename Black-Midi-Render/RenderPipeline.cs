@@ -184,7 +184,7 @@ namespace Zenith
             Stopwatch time = new Stopwatch();
 
             if (!Rendering) midiAudio = dispose.Add(new MIDIAudio(Playback, new KDMAPIOutput()));
-
+            
             RenderLoop.Run(form, () =>
             {
                 var context = form.Device.ImmediateContext;

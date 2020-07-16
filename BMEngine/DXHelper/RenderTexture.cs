@@ -54,19 +54,20 @@ namespace ZenithEngine.DXHelper
         {
             fixed (byte* data = internalBytes)
             {
-                Texture = new SharpDX.Direct3D11.Texture2D(Device, new SharpDX.Direct3D11.Texture2DDescription()
+                Texture = new Texture2D(Device, new Texture2DDescription()
                 {
                     Width = Width,
                     Height = Height,
                     ArraySize = 1,
-                    BindFlags = SharpDX.Direct3D11.BindFlags.ShaderResource,
-                    Usage = SharpDX.Direct3D11.ResourceUsage.Immutable,
-                    CpuAccessFlags = SharpDX.Direct3D11.CpuAccessFlags.None,
+                    BindFlags = BindFlags.ShaderResource,
+                    Usage = ResourceUsage.Immutable,
+                    CpuAccessFlags = CpuAccessFlags.None,
                     Format = SharpDX.DXGI.Format.R8G8B8A8_UNorm,
                     MipLevels = 1,
-                    OptionFlags = SharpDX.Direct3D11.ResourceOptionFlags.None,
+                    OptionFlags = ResourceOptionFlags.None,
                     SampleDescription = new SharpDX.DXGI.SampleDescription(1, 0),
-                }, new SharpDX.DataRectangle((IntPtr)data, Width * 4));
+                }, new DataRectangle((IntPtr)data, Width * 4));
+                Device.ImmediateContext.MapSubresource(Texture, 0, MapMode.Read, MapFlags.None);
             }
             TextureResource = new ShaderResourceView(Device, Texture);
         }
