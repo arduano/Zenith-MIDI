@@ -267,7 +267,7 @@
                         <StackPanel Margin="10">
                             <DockPanel Height="26" LastChildFill="True" Margin="0,0,0,0" VerticalAlignment="Top">
                                 <Label  Margin="0,0,0,0" Content="{DynamicResource savePath}"/>
-                                <Button x:Name="browseVideoSaveButton" Content="{DynamicResource browse}" HorizontalAlignment="Left" Margin="10,0,0,0" Padding="20,0,20,0" IsEnabled="{DynamicResource notRendering}" Click="BrowseVideoSaveButton_Click"/>
+                                <Button x:Name="browseVideoSaveButton" Content="{DynamicResource browse}" HorizontalAlignment="Left" Margin="10,0,0,0" Padding="20,0,20,0" IsEnabled="{Binding CanStart, ElementName=mainWindow}" Click="BrowseVideoSaveButton_Click"/>
                                 <TextBox x:Name="videoPath" Margin="10,0,0,0" IsEnabled="False" TextWrapping="Wrap" Text=""/>
                             </DockPanel>
                             <DockPanel Height="26" LastChildFill="True" Margin="0,10,0,0" VerticalAlignment="Top">

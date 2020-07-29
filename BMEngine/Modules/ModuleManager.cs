@@ -33,10 +33,13 @@ namespace ZenithEngine.Modules
         event EventHandler<IModuleRender> ModuleInitialized;
 
         CompositeRenderSurface fullSizeFrame;
+        CompositeRenderSurface alphaFixFrame;
         BlendStateKeeper blendState;
+        BlendStateKeeper pureBlendState;
         TextureSampler sampler;
 
         ShaderProgram downscale;
+        ShaderProgram alphaFix;
         Compositor composite;
 
         Initiator init = new Initiator();
@@ -48,9 +51,11 @@ namespace ZenithEngine.Modules
         public ModuleManager()
         {
             blendState = init.Add(new BlendStateKeeper());
+            pureBlendState = init.Add(new BlendStateKeeper(BlendPreset.PreserveColor));
             raster = init.Add(new RasterizerStateKeeper());
             composite = init.Add(new Compositor());
             sampler = init.Add(new TextureSampler());
+            alphaFix = init.Add(Shaders.AlphaAddFix());
         }
 
         public ModuleManager(IModuleRender module) : this()
@@ -74,6 +79,8 @@ namespace ZenithEngine.Modules
                 }
             }
             if (device != null) initQueue.Enqueue(module);
+            if (CurrentModule != null && CurrentModule.Initialized)
+                disposeQueue.Enqueue(CurrentModule);
             CurrentModule = module;
         }
 
@@ -94,6 +101,7 @@ namespace ZenithEngine.Modules
         public void StartRender(Device device, MidiPlayback file, RenderStatus status)
         {
             init.Replace(ref fullSizeFrame, new CompositeRenderSurface(status.RenderWidth, status.RenderHeight));
+            init.Replace(ref alphaFixFrame, new CompositeRenderSurface(status.OutputWidth, status.OutputHeight));
             init.Replace(ref downscale, Shaders.CompositeSSAA(status.OutputWidth, status.OutputHeight, status.SSAA));
             currentMidi = file;
             currentStatus = status;
@@ -122,13 +130,20 @@ namespace ZenithEngine.Modules
             ProcessQueues();
 
             using (fullSizeFrame.UseViewAndClear(context))
-            using (blendState.UseOn(context))
             using (raster.UseOn(context))
             using (sampler.UseOnPS(context))
             {
-                CurrentModule.RenderFrame(context, fullSizeFrame);
-                context.ClearRenderTargetView(outputSurface);
-                composite.Composite(context, fullSizeFrame, downscale, outputSurface);
+                using (blendState.UseOn(context))
+                {
+                    CurrentModule.RenderFrame(context, fullSizeFrame);
+                    context.ClearRenderTargetView(outputSurface);
+                }
+
+                using (pureBlendState.UseOn(context))
+                {
+                    composite.Composite(context, fullSizeFrame, downscale, alphaFixFrame);
+                    composite.Composite(context, alphaFixFrame, alphaFix, outputSurface);
+                }
             }
 
             //fullSizeFrame.BindSurface();

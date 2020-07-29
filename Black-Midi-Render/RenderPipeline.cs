@@ -18,6 +18,7 @@ using SharpDX.Direct3D;
 using SharpDX;
 using ZenithEngine.DXHelper.Presets;
 using System.Threading;
+using System.IO;
 
 namespace Zenith
 {
@@ -56,33 +57,95 @@ namespace Zenith
             public CompositeRenderSurface RenderTarget { get; }
         }
 
-        abstract class PreviewBase : IPreview
+        abstract class PreviewBase : DeviceInitiable, IPreview
         {
             protected RenderPipeline pipeline;
             protected Initiator init = new Initiator();
             protected DisposeGroup disposer = new DisposeGroup();
 
+            Textured2dShapeBuffer buffer;
+
+            ShaderProgram basicShader;
+            ShaderProgram maskAlphaShader;
+            ShaderProgram maskColorShader;
+
+            protected BlendStateKeeper pureBlendState;
+
             public CompositeRenderSurface RenderTarget { get; }
 
-            protected AspectRatioComposite aspectComposite;
+            protected CompositeRenderSurface RenderedMain { get; }
+            protected CompositeRenderSurface RenderedMask { get; }
 
-            public PreviewBase(RenderPipeline pipeline)
+            protected CompositeRenderSurface PreviewOutput { get; }
+
+            protected AspectRatioComposite aspectComposite;
+            protected Compositor composite;
+
+            protected bool useMask;
+
+            public PreviewBase(RenderPipeline pipeline, bool useMask)
             {
+                this.useMask = useMask;
                 this.pipeline = pipeline;
                 RenderTarget = init.Add(new CompositeRenderSurface(pipeline.Status.OutputWidth, pipeline.Status.OutputHeight));
+                pureBlendState = init.Add(new BlendStateKeeper(BlendPreset.PreserveColor));
+                if (useMask)
+                {
+                    RenderedMain = init.Add(new CompositeRenderSurface(pipeline.Status.OutputWidth, pipeline.Status.OutputHeight));
+                    RenderedMask = init.Add(new CompositeRenderSurface(pipeline.Status.OutputWidth, pipeline.Status.OutputHeight));
+                    PreviewOutput = init.Add(new CompositeRenderSurface(pipeline.Status.OutputWidth, pipeline.Status.OutputHeight / 2));
+                    composite = init.Add(new Compositor());
+                    basicShader = init.Add(Shaders.BasicTextured());
+                    maskAlphaShader = init.Add(Shaders.TransparencyMask(false));
+                    maskColorShader = init.Add(Shaders.TransparencyMask(true));
+                    buffer = init.Add(new Textured2dShapeBuffer(16));
+                }
+                else
+                {
+                    RenderedMain = RenderTarget;
+                    PreviewOutput = RenderTarget;
+                }
                 aspectComposite = init.Add(new AspectRatioComposite());
             }
 
-            public virtual void Dispose()
+            protected override void InitInternal()
+            {
+                disposer = new DisposeGroup();
+                init.Init(Device);
+                disposer.Add(init);
+            }
+
+            protected override void DisposeInternal()
             {
                 disposer.Dispose();
             }
 
-            public virtual void Init(Device device)
+            protected void ProcessFrame(DeviceContext context)
             {
-                disposer = new DisposeGroup();
-                init.Init(device);
-                disposer.Add(init);
+                if (useMask)
+                {
+                    using (pureBlendState.UseOn(context))
+                    {
+                        composite.Composite(context, RenderTarget, maskColorShader, RenderedMain);
+                        composite.Composite(context, RenderTarget, maskAlphaShader, RenderedMask);
+                        buffer.UseContext(context);
+                        using (PreviewOutput.UseViewAndClear(context))
+                        using (basicShader.UseOn(context))
+                        {
+                            using (RenderedMain.UseOnPS(context))
+                            {
+                                buffer.PushQuad(0, 1, 0.5f, 0);
+                                buffer.Flush();
+                            }
+
+                            using (RenderedMask.UseOnPS(context))
+                            {
+                                buffer.PushQuad(0.5f, 1, 1, 0);
+                                buffer.Flush();
+                            }
+                        }
+                    }
+                }
             }
 
             public abstract void RenderFrame(DeviceContext context, IRenderSurface outputSurface);
@@ -90,16 +153,57 @@ namespace Zenith
 
         class BasicPreview : PreviewBase
         {
-            public BasicPreview(RenderPipeline pipeline) : base(pipeline) { }
+            public BasicPreview(RenderPipeline pipeline) : base(pipeline, false) { }
+
+            public override void RenderFrame(DeviceContext context, IRenderSurface outputSurface)
+            {
+                ProcessFrame(context);
+                using (pureBlendState.UseOn(context))
+                    aspectComposite.Composite(context, PreviewOutput, outputSurface);
+            }
+        }
+
+        class RenderPreview : PreviewBase
+        {
+            FFMpegOutput output;
+            FFMpegOutput outputMask;
+            Logger outputLogger;
+            Logger outputMaskLogger;
+            public RenderPreview(RenderPipeline pipeline) : base(pipeline, true)
+            {
+            }
 
             public override void Init(Device device)
             {
                 base.Init(device);
+
+                var args = pipeline.RenderArgs;
+                var status = pipeline.Status;
+                outputLogger = Logs.GetFFMpegLogger(false);
+                output = new FFMpegOutput(Device, status.RenderWidth, status.RenderHeight, status.FPS, args.Args, args.OutputVideo, outputLogger);
+                output.Errored += (s, e) => outputLogger.OpenLogData();
+                if (args.UseMask)
+                {
+                    outputMaskLogger = Logs.GetFFMpegLogger(true);
+                    outputMask = new FFMpegOutput(Device, status.RenderWidth, status.RenderHeight, status.FPS, args.Args, args.OutputMask, outputLogger);
+                    outputMask.Errored += (s, e) => outputMaskLogger.OpenLogData();
+                }
+            }
+
+            public override void Dispose()
+            {
+                base.Dispose();
+                output?.Dispose();
+                outputMask?.Dispose();
             }
 
             public override void RenderFrame(DeviceContext context, IRenderSurface outputSurface)
             {
-                aspectComposite.Composite(context, RenderTarget, outputSurface);
+                ProcessFrame(context);
+                output.PushFrame(context, RenderedMain);
+                outputMask?.PushFrame(context, RenderedMask);
+                using (pureBlendState.UseOn(context))
+                    aspectComposite.Composite(context, PreviewOutput, outputSurface);
             }
         }
 
@@ -161,10 +265,11 @@ namespace Zenith
             this(status, playback, module, null)
         { }
 
-        public void Start()
+        public Thread Start()
         {
             renderTask = new Thread(new ThreadStart(Runner));
             renderTask.Start();
+            return renderTask;
         }
 
         void Runner()
@@ -175,7 +280,9 @@ namespace Zenith
             var dispose = new DisposeGroup();
             var init = dispose.Add(new Initiator());
 
-            IPreview preview = init.Add(new BasicPreview(this));
+            IPreview preview;
+            if (Rendering) preview = init.Add(new RenderPreview(this));
+            else preview = init.Add(new BasicPreview(this));
 
             Module.StartRender(form.Device, Playback, Status);
 
@@ -184,13 +291,22 @@ namespace Zenith
             Stopwatch time = new Stopwatch();
 
             if (!Rendering) midiAudio = dispose.Add(new MIDIAudio(Playback, new KDMAPIOutput()));
-            
+
             RenderLoop.Run(form, () =>
             {
                 var context = form.Device.ImmediateContext;
                 Module.RenderFrame(context, preview.RenderTarget);
-                preview.RenderFrame(context, form);
-                form.Present(false);
+
+                try
+                {
+                    preview.RenderFrame(context, form);
+                }
+                catch (FFMpegException)
+                {
+                    form.Close();
+                }
+
+                form.Present(VSync);
 
                 if (!Paused)
                 {

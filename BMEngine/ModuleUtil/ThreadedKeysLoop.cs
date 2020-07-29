@@ -78,6 +78,70 @@ namespace ZenithEngine.ModuleUtil
                 Parallel.ForEach(keys, new ParallelOptions() { MaxDegreeOfParallelism = threads }, renderKeyWrapper);
             }
 
+            PickStreams(RenderKeyArray, firstKey, lastKey, blackKeysOnTop);
+        }
+
+        public void RenderMultiTextured<T2>(DeviceContext context, int firstKey, int lastKey, bool blackKeysOnTop, int texCount, Func<T, int, T> fillTexVal, Action<int, Action<T, ShaderResourceView>> renderKey)
+            where T2 : struct, ITextureIdStruct
+        {
+            void RenderKeyArray(IEnumerable<int> keys)
+            {
+                object l = new object();
+
+                void renderKeyWrapper(int key)
+                {
+                    int pos = 0;
+                    var arr = arrays.Take();
+                    ShaderResourceView[] textures = new ShaderResourceView[texCount];
+                    void clearTextures()
+                    {
+                        for (int i = 0; i < textures.Length; i++) textures[i] = null;
+                    }
+                    void bindTextures()
+                    {
+                        int count = 0;
+                        while (textures[count] != null) count++;
+                        if (count == 0) return;
+                        context.PixelShader.SetShaderResources(0, count, textures);
+                        context.VertexShader.SetShaderResources(0, count, textures);
+                    }
+                    renderKey(key, (vert, tex) =>
+                    {
+                        int t = 0;
+                        while (textures[t] != null && textures[t] != tex) t++;
+                        textures[t] = tex;
+                        arr[pos++] = fillTexVal(vert, t);
+                        if (pos == arr.Length || t == textures.Length - 1)
+                        {
+                            lock (l)
+                            {
+                                bindTextures();
+                                FlushArray(context, arr, pos);
+                                clearTextures();
+                            }
+                            pos = 0;
+                        }
+                    });
+                    if (pos != 0)
+                    {
+                        lock (l)
+                        {
+                            bindTextures();
+                            FlushArray(context, arr, pos);
+                            clearTextures();
+                        }
+                    }
+                    arrays.Add(arr);
+                }
+
+                Parallel.ForEach(keys, new ParallelOptions() { MaxDegreeOfParallelism = threads }, renderKeyWrapper);
+            }
+
+            PickStreams(RenderKeyArray, firstKey, lastKey, blackKeysOnTop);
+        }
+
+        void PickStreams(Action<IEnumerable<int>> render, int firstKey, int lastKey, bool blackKeysOnTop)
+        {
             IEnumerable<int> iterateAllKeys()
             {
                 for (int i = firstKey; i < lastKey; i++)
@@ -93,12 +157,12 @@ namespace ZenithEngine.ModuleUtil
 
             if (blackKeysOnTop)
             {
-                RenderKeyArray(iterateSelectKeys(false));
-                RenderKeyArray(iterateSelectKeys(true));
+                render(iterateSelectKeys(false));
+                render(iterateSelectKeys(true));
             }
             else
             {
-                RenderKeyArray(iterateAllKeys());
+                render(iterateAllKeys());
             }
         }
     }

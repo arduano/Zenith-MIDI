@@ -16,7 +16,6 @@ namespace ZenithEngine.DXHelper.Presets
         ShaderProgram basicShader;
         CompositeRenderSurface buffer;
         Compositor composite;
-        Initiator init = new Initiator();
 
         float glowLowCutoff = 0.05f;
         public float GlowCutoff
@@ -53,16 +52,6 @@ namespace ZenithEngine.DXHelper.Presets
             buffer = init.Add(new CompositeRenderSurface(width, height));
 
             RebuildConstants();
-        }
-
-        protected override void InitInternal()
-        {
-            init.Init(Device);
-        }
-
-        protected override void DisposeInternal()
-        {
-            init.Dispose();
         }
 
         double Gaussian(double x, double sigma)

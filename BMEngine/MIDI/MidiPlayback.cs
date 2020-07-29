@@ -152,6 +152,7 @@ namespace ZenithEngine.MIDI
 
         protected IEnumerable<Note> IterateNotesListWithCutoffs(FastList<Note> notes, double bottomCutoffOffset, double topCutoffOffset)
         {
+            ParseUpTo(topCutoffOffset);
             var iter = notes.Iterate();
             for (Note n = null; iter.MoveNext(out n);)
             {

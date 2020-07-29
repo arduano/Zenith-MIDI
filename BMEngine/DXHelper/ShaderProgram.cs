@@ -15,6 +15,7 @@ namespace ZenithEngine.DXHelper
         where U : struct
     {
         U lastData;
+        bool first = true;
 
         public U ConstData;
 
@@ -43,6 +44,7 @@ namespace ZenithEngine.DXHelper
             var size = Utilities.SizeOf<U>();
             if (size % 16 != 0) size += 16 - (size % 16);
             dynamicConstantBuffer = new Buffer(Device, size, ResourceUsage.Dynamic, BindFlags.ConstantBuffer, CpuAccessFlags.Write, ResourceOptionFlags.None, 0);
+            first = true;
         }
 
         protected override void DisposeInternal()
@@ -53,8 +55,9 @@ namespace ZenithEngine.DXHelper
 
         public void UpdateConstBuffer(DeviceContext context)
         {
-            if (!lastData.Equals(ConstData))
+            if (!lastData.Equals(ConstData) || first)
             {
+                first = false;
                 var dataBox = context.MapSubresource(dynamicConstantBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
                 Utilities.Write(dataBox.DataPointer, ref ConstData);
                 context.UnmapSubresource(dynamicConstantBuffer, 0);
@@ -76,7 +79,7 @@ namespace ZenithEngine.DXHelper
         }
     }
 
-    public class ShaderProgram : DeviceInitiable
+    public class ShaderProgram : PureDeviceInitiable
     {
         struct ShaderKeep
         {
@@ -102,7 +105,6 @@ namespace ZenithEngine.DXHelper
         public GeometryShader GeometryShader { get; private set; }
 
         public InputLayout InputLayout { get; private set; }
-
         DisposeGroup dispose = new DisposeGroup();
 
         bool initedShader = false;
@@ -126,7 +128,7 @@ namespace ZenithEngine.DXHelper
         }
 
         public ShaderProgram(string shader, string inputTypeName, Type inputType, Type instanceType, string version, string vertEntry, string fragEntry, string geoEntry = null)
-            : this(shader, ShaderHelper.GetLayout(inputType).Concat(ShaderHelper.GetLayout(instanceType)).ToArray(), version, vertEntry, fragEntry, geoEntry)
+            : this(shader, ShaderHelper.GetLayout(inputType).Concat(ShaderHelper.GetLayout(instanceType, 1, 1)).ToArray(), version, vertEntry, fragEntry, geoEntry)
         {
             basicPrepend.Add(ShaderHelper.BuildStructDefinition(inputTypeName, inputType, instanceType));
         }

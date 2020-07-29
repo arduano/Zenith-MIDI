@@ -157,7 +157,15 @@ namespace ZenithEngine.DXHelper
 
         public void Present(bool vsync)
         {
+            try
+            {
             swapChain.Present(vsync ? 1 : 0, PresentFlags.None);
+            }
+            catch(SharpDXException e)
+            {
+                Console.WriteLine(Device.DeviceRemovedReason);
+                throw e;
+            }
             CheckResize();
         }
     }

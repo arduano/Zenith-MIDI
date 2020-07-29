@@ -7,15 +7,15 @@ using System.Threading.Tasks;
 
 namespace ZenithEngine.DXHelper
 {
-    public abstract class DeviceInitiable : IDeviceInitiable
+    public abstract class PureDeviceInitiable : IDeviceInitiable
     {
         public bool Initialized { get; private set; } = false;
         public Device Device { get; private set; } = null;
 
-        protected abstract void InitInternal();
-        protected abstract void DisposeInternal();
+        protected virtual void InitInternal() { }
+        protected virtual void DisposeInternal() { }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             if (!Initialized) return;
             DisposeInternal();
@@ -23,7 +23,7 @@ namespace ZenithEngine.DXHelper
             Initialized = false;
         }
 
-        public void Init(Device device)
+        public virtual void Init(Device device)
         {
             if (Initialized) return;
             Device = device;

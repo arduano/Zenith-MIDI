@@ -64,5 +64,6 @@ float4 PS(in float2 uv : UV, in float4 col : COLOR) : SV_Target
             sum += filterPixel(Texture.Sample(Sampler, uv + float2(0, i * step - halfWidth)), i - halfWidthPixels);
         }
     }
-    return sum;
+    if(sum.a == 0) return float4(0, 0, 0, 0);
+    return float4(sum.rgb / sum.a, sum.a);
 }

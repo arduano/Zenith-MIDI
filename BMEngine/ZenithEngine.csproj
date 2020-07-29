@@ -269,9 +269,11 @@
     <Compile Include="DXHelper\DepthStencilStateKeeper.cs" />
     <Compile Include="DXHelper\DeviceInitiable.cs" />
     <Compile Include="DXHelper\Extensions.cs" />
+    <Compile Include="DXHelper\FFMpegOutput.cs" />
     <Compile Include="DXHelper\IDeviceInitiable.cs" />
     <Compile Include="DXHelper\AssemblyElement.cs" />
     <Compile Include="DXHelper\Initiator.cs" />
+    <Compile Include="DXHelper\InstancedBufferFlusher.cs" />
     <Compile Include="DXHelper\IRenderSurface.cs" />
     <Compile Include="DXHelper\ITextureResource.cs" />
     <Compile Include="DXHelper\ManagedRenderWindow.cs">
@@ -279,12 +281,13 @@
     </Compile>
     <Compile Include="DXHelper\ModelBuffer.cs" />
     <Compile Include="DXHelper\CompositeRenderSurface.cs" />
+    <Compile Include="DXHelper\IBufferFlusher.cs" />
+    <Compile Include="DXHelper\MultiTextureShapeBuffer.cs" />
     <Compile Include="DXHelper\Presets\PingPongGlow.cs" />
     <Compile Include="DXHelper\Presets\Shaders.cs" />
     <Compile Include="DXHelper\Presets\ShapeBuffers.cs" />
     <Compile Include="DXHelper\Presets\Vertices.cs" />
     <Compile Include="DXHelper\RasterizerStateKeeper.cs" />
-    <Compile Include="DXHelper\RenderSurface.cs" />
     <Compile Include="DXHelper\RenderSurfaceExtensions.cs" />
     <Compile Include="DXHelper\RenderTexture.cs" />
     <Compile Include="DXHelper\ShaderHelper.cs" />
@@ -295,6 +298,8 @@
     <Compile Include="GLEngine\BufferTools.cs" />
     <Compile Include="GLEngine\InstancedModelBuffer.cs" />
     <Compile Include="GLEngine\ModelBuffer.cs" />
+    <Compile Include="IO\ZipDirectory.cs" />
+    <Compile Include="Modules\PureModule.cs" />
     <Compile Include="ModuleUI\Docked.cs" />
     <Compile Include="ModuleUI\Misc.cs" />
     <Compile Include="GLEngine\RenderSurface.cs" />
@@ -329,12 +334,14 @@
     <Compile Include="ModuleUI\UILabel.cs" />
     <Compile Include="ModuleUI\UINumber.cs" />
     <Compile Include="ModuleUI\UINumberSlider.cs" />
+    <Compile Include="ModuleUI\UITabs.cs" />
     <Compile Include="ModuleUtil\ColorUtil.cs" />
     <Compile Include="ModuleUtil\Extensions.cs" />
     <Compile Include="ModuleUtil\KeyboardState.cs" />
     <Compile Include="ModuleUtil\ThreadedKeysLoop.cs" />
     <Compile Include="Output\FFMpeg.cs" />
     <Compile Include="Output\PreviewWindow.cs" />
+    <Compile Include="DXHelper\PureDeviceInitiable.cs" />
     <Compile Include="ScriptedCompile\ExtraUI.cs" />
     <Compile Include="ScriptedCompile\IO.cs" />
     <Compile Include="NoteColorPalettePick.xaml.cs">
@@ -435,6 +442,15 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="DXHelper\Presets\Shaders\cutoffColor.fx" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="DXHelper\Presets\Shaders\alphaMask.fx" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="DXHelper\Presets\Shaders\alphaAddFix.fx" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="DXHelper\Presets\Shaders\multiTexture.fx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

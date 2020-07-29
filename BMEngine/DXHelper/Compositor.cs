@@ -11,24 +11,19 @@ namespace ZenithEngine.DXHelper
 {
     public class Compositor : DeviceInitiable
     {
-        ModelBuffer<VertTex2D> buffer = new ModelBuffer<VertTex2D>(
-            new[] {
-                new VertTex2D(new Vector2(1, 0), new Vector2(1, 1), new Color4(1.0f)),
-                new VertTex2D(new Vector2(1, 1), new Vector2(1, 0), new Color4(1.0f)),
-                new VertTex2D(new Vector2(0, 1), new Vector2(0, 0), new Color4(1.0f)),
-                new VertTex2D(new Vector2(0, 0), new Vector2(0, 1), new Color4(1.0f)),
-            },
-            new[] { 0, 2, 1, 0, 3, 2 }
-        );
+        ModelBuffer<VertTex2D> buffer;
 
-        protected override void InitInternal()
+        public Compositor()
         {
-            buffer.Init(Device);
-        }
-
-        protected override void DisposeInternal()
-        {
-            buffer.Dispose();
+            buffer = init.Add(new ModelBuffer<VertTex2D>(
+                new[] {
+                    new VertTex2D(new Vector2(1, 0), new Vector2(1, 1), new Color4(1.0f)),
+                    new VertTex2D(new Vector2(1, 1), new Vector2(1, 0), new Color4(1.0f)),
+                    new VertTex2D(new Vector2(0, 1), new Vector2(0, 0), new Color4(1.0f)),
+                    new VertTex2D(new Vector2(0, 0), new Vector2(0, 1), new Color4(1.0f)),
+                },
+                new[] { 0, 2, 1, 0, 3, 2 }
+            ));
         }
 
         public void Composite(DeviceContext context, ITextureResource[] sources, ShaderProgram shader, IRenderSurface destination, bool clearDest = true)

@@ -17,12 +17,15 @@ namespace ZenithEngine.ModuleUI
     public sealed class UIChild : Attribute
     {
         private readonly int order;
-        public UIChild([CallerLineNumber]int order = 0)
+        private readonly string name;
+        public UIChild([CallerMemberName] string name = null, [CallerLineNumber]int order = 0)
         {
             this.order = order;
+            this.name = name;
         }
 
         public int Order => order;
+        public string Name => name;
     }
 
     public interface ISerializableContainer

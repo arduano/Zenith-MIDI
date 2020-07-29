@@ -47,12 +47,7 @@ namespace ZenithEngine.DXHelper
 
         protected override void InitInternal()
         {
-            RasterizerState = new RasterizerState(Device, Description);
-        }
-
-        protected override void DisposeInternal()
-        {
-            RasterizerState.Dispose();
+            RasterizerState = dispose.Add(new RasterizerState(Device, Description));
         }
 
         public IDisposable UseOn(DeviceContext ctx) =>

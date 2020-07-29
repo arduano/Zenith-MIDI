@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ZenithEngine.DXHelper;
 
 namespace TexturedRender
 {
@@ -26,119 +27,112 @@ namespace TexturedRender
         Folder, Zip, Zrp, Rar, SevenZip, Tar
     }
 
-    public class KeyboardOverlay
+    public class KeyboardOverlay : DeviceInitiable
     {
-        public int firstKey;
-        public int lastKey;
-        public double alpha = 1;
-        public bool overlayBelow = false;
-        public Bitmap tex;
-        public int texID;
-        public double texAspect;
+        public int FirstKey { get; set; }
+        public int LastKey { get; set; }
+        public double Alpha { get; set; } = 1;
+        public bool OverlayBelow { get; set; } = false;
+        RenderTexture texture;
+        public RenderTexture Texture { get => texture; set => init.Replace(ref texture, value); }
     }
 
-    public class NoteTexture
+    public class NoteTexture : DeviceInitiable
     {
-        public double maxSize;
-        public bool useCaps;
-        public bool stretch;
-        public bool squeezeEndCaps = true;
+        public double MaxSize { get; set; }
+        public bool UseCaps { get; set; }
+        public bool Stretch { get; set; }
+        public bool SqueezeEndCaps { get; set; } = true;
 
-        public double darkenBlackNotes = 1;
-        public double highlightHitNotes = 0;
-        public Color highlightHitNotesColor = Color.FromArgb(255, 255, 255, 255);
+        public double DarkenBlackNotes { get; set; } = 1;
+        public double HighlightHitNotes { get; set; } = 0;
+        public Color HighlightHitNotesColor { get; set; } = Color.FromArgb(255, 255, 255, 255);
 
-        public double noteMiddleAspect;
-        public Bitmap noteMiddleTex;
-        public int noteMiddleTexID;
-        public double noteTopOversize;
-        public double noteTopAspect;
-        public Bitmap noteTopTex;
-        public int noteTopTexID;
-        public double noteBottomOversize;
-        public double noteBottomAspect;
-        public Bitmap noteBottomTex;
-        public int noteBottomTexID;
+        public RenderTexture NoteMiddleTex { get => noteMiddleTex; set => init.Replace(ref noteMiddleTex, value); }
+        RenderTexture noteMiddleTex;
+        public RenderTexture NoteTopTex { get => noteTopTex; set => init.Replace(ref noteTopTex, value); }
+        RenderTexture noteTopTex;
+        public double NoteTopOversize { get; set; }
+
+        public RenderTexture NoteBottomTex { get => noteBottomTex; set => init.Replace(ref noteBottomTex, value); }
+        RenderTexture noteBottomTex;
+        public double NoteBottomOversize { get; set; }
 
         public KeyType keyType = KeyType.Both;
     }
 
-    public class Pack
+    public class Pack : DeviceInitiable
     {
-        public string filepath;
-        public PackType filetype;
+        public string Filepath { get; set; }
+        public PackType Filetype { get; set; }
 
-        public List<string> switchOrder = new List<string>();
-        public Dictionary<string, string> switchValues = new Dictionary<string, string>();
-        public Dictionary<string, string[]> switchChoices = new Dictionary<string, string[]>();
+        public List<string> SwitchOrder { get; set; } = new List<string>();
+        public Dictionary<string, string> SwitchValues { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, string[]> SwitchChoices { get; set; } = new Dictionary<string, string[]>();
 
-        public string name;
-        public bool error = false;
-        public Bitmap preview = null;
+        public string Name { get; set; }
+        public bool Error { get; set; } = false;
+        public Bitmap Preview { get; set; } = null;
 
-        public bool sameWidthNotes = false;
-        public double keyboardHeight = 0.15;
-        public double blackKeyHeight = 0.4;
+        public bool SameWidthNotes { get; set; } = false;
+        public double KeyboardHeight { get; set; } = 0.15;
+        public double BlackKeyHeight { get; set; } = 0.4;
 
-        public string description = "";
+        public string Description { get; set; } = "";
 
-        public TextureShaderType noteShader = TextureShaderType.Normal;
-        public TextureShaderType whiteKeyShader = TextureShaderType.Normal;
-        public TextureShaderType blackKeyShader = TextureShaderType.Normal;
-        public bool blackKeyDefaultWhite = false;
+        public TextureShaderType NoteShader { get; set; } = TextureShaderType.Normal;
+        public TextureShaderType WhiteKeyShader { get; set; } = TextureShaderType.Normal;
+        public TextureShaderType BlackKeyShader { get; set; } = TextureShaderType.Normal;
+        public bool BlackKeyDefaultWhite { get; set; } = false;
 
-        public double blackKey2setOffset = 0.3;
-        public double blackKey3setOffset = 0.5;
-        public double blackKeyScale = 0.6;
+        public double BlackKey2setOffset { get; set; } = 0.3;
+        public double BlackKey3setOffset { get; set; } = 0.5;
+        public double BlackKeyScale { get; set; } = 0.6;
 
-        public double blackNote2setOffset = 0;
-        public double blackNote3setOffset = 0;
-        public double blackNoteScale = 1;
+        public double BlackNote2setOffset { get; set; } = 0;
+        public double BlackNote3setOffset { get; set; } = 0;
+        public double BlackNoteScale { get; set; } = 1;
 
-        public bool linearScaling = true;
+        public bool LinearScaling { get; set; } = true;
 
-        public double[] advancedBlackKeyOffsets = new double[] { 0, 0, 0, 0, 0 };
-        public double[] advancedBlackKeySizes = new double[] { 1, 1, 1, 1, 1 };
+        public double[] AdvancedBlackKeyOffsets { get; set; } = new double[] { 0, 0, 0, 0, 0 };
+        public double[] AdvancedBlackKeySizes { get; set; } = new double[] { 1, 1, 1, 1, 1 };
 
-        public Bitmap whiteKeyTex;
-        public int whiteKeyTexID;
-        public double whiteKeyOversize = 0;
+        public RenderTexture WhiteKeyTex { get => whiteKeyTex; set => init.Replace(ref whiteKeyTex, value); }
+        RenderTexture whiteKeyTex;
+        public double WhiteKeyOversize { get; set; } = 0;
 
-        public Bitmap blackKeyTex;
-        public int blackKeyTexID;
-        public double blackKeyOversize = 0;
+        public RenderTexture BlackKeyTex { get => blackKeyTex; set => init.Replace(ref blackKeyTex, value); }
+        RenderTexture blackKeyTex;
+        public double BlackKeyOversize { get; set; } = 0;
 
-        public Bitmap whiteKeyPressedTex;
-        public int whiteKeyPressedTexID;
-        public double whiteKeyPressedOversize = 0;
+        public RenderTexture WhiteKeyPressedTex { get => whiteKeyPressedTex; set => init.Replace(ref whiteKeyPressedTex, value); }
+        RenderTexture whiteKeyPressedTex;
+        public double WhiteKeyPressedOversize { get; set; } = 0;
 
-        public Bitmap blackKeyPressedTex;
-        public int blackKeyPressedTexID;
-        public double blackKeyPressedOversize = 0;
+        public RenderTexture BlackKeyPressedTex { get => blackKeyPressedTex; set => init.Replace(ref blackKeyPressedTex, value); }
+        RenderTexture blackKeyPressedTex;
+        public double BlackKeyPressedOversize { get; set; } = 0;
 
-        public bool useBar = false;
-        public Bitmap barTex;
-        public int barTexID;
-        public double barHeight = 0.05;
+        public bool UseBar = false;
+        public RenderTexture BarTex { get => barTex; set => init.Replace(ref barTex, value); }
+        RenderTexture barTex;
+        public double BarHeight { get; set; } = 0.05;
 
-        public Bitmap whiteKeyLeftTex = null;
-        public int whiteKeyLeftTexID;
-        public Bitmap whiteKeyPressedLeftTex = null;
-        public int whiteKeyPressedLeftTexID;
+        public RenderTexture WhiteKeyLeftTex { get => whiteKeyLeftTex; set => init.Replace(ref whiteKeyLeftTex, value); }
+        RenderTexture whiteKeyLeftTex;
+        public RenderTexture WhiteKeyPressedLeftTex { get => whiteKeyPressedLeftTex; set => init.Replace(ref whiteKeyPressedLeftTex, value); }
+        RenderTexture whiteKeyPressedLeftTex;
 
-        public Bitmap whiteKeyRightTex = null;
-        public int whiteKeyRightTexID;
-        public Bitmap whiteKeyPressedRightTex = null;
-        public int whiteKeyPressedRightTexID;
+        public RenderTexture WhiteKeyRightTex { get => whiteKeyRightTex; set => init.Replace(ref whiteKeyRightTex, value); }
+        RenderTexture whiteKeyRightTex;
+        public RenderTexture WhiteKeyPressedRightTex { get => whiteKeyPressedRightTex; set => init.Replace(ref whiteKeyPressedRightTex, value); }
+        RenderTexture whiteKeyPressedRightTex;
 
-        public float interpolateUnendedNotes = 0;
+        public bool WhiteKeysFullOctave { get; set; } = false;
+        public bool BlackKeysFullOctave { get; set; } = false;
 
-        public bool whiteKeysFullOctave = false;
-        public bool blackKeysFullOctave = false;
-
-        public NoteTexture[] NoteTextures;
-        public KeyboardOverlay[] OverlayTextures;
-
-        public bool disposed = false;
+        public NoteTexture[] NoteTextures { get; set; }
+        public KeyboardOverlay[] OverlayTextures { get; set; }
     }
 }

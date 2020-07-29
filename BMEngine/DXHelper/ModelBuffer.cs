@@ -26,6 +26,8 @@ namespace ZenithEngine.DXHelper
 
         public Buffer Buffer { get; private set; }
         public Buffer IndexBuffer { get; private set; }
+        public int IndexCount => indices.Length;
+        public int VertCount => verts.Length;
 
         public ModelBuffer(T[] verts) : this(verts, null) { }
         public ModelBuffer(T[] verts, int[] indices)
@@ -37,17 +39,11 @@ namespace ZenithEngine.DXHelper
 
         protected override void InitInternal()
         {
-            Buffer = Buffer.Create(Device, BindFlags.VertexBuffer, verts);
+            Buffer = dispose.Add(Buffer.Create(Device, BindFlags.VertexBuffer, verts));
             if (indices != null)
             {
-                IndexBuffer = Buffer.Create(Device, BindFlags.IndexBuffer, indices);
+                IndexBuffer = dispose.Add(Buffer.Create(Device, BindFlags.IndexBuffer, indices));
             }
-        }
-
-        protected override void DisposeInternal()
-        {
-            Buffer.Dispose();
-            IndexBuffer?.Dispose();
         }
 
         public void Bind(DeviceContext context, int slot = 0)

@@ -702,11 +702,11 @@ namespace Zenith
             if (customFFmpegArgs.IsChecked) return;
             if (crfOption.IsChecked)
             {
-                ffmpegOptions.Text = $"-vf vflip -pix_fmt yuv420p -vcodec libx264 -crf {crfFactor.Value}";
+                ffmpegOptions.Text = $"-pix_fmt yuv420p -vcodec libx264 -crf {crfFactor.Value}";
             }
             if (bitrateOption.IsChecked)
             {
-                ffmpegOptions.Text = $"-vf vflip -pix_fmt yuv420p -vcodec libx264 -b:v {bitrate.Value}";
+                ffmpegOptions.Text = $"-pix_fmt yuv420p -vcodec libx264 -b:v {bitrate.Value}";
             }
         }
 
@@ -741,7 +741,16 @@ namespace Zenith
             }
 
             SetPipelineValues();
-            ActivePipeline.Start();
+            var thread = ActivePipeline.Start();
+            Task.Run(() =>
+            {
+                thread.Join();
+                Dispatcher.Invoke(() =>
+                {
+                    ActivePipeline.Dispose();
+                    ActivePipeline = null;
+                });
+            });
         }
 
         private void StartButton_Click(object sender, RoutedEventArgs e)

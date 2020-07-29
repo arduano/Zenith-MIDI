@@ -23,12 +23,20 @@ namespace ZenithEngine.DXHelper
             }
         }
 
-        public static InputElement[] GetLayout(Type type)
+        public static InputElement[] GetLayout(Type type, int slot = 0, int instancedStepRate = 0)
         {
             var parts = AssemblyElement.GetMembersOnType(type)
                 .Select(AssemblyElement.GetAttributeFromMember)
                 .Select(a => a.Layout)
                 .ToArray();
+
+            if (parts.Length > 0) parts[0].AlignedByteOffset = 0;
+            for (int i = 0; i < parts.Length; i++)
+            {
+                parts[i].Slot = slot;
+                parts[i].Classification = instancedStepRate == 0 ? InputClassification.PerVertexData : InputClassification.PerInstanceData;
+                parts[i].InstanceDataStepRate = instancedStepRate;
+            }
             return parts;
         }
 

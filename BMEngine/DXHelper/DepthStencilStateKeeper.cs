@@ -8,40 +8,70 @@ using SharpDX.Direct3D11;
 
 namespace ZenithEngine.DXHelper
 {
-    //public class DepthStencilStateKeeper
-    //{
-    //    public static implicit operator DepthStencilState(DepthStencilStateKeeper keeper) => keeper.DepthStencilState;
+    public enum DepthStencilPresets
+    {
+        None,
+        Basic,
+        Always
+    }
 
-    //    public DepthStencilState DepthStencilState { get; private set; }
-    //    public DepthStencilStateDescription Description;
+    public class DepthStencilStateKeeper : DeviceInitiable
+    {
+        public static implicit operator DepthStencilState(DepthStencilStateKeeper keeper) => keeper.DepthStencilState;
 
-    //    public static DepthStencilStateDescription BasicStateDescription()
-    //    {
-    //        var desc = new DepthStencilStateDescription()
-    //        {
-    //            BackFace
-    //        };
+        public DepthStencilState DepthStencilState { get; private set; }
+        public DepthStencilStateDescription Description;
 
-    //        return blendDesc;
-    //    }
+        public static DepthStencilStateDescription BasicStateDescription()
+        {
+            return DepthStencilStateDescription.Default();
+        }
 
-    //    public BlendStateKeeper() : this(BasicBlendDescription()) { }
-    //    public BlendStateKeeper(BlendStateDescription desc)
-    //    {
-    //        Description = desc;
-    //    }
+        public static DepthStencilStateDescription NoDepthStateDescription()
+        {
+            var desc = DepthStencilStateDescription.Default();
+            desc.IsDepthEnabled = false;
+            return desc;
+        }
 
-    //    protected override void InitInternal()
-    //    {
-    //        BlendState = new BlendState(Device, Description);
-    //    }
+        public static DepthStencilStateDescription AlwaysDepthStateDescription()
+        {
+            var desc = DepthStencilStateDescription.Default();
+            desc.DepthComparison = Comparison.Always;
+            return desc;
+        }
 
-    //    protected override void DisposeInternal()
-    //    {
-    //        BlendState.Dispose();
-    //    }
+        public static DepthStencilStateDescription DescFromPreset(DepthStencilPresets preset) {
+            switch (preset)
+            {
+                case DepthStencilPresets.Basic: return BasicStateDescription();
+                case DepthStencilPresets.None: return NoDepthStateDescription();
+                case DepthStencilPresets.Always: return AlwaysDepthStateDescription();
+            }
+            throw new NotImplementedException("Specified blend preset not implemented yet");
+        }
 
-    //    public IDisposable UseOn(DeviceContext ctx) =>
-    //        new Applier<BlendState>(this, () => ctx.OutputMerger.BlendState, val => ctx.OutputMerger.BlendState = val);
-    //}
+
+        public DepthStencilStateKeeper() : this(BasicStateDescription()) { }
+        public DepthStencilStateKeeper(DepthStencilStateDescription desc)
+        {
+            Description = desc;
+        }
+        public DepthStencilStateKeeper(DepthStencilPresets preset) : this(DescFromPreset(preset))
+        {
+        }
+
+        protected override void InitInternal()
+        {
+            DepthStencilState = new DepthStencilState(Device, Description);
+        }
+
+        protected override void DisposeInternal()
+        {
+            DepthStencilState.Dispose();
+        }
+
+        public IDisposable UseOn(DeviceContext ctx) =>
+            new Applier<DepthStencilState>(this, () => ctx.OutputMerger.DepthStencilState, val => ctx.OutputMerger.DepthStencilState = val);
+    }
 }

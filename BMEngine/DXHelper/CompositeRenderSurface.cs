@@ -36,12 +36,9 @@ namespace ZenithEngine.DXHelper
             UseDepthResource = depthResource;
         }
 
-        DisposeGroup disposer;
-
         protected override void InitInternal()
         {
-            disposer = new DisposeGroup();
-            Texture = disposer.Add(new Texture2D(Device, new Texture2DDescription()
+            Texture = dispose.Add(new Texture2D(Device, new Texture2DDescription()
             {
                 Width = Width,
                 Height = Height,
@@ -56,7 +53,7 @@ namespace ZenithEngine.DXHelper
             }));
             if (UseDepth)
             {
-                DepthTexture = disposer.Add(new Texture2D(Device, new Texture2DDescription()
+                DepthTexture = dispose.Add(new Texture2D(Device, new Texture2DDescription()
                 {
                     Format = Format.D24_UNorm_S8_UInt,
                     ArraySize = 1,
@@ -69,16 +66,11 @@ namespace ZenithEngine.DXHelper
                     CpuAccessFlags = CpuAccessFlags.None,
                     OptionFlags = ResourceOptionFlags.Shared
                 }));
-                RenderTargetDepth = disposer.Add(new DepthStencilView(Device, DepthTexture));
-                if(UseDepthResource) DepthTextureResource = disposer.Add(new ShaderResourceView(Device, DepthTexture));
+                RenderTargetDepth = dispose.Add(new DepthStencilView(Device, DepthTexture));
+                if(UseDepthResource) DepthTextureResource = dispose.Add(new ShaderResourceView(Device, DepthTexture));
             }
-            RenderTarget = disposer.Add(new RenderTargetView(Device, Texture));
-            TextureResource = disposer.Add(new ShaderResourceView(Device, Texture));
-        }
-
-        protected override void DisposeInternal()
-        {
-            disposer.Dispose();
+            RenderTarget = dispose.Add(new RenderTargetView(Device, Texture));
+            TextureResource = dispose.Add(new ShaderResourceView(Device, Texture));
         }
     }
 }

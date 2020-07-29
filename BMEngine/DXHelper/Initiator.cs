@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ZenithEngine.DXHelper
 {
-    public class Initiator : DeviceInitiable
+    public class Initiator : PureDeviceInitiable
     {
         List<IDeviceInitiable> items = new List<IDeviceInitiable>();
 

@@ -44,17 +44,11 @@ namespace ZenithEngine.DXHelper
             return new RenderTexture(width, height, bytes);
         }
 
-        protected override void DisposeInternal()
-        {
-            Texture.Dispose();
-            TextureResource.Dispose();
-        }
-
         protected unsafe override void InitInternal()
         {
             fixed (byte* data = internalBytes)
             {
-                Texture = new Texture2D(Device, new Texture2DDescription()
+                Texture = dispose.Add(new Texture2D(Device, new Texture2DDescription()
                 {
                     Width = Width,
                     Height = Height,
@@ -66,10 +60,9 @@ namespace ZenithEngine.DXHelper
                     MipLevels = 1,
                     OptionFlags = ResourceOptionFlags.None,
                     SampleDescription = new SharpDX.DXGI.SampleDescription(1, 0),
-                }, new DataRectangle((IntPtr)data, Width * 4));
-                Device.ImmediateContext.MapSubresource(Texture, 0, MapMode.Read, MapFlags.None);
+                }, new DataRectangle((IntPtr)data, Width * 4)));
             }
-            TextureResource = new ShaderResourceView(Device, Texture);
+            TextureResource = dispose.Add(new ShaderResourceView(Device, Texture));
         }
     }
 }

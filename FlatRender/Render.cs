@@ -22,14 +22,13 @@ using SharpDX.Direct3D11;
 
 namespace FlatRender
 {
-    public class Render : IModuleRender
+    public class Render : PureModule
     {
         #region Info
-        public string Name { get; } = "Flat";
-        public string Description { get; } = "Flat renderer, requested by SquareWaveMidis for his channel";
-        public bool Initialized { get; private set; } = false;
-        public ImageSource PreviewImage { get; } = ModuleUtils.BitmapToImageSource(Properties.Resources.preview);
-        public string LanguageDictName { get; } = "flat";
+        public override string Name { get; } = "Flat";
+        public override string Description { get; } = "Flat renderer, requested by SquareWaveMidis for his channel";
+        public override ImageSource PreviewImage { get; } = ModuleUtils.BitmapToImageSource(Properties.Resources.preview);
+        public override string LanguageDictName { get; } = "flat";
         #endregion
 
         #region UI
@@ -97,21 +96,17 @@ namespace FlatRender
         }
         #endregion
 
-        RenderStatus renderStatus;
-
         UI settings = new UI();
 
-        public FrameworkElement SettingsControl => settings;
+        public override FrameworkElement SettingsControl => settings;
 
-        public double StartOffset => settings.noteScreenTime.Value;
+        public override double StartOffset => settings.noteScreenTime;
+
+        protected override NoteColorPalettePick PalettePicker => settings.Palette;
 
         Flat2dShapeBuffer quadBuffer;
         ShaderProgram flatShader;
         ThreadedKeysLoop<Vert2D> multithread;
-
-        MidiPlayback midi = null;
-
-        Initiator init = new Initiator();
 
         public Render()
         {
@@ -122,34 +117,15 @@ namespace FlatRender
             multithread = init.Add(new ThreadedKeysLoop<Vert2D>(1 << 12));
         }
 
-        public void Init(Device device, MidiPlayback file, RenderStatus status)
-        {
-            midi = file;
-            renderStatus = status;
-
-            init.Init(device);
-
-            ReloadTrackColors();
-            Initialized = true;
-        }
-
-        public void Dispose()
-        {
-            if (!Initialized) return;
-            midi = null;
-            init.Dispose();
-            Initialized = false;
-        }
-
-        public void RenderFrame(DeviceContext context, IRenderSurface renderSurface)
+        public override void RenderFrame(DeviceContext context, IRenderSurface renderSurface)
         {
             double screenTime = settings.noteScreenTime;
 
-            midi.CheckParseDistance(screenTime);
+            Midi.CheckParseDistance(screenTime);
 
             using (flatShader.UseOn(context))
             {
-                var midiTime = midi.PlayerPosition;
+                var midiTime = Midi.PlayerPosition;
                 int firstNote = settings.keys.left;
                 int lastNote = settings.keys.right;
                 bool sameWidth = settings.sameWidthNotes;
@@ -172,7 +148,7 @@ namespace FlatRender
 
                 double renderCutoff = midiTime + screenTime;
 
-                var keyed = midi.IterateNotesKeyed(midiTime, renderCutoff);
+                var keyed = Midi.IterateNotesKeyed(midiTime, renderCutoff);
                 multithread.Render(context, firstNote, lastNote, !sameWidth, (key, push) =>
                 {
                     float left = (float)keyboard.Notes[key].Left;
@@ -228,12 +204,6 @@ namespace FlatRender
                 }
                 quadBuffer.Flush();
             }
-        }
-
-        public void ReloadTrackColors()
-        {
-            var cols = settings.Palette.GetColors(midi.TrackCount);
-            midi.ApplyColors(cols);
         }
     }
 }

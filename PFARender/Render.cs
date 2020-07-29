@@ -24,14 +24,13 @@ using SharpDX;
 
 namespace PFARender
 {
-    public class Render : IModuleRender
+    public class Render : PureModule
     {
         #region Info
-        public string Name => "PFA+";
-        public string Description => "A replica of PFA with some special extra features";
-        public ImageSource PreviewImage { get; } = ModuleUtils.BitmapToImageSource(Properties.Resources.preview);
-        public bool Initialized { get; private set; } = false;
-        public string LanguageDictName { get; } = "pfa";
+        public override string Name => "PFA+";
+        public override string Description => "A replica of PFA with some special extra features";
+        public override ImageSource PreviewImage { get; } = ModuleUtils.BitmapToImageSource(Properties.Resources.preview);
+        public override string LanguageDictName { get; } = "pfa";
         #endregion
 
         #region UI
@@ -99,21 +98,17 @@ namespace PFARender
         }
         #endregion
 
-        RenderStatus renderStatus;
-
         UI settings = new UI();
 
-        public FrameworkElement SettingsControl => settings;
+        public override FrameworkElement SettingsControl => settings;
 
-        public double StartOffset => settings.noteScreenTime.Value;
+        public override double StartOffset => settings.noteScreenTime.Value;
+
+        protected override NoteColorPalettePick PalettePicker => settings.Palette;
 
         Flat2dShapeBuffer quadBuffer;
         ShaderProgram flatShader;
         ThreadedKeysLoop<Vert2D> multithread;
-
-        MidiPlayback midi = null;
-
-        Initiator init = new Initiator();
 
         public Render()
         {
@@ -122,25 +117,6 @@ namespace PFARender
             quadBuffer = init.Add(new Flat2dShapeBuffer(1024 * 64));
             flatShader = init.Add(Shaders.BasicFlat());
             multithread = init.Add(new ThreadedKeysLoop<Vert2D>(1 << 12));
-        }
-
-        public void Init(Device device, MidiPlayback file, RenderStatus status)
-        {
-            midi = file;
-            renderStatus = status;
-
-            init.Init(device);
-
-            ReloadTrackColors();
-            Initialized = true;
-        }
-
-        public void Dispose()
-        {
-            if (!Initialized) return;
-            midi = null;
-            init.Dispose();
-            Initialized = false;
         }
 
         Color4 MultCol(Color4 col, float fac)
@@ -159,15 +135,15 @@ namespace PFARender
             return col;
         }
 
-        public void RenderFrame(DeviceContext context, IRenderSurface renderSurface)
+        public override void RenderFrame(DeviceContext context, IRenderSurface renderSurface)
         {
             double screenTime = settings.noteScreenTime;
 
-            midi.CheckParseDistance(screenTime);
+            Midi.CheckParseDistance(screenTime);
 
             using (flatShader.UseOn(context))
             {
-                var midiTime = midi.PlayerPosition;
+                var midiTime = Midi.PlayerPosition;
                 int firstNote = settings.keys.left;
                 int lastNote = settings.keys.right;
                 bool sameWidth = settings.sameWidthNotes;
@@ -188,16 +164,16 @@ namespace PFARender
                 float pianoHeight = 0.151f * settings.kbHeight;
 
                 pianoHeight = pianoHeight / (settings.keys.right - settings.keys.left) * 128;
-                pianoHeight = pianoHeight / (1920.0f / 1080.0f) * renderStatus.AspectRatio;
+                pianoHeight = pianoHeight / (1920.0f / 1080.0f) * Status.AspectRatio;
 
                 double notePosFactor = 1 / screenTime * (1 - pianoHeight);
 
                 float paddingx = 0.001f * 1;
-                float paddingy = paddingx * renderStatus.OutputWidth / renderStatus.OutputHeight;
+                float paddingy = paddingx * Status.OutputWidth / Status.OutputHeight;
 
                 double renderCutoff = midiTime + screenTime;
 
-                var keyed = midi.IterateNotesKeyed(midiTime, renderCutoff);
+                var keyed = Midi.IterateNotesKeyed(midiTime, renderCutoff);
                 multithread.Render(context, firstNote, lastNote, !sameWidth, (key, push) =>
                 {
                     foreach (var n in keyed[key])
@@ -259,7 +235,7 @@ namespace PFARender
                 float bKeyUSplitLB = pianoHeight * 0.65f;
                 float bKeyUSplitRB = pianoHeight * 0.58f;
 
-                float sepwdth = (float)Math.Round(keyboard.WhiteKeyWidth * renderStatus.OutputWidth / 20);
+                float sepwdth = (float)Math.Round(keyboard.WhiteKeyWidth * Status.OutputWidth / 20);
                 if (sepwdth == 0) sepwdth = 1;
 
                 Color4 col1;
@@ -313,11 +289,11 @@ namespace PFARender
                             quadBuffer.PushQuad(left, wEndUpB, right, 0, col2, col2, col1, col1);
                         }
 
-                        var scleft = (float)Math.Floor(left * renderStatus.OutputWidth - sepwdth / 2);
-                        var scright = (float)Math.Floor(left * renderStatus.OutputWidth + sepwdth / 2);
+                        var scleft = (float)Math.Floor(left * Status.OutputWidth - sepwdth / 2);
+                        var scright = (float)Math.Floor(left * Status.OutputWidth + sepwdth / 2);
                         if (scleft == scright) scright++;
-                        scleft /= renderStatus.OutputWidth;
-                        scright /= renderStatus.OutputWidth;
+                        scleft /= Status.OutputWidth;
+                        scright /= Status.OutputWidth;
 
 
                         col1 = new Color4(.0431f, .0431f, .0431f, 1);
@@ -430,12 +406,6 @@ namespace PFARender
 
                 quadBuffer.Flush();
             }
-        }
-
-        public void ReloadTrackColors()
-        {
-            var cols = settings.Palette.GetColors(midi.TrackCount);
-            midi.ApplyColors(cols);
         }
     }
 }

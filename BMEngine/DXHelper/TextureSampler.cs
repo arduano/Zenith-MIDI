@@ -32,14 +32,9 @@ namespace ZenithEngine.DXHelper
             Description = desc;
         }
 
-        protected override void DisposeInternal()
-        {
-            Sampler.Dispose();
-        }
-
         protected override void InitInternal()
         {
-            Sampler = new SamplerState(Device, Description);
+            Sampler = dispose.Add(new SamplerState(Device, Description));
         }
 
         public IDisposable UseOnPS(DeviceContext ctx, int slot) =>

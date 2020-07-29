@@ -20,7 +20,7 @@ namespace ZenithEngine.DXHelper
         Quads,
     }
 
-    public class BufferFlusher<T> : DeviceInitiable
+    public class BufferFlusher<T> : DeviceInitiable, IBufferFlusher<T>
         where T : struct
     {
         public Buffer Buffer { get; private set; }
@@ -32,11 +32,13 @@ namespace ZenithEngine.DXHelper
         int indicesPerShape;
         protected int vertsCount;
 
-        int structByteSize;
+        protected int structByteSize;
 
-        int vertsPerShape = 1;
+        protected int vertsPerShape = 1;
 
-        protected static int[] IndicesFromPreset(ShapePresets preset)
+        public int Length => vertsCount;
+
+        public static int[] IndicesFromPreset(ShapePresets preset)
         {
             if (preset == ShapePresets.Sequential)
                 return null;
@@ -78,7 +80,7 @@ namespace ZenithEngine.DXHelper
 
         protected override void InitInternal()
         {
-            Buffer = new Buffer(Device, new BufferDescription()
+            Buffer = dispose.Add(new Buffer(Device, new BufferDescription()
             {
                 BindFlags = BindFlags.VertexBuffer,
                 CpuAccessFlags = CpuAccessFlags.Write,
@@ -86,20 +88,14 @@ namespace ZenithEngine.DXHelper
                 SizeInBytes = structByteSize * vertsCount,
                 Usage = ResourceUsage.Dynamic,
                 StructureByteStride = 0
-            });
+            }));
             if (indices != null)
             {
-                IndexBuffer = Buffer.Create(Device, BindFlags.IndexBuffer, indices);
+                IndexBuffer = dispose.Add(Buffer.Create(Device, BindFlags.IndexBuffer, indices));
             }
         }
 
-        protected override void DisposeInternal()
-        {
-            Buffer.Dispose();
-            IndexBuffer?.Dispose();
-        }
-
-        protected void FlushArray(DeviceContext context, T[] verts, int count)
+        public virtual void FlushArray(DeviceContext context, T[] verts, int count)
         {
             if (count == 0) return;
             if (count % vertsPerShape != 0) 

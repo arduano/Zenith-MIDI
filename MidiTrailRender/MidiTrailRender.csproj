@@ -260,7 +260,7 @@
       <DependentUpon>SettingsCtrl.xaml</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Shaders\notes.frag.glsl" />
-    <Compile Include="Util.cs" />
+    <Compile Include="UI.cs" />
     <EmbeddedResource Include="Shaders\notes.vert.glsl" />
   </ItemGroup>
   <ItemGroup>
@@ -300,6 +300,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="preview.png" />
+    <EmbeddedResource Include="Shaders\notes.fx" />
     <EmbeddedResource Include="Shaders\keys.fx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

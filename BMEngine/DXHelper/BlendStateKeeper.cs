@@ -11,6 +11,7 @@ namespace ZenithEngine.DXHelper
     {
         Blend,
         Add,
+        PreserveColor,
     }
 
     public class BlendStateKeeper : DeviceInitiable
@@ -26,6 +27,20 @@ namespace ZenithEngine.DXHelper
             renderTargetDesc.IsBlendEnabled = true;
             renderTargetDesc.SourceBlend = BlendOption.SourceAlpha;
             renderTargetDesc.DestinationBlend = BlendOption.InverseSourceAlpha;
+            renderTargetDesc.BlendOperation = BlendOperation.Add;
+            renderTargetDesc.SourceAlphaBlend = BlendOption.InverseDestinationAlpha;
+            renderTargetDesc.DestinationAlphaBlend = BlendOption.One;
+            renderTargetDesc.AlphaBlendOperation = BlendOperation.Add;
+            renderTargetDesc.RenderTargetWriteMask = ColorWriteMaskFlags.All;
+            return renderTargetDesc;
+        }
+
+        public static RenderTargetBlendDescription FullPreserveColorBlendDescription()
+        {
+            var renderTargetDesc = new RenderTargetBlendDescription();
+            renderTargetDesc.IsBlendEnabled = true;
+            renderTargetDesc.SourceBlend = BlendOption.One;
+            renderTargetDesc.DestinationBlend = BlendOption.One;
             renderTargetDesc.BlendOperation = BlendOperation.Add;
             renderTargetDesc.SourceAlphaBlend = BlendOption.InverseDestinationAlpha;
             renderTargetDesc.DestinationAlphaBlend = BlendOption.One;
@@ -63,6 +78,7 @@ namespace ZenithEngine.DXHelper
         {
             if (preset == BlendPreset.Blend) return BasicTargetBlendDescription();
             if (preset == BlendPreset.Add) return AddTargetBlendDescription();
+            if (preset == BlendPreset.PreserveColor) return FullPreserveColorBlendDescription();
             throw new NotImplementedException("Specified blend preset not implemented yet");
         }
 
@@ -75,12 +91,7 @@ namespace ZenithEngine.DXHelper
 
         protected override void InitInternal()
         {
-            BlendState = new BlendState(Device, Description);
-        }
-
-        protected override void DisposeInternal()
-        {
-            BlendState.Dispose();
+            BlendState = dispose.Add(new BlendState(Device, Description));
         }
 
         public IDisposable UseOn(DeviceContext ctx) =>

@@ -62,5 +62,22 @@ namespace ZenithEngine.DXHelper.Presets
         {
             return new ShaderProgram<GlowShaderParams>(ReadShaderText("cutoffColor.fx"), typeof(VertTex2D), "4_0", "VS", "PS");
         }
+
+        public static ShaderProgram AlphaAddFix()
+        {
+            return new ShaderProgram<GlowShaderParams>(ReadShaderText("alphaAddFix.fx"), typeof(VertTex2D), "4_0", "VS", "PS");
+        }
+
+        public static ShaderProgram TransparencyMask(bool color)
+        {
+            return new ShaderProgram<GlowShaderParams>(ReadShaderText("alphaMask.fx"), typeof(VertTex2D), "4_0", "VS", "PS")
+                .SetDefine(color ? "COLORCHANGE" : "MASK");
+        }
+
+        public static ShaderProgram MultiTexture(int texCount)
+        {
+            return new ShaderProgram<GlowShaderParams>(ReadShaderText("multiTexture.fx"), typeof(VertTex2D), "4_0", "VS", "PS")
+                .SetDefine("COUNT", texCount);
+        }
     }
 }

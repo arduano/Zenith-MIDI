@@ -11,8 +11,6 @@ namespace ZenithEngine.DXHelper
 {
     public class AspectRatioComposite : DeviceInitiable
     {
-        protected Initiator init = new Initiator();
-
         protected ShaderProgram solidShader;
         protected ShaderProgram textureShader;
         protected Flat2dShapeBuffer solidFill;
@@ -29,16 +27,6 @@ namespace ZenithEngine.DXHelper
             blendstate = init.Add(new BlendStateKeeper());
             solidFill = init.Add(new Flat2dShapeBuffer(16));
             texFill = init.Add(new Textured2dShapeBuffer(16));
-        }
-
-        protected override void InitInternal()
-        {
-            init.Init(Device);
-        }
-
-        protected override void DisposeInternal()
-        {
-            init.Dispose();
         }
 
         public void Composite(DeviceContext context, ITextureResource source, IRenderSurface target, Color4 paddingColor)
@@ -61,6 +49,7 @@ namespace ZenithEngine.DXHelper
             }
 
             //using(raster.UseOn(context))
+            using(blendstate.UseOn(context))
             using (target.UseViewAndClear(context))
             {
                 using (solidShader.UseOn(context))
@@ -68,6 +57,7 @@ namespace ZenithEngine.DXHelper
                     solidFill.UseContext(context);
                     solidFill.PushQuad(0, 1, 1, 0, new Color4(0.5f, 0.5f, 0.5f, 1));
                     solidFill.PushQuad(tl, br, new Color4(0, 0, 0, 1));
+                    //solidFill.PushQuad(tl, br, new Color4(1, 1, 1, 1));
                     solidFill.Flush();
                 }
 
