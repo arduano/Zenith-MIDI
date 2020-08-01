@@ -282,5 +282,36 @@ Time: {timep}%";
             settings.BarCountPad = 3;
             settings.FrCountPad = 5;
         }
+
+        private void NewProfile_Click(object sender, RoutedEventArgs e)
+        {
+            if (profileName.Text == "")
+            {
+                MessageBox.Show("Please write a name for the profile");
+                return;
+            }
+            profileName.Text = profileName.Text.Replace(".txt", "");
+            if (String.Compare(profileName.Text, "default", true) == 0 ||
+                String.Compare(profileName.Text, "full", true) == 0 ||
+                String.Compare(profileName.Text, "miditrail", true) == 0)
+            {
+                MessageBox.Show("You can't override default profiles.");
+                return;
+            }
+            if (File.Exists(templateFolder + "\\" + profileName.Text + ".txt"))
+            {
+                if (MessageBox.Show("Are you sure you want to override the profile \"" + profileName.Text + "\"?", "Override Profile", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                {
+                    return;
+                }
+            }
+            try
+            {
+                File.WriteAllText(Path.Combine(templateFolder, profileName.Text + ".txt"), textTemplate.Text);
+            }
+            catch { }
+            Reloading = true;
+            Reload();
+        }
     }
 }

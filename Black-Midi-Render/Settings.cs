@@ -13,7 +13,7 @@ namespace Zenith_MIDI
     class Settings
     {
         public string PreviousVersion = "";
-        public string VersionName = "2.1.4";
+        public string VersionName = "2.1.5";
         public string LanguagesVersion = "";
         public bool AutoUpdate = false;
         public bool Installed = false;

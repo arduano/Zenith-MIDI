@@ -27,7 +27,7 @@
             <TabItem Header="{DynamicResource Render}">
                 <DockPanel Margin="10">
                     <DockPanel DockPanel.Dock="Top">
-                        <StackPanel>
+                        <StackPanel Width="530">
                             <DockPanel HorizontalAlignment="Left" LastChildFill="False" Margin="0,0,0,0" VerticalAlignment="Top">
                                 <Label DockPanel.Dock="Left" Content="{DynamicResource fontSize}" VerticalAlignment="Top"/>
                                 <ui:NumberSelect x:Name="fontSize" Value="1"  Maximum="15360" Minimum="1" HorizontalAlignment="Left" Width="99" IsEnabled="{Binding IsEnabled, ElementName=notPreviewingOrRendering}"  DockPanel.Dock="Left" Margin="5,0,0,0" ValueChanged="FontSize_ValueChanged"  />
@@ -50,6 +50,9 @@
                                 <ComboBox x:Name="templates" DockPanel.Dock="Left" Width="120" SelectionChanged="Templates_SelectionChanged"/>
                                 <Button x:Name="reload" Content="{DynamicResource reload}" HorizontalAlignment="Left" Padding="10,0,10,0" DockPanel.Dock="Left" Margin="5,0,0,0" Click="Reload_Click"/>
                                 <Button x:Name="openFolder" Content="{DynamicResource openFolder}" HorizontalAlignment="Left" Padding="10,0,10,0" DockPanel.Dock="Left" Margin="5,0,0,0" Click="openFolder_Click"/>
+                                <Button x:Name="newProfile" Content="{DynamicResource saveNew}" HorizontalAlignment="Left" Margin="15,0,0,0" Padding="10,0,10,0" Click="NewProfile_Click" DockPanel.Dock="Left"/>
+                                <TextBox DockPanel.Dock="Left" x:Name="profileName" HorizontalAlignment="Left" Margin="5,0,0,0" TextWrapping="Wrap" Text="" Width="110"/>
+                                <Label DockPanel.Dock="Right" HorizontalAlignment="Right" Content=".txt" />
                             </DockPanel>
                         </StackPanel>
                         <StackPanel Margin="30,0,0,0">
