@@ -56,6 +56,7 @@ Time: {timep}%";
         string MIDITrail = @"TIME:{cmiltime}/{tmiltime}  BPM:{bpm}  BEAT:{tsn}/{tsd}  BAR:{currbars}/{totalbars}  NOTES:{nc}/{tn}";
 
         bool initialised = false;
+        bool Reloading = false;
 
         string templateFolder = "Plugins\\Assets\\NoteCounter\\Templates";
 
@@ -194,7 +195,7 @@ Time: {timep}%";
             }
             foreach (var i in templates.Items)
             {
-                if ((string)((ComboBoxItem)i).Content == "default")
+                if (!Reloading && (string)((ComboBoxItem)i).Content == "default")
                 {
                     templates.SelectedItem = i;
                     break;
@@ -204,12 +205,13 @@ Time: {timep}%";
 
         private void Templates_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!initialised) return;
+            if (!initialised || templates.SelectedIndex == -1) return;
             textTemplate.Text = templateStrings[templates.SelectedIndex];
         }
 
         private void Reload_Click(object sender, RoutedEventArgs e)
         {
+            Reloading = true;
             Reload();
         }
 

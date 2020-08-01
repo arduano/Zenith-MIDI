@@ -48,7 +48,7 @@
                             </DockPanel>
                             <DockPanel HorizontalAlignment="Left" LastChildFill="False" Margin="0,10,0,0" VerticalAlignment="Top">
                                 <ComboBox x:Name="templates" DockPanel.Dock="Left" Width="120" SelectionChanged="Templates_SelectionChanged"/>
-                                <!--<Button x:Name="reload" Content="{DynamicResource reload}" HorizontalAlignment="Left" Padding="10,0,10,0" DockPanel.Dock="Left" Margin="5,0,0,0" Click="Reload_Click"/>-->
+                                <Button x:Name="reload" Content="{DynamicResource reload}" HorizontalAlignment="Left" Padding="10,0,10,0" DockPanel.Dock="Left" Margin="5,0,0,0" Click="Reload_Click"/>
                                 <Button x:Name="openFolder" Content="{DynamicResource openFolder}" HorizontalAlignment="Left" Padding="10,0,10,0" DockPanel.Dock="Left" Margin="5,0,0,0" Click="openFolder_Click"/>
                             </DockPanel>
                         </StackPanel>
