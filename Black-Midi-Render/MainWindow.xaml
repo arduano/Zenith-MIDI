@@ -259,7 +259,12 @@
                 </TabItem>
                 <TabItem Header="{DynamicResource moduleSettingsTab}" IsEnabled="{DynamicResource notRendering}">
                     <Grid Name="pluginsSettings">
-
+                        <Grid.Resources>
+                            <ResourceDictionary>
+                                <Style TargetType="TabControl" BasedOn="{StaticResource SubTabs}"/>
+                                <Style TargetType="TabItem" BasedOn="{StaticResource SubTabItems}"/>
+                            </ResourceDictionary>
+                        </Grid.Resources>
                     </Grid>
                 </TabItem>
                 <TabItem Header="{DynamicResource renderTab}">
