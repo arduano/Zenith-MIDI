@@ -25,19 +25,19 @@ namespace Zenith
 #endif
             Console.Title = "Zenith";
             Application app = new Application();
-            var window = new MainWindow();
+            var window = new ZenithWindow();
 
             window.Loaded += (s, e) =>
             {
-                if(args.Length > 0)
-                {
-                    window.LoadMidi(args[0]);
-                }
-                if(args.Length > 1)
-                {
-                    window.SelectModule(args[1]);
-                    window.StartPipeline(false);
-                }
+                //if(args.Length > 0)
+                //{
+                //    window.LoadMidi(args[0]);
+                //}
+                //if(args.Length > 1)
+                //{
+                //    window.SelectModule(args[1]);
+                //    window.StartPipeline(false);
+                //}
             };
 
             app.Run(window);

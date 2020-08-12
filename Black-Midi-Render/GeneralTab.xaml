@@ -1,0 +1,99 @@
+﻿<UserControl x:Class="Zenith.GeneralTab"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Zenith"
+             xmlns:ui="clr-namespace:ZenithEngine.UI;assembly=ZenithEngine"
+             xmlns:models="clr-namespace:Zenith.Models"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <local:DecimalIntConvert x:Key="DecimalIntConvert"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <StackPanel>
+            <Button Name="loadMidi" Click="loadMidi_Click">Load</Button>
+            <DockPanel>
+                <Label>Notes:</Label>
+                <Label Content="{Binding Midi.Loaded.MidiFile.NoteCount}"></Label>
+            </DockPanel>
+            <DockPanel>
+                <Label>PPQ:</Label>
+                <Label Content="{Binding Midi.Loaded.MidiFile.PPQ}"></Label>
+            </DockPanel>
+            <ListView Name="pluginsList" Margin="0,10,0,0" Height="400"
+                      ItemsSource="{Binding RenderModules}"
+                      SelectedItem="{Binding SelectedModule, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                      >
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}" />
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
+        <StackPanel Grid.Column="1">
+            <Label Content="{Binding Midi.Loaded.FileName}"/>
+            <DockPanel HorizontalAlignment="Left">
+                <Label>Width</Label>
+                <ui:NumberBox Height="25"
+                    IsEnabled="{Binding IsNotPlaying}"
+                    Maximum="15360" Minimum="1"
+                    Value="{Binding RenderArgs.Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DecimalIntConvert}}"
+                    Width="100"
+                />
+            </DockPanel>
+            <DockPanel HorizontalAlignment="Left">
+                <Label>Height</Label>
+                <ui:NumberBox Height="25"
+                    IsEnabled="{Binding IsNotPlaying}"
+                    Maximum="8640" Minimum="1"
+                    Value="{Binding RenderArgs.Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DecimalIntConvert}}"
+                    Width="100"
+                />
+            </DockPanel>
+            <DockPanel HorizontalAlignment="Left">
+                <Label>SSAA</Label>
+                <ui:NumberBox Height="25"
+                    IsEnabled="{Binding IsNotPlaying}"
+                    Maximum="4" Minimum="1"
+                    Value="{Binding RenderArgs.SSAA, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DecimalIntConvert}}"
+                    Width="100"
+                />
+            </DockPanel>
+            <DockPanel HorizontalAlignment="Left">
+                <Label>FPS</Label>
+                <ui:NumberBox Height="25"
+                    IsEnabled="{Binding IsNotPlaying}"
+                    Maximum="1000" Minimum="1"
+                    Value="{Binding RenderArgs.FPS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DecimalIntConvert}}"
+                    Width="100"
+                />
+            </DockPanel>
+            <ui:EnumComboBox
+                IsEnabled="{Binding IsNotPlaying}"
+                Enum="{x:Type models:NoteSize}"
+                Selected="{Binding RenderArgs.NoteSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top" Margin="29,10,0,0"
+            >
+                <ui:EnumComboBoxItem EnumValue="{x:Static models:NoteSize.Tick}" Content="{DynamicResource tickBased}"/>
+                <ui:EnumComboBoxItem EnumValue="{x:Static models:NoteSize.Time}" Content="{DynamicResource timeBased}"/>
+            </ui:EnumComboBox>
+            <ui:Checkbox IsEnabled="{Binding IsNotPlaying}" IsChecked="{Binding RenderArgs.IgnoreColorEvents, UpdateSourceTrigger=PropertyChanged}" Content="Ignore Color Events"/>
+            <Button IsEnabled="{Binding IsNotPlaying}" Name="startPreview" Click="startPreview_Click">Start</Button>
+            <Button IsEnabled="{Binding IsPlaying}" Name="stopPlayback" Click="stopPlayback_Click">Stop</Button>
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -48,6 +48,8 @@ namespace ZenithEngine.Modules
 
         Device device = null;
 
+        object queueLock = new object();
+
         public ModuleManager()
         {
             blendState = init.Add(new BlendStateKeeper());
@@ -70,18 +72,21 @@ namespace ZenithEngine.Modules
 
         public void UseModule(IModuleRender module)
         {
-            while (initQueue.Count != 0)
+            lock (queueLock)
             {
-                var m = initQueue.Dequeue();
-                if (m.Initialized)
+                while (initQueue.Count != 0)
                 {
-                    disposeQueue.Enqueue(m);
+                    var m = initQueue.Dequeue();
+                    if (m.Initialized)
+                    {
+                        disposeQueue.Enqueue(m);
+                    }
                 }
+                if (device != null && module != null) initQueue.Enqueue(module);
+                if (CurrentModule != null && CurrentModule.Initialized)
+                    disposeQueue.Enqueue(CurrentModule);
+                CurrentModule = module;
             }
-            if (device != null) initQueue.Enqueue(module);
-            if (CurrentModule != null && CurrentModule.Initialized)
-                disposeQueue.Enqueue(CurrentModule);
-            CurrentModule = module;
         }
 
         public JObject SerializeModule()
@@ -110,17 +115,20 @@ namespace ZenithEngine.Modules
 
         void ProcessQueues()
         {
-            while (disposeQueue.Count != 0)
+            lock (queueLock)
             {
-                var m = disposeQueue.Dequeue();
-                m.Dispose();
-                ModuleDisposed?.Invoke(this, m);
-            }
-            while (initQueue.Count != 0)
-            {
-                var m = initQueue.Dequeue();
-                m.Init(device, currentMidi, currentStatus);
-                ModuleInitialized?.Invoke(this, m);
+                while (disposeQueue.Count != 0)
+                {
+                    var m = disposeQueue.Dequeue();
+                    m.Dispose();
+                    ModuleDisposed?.Invoke(this, m);
+                }
+                while (initQueue.Count != 0)
+                {
+                    var m = initQueue.Dequeue();
+                    m.Init(device, currentMidi, currentStatus);
+                    ModuleInitialized?.Invoke(this, m);
+                }
             }
         }
 
@@ -152,14 +160,17 @@ namespace ZenithEngine.Modules
             //composite.Composite(fullSizeFrame, downscale, outputSurface);
         }
 
-        void Dispose()
+        void DisposeRender()
         {
-            device = null;
+            lock (queueLock)
+            {
+                device = null;
 
-            init.Dispose();
+                init.Dispose();
 
-            if (CurrentModule != null && CurrentModule.Initialized) disposeQueue.Enqueue(CurrentModule);
-            ProcessQueues();
+                if (CurrentModule != null && CurrentModule.Initialized) disposeQueue.Enqueue(CurrentModule);
+                ProcessQueues();
+            }
         }
 
         void Init(Device device)
@@ -175,15 +186,15 @@ namespace ZenithEngine.Modules
             ProcessQueues();
         }
 
-        public void ClearModules()
+        public void ClearModule()
         {
-            Dispose();
+            DisposeRender();
             CurrentModule = null;
         }
 
         public void EndRender()
         {
-            Dispose();
+            DisposeRender();
             currentMidi = null;
             currentStatus = null;
         }

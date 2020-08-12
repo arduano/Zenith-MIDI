@@ -566,7 +566,7 @@ namespace Zenith
             pluginDescription.Text = "";
 
             RenderModules.Clear();
-            ModuleRunner.ClearModules();
+            ModuleRunner.ClearModule();
 
             RenderModules.Clear();
             var files = Directory.GetFiles("Plugins");
@@ -632,7 +632,7 @@ namespace Zenith
             pluginControl = null;
             if (id == -1)
             {
-                ModuleRunner.ClearModules();
+                ModuleRunner.ClearModule();
                 return;
             }
             pluginsList.SelectedIndex = id;
@@ -744,7 +744,7 @@ namespace Zenith
             var thread = ActivePipeline.Start();
             Task.Run(() =>
             {
-                thread.Join();
+                thread.Wait();
                 Dispatcher.Invoke(() =>
                 {
                     ActivePipeline.Dispose();

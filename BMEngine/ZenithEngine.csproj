@@ -361,15 +361,20 @@
     <Compile Include="UI\BetterSlider.xaml.cs">
       <DependentUpon>BetterSlider.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Checkbox.cs" />
     <Compile Include="UI\Converters.cs" />
+    <Compile Include="UI\EnumComboBox.cs" />
+    <Compile Include="UI\EnumerationExtension.cs" />
     <Compile Include="UI\HexColorPicker.xaml.cs">
       <DependentUpon>HexColorPicker.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\InplaceConverter.cs" />
+    <Compile Include="UI\NumberBox.cs" />
     <Compile Include="UI\NumberSelect.xaml.cs">
       <DependentUpon>NumberSelect.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\RippleEffectDecorator.cs" />
+    <Compile Include="UI\RippleSource.cs" />
     <Compile Include="UI\ValueSlider.xaml.cs">
       <DependentUpon>ValueSlider.xaml</DependentUpon>
     </Compile>
@@ -390,7 +395,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="UI\Checkbox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Colors.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\ComboBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -403,6 +416,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Material.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\NumberBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

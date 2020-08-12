@@ -265,67 +265,93 @@ namespace Zenith
             this(status, playback, module, null)
         { }
 
-        public Thread Start()
+        public Task Start() => Start(new CancellationTokenSource().Token);
+        public Task Start(CancellationToken cancel)
         {
-            renderTask = new Thread(new ThreadStart(Runner));
-            renderTask.Start();
-            return renderTask;
+#if DEBUG
+            return Task.Run(() =>
+            {
+                renderTask = new Thread(new ThreadStart(() =>
+                {
+                    try
+                    {
+                        Runner(cancel);
+                    }
+                    catch (OperationCanceledException)
+                    { }
+                }));
+                renderTask.Start();
+                renderTask.Join();
+            });
+#else
+            return Task.Run(() =>
+            {
+                Runner(cancel);
+            });
+#endif
         }
 
-        void Runner()
+        void Runner(CancellationToken cancel)
         {
-            var form = new ManagedRenderWindow(1280, 720);
-            form.Text = "test";
-
             var dispose = new DisposeGroup();
-            var init = dispose.Add(new Initiator());
 
-            IPreview preview;
-            if (Rendering) preview = init.Add(new RenderPreview(this));
-            else preview = init.Add(new BasicPreview(this));
-
-            Module.StartRender(form.Device, Playback, Status);
-
-            init.Init(form.Device);
-
-            Stopwatch time = new Stopwatch();
-
-            if (!Rendering) midiAudio = dispose.Add(new MIDIAudio(Playback, new KDMAPIOutput()));
-
-            RenderLoop.Run(form, () =>
+            try
             {
-                var context = form.Device.ImmediateContext;
-                Module.RenderFrame(context, preview.RenderTarget);
+                var form = dispose.Add(new ManagedRenderWindow(1280, 720));
+                form.Text = "test";
 
-                try
+                var init = dispose.Add(new Initiator());
+
+                IPreview preview;
+                if (Rendering) preview = init.Add(new RenderPreview(this));
+                else preview = init.Add(new BasicPreview(this));
+
+                Module.StartRender(form.Device, Playback, Status);
+
+                init.Init(form.Device);
+
+                Stopwatch time = new Stopwatch();
+
+                if (!Rendering) midiAudio = dispose.Add(new MIDIAudio(Playback, new KDMAPIOutput()));
+
+                RenderLoop.Run(form, () =>
                 {
-                    preview.RenderFrame(context, form);
-                }
-                catch (FFMpegException)
-                {
-                    form.Close();
-                }
+                    var context = form.Device.ImmediateContext;
+                    Module.RenderFrame(context, preview.RenderTarget);
 
-                form.Present(VSync);
+                    try
+                    {
+                        preview.RenderFrame(context, form);
+                    }
+                    catch (FFMpegException)
+                    {
+                        form.Close();
+                    }
 
-                if (!Paused)
-                {
-                    if (Status.RealtimePlayback)
-                        Playback.AdvancePlayback(Math.Min(time.Elapsed.TotalSeconds, 5) * PreviewSpeed);
-                    else
-                        Playback.AdvancePlayback(1.0 / Status.FPS * PreviewSpeed);
-                }
-                time.Reset();
-                time.Start();
+                    form.Present(VSync);
 
-                if (Playback.PlayerPositionSeconds > Playback.Midi.SecondsLength + 5)
-                    form.Close();
-                if (!Status.Running) form.Close();
-            });
+                    if (!Paused)
+                    {
+                        if (Status.RealtimePlayback)
+                            Playback.AdvancePlayback(Math.Min(time.Elapsed.TotalSeconds, 5) * PreviewSpeed);
+                        else
+                            Playback.AdvancePlayback(1.0 / Status.FPS * PreviewSpeed);
+                    }
+                    time.Reset();
+                    time.Start();
 
-            Module.EndRender();
+                    if (Playback.PlayerPositionSeconds > Playback.Midi.SecondsLength + 5)
+                        form.Close();
+                    if (!Status.Running) form.Close();
 
-            dispose.Dispose();
+                    cancel.ThrowIfCancellationRequested();
+                });
+            }
+            finally
+            {
+                dispose.Dispose();
+                Module.EndRender();
+            }
 
             //var win = new PreviewWindow(1280, 720, GraphicsMode.Default, "test", GameWindowFlags.Default, DisplayDevice.Default, 1, 0, GraphicsContextFlags.Default);
             //win.Run();
@@ -495,8 +521,8 @@ namespace Zenith
 
         public void Dispose()
         {
-            Status.Running = false;
-            renderTask.Join();
+            //Status.Running = false;
+            //renderTask.Join();
         }
     }
 }
