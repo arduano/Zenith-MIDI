@@ -7,93 +7,139 @@
              xmlns:ui="clr-namespace:ZenithEngine.UI;assembly=ZenithEngine"
              xmlns:models="clr-namespace:Zenith.Models"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="700" d:DesignWidth="1280">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Styles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-
             <local:DecimalIntConvert x:Key="DecimalIntConvert"/>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200"/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
-        <StackPanel>
-            <Button Name="loadMidi" Click="loadMidi_Click">Load</Button>
-            <DockPanel>
-                <Label>Notes:</Label>
-                <Label Content="{Binding Midi.Loaded.MidiFile.NoteCount}"></Label>
-            </DockPanel>
-            <DockPanel>
-                <Label>PPQ:</Label>
-                <Label Content="{Binding Midi.Loaded.MidiFile.PPQ}"></Label>
-            </DockPanel>
-            <ListView Name="pluginsList" Margin="0,10,0,0" Height="400"
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <StackPanel>
+                <ui:LoaderButton Name="loadMidi" LoaderClick="loadMidi_Click">
+                    <Button.Style>
+                        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MatLoadableButton}">
+                            <Setter Property="IsEnabled" Value="False"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Midi.LoadStatus}" Value="{x:Static models:MidiLoadStatus.Unloaded}">
+                                    <Setter Property="IsEnabled" Value="True"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    Load
+                </ui:LoaderButton>
+                <Button Name="unloadMidi" Click="unloadMidi_Click">
+                    <Button.Style>
+                        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MatButton}">
+                            <Setter Property="IsEnabled" Value="False"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Midi.LoadStatus}" Value="{x:Static models:MidiLoadStatus.Loaded}">
+                                    <Setter Property="IsEnabled" Value="True"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    Unload
+                </Button>
+                <DockPanel>
+                    <Label>Notes:</Label>
+                    <Label Content="{Binding Midi.Loaded.MidiFile.NoteCount}"></Label>
+                </DockPanel>
+                <DockPanel>
+                    <Label>PPQ:</Label>
+                    <Label Content="{Binding Midi.Loaded.MidiFile.PPQ}"></Label>
+                </DockPanel>
+                <ListView Name="pluginsList" Margin="0,10,0,0" Height="300"
                       ItemsSource="{Binding RenderModules}"
                       SelectedItem="{Binding SelectedModule, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                       >
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding Name}" />
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-        </StackPanel>
-        <StackPanel Grid.Column="1">
-            <Label Content="{Binding Midi.Loaded.FileName}"/>
-            <DockPanel HorizontalAlignment="Left">
-                <Label>Width</Label>
-                <ui:NumberBox Height="25"
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}" />
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <ui:LoaderButton Name="reloadModules" IsEnabled="{Binding AreModulesLoaded}" Loading="{Binding IsLoadingModules}" LoaderClick="reloadModules_LoaderClick">
+                    Reload Modules
+                </ui:LoaderButton>
+            </StackPanel>
+            <StackPanel Grid.Column="1">
+                <Label Content="{Binding Midi.Loaded.FileName}"/>
+                <DockPanel HorizontalAlignment="Left">
+                    <Label>Width</Label>
+                    <ui:NumberBox Height="25"
                     IsEnabled="{Binding IsNotPlaying}"
                     Maximum="15360" Minimum="1"
                     Value="{Binding RenderArgs.Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DecimalIntConvert}}"
                     Width="100"
                 />
-            </DockPanel>
-            <DockPanel HorizontalAlignment="Left">
-                <Label>Height</Label>
-                <ui:NumberBox Height="25"
+                </DockPanel>
+                <DockPanel HorizontalAlignment="Left">
+                    <Label>Height</Label>
+                    <ui:NumberBox Height="25"
                     IsEnabled="{Binding IsNotPlaying}"
                     Maximum="8640" Minimum="1"
                     Value="{Binding RenderArgs.Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DecimalIntConvert}}"
                     Width="100"
                 />
-            </DockPanel>
-            <DockPanel HorizontalAlignment="Left">
-                <Label>SSAA</Label>
-                <ui:NumberBox Height="25"
+                </DockPanel>
+                <DockPanel HorizontalAlignment="Left">
+                    <Label>SSAA</Label>
+                    <ui:NumberBox Height="25"
                     IsEnabled="{Binding IsNotPlaying}"
                     Maximum="4" Minimum="1"
                     Value="{Binding RenderArgs.SSAA, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DecimalIntConvert}}"
                     Width="100"
                 />
-            </DockPanel>
-            <DockPanel HorizontalAlignment="Left">
-                <Label>FPS</Label>
-                <ui:NumberBox Height="25"
+                </DockPanel>
+                <DockPanel HorizontalAlignment="Left">
+                    <Label>FPS</Label>
+                    <ui:NumberBox Height="25"
                     IsEnabled="{Binding IsNotPlaying}"
                     Maximum="1000" Minimum="1"
                     Value="{Binding RenderArgs.FPS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DecimalIntConvert}}"
                     Width="100"
                 />
-            </DockPanel>
-            <ui:EnumComboBox
+                </DockPanel>
+                <ui:EnumComboBox
                 IsEnabled="{Binding IsNotPlaying}"
                 Enum="{x:Type models:NoteSize}"
                 Selected="{Binding RenderArgs.NoteSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top" Margin="29,10,0,0"
             >
-                <ui:EnumComboBoxItem EnumValue="{x:Static models:NoteSize.Tick}" Content="{DynamicResource tickBased}"/>
-                <ui:EnumComboBoxItem EnumValue="{x:Static models:NoteSize.Time}" Content="{DynamicResource timeBased}"/>
-            </ui:EnumComboBox>
-            <ui:Checkbox IsEnabled="{Binding IsNotPlaying}" IsChecked="{Binding RenderArgs.IgnoreColorEvents, UpdateSourceTrigger=PropertyChanged}" Content="Ignore Color Events"/>
-            <Button IsEnabled="{Binding IsNotPlaying}" Name="startPreview" Click="startPreview_Click">Start</Button>
-            <Button IsEnabled="{Binding IsPlaying}" Name="stopPlayback" Click="stopPlayback_Click">Stop</Button>
-        </StackPanel>
+                    <ui:EnumComboBoxItem EnumValue="{x:Static models:NoteSize.Tick}" Content="{DynamicResource tickBased}"/>
+                    <ui:EnumComboBoxItem EnumValue="{x:Static models:NoteSize.Time}" Content="{DynamicResource timeBased}"/>
+                </ui:EnumComboBox>
+                <ui:Checkbox IsEnabled="{Binding IsNotPlaying}" IsChecked="{Binding RenderArgs.IgnoreColorEvents, UpdateSourceTrigger=PropertyChanged}" Content="Ignore Color Events"/>
+                <Button IsEnabled="{Binding CanStartPlaying}" Name="startPreview" Click="startPreview_Click">Start</Button>
+                <Button IsEnabled="{Binding IsPlaying}" Name="stopPlayback" Click="stopPlayback_Click">Stop</Button>
+            </StackPanel>
+        </Grid>
+        <Grid Background="#88000000">
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Midi.LoadStatus}" Value="{x:Static models:MidiLoadStatus.Loading}">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+            <DockPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Label Content="{Binding Midi.LoaderStatus.Parsed}"/>
+                <Label Content="/"/>
+                <Label Content="{Binding Midi.LoaderStatus.Discovered}"/>
+            </DockPanel>
+        </Grid>
     </Grid>
 </UserControl>

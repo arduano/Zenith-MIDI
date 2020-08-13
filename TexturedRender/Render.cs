@@ -29,7 +29,7 @@ namespace TexturedRender
 
         protected override NoteColorPalettePick PalettePicker => settings.mainPart.data.Palette;
 
-        UI settings = new UI();
+        UI settings = LoadUI(() => new UI());
         public override FrameworkElement SettingsControl => settings;
 
         #region UI

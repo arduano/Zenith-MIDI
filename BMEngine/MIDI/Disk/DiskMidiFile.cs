@@ -21,6 +21,33 @@ namespace ZenithEngine.MIDI.Disk
         }
     }
 
+    public enum MidiParseStep
+    {
+        Discover,
+        Parse,
+    }
+
+    public struct MidiParseProgress
+    {
+        public int Parsed { get; }
+        public int Discovered { get; }
+        public MidiParseStep Step { get; }
+
+        public MidiParseProgress(int parsed, int discovered)
+        {
+            Step = MidiParseStep.Parse;
+            Parsed = parsed;
+            Discovered = discovered;
+        }
+
+        public MidiParseProgress(int discovered)
+        {
+            Step = MidiParseStep.Discover;
+            Parsed = 0;
+            Discovered = discovered;
+        }
+    }
+
     public class DiskMidiFile : MidiFile
     {
         Stream MidiFileReader;
@@ -34,19 +61,21 @@ namespace ZenithEngine.MIDI.Disk
 
         internal List<TrackPos> TrackPositions { get; } = new List<TrackPos>();
 
-        public DiskMidiFile(string filename)
+        public DiskMidiFile(string filename) : this(filename, null) { }
+        public DiskMidiFile(string filename, IProgress<MidiParseProgress> progress)
         {
             MidiFileReader = new StreamReader(filename).BaseStream;
             ParseHeaderChunk();
             while (MidiFileReader.Position < MidiFileReader.Length)
             {
                 ParseTrackChunk();
+                progress.Report(new MidiParseProgress(TrackCount));
             }
             Tracks = new IMidiTrack[TrackCount];
 
             Console.WriteLine("Loading tracks into memory, biggest tracks first.");
             Console.WriteLine("Please expect this to start slow, especially on bigger midis.");
-            LoadAndParseAll();
+            LoadAndParseAll(progress);
             Console.WriteLine("Loaded!");
             Console.WriteLine("Note count: " + NoteCount);
         }
@@ -99,7 +128,7 @@ namespace ZenithEngine.MIDI.Disk
             Console.WriteLine("Track " + TrackCount + ", Size " + length);
         }
 
-        public void LoadAndParseAll()
+        void LoadAndParseAll(IProgress<MidiParseProgress> progress)
         {
             int p = 0;
             FileReadProvider = new DiskReadProvider(MidiFileReader);
@@ -119,6 +148,7 @@ namespace ZenithEngine.MIDI.Disk
                 lock (l)
                 {
                     Console.WriteLine("Loaded track " + p++ + "/" + Tracks.Length);
+                    progress.Report(new MidiParseProgress(p, TrackCount));
                 }
             });
             TickLength = Tracks.Select(t => t.LastNoteTick).Max();

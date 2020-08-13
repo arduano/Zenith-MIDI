@@ -57,5 +57,15 @@ namespace ZenithEngine.Modules
         }
 
         public abstract void RenderFrame(DeviceContext context, IRenderSurface renderSurface);
+
+        protected static T LoadUI<T>(Func<T> load)
+        {
+            T data = default;
+            Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                data = load();
+            }).Wait();
+            return data;
+        }
     }
 }

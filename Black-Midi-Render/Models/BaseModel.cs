@@ -28,49 +28,68 @@ namespace Zenith.Models
         public bool IsLoadingModules => ModuleLoadTask != null;
         public bool AreModulesLoaded => !IsLoadingModules;
 
-        public void LoadAllModules()
+        public async Task LoadAllModules()
         {
-            HasTriedLoadingModules = true;
-            if (IsLoadingModules) throw new UIException("Can't load modules while already loading");
-            ModuleLoadTask = CancellableTask.Run(async cancel =>
+            await Err.Handle(async () =>
             {
-                await RunModuleLoader(cancel);
+                HasTriedLoadingModules = true;
+                if (IsLoadingModules) throw new UIException("Can't load modules while already loading");
+                ModuleLoadTask = CancellableTask.Run(cancel =>
+                {
+                    RunModuleLoader(cancel).Wait();
+                });
+                await ModuleLoadTask.Await();
+                ModuleLoadTask = null;
             });
         }
 
         public void LoadAllModulesSync()
         {
-            HasTriedLoadingModules = true;
-            ModuleLoadTask?.Wait();
-            RunModuleLoader().Wait();
+            Err.Handle(() =>
+            {
+                HasTriedLoadingModules = true;
+                ModuleLoadTask?.Wait();
+                ModuleLoadTask = null;
+                RunModuleLoader().Wait();
+            });
         }
 
         Task RunModuleLoader() => RunModuleLoader(new CancellationTokenSource().Token);
         async Task RunModuleLoader(CancellationToken cancel)
         {
-            //previewImage.Source = null;
-            //pluginDescription.Text = "";
             SelectedModule = null;
 
-            RenderModules.Clear();
-            moduleManager.ClearModule();
+            await Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                RenderModules.Clear();
+                moduleManager.ClearModule();
+            });
 
-            RenderModules.Clear();
             var files = Directory.GetFiles("Plugins");
             var dlls = files.Where((s) => s.EndsWith(".dll"));
-            foreach (var d in dlls)
+            var loaders = dlls.Select(dll =>
+            {
+                cancel.ThrowIfCancellationRequested();
+                return Task.Run(() => ModuleManager.LoadModule(dll));
+            });
+            foreach (var mod in loaders)
             {
                 cancel.ThrowIfCancellationRequested();
                 try
                 {
+                    var module = await mod;
                     await Application.Current.Dispatcher.InvokeAsync(() =>
                     {
-                        RenderModules.Add(ModuleManager.LoadModule(d));
+                        RenderModules.Add(module);
                     });
                 }
 #if DEBUG
                 catch (ModuleLoadFailedException e)
 #else
+                catch(OperationCanceledException e)
+                {
+                    throw e;
+                }
                 catch (Exception e)
 #endif
                 {
@@ -79,7 +98,7 @@ namespace Zenith.Models
                 }
             }
 
-            SelectDefaultRenderer();
+            if(SelectedModule == null) SelectDefaultRenderer();
         }
 
         void SelectDefaultRenderer()
@@ -105,10 +124,13 @@ namespace Zenith.Models
 
         public CancellableTask RenderTask { get; private set; }
 
+        public bool IsMidiLoaded { get; private set; } = false;
+
         public bool IsPlaying => RenderPipeline != null;
         public bool IsRendering => IsPlaying && RenderPipeline.Rendering;
         public bool IsNotPlaying => !IsPlaying;
-        public bool IsNotRendering => !IsNotRendering;
+        public bool IsNotRendering => !IsRendering;
+        public bool CanStartPlaying => IsNotPlaying && IsMidiLoaded && SelectedModule != null;
 
         public bool Paused { get; set; } = false;
         public bool VsyncEnabled { get; set; } = true;
@@ -158,9 +180,33 @@ namespace Zenith.Models
         }
         #endregion
 
+        #region Audio
+        public bool KdmapiConnected { get; private set; }
+        public bool KdmapiNotDetected { get; private set; }
+        public CancellableTask ConnectKdmapiTask { get; private set; }
+        public bool LoadingKdmapi { get; private set; }
+
+        public async Task LoadKdmapi()
+        {
+
+        }
+
+        public async Task UnloadKdmapi()
+        {
+
+        }
+        #endregion
+
         public BaseModel()
         {
             PropertyChanged += BaseModel_PropertyChanged;
+            Midi.PropertyChanged += Midi_PropertyChanged;
+        }
+
+        private void Midi_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(Midi.LoadStatus))
+                IsMidiLoaded = Midi.LoadStatus == MidiLoadStatus.Loaded;
         }
 
         private void BaseModel_PropertyChanged(object sender, PropertyChangedEventArgs e)

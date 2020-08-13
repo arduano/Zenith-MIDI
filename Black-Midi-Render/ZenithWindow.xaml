@@ -108,10 +108,7 @@
                 <TabItem Header="{DynamicResource generalTab}" IsEnabled="{Binding NotRenderingOrPreviewing, ElementName=mainWindow}">
                     <local:GeneralTab />
                 </TabItem>
-                <TabItem Header="{DynamicResource modulesTab}" IsEnabled="{Binding NotRenderingOrPreviewing, ElementName=mainWindow}">
-
-                </TabItem>
-                <TabItem Header="{DynamicResource moduleSettingsTab}" IsEnabled="{Binding NotRenderingOrPreviewing, ElementName=mainWindow}">
+                <TabItem Content="{Binding SelectedModule.SettingsControl}" Header="{DynamicResource moduleSettingsTab}" IsEnabled="{Binding NotRenderingOrPreviewing, ElementName=mainWindow}">
                 </TabItem>
                 <TabItem Header="{DynamicResource renderTab}">
                 </TabItem>

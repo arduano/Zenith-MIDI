@@ -84,6 +84,9 @@
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
+    <Reference Include="MrMitch.Loaders, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MrMitch.Loaders.1.2.0.0\lib\net46\MrMitch.Loaders.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -362,6 +365,7 @@
       <DependentUpon>BetterSlider.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Checkbox.cs" />
+    <Compile Include="UI\Class1.cs" />
     <Compile Include="UI\Converters.cs" />
     <Compile Include="UI\EnumComboBox.cs" />
     <Compile Include="UI\EnumerationExtension.cs" />
@@ -369,6 +373,7 @@
       <DependentUpon>HexColorPicker.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\InplaceConverter.cs" />
+    <Compile Include="UI\LoaderButton.cs" />
     <Compile Include="UI\NumberBox.cs" />
     <Compile Include="UI\NumberSelect.xaml.cs">
       <DependentUpon>NumberSelect.xaml</DependentUpon>

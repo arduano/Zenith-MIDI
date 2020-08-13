@@ -61,12 +61,12 @@
                                 <RowDefinition/>
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
-                            <Button Name="PART_downArrow" FontSize="12" Grid.Row="1" Padding="0,0,0.3,0" Background="#33FFFFFF" Height="Auto" Margin="0">
+                            <Button Name="PART_downArrow" MinHeight="0" FontSize="12" Grid.Row="1" Padding="0,0,0.3,0" Background="#33FFFFFF" Height="Auto" Margin="0">
                                 <Button.Content>
                                     <Label Foreground="white" Padding="0,0,0,0" Margin="0,-0,0,0" FontWeight="Bold">﹀</Label>
                                 </Button.Content>
                             </Button>
-                            <Button Name="PART_upArrow" FontSize="12" Padding="0,0,0.3,0" Background="#33FFFFFF" Height="Auto" Margin="0">
+                            <Button Name="PART_upArrow" MinHeight="0" FontSize="12" Padding="0,0,0.3,0" Background="#33FFFFFF" Height="Auto" Margin="0">
                                 <Button.Content>
                                     <Label Foreground="white" Padding="0,0,0,0" Margin="0,-6,0,0" FontWeight="Bold">︿</Label>
                                 </Button.Content>

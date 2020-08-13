@@ -98,7 +98,7 @@ namespace PFARender
         }
         #endregion
 
-        UI settings = new UI();
+        UI settings = LoadUI(() => new UI());
 
         public override FrameworkElement SettingsControl => settings;
 

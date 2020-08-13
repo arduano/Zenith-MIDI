@@ -10,7 +10,7 @@ using System.IO;
 
 namespace Zenith.Models
 {
-    public class LoadedMidiArgsModel
+    public class LoadedMidiArgsModel : IDisposable
     {
         public MidiFile MidiFile { get; }
 
@@ -23,6 +23,11 @@ namespace Zenith.Models
             MidiFile = midi;
             FilePath = filepath;
             FileName = Path.GetFileName(filepath);
+        }
+
+        public void Dispose()
+        {
+            MidiFile.Dispose();
         }
     }
 }

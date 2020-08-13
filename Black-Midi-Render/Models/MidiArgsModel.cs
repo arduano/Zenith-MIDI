@@ -21,6 +21,8 @@ namespace Zenith.Models
         public LoadedMidiArgsModel Loaded { get; set; }
         public MidiLoadStatus LoadStatus { get; set; } = MidiLoadStatus.Unloaded;
 
+        public MidiParseProgress LoaderStatus { get; private set; }
+
         public async Task LoadMidi(string filename)
         {
             await Err.Handle(async () =>
@@ -29,9 +31,25 @@ namespace Zenith.Models
                 LoadStatus = MidiLoadStatus.Loading;
                 await Task.Run(() =>
                 {
-                    Loaded = new LoadedMidiArgsModel(new DiskMidiFile(filename), filename);
+                    var reporter = new Progress<MidiParseProgress>(progress =>
+                    {
+                        LoaderStatus = progress;
+                    });
+                    var file = new DiskMidiFile(filename, reporter);
+                    Loaded = new LoadedMidiArgsModel(file, filename);
                     LoadStatus = MidiLoadStatus.Loaded;
                 });
+            });
+        }
+
+        public void UnloadMidi()
+        {
+            Err.Handle(() =>
+            {
+                if (LoadStatus != MidiLoadStatus.Loaded) throw new UIException("Can't unload when no midi is loaded");
+                Loaded.Dispose();
+                Loaded = null;
+                LoadStatus = MidiLoadStatus.Unloaded;
             });
         }
 

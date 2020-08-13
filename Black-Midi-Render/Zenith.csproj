@@ -163,6 +163,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CancellableTask.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="GeneralTab.xaml.cs">
       <DependentUpon>GeneralTab.xaml</DependentUpon>
     </Compile>
@@ -174,6 +175,7 @@
     <Compile Include="Models\Err.cs" />
     <Compile Include="Models\LoadedMidiArgsModel.cs" />
     <Compile Include="Models\MidiArgsModel.cs" />
+    <Compile Include="Models\OutputArgsModel.cs" />
     <Compile Include="Models\PropertyChangedNotificationInterceptor.cs" />
     <Compile Include="Models\RenderArgsModel.cs" />
     <Compile Include="ZenithTabs.cs" />

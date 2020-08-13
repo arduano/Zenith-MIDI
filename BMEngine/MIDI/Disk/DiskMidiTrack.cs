@@ -7,7 +7,17 @@ using System.Threading.Tasks;
 
 namespace ZenithEngine.MIDI.Disk
 {
-    public delegate void DiskTrackParseProgress(DiskMidiTrack track, double progress);
+    public struct DiskTrackParseProgress
+    {
+        public DiskTrackParseProgress(DiskMidiTrack track, double progress)
+        {
+            Track = track;
+            Progress = progress;
+        }
+
+        public DiskMidiTrack Track { get; }
+        public double Progress { get; }
+    }
 
     public class DiskMidiTrack : IMidiPlaybackTrack, IMidiTrack, IDisposable
     {
@@ -90,11 +100,11 @@ namespace ZenithEngine.MIDI.Disk
         public static DiskMidiTrack NewParserTrack(
             int id,
             BufferByteReader reader,
-            DiskTrackParseProgress progressCallback,
+            IProgress<DiskTrackParseProgress> progress,
             int callbackRate)
         {
             var track = new DiskMidiTrack(id, reader, TrackMode.Parse);
-            track.InitialParse(progressCallback, callbackRate);
+            track.InitialParse(progress, callbackRate);
             reader.Dispose();
             return track;
         }
@@ -116,7 +126,7 @@ namespace ZenithEngine.MIDI.Disk
             return track;
         }
 
-        void InitialParse(DiskTrackParseProgress progressCallback, int callbackRate)
+        void InitialParse(IProgress<DiskTrackParseProgress> progress, int callbackRate)
         {
 
             for (int i = 0; i < 16; i++) InitialTrackColors[i] = null;
@@ -133,11 +143,11 @@ namespace ZenithEngine.MIDI.Disk
 
                 if (NoteCount % callbackRate == 0)
                 {
-                    progressCallback?.Invoke(this, reader.Location / (double)reader.Length);
+                    progress?.Report(new DiskTrackParseProgress(this, reader.Location / (double)reader.Length));
                 }
             }
 
-            progressCallback?.Invoke(this, 1);
+            progress?.Report(new DiskTrackParseProgress(this, 1));
         }
 
         long ReadVariableLen()
@@ -299,7 +309,7 @@ namespace ZenithEngine.MIDI.Disk
                         n.Vel = vel;
                         n.Track = ID;
                         unendedNotes[note << 4 | channel].Add(n);
-                        
+
                         if (MidiPlayback.NotesKeysSeparated)
                         {
                             MidiPlayback.NotesKeyed[note].Add(n);
