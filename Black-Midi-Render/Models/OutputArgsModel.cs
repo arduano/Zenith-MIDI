@@ -16,7 +16,7 @@ namespace Zenith.Models
         public bool UseMaskOutput { get; set; } = false;
         public string MaskOutputLocation { get; set; } = "";
 
-        public string OutputArgs
+        public string OutputArgs { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
     }
