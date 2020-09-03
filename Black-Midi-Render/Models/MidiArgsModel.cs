@@ -21,6 +21,8 @@ namespace Zenith.Models
         public LoadedMidiArgsModel Loaded { get; set; }
         public MidiLoadStatus LoadStatus { get; set; } = MidiLoadStatus.Unloaded;
 
+        public CancellableTask MidiLoadTask { get; private set; }
+
         public MidiParseProgress LoaderStatus { get; private set; }
 
         public async Task LoadMidi(string filename)
@@ -29,16 +31,38 @@ namespace Zenith.Models
             {
                 if (LoadStatus != MidiLoadStatus.Unloaded) throw new UIException("Can't load a midi when another is already loaded");
                 LoadStatus = MidiLoadStatus.Loading;
-                await Task.Run(() =>
+                MidiLoadTask = CancellableTask.Run(cancel =>
                 {
                     var reporter = new Progress<MidiParseProgress>(progress =>
                     {
                         LoaderStatus = progress;
                     });
-                    var file = new DiskMidiFile(filename, reporter);
-                    Loaded = new LoadedMidiArgsModel(file, filename);
-                    LoadStatus = MidiLoadStatus.Loaded;
+                    try
+                    {
+                        var file = new DiskMidiFile(filename, reporter, cancel);
+                        Loaded = new LoadedMidiArgsModel(file, filename);
+                        LoadStatus = MidiLoadStatus.Loaded;
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        LoadStatus = MidiLoadStatus.Unloaded;
+                    }
                 });
+                await MidiLoadTask.Await();
+                MidiLoadTask = null;
+            });
+        }
+
+        public async Task CancelMidiLoading()
+        {
+            await Err.Handle(async () =>
+            {
+                if (LoadStatus != MidiLoadStatus.Loading || MidiLoadTask == null) throw new UIException("Can't cancel loading when nothing is loading");
+                LoadStatus = MidiLoadStatus.Cancelling;
+                MidiLoadTask?.Cancel();
+                await MidiLoadTask.Await();
+                Loaded = null;
+                MidiLoadTask = null;
             });
         }
 
@@ -46,7 +70,7 @@ namespace Zenith.Models
         {
             Err.Handle(() =>
             {
-                if (LoadStatus != MidiLoadStatus.Loaded) throw new UIException("Can't unload when no midi is loaded");
+                if (LoadStatus != MidiLoadStatus.Loaded) throw new UIException("Can't unload midi when no midi is loaded");
                 Loaded.Dispose();
                 Loaded = null;
                 LoadStatus = MidiLoadStatus.Unloaded;

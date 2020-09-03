@@ -265,9 +265,11 @@ namespace Zenith
 
             DataContext = DataBase;
 
-            if (!DataBase.HasTriedLoadingModules) DataBase.LoadAllModules();
+            if (!DataBase.HasTriedLoadingModules)
+                Task.Run(() => DataBase.LoadAllModules());
+            if (!DataBase.KdmapiConnected) 
+                Task.Run(() => DataBase.LoadKdmapi());
         }
-
 
         private void updateDownloaded_MouseDown(object sender, MouseButtonEventArgs e)
         {

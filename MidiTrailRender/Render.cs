@@ -257,7 +257,7 @@ namespace MIDITrailRender
         #region Info
         public override string Name { get; } = "MIDITrail";
         public override string Description { get; } = "aaa";
-        public override ImageSource PreviewImage { get; } = ModuleUtils.BitmapToImageSource(Properties.Resources.preview);
+        public override ImageSource PreviewImage { get; } = LoadPreviewBitmap(Properties.Resources.preview);
         public override string LanguageDictName { get; } = "miditrail";
         #endregion
 

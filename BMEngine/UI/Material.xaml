@@ -7,24 +7,23 @@
                     xmlns:media="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="Scrollbar.xaml"/>
-        <ResourceDictionary Source="Colors.xaml"/>
+        <ResourceDictionary Source="Theme.xaml"/>
         <ResourceDictionary Source="ListBox.xaml"/>
-        <ResourceDictionary Source="Checkbox.xaml"/>
+        <ResourceDictionary Source="Checkbox.xaml"/> 
         <ResourceDictionary Source="ComboBox.xaml"/>
         <ResourceDictionary Source="NumberBox.xaml"/>
+        <ResourceDictionary Source="LabelledItem.xaml"/>
+        <ResourceDictionary Source="Slider.xaml"/>
     </ResourceDictionary.MergedDictionaries>
-    <Style TargetType="{x:Type TextBlock}">
-        <Setter Property="Control.Foreground" Value="White"/>
-        <Setter Property="Control.FontSize" Value="14"/>
+
+    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MatText}"/>
+    <Style TargetType="{x:Type Label}" BasedOn="{StaticResource MatText}"/>
+    <Style TargetType="{x:Type module:UILabel}" BasedOn="{StaticResource MatText}"/>
+
+    <Style TargetType="{x:Type local:Title}" BasedOn="{StaticResource MatTitleText}">
+        <Setter Property="Margin" Value="0,30,0,10"/>
     </Style>
-    <Style TargetType="{x:Type Label}">
-        <Setter Property="Control.Foreground" Value="White"/>
-        <Setter Property="Control.FontSize" Value="14"/>
-    </Style>
-    <Style TargetType="{x:Type module:UILabel}">
-        <Setter Property="Control.Foreground" Value="White"/>
-        <Setter Property="Control.FontSize" Value="14"/>
-    </Style>
+
     <Style x:Key="WindowButton" TargetType="Button">
         <Setter Property="OverridesDefaultStyle" Value="True"/>
         <Setter Property="Focusable" Value="False"/>
@@ -87,20 +86,20 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <Style x:Key="MainTabs" TargetType="TabItem">
-        <Setter Property="Foreground" Value="White"/>
-        <Setter Property="FontSize" Value="14"/>
+    <Style x:Key="MainTabs" TargetType="TabItem" BasedOn="{StaticResource MatText}">
         <Setter Property="HorizontalAlignment" Value="Left"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TabItem">
                     <Grid Name="Panel">
                         <local:RippleEffectDecorator ExpandTime="0.2" FadeTime="0.2">
-                            <ContentPresenter x:Name="ContentSite"
+                            <Border Padding="{TemplateBinding Padding}">
+                                <ContentPresenter x:Name="ContentSite"
                                         VerticalAlignment="Center"
                                         HorizontalAlignment="Center"
                                         ContentSource="Header"
                                         Margin="10,2"/>
+                            </Border>
                         </local:RippleEffectDecorator>
                     </Grid>
                     <ControlTemplate.Triggers>
@@ -115,9 +114,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <Style x:Key="SubTabItems" TargetType="TabItem">
-        <Setter Property="Foreground" Value="White"/>
-        <Setter Property="FontSize" Value="14"/>
+    <Style x:Key="SubTabItems" TargetType="TabItem" BasedOn="{StaticResource MatText}">
         <Setter Property="HorizontalAlignment" Value="Left"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -168,14 +165,14 @@
         </Setter>
     </Style>
 
-    <Style x:Key="MatButtonWrapper" TargetType="ContentControl">
+    <Style x:Key="MatButtonWrapper" TargetType="ContentControl" BasedOn="{StaticResource MatText}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ContentControl">
                     <Grid Background="{TemplateBinding Background}" Width="{TemplateBinding Width}">
                         <Border x:Name="background">
                             <Border.Background>
-                                <SolidColorBrush x:Name="bgBrush" Color="{StaticResource PrimaryColor}"/>
+                                <SolidColorBrush x:Name="bgBrush" Color="{DynamicResource PrimaryColor}"/>
                             </Border.Background>
                             <Border.Effect>
                                 <DropShadowEffect x:Name="dropShadow" ShadowDepth="0" Direction="0" BlurRadius="5"/>
@@ -235,7 +232,6 @@
         <Setter Property="OverridesDefaultStyle" Value="True"/>
         <Setter Property="Focusable" Value="False"/>
         <Setter Property="FontSize" Value="14"/>
-        <Setter Property="Foreground" Value="White"/>
         <Setter Property="MinHeight" Value="32"/>
     </Style>
 
@@ -244,7 +240,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <ContentControl 
-                        Style="{StaticResource MatButtonWrapper}" 
+                        Style="{DynamicResource MatButtonWrapper}" 
                         Background="{TemplateBinding Background}"
                         Width="{TemplateBinding Width}"
                         Padding="{TemplateBinding Padding}"
@@ -262,7 +258,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="local:LoaderButton">
                     <ContentControl 
-                        Style="{StaticResource MatButtonWrapper}" 
+                        Style="{DynamicResource MatButtonWrapper}" 
                         Background="{TemplateBinding Background}"
                         Width="{TemplateBinding Width}"
                         Padding="{TemplateBinding Padding}"
@@ -340,9 +336,8 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type TextBox}">
+    <Style x:Key="MatTextbox" TargetType="{x:Type TextBox}" BasedOn="{StaticResource MatText}">
         <Setter Property="Background" Value="#444444"/>
-        <Setter Property="Foreground" Value="White"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="Padding" Value="3"/>
         <Setter Property="Template">
@@ -403,6 +398,7 @@
     <Style BasedOn="{StaticResource MatButton}" TargetType="Button"/>
     <Style BasedOn="{StaticResource MatLoadableButton}" TargetType="local:LoaderButton"/>
 
+    <Style BasedOn="{StaticResource MatTextbox}" TargetType="{x:Type TextBox}"/>
 
     <Style BasedOn="{StaticResource MatCheckbox}" TargetType="{x:Type CheckBox}"/>
     <Style BasedOn="{StaticResource MatCheckbox}" TargetType="{x:Type local:Checkbox}"/>
@@ -415,4 +411,6 @@
     <Style BasedOn="{StaticResource MatComboBoxItem}" TargetType="{x:Type local:EnumComboBoxItem}"/>
 
     <Style BasedOn="{StaticResource MatNumberBox}" TargetType="{x:Type local:NumberBox}"/>
+    
+    <Style BasedOn="{StaticResource MatSlider}" TargetType="{x:Type local:Slider}"/>
 </ResourceDictionary>

@@ -10,13 +10,16 @@ using System.Collections.ObjectModel;
 using ZenithEngine.Modules;
 using System.IO;
 using System.Windows;
+using ZenithEngine.MIDI.Audio;
 
 namespace Zenith.Models
 {
     public class BaseModel : INotifyPropertyChanged
     {
         public RenderArgsModel RenderArgs { get; set; } = new RenderArgsModel();
+        public OutputArgsModel OutputOptions { get; set; } = new OutputArgsModel();
         public MidiArgsModel Midi { get; set; } = new MidiArgsModel();
+        public SettingsModel Settings { get; set; } = new SettingsModel();
 
         public ObservableCollection<IModuleRender> RenderModules { get; } = new ObservableCollection<IModuleRender>();
         public IModuleRender SelectedModule { get; set; } = null;
@@ -98,7 +101,7 @@ namespace Zenith.Models
                 }
             }
 
-            if(SelectedModule == null) SelectDefaultRenderer();
+            if (SelectedModule == null) SelectDefaultRenderer();
         }
 
         void SelectDefaultRenderer()
@@ -127,15 +130,16 @@ namespace Zenith.Models
         public bool IsMidiLoaded { get; private set; } = false;
 
         public bool IsPlaying => RenderPipeline != null;
+        public bool IsPlaybackLoading => RenderPipeline == null && RenderTask != null;
         public bool IsRendering => IsPlaying && RenderPipeline.Rendering;
         public bool IsNotPlaying => !IsPlaying;
         public bool IsNotRendering => !IsRendering;
         public bool CanStartPlaying => IsNotPlaying && IsMidiLoaded && SelectedModule != null;
 
         public bool Paused { get; set; } = false;
-        public bool VsyncEnabled { get; set; } = true;
+        public bool VsyncEnabled { get; set; } = false;
         public bool RealtimePlayback { get; set; } = true;
-        public bool UseAudioOutput { get; set; } = true;
+        public bool MuteAudio { get; set; } = false;
         public double PreviewSpeed { get; set; } = 1;
 
         void AssertRenderConstraints()
@@ -145,55 +149,108 @@ namespace Zenith.Models
             if (SelectedModule == null) throw new UIException("Can't play with no module selected");
         }
 
-        public async Task StartPreview()
+        public async Task StartPlayback(bool render)
         {
             await Err.Handle(async () =>
             {
                 AssertRenderConstraints();
-                RenderTask = CancellableTask.Run(async cancel =>
+                RenderTask = CancellableTask.Run(cancel =>
                 {
+                    var startOffset = Midi.Loaded.MidiFile.StartTicksToSeconds(SelectedModule.StartOffset, RenderArgs.NoteSize == NoteSize.Time);
+                    if (render) startOffset += OutputOptions.StartOffset;
+
+                    OutputSettings output = null;
+                    if (render)
+                    {
+                        var args = OutputOptions.ValidateAndGetRenderArgs(startOffset);
+                        if (OutputOptions.UseMaskOutput)
+                        {
+                            output = new OutputSettings(args, OutputOptions.OutputLocation, OutputOptions.MaskOutputLocation);
+                        }
+                        else
+                        {
+                            output = new OutputSettings(args, OutputOptions.OutputLocation);
+                        }
+                    }
+
                     RenderStatus = new RenderStatus(RenderArgs.Width, RenderArgs.Height, RenderArgs.SSAA)
                     {
                         RealtimePlayback = RealtimePlayback,
-                        PreviewAudioEnabled = UseAudioOutput,
+                        PreviewAudioEnabled = !MuteAudio,
                     };
-                    var playback = Midi.Loaded.MidiFile.GetMidiPlayback(0, RenderArgs.NoteSize == NoteSize.Time);
-                    RenderPipeline = new RenderPipeline(RenderStatus, playback, moduleManager)
+
+                    var playback = Midi.Loaded.MidiFile.GetMidiPlayback(startOffset, RenderArgs.NoteSize == NoteSize.Time);
+
+                    RenderPipeline = new RenderPipeline(RenderStatus, playback, moduleManager, output)
                     {
                         Paused = Paused,
                         VSync = VsyncEnabled,
                         PreviewSpeed = PreviewSpeed,
                     };
-                    await RenderPipeline.Start(cancel);
+
+                    RenderPipeline.Start(cancel).Wait();
                     RenderPipeline.Dispose();
                     RenderPipeline = null;
                     RenderStatus = null;
                 });
-                await RenderTask.Task;
+                await RenderTask.Await();
+                RenderTask = null;
             });
         }
 
         public async Task StopPlayback()
         {
-            RenderTask.Cancel();
-            await RenderTask.Task;
+            await Err.Handle(async () =>
+            {
+                RenderTask?.Cancel();
+                await RenderTask.Await();
+            });
         }
         #endregion
 
         #region Audio
         public bool KdmapiConnected { get; private set; }
         public bool KdmapiNotDetected { get; private set; }
-        public CancellableTask ConnectKdmapiTask { get; private set; }
-        public bool LoadingKdmapi { get; private set; }
+        public Task ConnectKdmapiTask { get; private set; }
+        public Task DisconnectKdmapiTask { get; private set; }
+        public bool LoadingKdmapi => ConnectKdmapiTask != null || DisconnectKdmapiTask != null;
 
         public async Task LoadKdmapi()
         {
-
+            await Err.Handle(async () =>
+            {
+                if (KdmapiNotDetected) throw new UIException("Can't detect kdmapi, connection cancelled");
+                if (KdmapiConnected || LoadingKdmapi) throw new UIException("Can't load kdmapi while it is already loaded");
+                ConnectKdmapiTask = Task.Run(() =>
+                {
+                    try
+                    {
+                        KDMAPIOutput.Init();
+                        KdmapiConnected = KDMAPIOutput.Initialized;
+                    }
+                    catch
+                    {
+                        KdmapiNotDetected = true;
+                    }
+                });
+                await ConnectKdmapiTask.Await();
+                ConnectKdmapiTask = null;
+            });
         }
 
         public async Task UnloadKdmapi()
         {
-
+            await Err.Handle(async () =>
+            {
+                if (!KdmapiConnected || LoadingKdmapi) throw new UIException("Can't disconnect kdmapi while when it isn't connected");
+                DisconnectKdmapiTask = Task.Run(() =>
+                {
+                    KDMAPIOutput.Terminate();
+                    KdmapiConnected = KDMAPIOutput.Initialized;
+                });
+                await DisconnectKdmapiTask.Await();
+                DisconnectKdmapiTask = null;
+            });
         }
         #endregion
 
@@ -224,8 +281,8 @@ namespace Zenith.Models
                         RenderStatus.RealtimePlayback = RealtimePlayback;
                     if (e.PropertyName == nameof(Paused))
                         RenderPipeline.Paused = Paused;
-                    if (e.PropertyName == nameof(UseAudioOutput))
-                        RenderStatus.PreviewAudioEnabled = UseAudioOutput;
+                    if (e.PropertyName == nameof(MuteAudio))
+                        RenderStatus.PreviewAudioEnabled = !MuteAudio;
                     if (e.PropertyName == nameof(PreviewSpeed))
                         RenderPipeline.PreviewSpeed = PreviewSpeed;
                 }

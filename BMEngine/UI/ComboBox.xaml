@@ -6,7 +6,7 @@
                     xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2"
                     xmlns:media="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="Colors.xaml"/>
+        <ResourceDictionary Source="Theme.xaml"/>
     </ResourceDictionary.MergedDictionaries>
     <Style x:Key="MatComboBoxToggleButton" TargetType="{x:Type ToggleButton}">
         <Setter Property="OverridesDefaultStyle" Value="true"/>
@@ -63,9 +63,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <Style x:Key="MatComboBox" TargetType="{x:Type ComboBox}">
-        <Setter Property="FontSize" Value="14"/>
-        <Setter Property="Foreground" Value="White"/>
+    <Style x:Key="MatComboBox" TargetType="{x:Type ComboBox}" BasedOn="{StaticResource MatText}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ComboBox}">
@@ -116,9 +114,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <Style x:Key="MatComboBoxItem" TargetType="{x:Type ComboBoxItem}">
-        <Setter Property="Foreground" Value="White"/>
-        <Setter Property="FontSize" Value="14"/>
+    <Style x:Key="MatComboBoxItem" TargetType="{x:Type ComboBoxItem}" BasedOn="{StaticResource MatText}">
         <Setter Property="Padding" Value="5"/>
         <Setter Property="Background" Value="#292929"/>
         <Setter Property="Template">

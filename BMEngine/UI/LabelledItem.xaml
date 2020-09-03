@@ -1,0 +1,33 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:ZenithEngine.UI"
+                    xmlns:module="clr-namespace:ZenithEngine.ModuleUI"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+                    xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2"
+                    xmlns:media="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+    <ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary.MergedDictionaries>
+    
+    <Style x:Key="MatLabelledItem" TargetType="{x:Type local:LabelledItem}">
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="VerticalAlignment" Value="Top"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="local:LabelledItem">
+                    <DockPanel>
+                        <Label Name="label" Content="{TemplateBinding Label}" MinWidth="{TemplateBinding MinLabelWidth}" Margin="{TemplateBinding LabelMargin}"/>
+                        <ContentPresenter/>
+                    </DockPanel>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Label" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed" TargetName="label"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="local:LabelledItem" BasedOn="{StaticResource MatLabelledItem}"/>
+
+</ResourceDictionary>

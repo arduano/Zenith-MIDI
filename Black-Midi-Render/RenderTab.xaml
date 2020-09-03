@@ -1,0 +1,147 @@
+﻿<UserControl x:Class="Zenith.RenderTab"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Zenith"
+             xmlns:ui="clr-namespace:ZenithEngine.UI;assembly=ZenithEngine"
+             xmlns:models="clr-namespace:Zenith.Models"
+             mc:Ignorable="d" 
+             d:DesignHeight="700" d:DesignWidth="1280">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <local:DecimalIntConvert x:Key="DecimalIntConvert"/>
+            <local:DecimalDoubleConvert x:Key="DecimalDoubleConvert"/>
+
+            <Style x:Key="RenderType" TargetType="{x:Type ui:EnumComboBox}" BasedOn="{StaticResource MatComboBox}">
+                <Setter Property="IsEnabled" Value="{Binding IsNotRendering}"/>
+                <Setter Property="Enum" Value="{x:Type models:OutputType}"/>
+                <Setter Property="Padding" Value="6,5,6,6"/>
+                <Setter Property="MinWidth" Value="120"/>
+            </Style>
+
+            <Style x:Key="UseMaskButton" TargetType="{x:Type Button}" BasedOn="{StaticResource MatButton}">
+                <Setter Property="IsEnabled" Value="{Binding IsNotRendering}"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding OutputOptions.UseMaskOutput}" Value="False">
+                        <Setter Property="IsEnabled" Value="False"/>
+                    </DataTrigger>
+                </Style.Triggers >
+            </Style>
+
+            <Style x:Key="UseAudioButton" TargetType="{x:Type Button}" BasedOn="{StaticResource MatButton}">
+                <Setter Property="IsEnabled" Value="{Binding IsNotRendering}"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding OutputOptions.UseAudio}" Value="False">
+                        <Setter Property="IsEnabled" Value="False"/>
+                    </DataTrigger>
+                </Style.Triggers >
+            </Style>
+
+            <Style x:Key="RenderBitrate" TargetType="{x:Type ui:NumberBox}" BasedOn="{StaticResource MatNumberBox}">
+                <Setter Property="IsEnabled" Value="{Binding IsNotRendering}"/>
+                <Setter Property="Maximum" Value="100000"/>
+                <Setter Property="Minimum" Value="1"/>
+            </Style>
+
+            <Style x:Key="RenderCRF" TargetType="{x:Type ui:NumberBox}" BasedOn="{StaticResource MatNumberBox}">
+                <Setter Property="IsEnabled" Value="{Binding IsNotRendering}"/>
+                <Setter Property="Maximum" Value="51"/>
+                <Setter Property="Minimum" Value="0"/>
+            </Style>
+
+            <Style x:Key="CustomArgsEnabled" TargetType="{x:Type TextBox}" BasedOn="{StaticResource MatTextbox}">
+                <Setter Property="IsEnabled" Value="False"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding OutputOptions.SelectedOutputType}" Value="{x:Static models:OutputType.Custom}">
+                        <Setter Property="IsEnabled" Value="{Binding IsNotRendering}"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style x:Key="StartOffset" TargetType="{x:Type ui:NumberBox}" BasedOn="{StaticResource MatNumberBox}">
+                <Setter Property="IsEnabled" Value="{Binding IsNotRendering}"/>
+                <Setter Property="Minimum" Value="0"/>
+                <Setter Property="Maximum" Value="120"/>
+                <Setter Property="DecimalPoints" Value="2"/>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <StackPanel>
+        <ui:LabelledItem Label="Output File" HorizontalAlignment="Stretch">
+            <DockPanel>
+                <Button IsEnabled="{Binding IsNotRendering}" Name="browseOutputButton" Content="Browse" Click="browseOutputButton_Click"/>
+                <TextBox Style="{StaticResource CustomArgsEnabled}" Text="{Binding OutputOptions.OutputLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            </DockPanel>
+        </ui:LabelledItem>
+        <DockPanel>
+            <ui:Checkbox Margin="5" VerticalAlignment="Center" Content="Transparency Mask" IsChecked="{Binding OutputOptions.UseMaskOutput}"/>
+            <Button Style="{StaticResource UseMaskButton}" Name="browseMaskButton" Content="Browse" Click="browseMaskButton_Click"/>
+            <TextBox Style="{StaticResource CustomArgsEnabled}" Text="{Binding OutputOptions.MaskOutputLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        </DockPanel>
+        <DockPanel>
+            <ui:Checkbox Margin="5" VerticalAlignment="Center" Content="Include Audio" IsChecked="{Binding OutputOptions.UseAudio}"/>
+            <Button Style="{StaticResource UseAudioButton}" Name="browseAudioButton" Content="Browse" Click="browseAudioButton_Click"/>
+            <TextBox Style="{StaticResource CustomArgsEnabled}" Text="{Binding OutputOptions.AudioLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        </DockPanel>
+        <DockPanel>
+            <ui:LabelledItem Label="Output Format" Margin="5">
+                <ui:EnumComboBox
+                    Style="{DynamicResource RenderType}"
+                    Selected="{Binding OutputOptions.SelectedOutputType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  
+                >
+                    <ui:EnumComboBoxItem EnumValue="{x:Static models:OutputType.H264CRF}" Content="h.264 CRF"/>
+                    <ui:EnumComboBoxItem EnumValue="{x:Static models:OutputType.H264Bitrate}" Content="h.264 Bitrate"/>
+                    <ui:EnumComboBoxItem EnumValue="{x:Static models:OutputType.H264NVENC}" Content="h.264 NVENC"/>
+                    <ui:EnumComboBoxItem EnumValue="{x:Static models:OutputType.Custom}" Content="Custom"/>
+                </ui:EnumComboBox>
+            </ui:LabelledItem>
+            <ui:LabelledItem Label="Bitrate" Margin="5">
+                <ui:LabelledItem.Style>
+                    <Style TargetType="ui:LabelledItem" BasedOn="{StaticResource MatLabelledItem}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding OutputOptions.SelectedOutputType}" Value="{x:Static models:OutputType.H264Bitrate}">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding OutputOptions.SelectedOutputType}" Value="{x:Static models:OutputType.H264NVENC}">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ui:LabelledItem.Style>
+                <ui:NumberBox
+                    Style="{DynamicResource RenderBitrate}"
+                    Value="{Binding OutputOptions.Bitrate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DecimalIntConvert}}"
+                    Width="100"
+                />
+            </ui:LabelledItem>
+            <ui:LabelledItem Label="Crf" Margin="5">
+                <ui:LabelledItem.Style>
+                    <Style TargetType="ui:LabelledItem" BasedOn="{StaticResource MatLabelledItem}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding OutputOptions.SelectedOutputType}" Value="{x:Static models:OutputType.H264CRF}">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ui:LabelledItem.Style>
+                <ui:NumberBox
+                    Style="{DynamicResource RenderCRF}"
+                    Value="{Binding OutputOptions.CRF, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DecimalIntConvert}}"
+                    Width="100"
+                />
+            </ui:LabelledItem>
+        </DockPanel>
+        <ui:LabelledItem Label="Args" HorizontalAlignment="Stretch">
+            <TextBox Style="{StaticResource CustomArgsEnabled}" Text="{Binding OutputOptions.FFmpegArgs, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        </ui:LabelledItem>
+        <ui:LabelledItem Label="Start Offset (seconds)">
+            <ui:NumberBox Style="{StaticResource StartOffset}" Value="{Binding OutputOptions.StartOffset, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DecimalDoubleConvert}}"/>
+        </ui:LabelledItem>
+    </StackPanel>
+</UserControl>

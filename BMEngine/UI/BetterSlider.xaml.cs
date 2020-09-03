@@ -199,19 +199,6 @@ namespace ZenithEngine.UI
         }
     }
 
-    public class ScaledValueConverter : IMultiValueConverter
-    {
-        public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            return ((double)values[0] - (double)values[1]) / ((double)values[2] - (double)values[1]) * (double)values[3];
-        }
-
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
     public class ThicknessConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

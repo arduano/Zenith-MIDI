@@ -26,6 +26,11 @@ namespace Zenith
         public GeneralTab()
         {
             InitializeComponent();
+
+            speedSlider.nudToSlider = v => Math.Log(v, 2);
+            speedSlider.sliderToNud = v => Math.Pow(2, v);
+            speedSlider.Minimum = Math.Log(0.01, 2);
+            speedSlider.Maximum = Math.Log(50, 2);
         }
 
         public BaseModel Data
@@ -45,9 +50,15 @@ namespace Zenith
             e.Loaded();
         }
 
+        private async void cancelLoadButton_Click(object sender, LoadableRoutedEventArgs e)
+        {
+            await Data.Midi.CancelMidiLoading();
+            e.Loaded();
+        }
+
         private async void startPreview_Click(object sender, RoutedEventArgs e)
         {
-            await Data.StartPreview();
+            await Data.StartPlayback(false);
         }
 
         private async void stopPlayback_Click(object sender, RoutedEventArgs e)
@@ -65,18 +76,12 @@ namespace Zenith
             await Data.LoadAllModules();
             e.Loaded();
         }
-    }
 
-    public class DecimalIntConvert : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        private async void kdmapiSwitch_LoaderClick(object sender, LoadableRoutedEventArgs e)
         {
-            return (decimal)(int)value;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return (int)(decimal)value;
+            if (Data.KdmapiConnected) await Data.UnloadKdmapi();
+            else await Data.LoadKdmapi();
+            e.Loaded();
         }
     }
 }

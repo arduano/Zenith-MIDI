@@ -64,6 +64,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
@@ -365,7 +366,6 @@
       <DependentUpon>BetterSlider.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Checkbox.cs" />
-    <Compile Include="UI\Class1.cs" />
     <Compile Include="UI\Converters.cs" />
     <Compile Include="UI\EnumComboBox.cs" />
     <Compile Include="UI\EnumerationExtension.cs" />
@@ -373,6 +373,7 @@
       <DependentUpon>HexColorPicker.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\InplaceConverter.cs" />
+    <Compile Include="UI\LabelledItem.cs" />
     <Compile Include="UI\LoaderButton.cs" />
     <Compile Include="UI\NumberBox.cs" />
     <Compile Include="UI\NumberSelect.xaml.cs">
@@ -380,6 +381,8 @@
     </Compile>
     <Compile Include="UI\RippleEffectDecorator.cs" />
     <Compile Include="UI\RippleSource.cs" />
+    <Compile Include="UI\Slider.cs" />
+    <Compile Include="UI\Title.cs" />
     <Compile Include="UI\ValueSlider.xaml.cs">
       <DependentUpon>ValueSlider.xaml</DependentUpon>
     </Compile>
@@ -388,6 +391,16 @@
   <ItemGroup>
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
+    <Resource Include="UI\Fonts\Inter-Light.otf" />
+    <Resource Include="UI\Fonts\Inter-Medium.otf" />
+    <Resource Include="UI\Fonts\Metropolis-Light.otf" />
+    <Resource Include="UI\Fonts\Metropolis-Medium.otf" />
+    <Resource Include="UI\Fonts\Metropolis-Thin.otf" />
+    <Resource Include="UI\Fonts\Inter-Thin.otf" />
+    <Resource Include="UI\Fonts\Inter-Regular.otf" />
+    <Resource Include="UI\Fonts\Metropolis-Bold.otf" />
+    <Resource Include="UI\Fonts\Metropolis-Regular.otf" />
+    <Resource Include="UI\Fonts\Metropolis-ExtraBold.ttf" />
     <Page Include="UI\BetterCheckbox.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -404,7 +417,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Colors.xaml">
+    <Page Include="UI\Slider.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Theme.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -415,6 +432,10 @@
     <Page Include="UI\HexColorPicker.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\LabelledItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\ListBox.xaml">
       <SubType>Designer</SubType>
@@ -474,6 +495,7 @@
   <ItemGroup>
     <EmbeddedResource Include="DXHelper\Presets\Shaders\multiTexture.fx" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

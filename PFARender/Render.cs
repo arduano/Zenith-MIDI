@@ -29,7 +29,7 @@ namespace PFARender
         #region Info
         public override string Name => "PFA+";
         public override string Description => "A replica of PFA with some special extra features";
-        public override ImageSource PreviewImage { get; } = ModuleUtils.BitmapToImageSource(Properties.Resources.preview);
+        public override ImageSource PreviewImage { get; } = LoadPreviewBitmap(Properties.Resources.preview);
         public override string LanguageDictName { get; } = "pfa";
         #endregion
 

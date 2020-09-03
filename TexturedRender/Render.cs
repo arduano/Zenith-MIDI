@@ -23,7 +23,7 @@ namespace TexturedRender
 
         public override string LanguageDictName { get; } = "textured";
 
-        public override ImageSource PreviewImage => null;
+        public override ImageSource PreviewImage { get; } =  LoadPreviewBitmap(Properties.Resources.preview);
 
         public override double StartOffset => 0;
 

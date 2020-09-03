@@ -1,0 +1,39 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:ZenithEngine.UI"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+                    xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2"
+                    xmlns:media="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+    
+    <media:Color x:Key="PrimaryColor" >#2E7D32</media:Color>
+    <SolidColorBrush x:Key="PrimaryBrush" Color="{DynamicResource PrimaryColor}"/>
+    
+    <media:Color x:Key="TextColor" >#FFFFFF</media:Color>
+    <SolidColorBrush x:Key="TextBrush" Color="{DynamicResource TextColor}"/>
+
+    <sys:Double x:Key="BodyFontSize">16</sys:Double>
+    <FontFamily x:Key="BodyFont">/ZenithEngine;component/UI/Fonts/#Inter Light</FontFamily>
+
+    <sys:Double x:Key="TitleFontSize">32</sys:Double>
+    <FontFamily x:Key="TitleFont">/ZenithEngine;component/UI/Fonts/#Metropolis Medium</FontFamily>
+
+    <Style x:Key="MatText">
+        <Setter Property="Control.Foreground" Value="{DynamicResource TextBrush}"/>
+        <Setter Property="Control.FontSize" Value="{DynamicResource BodyFontSize}"/>
+        <Setter Property="Control.FontFamily" Value="{DynamicResource BodyFont}"/>
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextBrush}"/>
+        <Setter Property="TextElement.FontSize" Value="{DynamicResource BodyFontSize}"/>
+        <Setter Property="TextElement.FontFamily" Value="{DynamicResource BodyFont}"/>
+    </Style>
+
+    <Style x:Key="MatTitleText">
+        <Setter Property="Control.Foreground" Value="{DynamicResource TextBrush}"/>
+        <Setter Property="Control.FontSize" Value="{DynamicResource TitleFontSize}"/>
+        <Setter Property="Control.FontFamily" Value="{DynamicResource TitleFont}"/>
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextBrush}"/>
+        <Setter Property="TextElement.FontSize" Value="{DynamicResource TitleFontSize}"/>
+        <Setter Property="TextElement.FontFamily" Value="{DynamicResource TitleFont}"/>
+    </Style>
+
+    <!--<FontFamily x:Key="BodyFont">/ZenithEngine;component/UI/Fonts/#Metropolis Extra Bold</FontFamily>-->
+</ResourceDictionary>

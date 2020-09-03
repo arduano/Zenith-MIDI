@@ -60,4 +60,11 @@ namespace ZenithEngine.UI
             : base(new[] { binding1, binding2, binding3 }, (d) => func((T1)d[0], (T2)d[1], (T3)d[2]))
         { }
     }
+
+    public class InplaceConverter<T1, T2, T3, T4, R1> : InplaceConverter
+    {
+        public InplaceConverter(Binding binding1, Binding binding2, Binding binding3, Binding binding4, Func<T1, T2, T3, T4, R1> func)
+            : base(new[] { binding1, binding2, binding3, binding4 }, (d) => func((T1)d[0], (T2)d[1], (T3)d[2], (T4)d[3]))
+        { }
+    }
 }

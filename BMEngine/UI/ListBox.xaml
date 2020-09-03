@@ -5,7 +5,7 @@
                     xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2"
                     xmlns:media="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="Colors.xaml"/>
+        <ResourceDictionary Source="Theme.xaml"/>
     </ResourceDictionary.MergedDictionaries>
     <media:Style TargetType="{x:Type media:ListBox}" x:Key="ListBoxStyle">
         <media:Setter Property="BorderThickness" Value="1"/>
@@ -28,7 +28,7 @@
         </media:Setter>
     </media:Style>
 
-    <media:Style TargetType="{x:Type media:ListBoxItem}" x:Key="ListItemStyle">
+    <media:Style TargetType="{x:Type media:ListBoxItem}" x:Key="ListItemStyle" BasedOn="{StaticResource MatText}">
         <media:Setter Property="SnapsToDevicePixels" Value="True"/>
         <media:Setter Property="Padding" Value="4,1"/>
         <media:Setter Property="HorizontalContentAlignment" Value="{media:Binding HorizontalContentAlignment, RelativeSource={media:RelativeSource AncestorType={x:Type media:ItemsControl}}}"/>
@@ -36,8 +36,6 @@
         <media:Setter Property="Background" Value="Transparent"/>
         <media:Setter Property="BorderBrush" Value="Transparent"/>
         <media:Setter Property="BorderThickness" Value="1"/>
-        <media:Setter Property="FontSize" Value="14"/>
-        <media:Setter Property="Foreground" Value="White"/>
         <media:Setter Property="Padding" Value="5"/>
         <media:Setter Property="Template">
             <media:Setter.Value>

@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
 namespace Zenith.Models
 {
-    public class UIException : Exception
-    {
-        public UIException(string message) : base(message) { }
-    }
-
     public static class Err
     {
         static void HandleUIError(UIException e)
@@ -22,6 +18,19 @@ namespace Zenith.Models
 
         static void HandleUnknownError(Exception e)
         {
+            if (e is AggregateException)
+            {
+                foreach (var ce in (e as AggregateException).InnerExceptions)
+                {
+                    HandleUnknownError(ce);
+                }
+                return;
+            }
+            if (e is TargetInvocationException)
+            {
+                HandleUnknownError((e as TargetInvocationException).InnerException);
+                return;
+            }
             Console.WriteLine("An unknown error occured");
             Console.WriteLine(e.Message);
         }

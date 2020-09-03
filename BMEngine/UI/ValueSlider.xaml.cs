@@ -111,12 +111,12 @@ namespace ZenithEngine.UI
 
             FocusVisualStyle = null;
 
-            slider.SetBinding(BetterSlider.MaximumProperty, new Binding("Maximum") { Source = this });
-            slider.SetBinding(BetterSlider.MinimumProperty, new Binding("Minimum") { Source = this });
-            updown.SetBinding(NumberSelect.MinimumProperty, new Binding("TrueMin") { Source = this });
-            updown.SetBinding(NumberSelect.MaximumProperty, new Binding("TrueMax") { Source = this });
-            updown.SetBinding(NumberSelect.DecimalPointsProperty, new Binding("DecimalPoints") { Source = this });
-            updown.SetBinding(NumberSelect.StepProperty, new Binding("Step") { Source = this });
+            slider.SetBinding(Slider.MaximumProperty, new Binding("Maximum") { Source = this });
+            slider.SetBinding(Slider.MinimumProperty, new Binding("Minimum") { Source = this });
+            updown.SetBinding(NumberBox.MinimumProperty, new Binding("TrueMin") { Source = this });
+            updown.SetBinding(NumberBox.MaximumProperty, new Binding("TrueMax") { Source = this });
+            updown.SetBinding(NumberBox.DecimalPointsProperty, new Binding("DecimalPoints") { Source = this });
+            updown.SetBinding(NumberBox.StepProperty, new Binding("Step") { Source = this });
         }
 
         bool ignoreslider = false;

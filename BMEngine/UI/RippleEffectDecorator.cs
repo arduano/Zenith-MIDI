@@ -22,7 +22,6 @@ namespace ZenithEngine.UI
             set { SetValue(OpacityProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for Opacity.  This enables animation, styling, binding, etc...
         new public static readonly DependencyProperty OpacityProperty =
             DependencyProperty.Register("Opacity", typeof(double), typeof(RippleEffectDecorator), new PropertyMetadata(0.4));
 
@@ -32,7 +31,6 @@ namespace ZenithEngine.UI
             set { SetValue(ExpandTimeProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for ExpandTime.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ExpandTimeProperty =
             DependencyProperty.Register("ExpandTime", typeof(double), typeof(RippleEffectDecorator), new PropertyMetadata(0.4));
 
@@ -42,7 +40,6 @@ namespace ZenithEngine.UI
             set { SetValue(FadeTimeProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for FadeTime.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty FadeTimeProperty =
             DependencyProperty.Register("FadeTime", typeof(double), typeof(RippleEffectDecorator), new PropertyMetadata(0.3));
 

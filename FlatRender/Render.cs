@@ -27,7 +27,7 @@ namespace FlatRender
         #region Info
         public override string Name { get; } = "Flat";
         public override string Description { get; } = "Flat renderer, requested by SquareWaveMidis for his channel";
-        public override ImageSource PreviewImage { get; } = ModuleUtils.BitmapToImageSource(Properties.Resources.preview);
+        public override ImageSource PreviewImage { get; } = LoadPreviewBitmap(Properties.Resources.preview);
         public override string LanguageDictName { get; } = "flat";
         #endregion
 

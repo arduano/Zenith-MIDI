@@ -6,10 +6,11 @@
                     xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2"
                     xmlns:media="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="Colors.xaml"/>
+        <ResourceDictionary Source="Theme.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
     <Style x:Key="MatNumberBox" TargetType="{x:Type local:NumberBox}">
+        <Setter Property="Height" Value="25"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:NumberBox}">
@@ -20,12 +21,11 @@
                         </Grid.ColumnDefinitions>
                         <Grid Margin="0,0,3,0">
                             <TextBox ClipToBounds="True" x:Name="PART_textbox" Padding="0,1,0,0" TextWrapping="Wrap"
-                 Background="Transparent"
-                 BorderThickness="0"
-                     Foreground="White"
-                     Text="0"
-                     CaretBrush="White"
-                     RenderTransformOrigin="0.5,0.5" FontSize="16" Margin="0,2,0,0">
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Text="0"
+                                    CaretBrush="White"
+                                    RenderTransformOrigin="0.5,0.5" Margin="0,2,0,0">
                                 <TextBox.Style>
                                     <Style TargetType="TextBox">
                                         <Setter Property="Background" Value="#666666"/>
@@ -54,7 +54,7 @@
                                     </TransformGroup>
                                 </TextBox.RenderTransform>
                             </TextBox>
-                            <Rectangle Fill="{StaticResource PrimaryBrush}" Height="1" VerticalAlignment="Bottom"/>
+                            <Rectangle Fill="{DynamicResource PrimaryBrush}" Height="1" VerticalAlignment="Bottom"/>
                         </Grid>
                         <Grid Grid.Column="1" Width="25" Height="25" Grid.ColumnSpan="2" Margin="0,0">
                             <Grid.RowDefinitions>
