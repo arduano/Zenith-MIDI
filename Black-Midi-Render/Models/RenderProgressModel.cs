@@ -15,6 +15,7 @@ namespace Zenith.Models
         public double Seconds { get; }
 
         public long Ticks { get; }
+
         public long NotesRendering { get; }
     }
 }

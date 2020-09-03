@@ -64,7 +64,7 @@
 
             <Style x:Key="RenderFPS" TargetType="{x:Type ui:NumberBox}" BasedOn="{StaticResource MatNumberBox}">
                 <Setter Property="IsEnabled" Value="{Binding IsNotPlaying}"/>
-                <Setter Property="Maximum" Value="4"/>
+                <Setter Property="Maximum" Value="1000"/>
                 <Setter Property="Minimum" Value="1"/>
             </Style>
 
