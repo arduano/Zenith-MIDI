@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenithShared", "ZenithShare
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenithInstaller", "ZenithInstaller\ZenithInstaller.csproj", "{F43DEA70-CB97-43FA-9CE9-172D85F010F3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DX.WPF", "DX.WPF\DX.WPF.csproj", "{BD352A84-3DEC-47AD-87AB-1765237D7DEE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -169,6 +171,18 @@ Global
 		{F43DEA70-CB97-43FA-9CE9-172D85F010F3}.Release|x64.Build.0 = Release|Any CPU
 		{F43DEA70-CB97-43FA-9CE9-172D85F010F3}.Release|x86.ActiveCfg = Release|Any CPU
 		{F43DEA70-CB97-43FA-9CE9-172D85F010F3}.Release|x86.Build.0 = Release|Any CPU
+		{BD352A84-3DEC-47AD-87AB-1765237D7DEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD352A84-3DEC-47AD-87AB-1765237D7DEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD352A84-3DEC-47AD-87AB-1765237D7DEE}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BD352A84-3DEC-47AD-87AB-1765237D7DEE}.Debug|x64.Build.0 = Debug|Any CPU
+		{BD352A84-3DEC-47AD-87AB-1765237D7DEE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BD352A84-3DEC-47AD-87AB-1765237D7DEE}.Debug|x86.Build.0 = Debug|Any CPU
+		{BD352A84-3DEC-47AD-87AB-1765237D7DEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD352A84-3DEC-47AD-87AB-1765237D7DEE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD352A84-3DEC-47AD-87AB-1765237D7DEE}.Release|x64.ActiveCfg = Release|Any CPU
+		{BD352A84-3DEC-47AD-87AB-1765237D7DEE}.Release|x64.Build.0 = Release|Any CPU
+		{BD352A84-3DEC-47AD-87AB-1765237D7DEE}.Release|x86.ActiveCfg = Release|Any CPU
+		{BD352A84-3DEC-47AD-87AB-1765237D7DEE}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

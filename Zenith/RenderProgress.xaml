@@ -26,6 +26,7 @@
             </ui:LabelledItem>
             <Label Content="{Binding RenderProgress.Seconds}" />
             <ProgressBar Height="20" Width="500" Value="{Binding RenderProgress.Progress, Mode=OneWay}" Minimum="0" Maximum="1"/>
+            
         </StackPanel>
     </Grid>
 </UserControl>

@@ -1,0 +1,3 @@
+[submodule "DX.WPF"]
+	path = DX.WPF
+	url = https://github.com/arduano/DX.WPF.git

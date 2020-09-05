@@ -396,6 +396,7 @@
     </media:Style>
 
     <Style x:Key="MatOverlay" TargetType="{x:Type local:Overlay}">
+        <Setter Property="Visibility" Value="Hidden"/>
         <Setter Property="Background" Value="{DynamicResource OverlayBrush}"/>
     </Style>
     
