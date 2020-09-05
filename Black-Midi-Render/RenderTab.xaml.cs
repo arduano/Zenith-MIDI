@@ -57,5 +57,10 @@ namespace Zenith
         {
 
         }
+
+        private async void startRender_Click(object sender, RoutedEventArgs e)
+        {
+            await Data.StartRender();
+        }
     }
 }

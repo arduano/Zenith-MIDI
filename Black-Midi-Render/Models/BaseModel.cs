@@ -41,8 +41,14 @@ namespace Zenith.Models
                 {
                     RunModuleLoader(cancel).Wait();
                 });
-                await ModuleLoadTask.Await();
-                ModuleLoadTask = null;
+                try
+                {
+                    await ModuleLoadTask.Await();
+                }
+                finally
+                {
+                    ModuleLoadTask = null;
+                }
             });
         }
 
@@ -51,8 +57,14 @@ namespace Zenith.Models
             Err.Handle(() =>
             {
                 HasTriedLoadingModules = true;
-                ModuleLoadTask?.Wait();
-                ModuleLoadTask = null;
+                try
+                {
+                    ModuleLoadTask?.Wait();
+                }
+                finally
+                {
+                    ModuleLoadTask = null;
+                }
                 RunModuleLoader().Wait();
             });
         }
@@ -125,6 +137,8 @@ namespace Zenith.Models
         public RenderPipeline RenderPipeline { get; set; }
         public RenderStatus RenderStatus { get; set; }
 
+        public RenderProgressModel RenderProgress { get; set; } = null;
+
         public CancellableTask RenderTask { get; private set; }
 
         public bool IsMidiLoaded { get; private set; } = false;
@@ -149,7 +163,10 @@ namespace Zenith.Models
             if (SelectedModule == null) throw new UIException("Can't play with no module selected");
         }
 
-        public async Task StartPlayback(bool render)
+        public Task StartPreview() => StartPlayback(false);
+        public Task StartRender() => StartPlayback(true);
+
+        async Task StartPlayback(bool render)
         {
             await Err.Handle(async () =>
             {
@@ -173,28 +190,52 @@ namespace Zenith.Models
                         }
                     }
 
-                    RenderStatus = new RenderStatus(RenderArgs.Width, RenderArgs.Height, RenderArgs.SSAA)
+                    RenderStatus = new RenderStatus(RenderArgs.Width, RenderArgs.Height, RenderArgs.SSAA);
+                    if (!render)
                     {
-                        RealtimePlayback = RealtimePlayback,
-                        PreviewAudioEnabled = !MuteAudio,
-                    };
+                        RenderStatus.RealtimePlayback = RealtimePlayback;
+                        RenderStatus.PreviewAudioEnabled = !MuteAudio;
+                    }
+                    else
+                    {
+                        RenderStatus.RealtimePlayback = false;
+                        RenderStatus.PreviewAudioEnabled = false;
+                    }
 
                     var playback = Midi.Loaded.MidiFile.GetMidiPlayback(startOffset, RenderArgs.NoteSize == NoteSize.Time);
 
-                    RenderPipeline = new RenderPipeline(RenderStatus, playback, moduleManager, output)
+
+                    RenderPipeline = new RenderPipeline(RenderStatus, playback, moduleManager, output);
+                    if (!render)
                     {
-                        Paused = Paused,
-                        VSync = VsyncEnabled,
-                        PreviewSpeed = PreviewSpeed,
-                    };
+                        RenderPipeline.Paused = Paused;
+                        RenderPipeline.VSync = VsyncEnabled;
+                        RenderPipeline.PreviewSpeed = PreviewSpeed;
+                    }
+                    else
+                    {
+                        RenderPipeline.Paused = false;
+                        RenderPipeline.VSync = false;
+                        RenderPipeline.PreviewSpeed = 1;
+                    }
+
+
+                    RenderProgress = new RenderProgressModel(RenderPipeline);
 
                     RenderPipeline.Start(cancel).Wait();
                     RenderPipeline.Dispose();
                     RenderPipeline = null;
                     RenderStatus = null;
+                    RenderProgress = null;
                 });
-                await RenderTask.Await();
-                RenderTask = null;
+                try
+                {
+                    await RenderTask.Await();
+                }
+                finally
+                {
+                    RenderTask = null;
+                }
             });
         }
 
@@ -233,8 +274,14 @@ namespace Zenith.Models
                         KdmapiNotDetected = true;
                     }
                 });
-                await ConnectKdmapiTask.Await();
-                ConnectKdmapiTask = null;
+                try
+                {
+                    await ConnectKdmapiTask.Await();
+                }
+                finally
+                {
+                    ConnectKdmapiTask = null;
+                }
             });
         }
 
@@ -248,8 +295,14 @@ namespace Zenith.Models
                     KDMAPIOutput.Terminate();
                     KdmapiConnected = KDMAPIOutput.Initialized;
                 });
-                await DisconnectKdmapiTask.Await();
-                DisconnectKdmapiTask = null;
+                try
+                {
+                    await DisconnectKdmapiTask.Await();
+                }
+                finally
+                {
+                    DisconnectKdmapiTask = null;
+                }
             });
         }
         #endregion

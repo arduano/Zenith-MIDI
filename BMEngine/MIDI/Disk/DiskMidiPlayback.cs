@@ -167,9 +167,9 @@ namespace ZenithEngine.MIDI.Disk
             long nc = 0;
             return GenerateNotesListArrays(
                 getNotes,
-                n => nc += n,
-                () =>
+                n =>
                 {
+                    nc += n;
                     lastNoteCount = nc;
                     CheckEnded();
                 });

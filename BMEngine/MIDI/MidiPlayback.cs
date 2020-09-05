@@ -193,7 +193,7 @@ namespace ZenithEngine.MIDI
             }
         }
 
-        protected static IEnumerable<Note>[] GenerateNotesListArrays(Func<int, IEnumerable<Note>> listFromKey, Action<long> addNotes, Action onComplete)
+        protected static IEnumerable<Note>[] GenerateNotesListArrays(Func<int, IEnumerable<Note>> listFromKey, Action<long> completedTrack)
         {
             object l = new object();
             int completed = 0;
@@ -207,15 +207,14 @@ namespace ZenithEngine.MIDI
                 }
                 lock (l)
                 {
-                    addNotes(nc);
+                    completedTrack(nc);
                     completed++;
-                    if (completed == 256) onComplete();
                 }
             }
 
             IEnumerable<IEnumerable<Note>> allKeys()
             {
-                for (int i = 0; i < 255; i++)
+                for (int i = 0; i < 256; i++)
                 {
                     yield return fromKey(i);
                 }

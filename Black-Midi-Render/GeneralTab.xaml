@@ -230,16 +230,16 @@
                 </ListView>
             </DockPanel>
         </Grid>
-        <Grid Background="#88000000">
+        <ui:Overlay>
             <Grid.Style>
-                <Style TargetType="Grid">
-                    <Setter Property="Visibility" Value="Collapsed"/>
+                <Style TargetType="ui:Overlay" BasedOn="{StaticResource MatOverlay}">
+                    <Setter Property="Showing" Value="False"/>
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding Midi.LoadStatus}" Value="{x:Static models:MidiLoadStatus.Loading}">
-                            <Setter Property="Visibility" Value="Visible"/>
+                            <Setter Property="Showing" Value="True"/>
                         </DataTrigger>
                         <DataTrigger Binding="{Binding Midi.LoadStatus}" Value="{x:Static models:MidiLoadStatus.Cancelling}">
-                            <Setter Property="Visibility" Value="Visible"/>
+                            <Setter Property="Showing" Value="True"/>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
@@ -254,6 +254,19 @@
                     <ui:LoaderButton Name="cancelLoadButton" LoaderClick="cancelLoadButton_Click">Cancel</ui:LoaderButton>
                 </StackPanel>
             </DockPanel>
-        </Grid>
+        </ui:Overlay>
+        <ui:Overlay>
+            <Grid.Style>
+                <Style TargetType="ui:Overlay" BasedOn="{StaticResource MatOverlay}">
+                    <Setter Property="Showing" Value="True"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding RenderProgress}" Value="{x:Null}">
+                            <Setter Property="Showing" Value="False"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+            <local:RenderProgress/>
+        </ui:Overlay>
     </Grid>
 </UserControl>

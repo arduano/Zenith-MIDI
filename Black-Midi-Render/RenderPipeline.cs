@@ -22,9 +22,18 @@ using System.IO;
 
 namespace Zenith
 {
-    public struct RenderProgress
+    public struct RenderProgressData
     {
+        public RenderProgressData(double seconds, long renderedNotes, long renderFrameNumber)
+        {
+            Seconds = seconds;
+            RenderedNotes = renderedNotes;
+            RenderFrameNumber = renderFrameNumber;
+        }
 
+        public double Seconds { get; }
+        public long RenderedNotes { get; }
+        public long RenderFrameNumber { get; }
     }
 
     public class OutputSettings
@@ -215,6 +224,9 @@ namespace Zenith
 
         public bool Running => Status.Running;
 
+        public double StartTime { get; }
+        public double EndTime { get; }
+
         public event Action<bool> PauseToggled;
         private bool paused = false;
         public bool Paused
@@ -246,10 +258,10 @@ namespace Zenith
 
         Thread renderTask = null;
 
-        public EventHandler RenderStarted;
-        public EventHandler<RenderProgress> RenderProgress;
-        public EventHandler RenderEnded;
-        public EventHandler RenderErrored;
+        public event EventHandler RenderStarted;
+        public event EventHandler<RenderProgressData> RenderProgress;
+        public event EventHandler RenderEnded;
+        public event EventHandler RenderErrored;
         private double previewSpeed = 1;
 
         public RenderPipeline(RenderStatus status, MidiPlayback playback, ModuleManager module, OutputSettings renderSettings)
@@ -259,6 +271,9 @@ namespace Zenith
             Module = module;
             RenderArgs = renderSettings;
             Playback.PushPlaybackEvents = Status.PreviewAudioEnabled && !Rendering;
+
+            EndTime = Playback.Midi.SecondsLength + 5;
+            StartTime = Playback.PlayerPositionSeconds;
         }
 
         public RenderPipeline(RenderStatus status, MidiPlayback playback, ModuleManager module) :
@@ -293,6 +308,8 @@ namespace Zenith
 
         void Runner(CancellationToken cancel)
         {
+            RenderStarted?.Invoke(this, new EventArgs());
+
             var dispose = new DisposeGroup();
 
             try
@@ -312,9 +329,11 @@ namespace Zenith
 
                 Stopwatch time = new Stopwatch();
 
+                long frameNum = 0;
+
                 if (!Rendering) midiAudio = dispose.Add(new MIDIAudio(Playback, new KDMAPIOutput()));
 
-                RenderLoop.Run(form, () =>
+                RenderLoop.Run(form, (RenderLoop.RenderCallback)(() =>
                 {
                     var context = form.Device.ImmediateContext;
                     Module.RenderFrame(context, preview.RenderTarget);
@@ -326,6 +345,7 @@ namespace Zenith
                     catch (FFMpegException)
                     {
                         form.Close();
+                        return;
                     }
 
                     form.Present(VSync);
@@ -340,18 +360,22 @@ namespace Zenith
                     time.Reset();
                     time.Start();
 
-                    if (Playback.PlayerPositionSeconds > Playback.Midi.SecondsLength + 5)
+                    if (Playback.PlayerPositionSeconds > EndTime)
                         form.Close();
                     if (!Status.Running) form.Close();
 
+                    RenderProgress?.Invoke(this, new RenderProgressData((double)Playback.PlayerPositionSeconds, (long)Playback.LastIterateNoteCount, frameNum++));
+
                     cancel.ThrowIfCancellationRequested();
-                });
+                }));
             }
             finally
             {
                 dispose.Dispose();
                 Module.EndRender();
             }
+
+            RenderEnded?.Invoke(this, new EventArgs());
 
             //var win = new PreviewWindow(1280, 720, GraphicsMode.Default, "test", GameWindowFlags.Default, DisplayDevice.Default, 1, 0, GraphicsContextFlags.Default);
             //win.Run();

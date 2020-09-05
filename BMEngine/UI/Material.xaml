@@ -395,6 +395,10 @@
         </media:Setter>
     </media:Style>
 
+    <Style x:Key="MatOverlay" TargetType="{x:Type local:Overlay}">
+        <Setter Property="Background" Value="{DynamicResource OverlayBrush}"/>
+    </Style>
+    
     <Style BasedOn="{StaticResource MatButton}" TargetType="Button"/>
     <Style BasedOn="{StaticResource MatLoadableButton}" TargetType="local:LoaderButton"/>
 
@@ -413,4 +417,6 @@
     <Style BasedOn="{StaticResource MatNumberBox}" TargetType="{x:Type local:NumberBox}"/>
     
     <Style BasedOn="{StaticResource MatSlider}" TargetType="{x:Type local:Slider}"/>
+
+    <Style BasedOn="{StaticResource MatOverlay}" TargetType="{x:Type local:Overlay}"/>
 </ResourceDictionary>

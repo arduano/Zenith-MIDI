@@ -68,6 +68,18 @@
                 <Setter Property="Maximum" Value="120"/>
                 <Setter Property="DecimalPoints" Value="2"/>
             </Style>
+
+            <Style x:Key="StartRender" TargetType="{x:Type ui:LoaderButton}" BasedOn="{StaticResource MatLoadableButton}">
+                <Setter Property="IsEnabled" Value="{Binding CanStartPlaying}"/>
+                <Setter Property="Loading" Value="False"/>
+                <Setter Property="RaiseLoaderClick" Value="False"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsPlaybackLoading}" Value="True">
+                        <Setter Property="IsEnabled" Value="False"/>
+                        <Setter Property="Loading" Value="True"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
         </ResourceDictionary>
     </UserControl.Resources>
     <StackPanel>
@@ -143,5 +155,6 @@
         <ui:LabelledItem Label="Start Offset (seconds)">
             <ui:NumberBox Style="{StaticResource StartOffset}" Value="{Binding OutputOptions.StartOffset, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DecimalDoubleConvert}}"/>
         </ui:LabelledItem>
+        <ui:LoaderButton Grid.Column="0" Margin="5" Style="{DynamicResource StartRender}" Name="startRender" Click="startRender_Click">Start Render</ui:LoaderButton>
     </StackPanel>
 </UserControl>

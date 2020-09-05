@@ -379,6 +379,7 @@
     <Compile Include="UI\NumberSelect.xaml.cs">
       <DependentUpon>NumberSelect.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Overlay.cs" />
     <Compile Include="UI\RippleEffectDecorator.cs" />
     <Compile Include="UI\RippleSource.cs" />
     <Compile Include="UI\Slider.cs" />

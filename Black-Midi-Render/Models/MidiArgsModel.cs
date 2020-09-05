@@ -47,9 +47,15 @@ namespace Zenith.Models
                     {
                         LoadStatus = MidiLoadStatus.Unloaded;
                     }
-                });
-                await MidiLoadTask.Await();
-                MidiLoadTask = null;
+                }); 
+                try
+                {
+                    await MidiLoadTask.Await();
+                }
+                finally
+                {
+                    MidiLoadTask = null;
+                }
             });
         }
 
@@ -60,9 +66,15 @@ namespace Zenith.Models
                 if (LoadStatus != MidiLoadStatus.Loading || MidiLoadTask == null) throw new UIException("Can't cancel loading when nothing is loading");
                 LoadStatus = MidiLoadStatus.Cancelling;
                 MidiLoadTask?.Cancel();
-                await MidiLoadTask.Await();
-                Loaded = null;
-                MidiLoadTask = null;
+                try
+                {
+                    await MidiLoadTask.Await();
+                }
+                finally
+                {
+                    MidiLoadTask = null;
+                    Loaded = null;
+                }
             });
         }
 

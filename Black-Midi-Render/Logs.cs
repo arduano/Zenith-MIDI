@@ -17,15 +17,24 @@ namespace Zenith
         string filepath;
 
         StreamWriter writer;
-        Stream stdout = Console.OpenStandardOutput();
+        Stream stdout;
 
-        public Logger(string filepath)
+        bool useStdout;
+        object l = new object();
+
+        public Logger(string filepath, bool useStdout = false)
         {
             var dir = Path.GetDirectoryName(filepath);
             if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
             this.filepath = filepath;
             writeStream = File.Open(filepath, FileMode.Create, FileAccess.Write);
             writer = new StreamWriter(this);
+
+            this.useStdout = useStdout;
+            if (useStdout)
+            {
+                stdout = Console.OpenStandardOutput();
+            }
         }
 
         public override bool CanRead => false;
@@ -61,7 +70,13 @@ namespace Zenith
         public override void Write(byte[] buffer, int offset, int count)
         {
             writeStream.Write(buffer, offset, count);
-            stdout.Write(buffer, offset, count);
+            if (useStdout)
+            {
+                lock (l)
+                {
+                    stdout.Write(buffer, offset, count);
+                }
+            }
         }
 
         public void OpenDebugOnClose()
@@ -73,7 +88,7 @@ namespace Zenith
         {
             base.Close();
             writeStream.Close();
-            stdout.Close();
+            stdout?.Close();
             if (debugFlagged)
             {
                 OpenLogData();
@@ -114,7 +129,7 @@ namespace Zenith
             extra = extra == "" ? "" : "-" + extra;
             for (int i = 1; ; i++)
             {
-                string name = $"{folder}-{now.Day}.{now.Month}.{now.Year}-{now.Hour}.{now.Minute}.{now.Second}-log{i}{extra}.txt";
+                string name = $"{folder}--{now.ToShortDateString().Replace("/", ".")}--{now.ToLongTimeString().Replace(" ", "").Replace(":", ".")}--log{i}{extra}.txt";
                 var path = Path.Combine(logFolder, folder, name);
                 if (File.Exists(path)) continue;
                 return new Logger(path);

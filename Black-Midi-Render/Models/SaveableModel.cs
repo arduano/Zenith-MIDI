@@ -48,7 +48,7 @@ namespace Zenith.Models
             PropertyChanged += SaveableModel_PropertyChanged;
         }
 
-        private void SaveableModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        protected void SaveSettings()
         {
             if (watcherReading) return;
             lock (l)
@@ -57,6 +57,11 @@ namespace Zenith.Models
                 lastJson = json;
                 File.WriteAllText(savePath, json);
             }
+        }
+
+        private void SaveableModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            SaveSettings();
         }
 
         private void Watcher_Changed(object sender, FileSystemEventArgs e)

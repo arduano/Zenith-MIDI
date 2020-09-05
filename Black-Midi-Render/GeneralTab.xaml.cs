@@ -45,8 +45,8 @@ namespace Zenith
 
         private async void loadMidi_Click(object sender, LoadableRoutedEventArgs e)
         {
-            //await Data.Midi.LoadMidi("D:\\Midi\\tau2.5.9.mid");
-            await Data.Midi.LoadMidi("D:\\Midi\\(black score) Last Brutal Sister Flandre S 110 Million Notes.mid");
+            await Data.Midi.LoadMidi("D:\\Midi\\tau2.5.9.mid");
+            //await Data.Midi.LoadMidi("D:\\Midi\\(black score) Last Brutal Sister Flandre S 110 Million Notes.mid");
             e.Loaded();
         }
 
@@ -58,7 +58,7 @@ namespace Zenith
 
         private async void startPreview_Click(object sender, RoutedEventArgs e)
         {
-            await Data.StartPlayback(false);
+            await Data.StartPreview();
         }
 
         private async void stopPlayback_Click(object sender, RoutedEventArgs e)

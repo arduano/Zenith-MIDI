@@ -184,6 +184,9 @@
     <Compile Include="Models\RenderProgressModel.cs" />
     <Compile Include="Models\SaveableModel.cs" />
     <Compile Include="Models\SettingsModel.cs" />
+    <Compile Include="RenderProgress.xaml.cs">
+      <DependentUpon>RenderProgress.xaml</DependentUpon>
+    </Compile>
     <Compile Include="RenderTab.xaml.cs">
       <DependentUpon>RenderTab.xaml</DependentUpon>
     </Compile>
@@ -273,6 +276,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="GeneralTab.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="RenderProgress.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

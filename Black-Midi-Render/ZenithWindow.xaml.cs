@@ -269,6 +269,12 @@ namespace Zenith
                 Task.Run(() => DataBase.LoadAllModules());
             if (!DataBase.KdmapiConnected) 
                 Task.Run(() => DataBase.LoadKdmapi());
+
+            SourceInitialized += (s, e) =>
+            {
+                IntPtr handle = (new WindowInteropHelper(this)).Handle;
+                HwndSource.FromHwnd(handle).AddHook(new HwndSourceHook(WindowProc));
+            };
         }
 
         private void updateDownloaded_MouseDown(object sender, MouseButtonEventArgs e)

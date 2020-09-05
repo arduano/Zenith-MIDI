@@ -159,9 +159,9 @@ namespace ZenithEngine.DXHelper
         {
             try
             {
-            swapChain.Present(vsync ? 1 : 0, PresentFlags.None);
+                swapChain.Present(vsync ? 1 : 0, PresentFlags.None);
             }
-            catch(SharpDXException e)
+            catch (SharpDXException e)
             {
                 Console.WriteLine(Device.DeviceRemovedReason);
                 throw e;
