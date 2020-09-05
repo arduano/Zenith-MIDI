@@ -3,25 +3,25 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29001.49
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenith", "Black-Midi-Render\Zenith.csproj", "{273DA7BD-C89A-4574-97DE-AF425529FAAE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenith", "Zenith\Zenith.csproj", "{273DA7BD-C89A-4574-97DE-AF425529FAAE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenithEngine", "BMEngine\ZenithEngine.csproj", "{60F2212A-D56C-4776-836F-6A49453CDBC4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenithEngine", "ZenithEngine\ZenithEngine.csproj", "{60F2212A-D56C-4776-836F-6A49453CDBC4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{D60FA663-FD18-4342-A8C7-CD072DA1E4A0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassicRender", "ClassicRender\ClassicRender.csproj", "{B733D6F1-78A8-43CA-91A3-28FA3E7025D4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassicRender", "Modules\ClassicRender\ClassicRender.csproj", "{B733D6F1-78A8-43CA-91A3-28FA3E7025D4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PFARender", "PFARender\PFARender.csproj", "{84E13869-0D33-4A56-A1A8-0B6F12C76081}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PFARender", "Modules\PFARender\PFARender.csproj", "{84E13869-0D33-4A56-A1A8-0B6F12C76081}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRender", "FlatRender\FlatRender.csproj", "{AE59479C-9D0D-464C-A4D3-8FDD7E1F3786}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRender", "Modules\FlatRender\FlatRender.csproj", "{AE59479C-9D0D-464C-A4D3-8FDD7E1F3786}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MidiTrailRender", "MidiTrailRender\MidiTrailRender.csproj", "{991E132A-A56D-49AB-BBEE-9828359BB307}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MidiTrailRender", "Modules\MidiTrailRender\MidiTrailRender.csproj", "{991E132A-A56D-49AB-BBEE-9828359BB307}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoteCountRender", "NoteCountRender\NoteCountRender.csproj", "{5F30BA79-D86B-4FC6-BA76-7CBB9EBBA721}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoteCountRender", "Modules\NoteCountRender\NoteCountRender.csproj", "{5F30BA79-D86B-4FC6-BA76-7CBB9EBBA721}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TexturedRender", "TexturedRender\TexturedRender.csproj", "{ECF72523-79AE-4DD1-9421-60B1D8BCCB9E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TexturedRender", "Modules\TexturedRender\TexturedRender.csproj", "{ECF72523-79AE-4DD1-9421-60B1D8BCCB9E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScriptedRender", "ScriptedRenderer\ScriptedRender.csproj", "{95F774EB-47A2-40B3-A0CE-E616BBD4D62B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScriptedRender", "Modules\ScriptedRenderer\ScriptedRender.csproj", "{95F774EB-47A2-40B3-A0CE-E616BBD4D62B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZenithShared", "ZenithShared\ZenithShared.csproj", "{019E4CE1-547F-4A32-B02C-F190943713EB}"
 EndProject

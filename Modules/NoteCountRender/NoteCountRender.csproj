@@ -124,7 +124,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BMEngine\ZenithEngine.csproj">
+    <ProjectReference Include="..\..\ZenithEngine\ZenithEngine.csproj">
       <Project>{60f2212a-d56c-4776-836f-6a49453cdbc4}</Project>
       <Name>ZenithEngine</Name>
     </ProjectReference>

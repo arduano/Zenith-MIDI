@@ -223,23 +223,23 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BMEngine\ZenithEngine.csproj">
+    <ProjectReference Include="..\ZenithEngine\ZenithEngine.csproj">
       <Project>{60f2212a-d56c-4776-836f-6a49453cdbc4}</Project>
       <Name>ZenithEngine</Name>
     </ProjectReference>
-    <ProjectReference Include="..\FlatRender\FlatRender.csproj">
+    <ProjectReference Include="..\Modules\FlatRender\FlatRender.csproj">
       <Project>{ae59479c-9d0d-464c-a4d3-8fdd7e1f3786}</Project>
       <Name>FlatRender</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MidiTrailRender\MidiTrailRender.csproj">
+    <ProjectReference Include="..\Modules\MidiTrailRender\MidiTrailRender.csproj">
       <Project>{991e132a-a56d-49ab-bbee-9828359bb307}</Project>
       <Name>MidiTrailRender</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PFARender\PFARender.csproj">
+    <ProjectReference Include="..\Modules\PFARender\PFARender.csproj">
       <Project>{84e13869-0d33-4a56-a1a8-0b6f12c76081}</Project>
       <Name>PFARender</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TexturedRender\TexturedRender.csproj">
+    <ProjectReference Include="..\Modules\TexturedRender\TexturedRender.csproj">
       <Project>{ecf72523-79ae-4dd1-9421-60b1d8bccb9e}</Project>
       <Name>TexturedRender</Name>
     </ProjectReference>

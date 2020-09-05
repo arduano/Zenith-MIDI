@@ -200,7 +200,6 @@
                 </DockPanel>
                 <Label Margin="0,20,0,0" HorizontalAlignment="Center" Content="Preview Speed"/>
                 <ui:ValueSlider Name="speedSlider" Value="{Binding PreviewSpeed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" DecimalPoints="2" Width="600" Maximum="50" Minimum="0.01" TrueMax="50" TrueMin="0.01" />
-                <ui:ValueSlider Value="{Binding Settings.Test, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" DecimalPoints="2" Width="600" Maximum="50" Minimum="0.01" TrueMax="50" TrueMin="0.01" />
                 <Grid Margin="30">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
