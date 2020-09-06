@@ -19,6 +19,7 @@ using SharpDX;
 using ZenithEngine.DXHelper.Presets;
 using System.Threading;
 using System.IO;
+using DX.WPF;
 
 namespace Zenith
 {
@@ -178,7 +179,7 @@ namespace Zenith
             FFMpegOutput outputMask;
             Logger outputLogger;
             Logger outputMaskLogger;
-            public RenderPreview(RenderPipeline pipeline) : base(pipeline, true)
+            public RenderPreview(RenderPipeline pipeline) : base(pipeline, pipeline.RenderArgs.UseMask)
             {
             }
 
@@ -264,7 +265,9 @@ namespace Zenith
         public event EventHandler RenderErrored;
         private double previewSpeed = 1;
 
-        public RenderPipeline(RenderStatus status, MidiPlayback playback, ModuleManager module, OutputSettings renderSettings)
+        private DXElement OutputElement { get; }
+
+        public RenderPipeline(RenderStatus status, MidiPlayback playback, ModuleManager module, OutputSettings renderSettings, DXElement outputElment = null)
         {
             Status = status;
             Playback = playback;
@@ -272,12 +275,14 @@ namespace Zenith
             RenderArgs = renderSettings;
             Playback.PushPlaybackEvents = Status.PreviewAudioEnabled && !Rendering;
 
+            OutputElement = outputElment;
+
             EndTime = Playback.Midi.SecondsLength + 5;
             StartTime = Playback.PlayerPositionSeconds;
         }
 
         public RenderPipeline(RenderStatus status, MidiPlayback playback, ModuleManager module) :
-            this(status, playback, module, null)
+            this(status, playback, module, null, null)
         { }
 
         public Task Start() => Start(new CancellationTokenSource().Token);
@@ -308,8 +313,6 @@ namespace Zenith
 
         void Runner(CancellationToken cancel)
         {
-            RenderStarted?.Invoke(this, new EventArgs());
-
             var dispose = new DisposeGroup();
 
             try
@@ -333,7 +336,7 @@ namespace Zenith
 
                 if (!Rendering) midiAudio = dispose.Add(new MIDIAudio(Playback, new KDMAPIOutput()));
 
-                RenderLoop.Run(form, (RenderLoop.RenderCallback)(() =>
+                void RenderFrame()
                 {
                     var context = form.Device.ImmediateContext;
                     Module.RenderFrame(context, preview.RenderTarget);
@@ -367,7 +370,10 @@ namespace Zenith
                     RenderProgress?.Invoke(this, new RenderProgressData((double)Playback.PlayerPositionSeconds, (long)Playback.LastIterateNoteCount, frameNum++));
 
                     cancel.ThrowIfCancellationRequested();
-                }));
+                }
+
+                RenderStarted?.Invoke(this, new EventArgs());
+                RenderLoop.Run(form, RenderFrame);
             }
             finally
             {

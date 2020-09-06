@@ -9,12 +9,12 @@ namespace ZenithEngine.MIDI
 {
     public abstract class PositionedEvent
     {
-        protected PositionedEvent(long position)
+        protected PositionedEvent(double position)
         {
             Position = position;
         }
 
-        public long Position { get; internal set; }
+        public double Position { get; internal set; }
     }
 
     public class Note
@@ -43,6 +43,13 @@ namespace ZenithEngine.MIDI
             Left = left;
             Right = right;
         }
+
+        public void Set(Color4 left, Color4 right)
+        {
+            isDefault = false;
+            Left = left;
+            Right = right;
+        }
     }
 
     public struct PlaybackEvent
@@ -67,18 +74,18 @@ namespace ZenithEngine.MIDI
 
     public class ColorChange : PositionedEvent
     {
-        public ColorChange(long pos, IMidiPlaybackTrack track, byte channel, Color4 col1, Color4 col2) : base(pos)
+        public ColorChange(double pos, IMidiPlaybackTrack track, byte channel, Color4 col1, Color4 col2) : base(pos)
         {
-            this.track = track;
-            this.channel = channel;
-            this.col1 = col1;
-            this.col2 = col2;
+            this.Track = track;
+            this.Channel = channel;
+            this.Col1 = col1;
+            this.Col2 = col2;
         }
 
-        public Color4 col1 { get; internal set; }
-        public Color4 col2 { get; internal set; }
-        public byte channel { get; internal set; }
-        public IMidiPlaybackTrack track { get; internal set; }
+        public Color4 Col1 { get; internal set; }
+        public Color4 Col2 { get; internal set; }
+        public byte Channel { get; internal set; }
+        public IMidiPlaybackTrack Track { get; internal set; }
     }
 
     public class TimeSignature : PositionedEvent

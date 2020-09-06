@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Zenith.Models;
 
 namespace Zenith
 {
@@ -20,9 +21,24 @@ namespace Zenith
     /// </summary>
     public partial class RenderProgress : UserControl
     {
+        public BaseModel Data
+        {
+            get
+            {
+                var data = DataContext as BaseModel;
+                if (data == null) throw new Exception("Data context must be set correctly");
+                return data;
+            }
+        }
+
         public RenderProgress()
         {
             InitializeComponent();
+        }
+
+        private async void stopPlayback_Click(object sender, RoutedEventArgs e)
+        {
+            await Data.StopPlayback();
         }
     }
 }

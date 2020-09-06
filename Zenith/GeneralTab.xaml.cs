@@ -23,6 +23,17 @@ namespace Zenith
     /// </summary>
     public partial class GeneralTab : UserControl
     {
+        public bool SelectingHistoricalMidi
+        {
+            get { return (bool)GetValue(SelectingHistoricalMidiProperty); }
+            set { SetValue(SelectingHistoricalMidiProperty, value); }
+        }
+
+        public static readonly DependencyProperty SelectingHistoricalMidiProperty =
+            DependencyProperty.Register("SelectingHistoricalMidi", typeof(bool), typeof(GeneralTab), new PropertyMetadata(false));
+
+
+
         public GeneralTab()
         {
             InitializeComponent();
@@ -45,9 +56,45 @@ namespace Zenith
 
         private async void loadMidi_Click(object sender, LoadableRoutedEventArgs e)
         {
-            await Data.Midi.LoadMidi("D:\\Midi\\tau2.5.9.mid");
-            //await Data.Midi.LoadMidi("D:\\Midi\\(black score) Last Brutal Sister Flandre S 110 Million Notes.mid");
-            e.Loaded();
+            SelectingHistoricalMidi = true;
+            selectPreviousMidiList.SelectedIndex = -1;
+
+            void selectPreviousMidiList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+            {
+                Load(Data.Settings.HistoricalMidiFiles[selectPreviousMidiList.SelectedIndex].Path);
+            }
+
+            void browseMidiButton_Click(object sender, RoutedEventArgs e)
+            {
+                var path = Data.Settings.OpenFileDialog("BrowseMidi", "Midi files (*.mid)|*.mid");
+                if (path != null) Load(path);
+            }
+
+            void cancelSelectingMidiButton_Click(object sender, RoutedEventArgs _e)
+            {
+                Unbind();
+                e.Loaded();
+            }
+
+            selectPreviousMidiList.SelectionChanged += selectPreviousMidiList_SelectionChanged;
+            browseMidiButton.Click += browseMidiButton_Click;
+            cancelSelectingMidiButton.Click += cancelSelectingMidiButton_Click;
+
+            void Unbind()
+            {
+                selectPreviousMidiList.SelectionChanged -= selectPreviousMidiList_SelectionChanged;
+                browseMidiButton.Click -= browseMidiButton_Click;
+                cancelSelectingMidiButton.Click -= cancelSelectingMidiButton_Click;
+                SelectingHistoricalMidi = false;
+            }
+
+            async void Load(string midi)
+            {
+                Unbind();
+                Data.Settings.AddHistoricalMidiFile(midi);
+                await Data.Midi.LoadMidi(midi);
+                e.Loaded();
+            }
         }
 
         private async void cancelLoadButton_Click(object sender, LoadableRoutedEventArgs e)

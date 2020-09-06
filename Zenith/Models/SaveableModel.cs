@@ -17,7 +17,7 @@ namespace Zenith.Models
         FileSystemWatcher watcher = new FileSystemWatcher();
 
         string savePath;
-        object l = new object();
+        protected object l = new object();
         string lastJson = "";
 
         bool watcherReading = false;
@@ -46,6 +46,8 @@ namespace Zenith.Models
             watcher.Changed += Watcher_Changed;
 
             PropertyChanged += SaveableModel_PropertyChanged;
+
+            ReadSettings();
         }
 
         protected void SaveSettings()
@@ -59,12 +61,7 @@ namespace Zenith.Models
             }
         }
 
-        private void SaveableModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            SaveSettings();
-        }
-
-        private void Watcher_Changed(object sender, FileSystemEventArgs e)
+        protected void ReadSettings()
         {
             lock (l)
             {
@@ -92,6 +89,16 @@ namespace Zenith.Models
                     watcherReading = false;
                 }
             }
+        }
+
+        private void SaveableModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            SaveSettings();
+        }
+
+        private void Watcher_Changed(object sender, FileSystemEventArgs e)
+        {
+            ReadSettings();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

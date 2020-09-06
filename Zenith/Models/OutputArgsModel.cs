@@ -12,7 +12,8 @@ namespace Zenith.Models
     {
         H264Bitrate,
         H264CRF,
-        H264NVENC,
+        H264NVENCBitrate,
+        H264NVENCCRF,
         Custom
     }
 
@@ -84,9 +85,13 @@ namespace Zenith.Models
             {
                 FFmpegArgs = $"-pix_fmt yuv420p -vcodec libx264 -crf {CRF}";
             }
-            else if (SelectedOutputType == OutputType.H264NVENC)
+            else if (SelectedOutputType == OutputType.H264NVENCBitrate)
             {
                 FFmpegArgs = $"-pix_fmt yuv420p -vcodec h264_nvenc -b:v {Bitrate}";
+            }
+            else if (SelectedOutputType == OutputType.H264NVENCCRF)
+            {
+                FFmpegArgs = $"-pix_fmt yuv420p -vcodec h264_nvenc -cq:v {CRF}";
             }
         }
 

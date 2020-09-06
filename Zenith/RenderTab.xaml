@@ -82,79 +82,93 @@
             </Style>
         </ResourceDictionary>
     </UserControl.Resources>
-    <StackPanel>
-        <ui:LabelledItem Label="Output File" HorizontalAlignment="Stretch">
+    <Grid>
+        <StackPanel>
+            <ui:LabelledItem Label="Output File" HorizontalAlignment="Stretch">
+                <DockPanel>
+                    <Button IsEnabled="{Binding IsNotRendering}" Name="browseOutputButton" Content="Browse" Click="browseOutputButton_Click"/>
+                    <TextBox Style="{StaticResource CustomArgsEnabled}" Text="{Binding OutputOptions.OutputLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                </DockPanel>
+            </ui:LabelledItem>
             <DockPanel>
-                <Button IsEnabled="{Binding IsNotRendering}" Name="browseOutputButton" Content="Browse" Click="browseOutputButton_Click"/>
-                <TextBox Style="{StaticResource CustomArgsEnabled}" Text="{Binding OutputOptions.OutputLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <ui:Checkbox Margin="5" VerticalAlignment="Center" Content="Transparency Mask" IsChecked="{Binding OutputOptions.UseMaskOutput}"/>
+                <Button Style="{StaticResource UseMaskButton}" Name="browseMaskButton" Content="Browse" Click="browseMaskButton_Click"/>
+                <TextBox Style="{StaticResource CustomArgsEnabled}" Text="{Binding OutputOptions.MaskOutputLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             </DockPanel>
-        </ui:LabelledItem>
-        <DockPanel>
-            <ui:Checkbox Margin="5" VerticalAlignment="Center" Content="Transparency Mask" IsChecked="{Binding OutputOptions.UseMaskOutput}"/>
-            <Button Style="{StaticResource UseMaskButton}" Name="browseMaskButton" Content="Browse" Click="browseMaskButton_Click"/>
-            <TextBox Style="{StaticResource CustomArgsEnabled}" Text="{Binding OutputOptions.MaskOutputLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-        </DockPanel>
-        <DockPanel>
-            <ui:Checkbox Margin="5" VerticalAlignment="Center" Content="Include Audio" IsChecked="{Binding OutputOptions.UseAudio}"/>
-            <Button Style="{StaticResource UseAudioButton}" Name="browseAudioButton" Content="Browse" Click="browseAudioButton_Click"/>
-            <TextBox Style="{StaticResource CustomArgsEnabled}" Text="{Binding OutputOptions.AudioLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-        </DockPanel>
-        <DockPanel>
-            <ui:LabelledItem Label="Output Format" Margin="5">
-                <ui:EnumComboBox
+            <DockPanel>
+                <ui:Checkbox Margin="5" VerticalAlignment="Center" Content="Include Audio" IsChecked="{Binding OutputOptions.UseAudio}"/>
+                <Button Style="{StaticResource UseAudioButton}" Name="browseAudioButton" Content="Browse" Click="browseAudioButton_Click"/>
+                <TextBox Style="{StaticResource CustomArgsEnabled}" Text="{Binding OutputOptions.AudioLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            </DockPanel>
+            <DockPanel>
+                <ui:LabelledItem Label="Output Format" Margin="5">
+                    <ui:EnumComboBox
                     Style="{DynamicResource RenderType}"
                     Selected="{Binding OutputOptions.SelectedOutputType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  
                 >
-                    <ui:EnumComboBoxItem EnumValue="{x:Static models:OutputType.H264CRF}" Content="h.264 CRF"/>
-                    <ui:EnumComboBoxItem EnumValue="{x:Static models:OutputType.H264Bitrate}" Content="h.264 Bitrate"/>
-                    <ui:EnumComboBoxItem EnumValue="{x:Static models:OutputType.H264NVENC}" Content="h.264 NVENC"/>
-                    <ui:EnumComboBoxItem EnumValue="{x:Static models:OutputType.Custom}" Content="Custom"/>
-                </ui:EnumComboBox>
-            </ui:LabelledItem>
-            <ui:LabelledItem Label="Bitrate" Margin="5">
-                <ui:LabelledItem.Style>
-                    <Style TargetType="ui:LabelledItem" BasedOn="{StaticResource MatLabelledItem}">
-                        <Setter Property="Visibility" Value="Collapsed"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding OutputOptions.SelectedOutputType}" Value="{x:Static models:OutputType.H264Bitrate}">
-                                <Setter Property="Visibility" Value="Visible"/>
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding OutputOptions.SelectedOutputType}" Value="{x:Static models:OutputType.H264NVENC}">
-                                <Setter Property="Visibility" Value="Visible"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </ui:LabelledItem.Style>
-                <ui:NumberBox
+                        <ui:EnumComboBoxItem EnumValue="{x:Static models:OutputType.H264CRF}" Content="h.264 CRF"/>
+                        <!--<ui:EnumComboBoxItem EnumValue="{x:Static models:OutputType.H264NVENCCRF}" Content="h.264 NVENC CRF"/>-->
+                        <ui:EnumComboBoxItem EnumValue="{x:Static models:OutputType.H264Bitrate}" Content="h.264 Bitrate"/>
+                        <ui:EnumComboBoxItem EnumValue="{x:Static models:OutputType.H264NVENCBitrate}" Content="h.264 NVENC Bitrate"/>
+                        <ui:EnumComboBoxItem EnumValue="{x:Static models:OutputType.Custom}" Content="Custom"/>
+                    </ui:EnumComboBox>
+                </ui:LabelledItem>
+                <ui:LabelledItem Label="Bitrate" Margin="5">
+                    <ui:LabelledItem.Style>
+                        <Style TargetType="ui:LabelledItem" BasedOn="{StaticResource MatLabelledItem}">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding OutputOptions.SelectedOutputType}" Value="{x:Static models:OutputType.H264Bitrate}">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding OutputOptions.SelectedOutputType}" Value="{x:Static models:OutputType.H264NVENCBitrate}">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ui:LabelledItem.Style>
+                    <ui:NumberBox
                     Style="{DynamicResource RenderBitrate}"
                     Value="{Binding OutputOptions.Bitrate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DecimalIntConvert}}"
                     Width="100"
                 />
-            </ui:LabelledItem>
-            <ui:LabelledItem Label="Crf" Margin="5">
-                <ui:LabelledItem.Style>
-                    <Style TargetType="ui:LabelledItem" BasedOn="{StaticResource MatLabelledItem}">
-                        <Setter Property="Visibility" Value="Collapsed"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding OutputOptions.SelectedOutputType}" Value="{x:Static models:OutputType.H264CRF}">
-                                <Setter Property="Visibility" Value="Visible"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </ui:LabelledItem.Style>
-                <ui:NumberBox
+                </ui:LabelledItem>
+                <ui:LabelledItem Label="Crf" Margin="5">
+                    <ui:LabelledItem.Style>
+                        <Style TargetType="ui:LabelledItem" BasedOn="{StaticResource MatLabelledItem}">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding OutputOptions.SelectedOutputType}" Value="{x:Static models:OutputType.H264CRF}">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding OutputOptions.SelectedOutputType}" Value="{x:Static models:OutputType.H264NVENCCRF}">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ui:LabelledItem.Style>
+                    <ui:NumberBox
                     Style="{DynamicResource RenderCRF}"
                     Value="{Binding OutputOptions.CRF, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DecimalIntConvert}}"
                     Width="100"
                 />
+                </ui:LabelledItem>
+            </DockPanel>
+            <ui:LabelledItem Label="Args" HorizontalAlignment="Stretch">
+                <TextBox Style="{StaticResource CustomArgsEnabled}" Text="{Binding OutputOptions.FFmpegArgs, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             </ui:LabelledItem>
-        </DockPanel>
-        <ui:LabelledItem Label="Args" HorizontalAlignment="Stretch">
-            <TextBox Style="{StaticResource CustomArgsEnabled}" Text="{Binding OutputOptions.FFmpegArgs, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-        </ui:LabelledItem>
-        <ui:LabelledItem Label="Start Offset (seconds)">
-            <ui:NumberBox Style="{StaticResource StartOffset}" Value="{Binding OutputOptions.StartOffset, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DecimalDoubleConvert}}"/>
-        </ui:LabelledItem>
-        <ui:LoaderButton Grid.Column="0" Margin="5" Style="{DynamicResource StartRender}" Name="startRender" Click="startRender_Click">Start Render</ui:LoaderButton>
-    </StackPanel>
+            <ui:LabelledItem Label="Start Offset (seconds)">
+                <ui:NumberBox Style="{StaticResource StartOffset}" Value="{Binding OutputOptions.StartOffset, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DecimalDoubleConvert}}"/>
+            </ui:LabelledItem>
+            <ui:LoaderButton Grid.Column="0" Margin="5" Style="{DynamicResource StartRender}" Name="startRender" Click="startRender_Click">Start Render</ui:LoaderButton>
+        </StackPanel>
+        <ui:Overlay>
+            <Grid.Style>
+                <Style TargetType="ui:Overlay" BasedOn="{StaticResource MatOverlay}">
+                    <Setter Property="Showing" Value="{Binding IsRendering}"/>
+                </Style>
+            </Grid.Style>
+            <local:RenderProgress/>
+        </ui:Overlay>
+    </Grid>
 </UserControl>

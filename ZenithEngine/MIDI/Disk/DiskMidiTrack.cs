@@ -434,10 +434,10 @@ namespace ZenithEngine.MIDI.Disk
                             if (data[0] == 0x00 &&
                                 data[1] == 0x0F)
                             {
-                                Color4 col1 = new Color4(data[4], data[5], data[6], data[7]);
+                                Color4 col1 = new Color4(data[4] / 255.0f, data[5] / 255.0f, data[6] / 255.0f, data[7] / 255.0f);
                                 Color4 col2;
                                 if (data.Length == 12)
-                                    col2 = new Color4(data[8], data[9], data[10], data[11]);
+                                    col2 = new Color4(data[8] / 255.0f, data[9] / 255.0f, data[10] / 255.0f, data[11] / 255.0f);
                                 else col2 = col1;
                                 if (loading)
                                 {
@@ -455,7 +455,7 @@ namespace ZenithEngine.MIDI.Disk
                                 {
                                     if (data[2] < 0x10 || data[2] == 0x7F)
                                     {
-                                        var c = new ColorChange(ParseTimeTicks, this, data[2], col1, col2);
+                                        var c = new ColorChange(ParseTimeSeconds, this, data[2], col1, col2);
                                         MidiPlayback.ColorChanges.Add(c);
                                     }
                                 }

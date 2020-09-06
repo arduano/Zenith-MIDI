@@ -11,6 +11,9 @@
     <media:Color x:Key="OverlayColor" >#88000000</media:Color>
     <SolidColorBrush x:Key="OverlayBrush" Color="{DynamicResource OverlayColor}"/>
 
+    <media:Color x:Key="BackgroundColor" >#171717</media:Color>
+    <SolidColorBrush x:Key="BackgroundBrush" Color="{DynamicResource BackgroundColor}"/>
+
     <media:Color x:Key="TextColor" >#FFFFFF</media:Color>
     <SolidColorBrush x:Key="TextBrush" Color="{DynamicResource TextColor}"/>
 

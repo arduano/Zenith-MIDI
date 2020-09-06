@@ -106,6 +106,28 @@ namespace ZenithEngine.MIDI
 
         public abstract bool ParseUpTo(double time);
 
+        protected void FlushColorEvents()
+        {
+            var iter = ColorChanges.Iterate();
+            ColorChange change;
+            while(iter.MoveNext(out change))
+            {
+                if (change.Position <= PlayerPositionSeconds)
+                {
+                    if(change.Channel == 0x7f)
+                    {
+                        foreach (var c in change.Track.TrackColors) c.Set(change.Col1, change.Col2);
+                    }
+                    else
+                    {
+                        change.Track.TrackColors[change.Channel].Set(change.Col1, change.Col2);
+                    }
+                    iter.Remove();
+                }
+                else break;
+            }
+        }
+
         public int ColorCount => Midi.TrackCount * 32;
         public void ApplyColors(Color4[] colors)
         {

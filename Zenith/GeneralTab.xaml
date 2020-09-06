@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:Zenith"
              xmlns:ui="clr-namespace:ZenithEngine.UI;assembly=ZenithEngine"
              xmlns:models="clr-namespace:Zenith.Models"
-             mc:Ignorable="d" 
+             mc:Ignorable="d" Name="genTab"
              d:DesignHeight="700" d:DesignWidth="1280">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -254,18 +254,33 @@
                 </StackPanel>
             </DockPanel>
         </ui:Overlay>
-        <ui:Overlay>
-            <Grid.Style>
-                <Style TargetType="ui:Overlay" BasedOn="{StaticResource MatOverlay}">
-                    <Setter Property="Showing" Value="True"/>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding RenderProgress}" Value="{x:Null}">
-                            <Setter Property="Showing" Value="False"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Grid.Style>
-            <local:RenderProgress/>
+        <ui:Overlay Showing="{Binding SelectingHistoricalMidi, ElementName=genTab}">
+            <Border Margin="70" Width="500" HorizontalAlignment="Center" Background="{DynamicResource BackgroundBrush}">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="5" ShadowDepth="0" Color="Black"/>
+                </Border.Effect>
+                <DockPanel>
+                    <Button Margin="10" Name="browseMidiButton" DockPanel.Dock="Top">
+                        Browse
+                    </Button>
+                    <Button Margin="10" Name="cancelSelectingMidiButton" DockPanel.Dock="Bottom">
+                        Cancel
+                    </Button>
+                    <ListView 
+                        Margin="10,0"
+                        Name="selectPreviousMidiList"
+                        ScrollViewer.CanContentScroll="False"
+                        HorizontalContentAlignment="Stretch"
+                        ItemsSource="{Binding Settings.HistoricalMidiFiles}"
+                    >
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Margin="5" Width="450" Text="{Binding Name}"/>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </DockPanel>
+            </Border>
         </ui:Overlay>
     </Grid>
 </UserControl>

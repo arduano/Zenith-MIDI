@@ -135,7 +135,7 @@ namespace ZenithEngine.MIDI.Disk
 
             if (SecondsParsed < TimeSeconds) ParseUpTo(PlayerPosition);
 
-            return;
+            FlushColorEvents();
         }
 
         IEnumerable<Note> SingleNoteListFromSource(Func<IEnumerable<Note>> getNotes)

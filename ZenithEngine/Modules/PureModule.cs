@@ -52,7 +52,7 @@ namespace ZenithEngine.Modules
 
         public virtual void ReloadTrackColors()
         {
-            if (PalettePicker == null) return;
+            if (PalettePicker == null || Midi == null) return;
             var cols = PalettePicker.GetColors(Midi.TrackCount);
             Midi.ApplyColors(cols);
         }
