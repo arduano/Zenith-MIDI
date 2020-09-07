@@ -108,23 +108,17 @@ namespace ZenithEngine.MIDI
 
         protected void FlushColorEvents()
         {
-            var iter = ColorChanges.Iterate();
-            ColorChange change;
-            while(iter.MoveNext(out change))
+            while (!ColorChanges.ZeroLen && ColorChanges.First.Position <= PlayerPositionSeconds)
             {
-                if (change.Position <= PlayerPositionSeconds)
+                ColorChange change = ColorChanges.Pop();
+                if (change.Channel == 0x7f)
                 {
-                    if(change.Channel == 0x7f)
-                    {
-                        foreach (var c in change.Track.TrackColors) c.Set(change.Col1, change.Col2);
-                    }
-                    else
-                    {
-                        change.Track.TrackColors[change.Channel].Set(change.Col1, change.Col2);
-                    }
-                    iter.Remove();
+                    foreach (var c in change.Track.TrackColors) c.Set(change.Col1, change.Col2);
                 }
-                else break;
+                else
+                {
+                    change.Track.TrackColors[change.Channel].Set(change.Col1, change.Col2);
+                }
             }
         }
 

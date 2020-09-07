@@ -41,7 +41,7 @@ namespace ZenithEngine.MIDI.Disk
             for (int i = 0; i < file.TrackCount; i++)
             {
                 var trackReader = new BufferByteReader(reader, 10000000, midi.TrackPositions[i].start, midi.TrackPositions[i].length);
-                tracks[i] = DiskMidiTrack.NewPlayerTrack(i, trackReader, this);
+                tracks[i] = DiskMidiTrack.NewPlayerTrack(i, trackReader, this, midi.Tracks[i].InitialTrackColors);
             }
 
             ColorChanges = new FastList<ColorChange>();

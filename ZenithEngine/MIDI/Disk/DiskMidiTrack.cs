@@ -64,7 +64,15 @@ namespace ZenithEngine.MIDI.Disk
             var col = new Color4(0.5f, 0.5f, 0.5f, 1);
             for (int i = 0; i < 16; i++)
             {
-                TrackColors[i] = new NoteColor() { Left = col, Right = col, isDefault = true };
+                var c = InitialTrackColors[i];
+                if (c == null)
+                {
+                    TrackColors[i] = new NoteColor() { Left = col, Right = col, isDefault = true };
+                }
+                else
+                {
+                    TrackColors[i] = new NoteColor() { Left = c.Left, Right = c.Right, isDefault = true };
+                }
             }
         }
 
@@ -74,8 +82,7 @@ namespace ZenithEngine.MIDI.Disk
             {
                 if (InitialTrackColors[i] != null)
                 {
-                    TrackColors[i].Left = InitialTrackColors[i].Left;
-                    TrackColors[i].Right = InitialTrackColors[i].Right;
+                    TrackColors[i].Set(InitialTrackColors[i].Left, InitialTrackColors[i].Right);
                 }
             }
         }
@@ -95,6 +102,7 @@ namespace ZenithEngine.MIDI.Disk
             {
                 InitialTrackColors = initialTrackColors;
             }
+            SetZeroColors();
         }
 
         public static DiskMidiTrack NewParserTrack(
@@ -119,9 +127,10 @@ namespace ZenithEngine.MIDI.Disk
         public static DiskMidiTrack NewPlayerTrack(
             int id,
             BufferByteReader reader,
-            MidiPlayback playback)
+            MidiPlayback playback,
+            NoteColor[] initialTrackColors = null)
         {
-            var track = new DiskMidiTrack(id, reader, TrackMode.Playback);
+            var track = new DiskMidiTrack(id, reader, TrackMode.Playback, initialTrackColors);
             track.MidiPlayback = playback;
             return track;
         }
@@ -441,14 +450,17 @@ namespace ZenithEngine.MIDI.Disk
                                 else col2 = col1;
                                 if (loading)
                                 {
-                                    if (data[2] < 0x10)
+                                    if (ParseTimeTicks == 0)
                                     {
-                                        InitialTrackColors[data[2]] = new NoteColor() { Left = col1, Right = col2 };
-                                    }
-                                    else if (data[2] == 0x7F)
-                                    {
-                                        for (int i = 0; i < 16; i++)
-                                            InitialTrackColors[i] = new NoteColor() { Left = col1, Right = col2 };
+                                        if (data[2] < 0x10)
+                                        {
+                                            InitialTrackColors[data[2]] = new NoteColor() { Left = col1, Right = col2 };
+                                        }
+                                        else if (data[2] == 0x7F)
+                                        {
+                                            for (int i = 0; i < 16; i++)
+                                                InitialTrackColors[i] = new NoteColor() { Left = col1, Right = col2 };
+                                        }
                                     }
                                 }
                                 else
