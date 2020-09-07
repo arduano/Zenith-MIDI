@@ -72,6 +72,8 @@ namespace NoteCountRender
         {
             textRt.BeginDraw();
             textRt.DrawText("test stuff", textFormat, rect, brush);
+            DirectWrite.TextLayout layout = new DirectWrite.TextLayout(dwFactory, "test stuff", textFormat, float.MaxValue, float.MaxValue);
+            Console.WriteLine(layout.DetermineMinWidth());
             textRt.EndDraw();
 
             compositor.Composite(context, preFinalSurface, plainShader, renderSurface);
