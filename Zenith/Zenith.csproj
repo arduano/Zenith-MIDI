@@ -228,6 +228,10 @@
       <Project>{BD352A84-3DEC-47AD-87AB-1765237D7DEE}</Project>
       <Name>DX.WPF</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Modules\NoteCountRender\NoteCountRender.csproj">
+      <Project>{5f30ba79-d86b-4fc6-ba76-7cbb9ebba721}</Project>
+      <Name>NoteCountRender</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ZenithEngine\ZenithEngine.csproj">
       <Project>{60f2212a-d56c-4776-836f-6a49453cdbc4}</Project>
       <Name>ZenithEngine</Name>
