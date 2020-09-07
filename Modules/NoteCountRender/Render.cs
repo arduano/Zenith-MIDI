@@ -8,7 +8,13 @@ using System.Windows;
 using System.Windows.Media;
 using ZenithEngine;
 using ZenithEngine.DXHelper;
+using ZenithEngine.MIDI;
 using ZenithEngine.Modules;
+using Direct2D1 = SharpDX.Direct2D1;
+using DXGI = SharpDX.DXGI;
+using DirectWrite = SharpDX.DirectWrite;
+using SharpDX.Mathematics.Interop;
+using ZenithEngine.DXHelper.Presets;
 
 namespace NoteCountRender
 {
@@ -27,12 +33,48 @@ namespace NoteCountRender
 
         protected override NoteColorPalettePick PalettePicker => null;
 
+        Direct2D1.Factory d2dFactory;
+        DirectWrite.Factory dwFactory;
+
+        CompositeRenderSurface preFinalSurface;
+        Compositor compositor;
+        ShaderProgram plainShader;
+
+        Direct2D1.RenderTarget textRt = null;
+        DirectWrite.TextFormat textFormat;
+        Direct2D1.SolidColorBrush brush;
+        RawRectangleF rect;
+
         public Render()
         {
+            compositor = init.Add(new Compositor());
+            plainShader = init.Add(Shaders.BasicTextured());
+        }
+
+        public override void Init(Device device, MidiPlayback midi, RenderStatus status)
+        {
+            init.Replace(ref preFinalSurface, new CompositeRenderSurface(status.RenderWidth, status.RenderHeight));
+            base.Init(device, midi, status);
+
+            d2dFactory = new Direct2D1.Factory();
+            dwFactory = new DirectWrite.Factory();
+
+            var dxgiSurface = preFinalSurface.Texture.QueryInterface<DXGI.Surface>();
+            var renderTargetProperties = new Direct2D1.RenderTargetProperties(new Direct2D1.PixelFormat(DXGI.Format.R32G32B32A32_Float, Direct2D1.AlphaMode.Premultiplied));
+            textRt = new Direct2D1.RenderTarget(d2dFactory, dxgiSurface, renderTargetProperties);
+
+            textFormat = new DirectWrite.TextFormat(dwFactory, "Gabriola", 96) { TextAlignment = DirectWrite.TextAlignment.Center, ParagraphAlignment = DirectWrite.ParagraphAlignment.Center };
+            brush = new Direct2D1.SolidColorBrush(textRt, new RawColor4(1.0f, 1.0f, 1.0f, 1.0f));
+            rect = new RawRectangleF(0, 0, preFinalSurface.Width, preFinalSurface.Height);
         }
 
         public override void RenderFrame(DeviceContext context, IRenderSurface renderSurface)
-        { 
+        {
+            textRt.BeginDraw();
+            textRt.DrawText("test stuff", textFormat, rect, brush);
+            textRt.EndDraw();
+
+            compositor.Composite(context, preFinalSurface, plainShader, renderSurface);
         }
     }
 }

@@ -482,7 +482,7 @@ namespace MIDITrailRender
 
             var factory = new ObjLoaderFactory();
             var objLoader = factory.Create();
-            var obj = objLoader.Load(new BufferedStream(File.OpenRead("E:/keys.obj")));
+            var obj = objLoader.Load(new BufferedStream(File.OpenRead("D:/keys.obj")));
 
             Dictionary<string, ModelBuffer<KeyVert>> keyModels = new Dictionary<string, ModelBuffer<KeyVert>>();
             Dictionary<string, ModelBuffer<NoteVert>> noteModelsBody = new Dictionary<string, ModelBuffer<NoteVert>>();

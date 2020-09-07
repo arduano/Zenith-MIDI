@@ -117,7 +117,7 @@ namespace ZenithEngine.DXHelper
             desc.ModeDescription = new ModeDescription(width, height, new Rational(60, 1), Format.R8G8B8A8_UNorm);
             desc.OutputHandle = Handle;
 
-            Device.CreateWithSwapChain(DriverType.Hardware, DeviceCreationFlags.None, desc, out device, out swapChain);
+            Device.CreateWithSwapChain(DriverType.Hardware, DeviceCreationFlags.BgraSupport, desc, out device, out swapChain);
             dispose.Add(device);
             dispose.Add(swapChain);
             var context = device.ImmediateContext;
