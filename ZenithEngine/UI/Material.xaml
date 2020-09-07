@@ -407,6 +407,7 @@
 
     <Style BasedOn="{StaticResource MatCheckbox}" TargetType="{x:Type CheckBox}"/>
     <Style BasedOn="{StaticResource MatCheckbox}" TargetType="{x:Type local:Checkbox}"/>
+    <Style BasedOn="{StaticResource MatCheckbox}" TargetType="{x:Type module:UICheckbox}"/>
 
     <Style BasedOn="{StaticResource MatComboBoxToggleButton}" TargetType="{x:Type ToggleButton}"/>
     <Style BasedOn="{StaticResource MatComboBoxItem}" TargetType="{x:Type ComboBoxItem}"/>

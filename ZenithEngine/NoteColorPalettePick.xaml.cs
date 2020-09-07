@@ -233,7 +233,7 @@ namespace ZenithEngine
             Reload();
         }
 
-        private void randomiseOrder_CheckToggled(object sender, RoutedPropertyChangedEventArgs<bool> e)
+        private void randomiseOrder_CheckToggled(object sender, RoutedEventArgs e)
         {
             randomise = (bool)randomiseOrder.IsChecked;
             if (randomise) seed++;

@@ -8,13 +8,13 @@ using ZenithEngine.UI;
 
 namespace ZenithEngine.ModuleUI
 {
-    public class UICheckbox : BetterCheckbox, ISerializableItem, IValueItem<bool>
+    public class UICheckbox : Checkbox, ISerializableItem, IValueItem<bool>
     {
         public static implicit operator bool(UICheckbox val) => val.Value;
 
         public bool ValueInternal
         {
-            get => IsChecked;
+            get => (bool)IsChecked;
             set { if (IsChecked != value) IsChecked = value; }
         }
 
@@ -41,12 +41,12 @@ namespace ZenithEngine.ModuleUI
                 if (label is DynamicResourceExtension)
                 {
                     var l = (DynamicResourceExtension)label;
-                    SetResourceReference(TextProperty, l.ResourceKey);
+                    SetResourceReference(ContentProperty, l.ResourceKey);
                 }
                 else
                 {
-                    if (label is string) Text = (string)label;
-                    else Text = label.ToString();
+                    if (label is string) Content = (string)label;
+                    else Content = label.ToString();
                 }
             }
         }
@@ -59,7 +59,7 @@ namespace ZenithEngine.ModuleUI
 
             CheckToggled += (s, e) =>
             {
-                ValueChanged?.Invoke(this, e.NewValue);
+                ValueChanged?.Invoke(this, (bool)IsChecked);
             };
 
             UITools.BindValue(this);

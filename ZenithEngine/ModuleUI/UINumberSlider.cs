@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows;
 using ZenithEngine.UI;
+using Slider = ZenithEngine.UI.Slider;
 
 namespace ZenithEngine.ModuleUI
 {
@@ -14,8 +15,8 @@ namespace ZenithEngine.ModuleUI
         public static implicit operator double(UINumberSlider val) => val.Value;
         public static implicit operator float(UINumberSlider val) => (float)val.Value;
 
-        NumberSelect numberItem = new NumberSelect() { MinWidth = 80 };
-        BetterSlider sliderItem = new BetterSlider();
+        NumberBox numberItem = new NumberBox() { MinWidth = 80 };
+        Slider sliderItem = new Slider();
 
         public double ValueInternal
         {

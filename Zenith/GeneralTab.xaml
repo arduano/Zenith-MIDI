@@ -39,7 +39,7 @@
                 <Setter Property="Height" Value="36"/>
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding Midi.LoadStatus}" Value="{x:Static models:MidiLoadStatus.Loaded}">
-                        <Setter Property="IsEnabled" Value="True"/>
+                        <Setter Property="IsEnabled" Value="{Binding IsNotPlaying}"/>
                     </DataTrigger>
                 </Style.Triggers>
             </Style>

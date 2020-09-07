@@ -176,6 +176,7 @@
     <Compile Include="Models\BaseModel.cs" />
     <Compile Include="Models\Err.cs" />
     <Compile Include="Models\Errors.cs" />
+    <Compile Include="Models\LanguagesModel.cs" />
     <Compile Include="Models\LoadedMidiArgsModel.cs" />
     <Compile Include="Models\MidiArgsModel.cs" />
     <Compile Include="Models\OutputArgsModel.cs" />

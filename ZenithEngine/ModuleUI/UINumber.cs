@@ -16,7 +16,7 @@ namespace ZenithEngine.ModuleUI
         public static implicit operator double(UINumber val) => (double)val.Value;
         public static implicit operator float(UINumber val) => (float)val.Value;
 
-        NumberSelect numberItem = new NumberSelect() { MinWidth = 80 };
+        NumberBox numberItem = new NumberBox() { MinWidth = 80 };
 
         public decimal ValueInternal
         {
