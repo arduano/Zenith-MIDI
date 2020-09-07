@@ -26,6 +26,7 @@ namespace Zenith.Models
         {
             for (int i = 0; i < 100; i++)
             {
+                if (!File.Exists(path)) throw new FileNotFoundException();
                 try
                 {
                     return File.ReadAllText(path);
@@ -84,6 +85,8 @@ namespace Zenith.Models
                         }
                     }
                 }
+                catch (FileNotFoundException)
+                { }
                 finally
                 {
                     watcherReading = false;
