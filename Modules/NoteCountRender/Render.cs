@@ -15,6 +15,8 @@ using DXGI = SharpDX.DXGI;
 using DirectWrite = SharpDX.DirectWrite;
 using SharpDX.Mathematics.Interop;
 using ZenithEngine.DXHelper.Presets;
+using ZenithEngine.DXHelper.D2D;
+using OpenTK.Graphics;
 
 namespace NoteCountRender
 {
@@ -33,17 +35,13 @@ namespace NoteCountRender
 
         protected override NoteColorPalettePick PalettePicker => null;
 
-        Direct2D1.Factory d2dFactory;
-        DirectWrite.Factory dwFactory;
-
-        CompositeRenderSurface preFinalSurface;
+        CompositeRenderSurface composite;
         Compositor compositor;
         ShaderProgram plainShader;
 
-        Direct2D1.RenderTarget textRt = null;
-        DirectWrite.TextFormat textFormat;
-        Direct2D1.SolidColorBrush brush;
-        RawRectangleF rect;
+        InterlopRenderTarget2D target2d;
+        SolidColorBrushKeeper brush;
+        TextFormatKeeper textFormat;
 
         public Render()
         {
@@ -53,31 +51,27 @@ namespace NoteCountRender
 
         public override void Init(DeviceGroup device, MidiPlayback midi, RenderStatus status)
         {
-            init.Replace(ref preFinalSurface, new CompositeRenderSurface(status.RenderWidth, status.RenderHeight));
+            init.Replace(ref composite, new CompositeRenderSurface(status.RenderWidth, status.RenderHeight));
+            init.Replace(ref target2d, new InterlopRenderTarget2D(composite));
+            init.Replace(ref brush, new SolidColorBrushKeeper(target2d, new Color4(255, 255, 255, 255)));
+            init.Replace(ref textFormat, new TextFormatKeeper("Gabriola", 96));
+
             base.Init(device, midi, status);
-
-            d2dFactory = new Direct2D1.Factory();
-            dwFactory = new DirectWrite.Factory();
-
-            var dxgiSurface = preFinalSurface.Texture.QueryInterface<DXGI.Surface>();
-            var renderTargetProperties = new Direct2D1.RenderTargetProperties(new Direct2D1.PixelFormat(DXGI.Format.R32G32B32A32_Float, Direct2D1.AlphaMode.Premultiplied));
-            textRt = new Direct2D1.RenderTarget(d2dFactory, dxgiSurface, renderTargetProperties);
-
-            textFormat = new DirectWrite.TextFormat(dwFactory, "Gabriola", 96) { TextAlignment = DirectWrite.TextAlignment.Center, ParagraphAlignment = DirectWrite.ParagraphAlignment.Center };
-            brush = new Direct2D1.SolidColorBrush(textRt, new RawColor4(1.0f, 1.0f, 1.0f, 1.0f));
-            rect = new RawRectangleF(0, 0, preFinalSurface.Width, preFinalSurface.Height);
         }
 
         public override void RenderFrame(DeviceContext context, IRenderSurface renderSurface)
         {
-            textRt.BeginDraw();
-            rect = new RawRectangleF(0, 0, preFinalSurface.Width, preFinalSurface.Height);
-            textRt.DrawText("test stuff", textFormat, rect, brush);
-            DirectWrite.TextLayout layout = new DirectWrite.TextLayout(dwFactory, "test stuff", textFormat, float.MaxValue, float.MaxValue);
-            Console.WriteLine(layout.DetermineMinWidth());
-            textRt.EndDraw();
+            var rect = new RawRectangleF(0, 0, composite.Width, composite.Height);
+            using (target2d.BeginDraw())
+            {
+                textFormat.TextAlignment = DirectWrite.TextAlignment.Center;
+                textFormat.ParagraphAlignment = DirectWrite.ParagraphAlignment.Center;
+                target2d.RenderTarget.DrawText("test stuff", textFormat, rect, brush);
+                var layout = textFormat.GetLayout("test stuff");
+                Console.WriteLine(layout.DetermineMinWidth());
+            }
 
-            compositor.Composite(context, preFinalSurface, plainShader, renderSurface);
+            compositor.Composite(context, composite, plainShader, renderSurface);
         }
     }
 }
