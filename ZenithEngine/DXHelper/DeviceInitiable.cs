@@ -10,7 +10,7 @@ namespace ZenithEngine.DXHelper
     public abstract class PureDeviceInitiable : IDeviceInitiable
     {
         public bool Initialized { get; private set; } = false;
-        public Device Device { get; private set; } = null;
+        public DeviceGroup Device { get; private set; } = null;
 
         protected virtual void InitInternal() { }
         protected virtual void DisposeInternal() { }
@@ -23,7 +23,7 @@ namespace ZenithEngine.DXHelper
             Initialized = false;
         }
 
-        public virtual void Init(Device device)
+        public virtual void Init(DeviceGroup device)
         {
             if (Initialized) return;
             Device = device;

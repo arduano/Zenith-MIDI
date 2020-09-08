@@ -37,7 +37,7 @@ namespace ZenithEngine.DXHelper
 
         Stream debugOutput;
 
-        public FFMpegOutput(Device device, int width, int height, int fps, string extraArgs, string output, Stream debugOutput = null)
+        public FFMpegOutput(DeviceGroup device, int width, int height, int fps, string extraArgs, string output, Stream debugOutput = null)
         {
             this.debugOutput = debugOutput;
 

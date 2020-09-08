@@ -18,7 +18,7 @@ namespace ZenithEngine.DXHelper
             dispose.Dispose();
         }
 
-        public override void Init(Device device)
+        public override void Init(DeviceGroup device)
         {
             dispose = new DisposeGroup();
             dispose.Add(init);

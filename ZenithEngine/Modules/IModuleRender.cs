@@ -25,7 +25,7 @@ namespace ZenithEngine.Modules
         FrameworkElement SettingsControl { get; }
         public double StartOffset { get; }
 
-        void Init(Device device, MidiPlayback midi, RenderStatus status);
+        void Init(DeviceGroup device, MidiPlayback midi, RenderStatus status);
         void RenderFrame(DeviceContext context, IRenderSurface renderSurface);
         void ReloadTrackColors();
     }

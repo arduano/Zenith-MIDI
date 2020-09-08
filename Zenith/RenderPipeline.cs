@@ -183,7 +183,7 @@ namespace Zenith
             {
             }
 
-            public override void Init(Device device)
+            public override void Init(DeviceGroup device)
             {
                 base.Init(device);
 

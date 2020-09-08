@@ -680,7 +680,7 @@ namespace MIDITrailRender
             settings.Palette.PaletteChanged += ReloadTrackColors;
         }
 
-        public override void Init(Device device, MidiPlayback midi, RenderStatus status)
+        public override void Init(DeviceGroup device, MidiPlayback midi, RenderStatus status)
         {
             keyPressPos = new float[256];
             keyPressVel = new float[256];

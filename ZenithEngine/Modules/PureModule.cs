@@ -32,7 +32,7 @@ namespace ZenithEngine.Modules
 
         protected abstract NoteColorPalettePick PalettePicker { get; }
 
-        public virtual void Init(Device device, MidiPlayback midi, RenderStatus status)
+        public virtual void Init(DeviceGroup device, MidiPlayback midi, RenderStatus status)
         {
             Init(device);
             Midi = midi;

@@ -51,7 +51,7 @@ namespace NoteCountRender
             plainShader = init.Add(Shaders.BasicTextured());
         }
 
-        public override void Init(Device device, MidiPlayback midi, RenderStatus status)
+        public override void Init(DeviceGroup device, MidiPlayback midi, RenderStatus status)
         {
             init.Replace(ref preFinalSurface, new CompositeRenderSurface(status.RenderWidth, status.RenderHeight));
             base.Init(device, midi, status);

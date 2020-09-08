@@ -46,7 +46,7 @@ namespace ZenithEngine.Modules
 
         RasterizerStateKeeper raster;
 
-        Device device = null;
+        DeviceGroup device = null;
 
         object queueLock = new object();
 
@@ -65,7 +65,7 @@ namespace ZenithEngine.Modules
             UseModule(module);
         }
 
-        public ModuleManager(IModuleRender module, Device device, MidiPlayback midi, RenderStatus status) : this(module)
+        public ModuleManager(IModuleRender module, DeviceGroup device, MidiPlayback midi, RenderStatus status) : this(module)
         {
             StartRender(device, midi, status);
         }
@@ -103,7 +103,7 @@ namespace ZenithEngine.Modules
             else contianer.Parse(data);
         }
 
-        public void StartRender(Device device, MidiPlayback file, RenderStatus status)
+        public void StartRender(DeviceGroup device, MidiPlayback file, RenderStatus status)
         {
             init.Replace(ref fullSizeFrame, new CompositeRenderSurface(status.RenderWidth, status.RenderHeight));
             init.Replace(ref alphaFixFrame, new CompositeRenderSurface(status.OutputWidth, status.OutputHeight));
@@ -173,7 +173,7 @@ namespace ZenithEngine.Modules
             }
         }
 
-        void Init(Device device)
+        void Init(DeviceGroup device)
         {
             this.device = device;
 
