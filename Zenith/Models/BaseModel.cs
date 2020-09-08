@@ -11,6 +11,7 @@ using ZenithEngine.Modules;
 using System.IO;
 using System.Windows;
 using ZenithEngine.MIDI.Audio;
+using ZenithEngine.DXHelper;
 
 namespace Zenith.Models
 {
@@ -222,7 +223,10 @@ namespace Zenith.Models
 
                     RenderProgress = new RenderProgressModel(RenderPipeline);
 
-                    RenderPipeline.Start(cancel).Wait();
+                    var device = new DeviceGroup();
+                    var preview = new WindowPreview(device);
+                    RenderPipeline.Start(preview, cancel).Wait();
+                    device.Dispose();
                     RenderPipeline.Dispose();
                     RenderPipeline = null;
                     RenderStatus = null;

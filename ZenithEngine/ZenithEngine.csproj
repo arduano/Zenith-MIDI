@@ -271,6 +271,7 @@
     <Compile Include="DXHelper\BufferFlusher.cs" />
     <Compile Include="DXHelper\Compositor.cs" />
     <Compile Include="DXHelper\DepthStencilStateKeeper.cs" />
+    <Compile Include="DXHelper\DeviceGroup.cs" />
     <Compile Include="DXHelper\DeviceInitiable.cs" />
     <Compile Include="DXHelper\Extensions.cs" />
     <Compile Include="DXHelper\FFMpegOutput.cs" />

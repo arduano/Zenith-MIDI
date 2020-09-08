@@ -741,7 +741,7 @@ namespace Zenith
             }
 
             SetPipelineValues();
-            var thread = ActivePipeline.Start();
+            var thread = ActivePipeline.Start(null);
             Task.Run(() =>
             {
                 thread.Wait();

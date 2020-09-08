@@ -185,6 +185,7 @@
     <Compile Include="Models\RenderProgressModel.cs" />
     <Compile Include="Models\SaveableModel.cs" />
     <Compile Include="Models\SettingsModel.cs" />
+    <Compile Include="PreviewTypes.cs" />
     <Compile Include="RenderProgress.xaml.cs">
       <DependentUpon>RenderProgress.xaml</DependentUpon>
     </Compile>
@@ -207,8 +208,6 @@
     </Compile>
     <Compile Include="RenderPipeline.cs" />
     <Compile Include="RenderWindow.cs" />
-    <Compile Include="test.cs" />
-    <Compile Include="test2.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

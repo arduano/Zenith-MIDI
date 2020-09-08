@@ -110,21 +110,26 @@ namespace ZenithEngine.DXHelper
             }
         }
 
-        public ManagedRenderWindow(int width, int height)
+        public ManagedRenderWindow(Device device, int width, int height)
         {
             ClientSize = new Size(width, height);
+            this.device = device;
 
             desc.ModeDescription = new ModeDescription(width, height, new Rational(60, 1), Format.R8G8B8A8_UNorm);
             desc.OutputHandle = Handle;
 
-            Device.CreateWithSwapChain(DriverType.Hardware, DeviceCreationFlags.BgraSupport, desc, out device, out swapChain);
+            //device = new Device(DriverType.Hardware, DeviceCreationFlags.BgraSupport);
+            using (var factory = new Factory1())
+            {
+                swapChain = new SwapChain(factory, device, desc);
+            }
             dispose.Add(device);
             dispose.Add(swapChain);
             var context = device.ImmediateContext;
 
-            var factory = swapChain.GetParent<Factory>();
-            factory.MakeWindowAssociation(Handle, WindowAssociationFlags.IgnoreAll);
-            dispose.Add(factory);
+            var fact = swapChain.GetParent<Factory>();
+            fact.MakeWindowAssociation(Handle, WindowAssociationFlags.IgnoreAll);
+            dispose.Add(fact);
 
             CheckResize();
             UserResized += (sender, args) => hasResized = true;

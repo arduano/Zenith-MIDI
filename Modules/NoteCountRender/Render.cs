@@ -71,6 +71,7 @@ namespace NoteCountRender
         public override void RenderFrame(DeviceContext context, IRenderSurface renderSurface)
         {
             textRt.BeginDraw();
+            rect = new RawRectangleF(0, 0, preFinalSurface.Width, preFinalSurface.Height);
             textRt.DrawText("test stuff", textFormat, rect, brush);
             DirectWrite.TextLayout layout = new DirectWrite.TextLayout(dwFactory, "test stuff", textFormat, float.MaxValue, float.MaxValue);
             Console.WriteLine(layout.DetermineMinWidth());

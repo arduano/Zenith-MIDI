@@ -67,7 +67,7 @@ namespace Zenith
             public CompositeRenderSurface RenderTarget { get; }
         }
 
-        abstract class PreviewBase : DeviceInitiable, IPreview
+        abstract class CompositeBase : DeviceInitiable, IPreview
         {
             protected RenderPipeline pipeline;
             protected Initiator init = new Initiator();
@@ -93,7 +93,7 @@ namespace Zenith
 
             protected bool useMask;
 
-            public PreviewBase(RenderPipeline pipeline, bool useMask)
+            public CompositeBase(RenderPipeline pipeline, bool useMask)
             {
                 this.useMask = useMask;
                 this.pipeline = pipeline;
@@ -161,9 +161,9 @@ namespace Zenith
             public abstract void RenderFrame(DeviceContext context, IRenderSurface outputSurface);
         }
 
-        class BasicPreview : PreviewBase
+        class BasicComposite : CompositeBase
         {
-            public BasicPreview(RenderPipeline pipeline) : base(pipeline, false) { }
+            public BasicComposite(RenderPipeline pipeline) : base(pipeline, false) { }
 
             public override void RenderFrame(DeviceContext context, IRenderSurface outputSurface)
             {
@@ -173,13 +173,13 @@ namespace Zenith
             }
         }
 
-        class RenderPreview : PreviewBase
+        class RenderComposite : CompositeBase
         {
             FFMpegOutput output;
             FFMpegOutput outputMask;
             Logger outputLogger;
             Logger outputMaskLogger;
-            public RenderPreview(RenderPipeline pipeline) : base(pipeline, pipeline.RenderArgs.UseMask)
+            public RenderComposite(RenderPipeline pipeline) : base(pipeline, pipeline.RenderArgs.UseMask)
             {
             }
 
@@ -285,8 +285,8 @@ namespace Zenith
             this(status, playback, module, null, null)
         { }
 
-        public Task Start() => Start(new CancellationTokenSource().Token);
-        public Task Start(CancellationToken cancel)
+        public Task Start(PreviewBase preview) => Start(preview, new CancellationTokenSource().Token);
+        public Task Start(PreviewBase preview, CancellationToken cancel)
         {
 #if DEBUG
             return Task.Run(() =>
@@ -295,7 +295,7 @@ namespace Zenith
                 {
                     try
                     {
-                        Runner(cancel);
+                        Runner(preview, cancel);
                     }
                     catch (OperationCanceledException)
                     { }
@@ -311,24 +311,23 @@ namespace Zenith
 #endif
         }
 
-        void Runner(CancellationToken cancel)
+        void Runner(PreviewBase preview, CancellationToken cancel)
         {
             var dispose = new DisposeGroup();
 
             try
             {
-                var form = dispose.Add(new ManagedRenderWindow(1280, 720));
-                form.Text = "test";
+                var device = preview.Device;
 
                 var init = dispose.Add(new Initiator());
 
-                IPreview preview;
-                if (Rendering) preview = init.Add(new RenderPreview(this));
-                else preview = init.Add(new BasicPreview(this));
+                IPreview previewComposite;
+                if (Rendering) previewComposite = init.Add(new RenderComposite(this));
+                else previewComposite = init.Add(new BasicComposite(this));
 
-                Module.StartRender(form.Device, Playback, Status);
+                Module.StartRender(device, Playback, Status);
 
-                init.Init(form.Device);
+                init.Init(device);
 
                 Stopwatch time = new Stopwatch();
 
@@ -336,22 +335,22 @@ namespace Zenith
 
                 if (!Rendering) midiAudio = dispose.Add(new MIDIAudio(Playback, new KDMAPIOutput()));
 
-                void RenderFrame()
+                RenderStarted?.Invoke(this, new EventArgs());
+                var context = device.D3Device.ImmediateContext;
+                preview.Run(state =>
                 {
-                    var context = form.Device.ImmediateContext;
-                    Module.RenderFrame(context, preview.RenderTarget);
+                    context.ClearRenderTargetView(state.RenderTarget);
+                    Module.RenderFrame(context, previewComposite.RenderTarget);
 
                     try
                     {
-                        preview.RenderFrame(context, form);
+                        previewComposite.RenderFrame(context, state.RenderTarget);
                     }
                     catch (FFMpegException)
                     {
-                        form.Close();
+                        state.Stop();
                         return;
                     }
-
-                    form.Present(VSync);
 
                     if (!Paused)
                     {
@@ -364,16 +363,14 @@ namespace Zenith
                     time.Start();
 
                     if (Playback.PlayerPositionSeconds > EndTime)
-                        form.Close();
-                    if (!Status.Running) form.Close();
+                        state.Stop();
+                    if (!Status.Running) 
+                        state.Stop();
 
                     RenderProgress?.Invoke(this, new RenderProgressData((double)Playback.PlayerPositionSeconds, (long)Playback.LastIterateNoteCount, frameNum++));
 
                     cancel.ThrowIfCancellationRequested();
-                }
-
-                RenderStarted?.Invoke(this, new EventArgs());
-                RenderLoop.Run(form, RenderFrame);
+                });
             }
             finally
             {
