@@ -32,7 +32,7 @@ namespace Zenith.Models
                 return;
             }
             Console.WriteLine("An unknown error occured");
-            Console.WriteLine(e.Message);
+            Console.WriteLine(e);
         }
 
         public static void Handle(Action call)

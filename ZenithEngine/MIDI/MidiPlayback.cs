@@ -57,19 +57,6 @@ namespace ZenithEngine.MIDI
             }
         }
 
-        public void ClearNoteMeta()
-        {
-            if (NotesSingle != null)
-            {
-                foreach (var n in NotesSingle) n.Meta = null;
-            }
-            if (NotesKeyed != null)
-            {
-                foreach (var k in NotesKeyed)
-                    foreach (var n in k) n.Meta = null;
-            }
-        }
-
         public int TrackCount => Midi.TrackCount;
         public FastList<Note> NotesSingle { get; protected set; }
         public FastList<Note>[] NotesKeyed { get; protected set; }
@@ -150,6 +137,23 @@ namespace ZenithEngine.MIDI
             }
         }
 
+        public void ClearNoteMeta()
+        {
+            void ClearStream(IEnumerable<Note> notes)
+            {
+                foreach (var n in notes) n.Meta = null;
+            }
+
+            if (NotesKeyed != null)
+            {
+                Parallel.ForEach(NotesKeyed, k => ClearStream(k));
+            }
+            if (NotesSingle != null)
+            {
+                ClearStream(NotesSingle);
+            }
+        }
+
         public void AdvancePlayback(double offset)
         {
             AdvancePlaybackTo(PlayerPositionSeconds + offset);
@@ -189,13 +193,17 @@ namespace ZenithEngine.MIDI
             var iter = notes.Iterate();
             for (Note n = null; iter.MoveNext(out n);)
             {
-                if (stopped) break;
                 if (n.Delete)
                 {
                     iter.Remove();
                     continue;
                 }
+                if (stopped) break;
                 yield return n;
+                if (n.Delete)
+                {
+                    iter.Remove();
+                }
             }
         }
 

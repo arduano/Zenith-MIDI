@@ -34,11 +34,11 @@ namespace ZenithEngine.DXHelper.D2D
         public static implicit operator TextFormat(TextFormatKeeper keeper) => keeper.TextFormat;
         public TextFormat TextFormat { get; private set; }
 
-        string FontFamily { get; }
-        float FontSize { get; }
-        FontWeight FontWeight { get; }
-        FontStyle FontStyle { get; }
-        FontStretch FontStretch { get; }
+        public string FontFamily { get; }
+        public float FontSize { get; }
+        public FontWeight FontWeight { get; }
+        public FontStyle FontStyle { get; }
+        public FontStretch FontStretch { get; }
 
         public ParagraphAlignment ParagraphAlignment
         {
@@ -63,6 +63,6 @@ namespace ZenithEngine.DXHelper.D2D
         }
 
         public TextLayout GetLayout(string text) =>
-            GetLayout(text, float.MaxValue, float.MinValue);
+            GetLayout(text, float.MaxValue, 0);
     }
 }

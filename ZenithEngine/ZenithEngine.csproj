@@ -270,6 +270,9 @@
     <Compile Include="DXHelper\BlendStateKeeper.cs" />
     <Compile Include="DXHelper\BufferFlusher.cs" />
     <Compile Include="DXHelper\Compositor.cs" />
+    <Compile Include="DXHelper\D2D\InterlopRenderTarget2D.cs" />
+    <Compile Include="DXHelper\D2D\SolidColorBrushKeeper.cs" />
+    <Compile Include="DXHelper\D2D\TextFormatKeeper.cs" />
     <Compile Include="DXHelper\DepthStencilStateKeeper.cs" />
     <Compile Include="DXHelper\DeviceGroup.cs" />
     <Compile Include="DXHelper\DeviceInitiable.cs" />

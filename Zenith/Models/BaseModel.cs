@@ -83,6 +83,7 @@ namespace Zenith.Models
 
             var files = Directory.GetFiles("Plugins");
             var dlls = files.Where((s) => s.EndsWith(".dll"));
+
             var loaders = dlls.Select(dll =>
             {
                 cancel.ThrowIfCancellationRequested();
@@ -99,19 +100,15 @@ namespace Zenith.Models
                         RenderModules.Add(module);
                     });
                 }
-#if DEBUG
                 catch (ModuleLoadFailedException e)
-#else
-                catch(OperationCanceledException e)
                 {
-                    throw e;
-                }
-                catch (Exception e)
-#endif
-                {
-                    cancel.ThrowIfCancellationRequested();
                     Err.Notify(e.Message);
                 }
+                catch (Exception e)
+                {
+                    Err.Notify(e.ToString());
+                }
+                cancel.ThrowIfCancellationRequested();
             }
 
             if (SelectedModule == null) SelectDefaultRenderer();

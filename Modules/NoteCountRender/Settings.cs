@@ -8,15 +8,6 @@ using System.Windows.Media.Effects;
 
 namespace NoteCountRender
 {
-    public enum Alignments
-    {
-        TopLeft,
-        TopRight,
-        BottomLeft,
-        BottomRight,
-        TopSpread,
-        BottomSpread,
-    }
     public enum Commas
     {
         Comma,

@@ -117,11 +117,15 @@ namespace ZenithEngine.Modules
         {
             lock (queueLock)
             {
-                while (disposeQueue.Count != 0)
+                if (disposeQueue.Count != 0)
                 {
-                    var m = disposeQueue.Dequeue();
-                    m.Dispose();
-                    ModuleDisposed?.Invoke(this, m);
+                    currentMidi?.ClearNoteMeta();
+                    while (disposeQueue.Count != 0)
+                    {
+                        var m = disposeQueue.Dequeue();
+                        m.Dispose();
+                        ModuleDisposed?.Invoke(this, m);
+                    }
                 }
                 while (initQueue.Count != 0)
                 {
