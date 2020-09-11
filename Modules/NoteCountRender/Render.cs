@@ -21,39 +21,39 @@ using System.Text.RegularExpressions;
 
 namespace NoteCountRender
 {
+    struct DecimalFormat
+    {
+        public DecimalFormat(int minDigits, int minDecimals, int round, string thousands = "", string point = ".")
+        {
+            MinDigits = minDigits;
+            MinDecimals = minDecimals;
+            Round = round;
+            Thousands = thousands;
+            Point = point;
+        }
+
+        public int MinDigits { get; }
+        public int MinDecimals { get; }
+        public int Round { get; }
+
+        public string Thousands { get; }
+        public string Point { get; }
+    }
+
+    struct NPSFrame
+    {
+        public NPSFrame(double time, long notes)
+        {
+            Time = time;
+            Notes = notes;
+        }
+
+        public double Time { get; }
+        public long Notes { get; }
+    }
+
     public class Render : PureModule
     {
-        struct DecimalFormat
-        {
-            public DecimalFormat(int minDigits, int minDecimals, int round, string thousands = "", string point = ".")
-            {
-                MinDigits = minDigits;
-                MinDecimals = minDecimals;
-                Round = round;
-                Thousands = thousands;
-                Point = point;
-            }
-
-            public int MinDigits { get; }
-            public int MinDecimals { get; }
-            public int Round { get; }
-
-            public string Thousands { get; }
-            public string Point { get; }
-        }
-
-        struct NPSFrame
-        {
-            public NPSFrame(double time, long notes)
-            {
-                Time = time;
-                Notes = notes;
-            }
-
-            public double Time { get; }
-            public long Notes { get; }
-        }
-
         #region Info
         public override string Name { get; } = "Note Count";
         public override string Description { get; } = "blah blah blah";
@@ -61,21 +61,12 @@ namespace NoteCountRender
         public override string LanguageDictName { get; } = "notecounter";
         #endregion
 
-
         public override double StartOffset => 0;
 
         protected override NoteColorPalettePick PalettePicker => null;
 
         BaseModel Data { get; } = new BaseModel();
         public override FrameworkElement SettingsControl => LoadUI(() => new SettingsCtrl() { DataContext = Data });
-
-        CompositeRenderSurface composite;
-        Compositor compositor;
-        ShaderProgram plainShader;
-
-        InterlopRenderTarget2D target2d;
-        SolidColorBrushKeeper brush;
-        TextFormatKeeper textFormat;
 
         public Render()
         {
@@ -193,12 +184,22 @@ namespace NoteCountRender
             };
         }
 
+        CompositeRenderSurface composite;
+        Compositor compositor;
+        ShaderProgram plainShader;
+
+        InterlopRenderTarget2D target2d;
+        SolidColorBrushKeeper brush;
+        TextFormatKeeper textFormat;
+
         public override void Init(DeviceGroup device, MidiPlayback midi, RenderStatus status)
         {
+            var state = Data.State;
+
             init.Replace(ref composite, new CompositeRenderSurface(status.RenderWidth, status.RenderHeight));
             init.Replace(ref target2d, new InterlopRenderTarget2D(composite));
             init.Replace(ref brush, new SolidColorBrushKeeper(target2d, new Color4(255, 255, 255, 255)));
-            init.Replace(ref textFormat, new TextFormatKeeper("Arial", 32 * status.SSAA));
+            init.Replace(ref textFormat, new TextFormatKeeper(state.FontName, state.FontSize * status.SSAA));
 
             countedNotes = 0;
             maximumVals = new Dictionary<string, object>();
@@ -217,7 +218,7 @@ namespace NoteCountRender
             var state = Data.State;
             if (
                 textFormat.FontFamily != state.FontName ||
-                textFormat.FontSize != state.FontSize
+                textFormat.FontSize != state.FontSize * Status.SSAA
                 )
             {
                 init.Replace(ref textFormat, new TextFormatKeeper(state.FontName, state.FontSize * Status.SSAA));

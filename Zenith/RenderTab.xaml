@@ -23,7 +23,12 @@
                 <Setter Property="MinWidth" Value="120"/>
             </Style>
 
-            <Style x:Key="UseMaskButton" TargetType="{x:Type Button}" BasedOn="{StaticResource MatButton}">
+            <Style x:Key="BrowseButton" TargetType="{x:Type Button}" BasedOn="{StaticResource MatButton}">
+                <Setter Property="Padding" Value="20,0"/>
+                <Setter Property="Margin" Value="10,0"/>
+            </Style>
+
+            <Style x:Key="UseMaskButton" TargetType="{x:Type Button}" BasedOn="{StaticResource BrowseButton}">
                 <Setter Property="IsEnabled" Value="{Binding IsNotRendering}"/>
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding OutputOptions.UseMaskOutput}" Value="False">
@@ -32,7 +37,7 @@
                 </Style.Triggers >
             </Style>
 
-            <Style x:Key="UseAudioButton" TargetType="{x:Type Button}" BasedOn="{StaticResource MatButton}">
+            <Style x:Key="UseAudioButton" TargetType="{x:Type Button}" BasedOn="{StaticResource BrowseButton}">
                 <Setter Property="IsEnabled" Value="{Binding IsNotRendering}"/>
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding OutputOptions.UseAudio}" Value="False">
@@ -55,11 +60,29 @@
 
             <Style x:Key="CustomArgsEnabled" TargetType="{x:Type TextBox}" BasedOn="{StaticResource MatTextbox}">
                 <Setter Property="IsEnabled" Value="False"/>
+                <Setter Property="Width" Value="900"/>
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding OutputOptions.SelectedOutputType}" Value="{x:Static models:OutputType.Custom}">
                         <Setter Property="IsEnabled" Value="{Binding IsNotRendering}"/>
                     </DataTrigger>
                 </Style.Triggers>
+            </Style>
+
+            <Style x:Key="TransparencyMaskBox" TargetType="{x:Type TextBox}" BasedOn="{StaticResource CustomArgsEnabled}">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding OutputOptions.UseMaskOutput}" Value="False">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                    </DataTrigger>
+                </Style.Triggers >
+            </Style>
+
+            <Style x:Key="IncludeAudioBox" TargetType="{x:Type TextBox}" BasedOn="{StaticResource CustomArgsEnabled}">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding OutputOptions.UseAudio}" Value="False">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                    </DataTrigger>
+                </Style.Triggers >
             </Style>
 
             <Style x:Key="StartOffset" TargetType="{x:Type ui:NumberBox}" BasedOn="{StaticResource MatNumberBox}">
@@ -84,36 +107,43 @@
     </UserControl.Resources>
     <Grid>
         <StackPanel>
-            <ui:LabelledItem Label="Output File" HorizontalAlignment="Stretch">
-                <DockPanel>
-                    <Button IsEnabled="{Binding IsNotRendering}" Name="browseOutputButton" Content="Browse" Click="browseOutputButton_Click"/>
-                    <TextBox Style="{StaticResource CustomArgsEnabled}" Text="{Binding OutputOptions.OutputLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <ui:Title HorizontalAlignment="Center" Content="Output Locations"/>
+            <StackPanel Margin="0,0,0,0">
+                <ui:LabelledItem Label="{ui:LangText main.render.outputFile}" HorizontalAlignment="Center" Margin="5">
+                    <Button Style="{StaticResource BrowseButton}" IsEnabled="{Binding IsNotRendering}" Name="browseOutputButton" Content="{ui:LangText main.browse}" Click="browseOutputButton_Click"/>
+                </ui:LabelledItem>
+                <TextBox Style="{StaticResource CustomArgsEnabled}" Text="{Binding OutputOptions.OutputLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            </StackPanel>
+            <StackPanel Margin="0,15,0,0">
+                <DockPanel HorizontalAlignment="Center" Margin="5">
+                    <ui:Checkbox Margin="5" VerticalAlignment="Center" Content="{ui:LangText main.render.transparencyMask}" IsChecked="{Binding OutputOptions.UseMaskOutput}"/>
+                    <Button Style="{StaticResource UseMaskButton}" Name="browseMaskButton" Content="{ui:LangText main.browse}" Click="browseMaskButton_Click"/>
                 </DockPanel>
-            </ui:LabelledItem>
-            <DockPanel>
-                <ui:Checkbox Margin="5" VerticalAlignment="Center" Content="Transparency Mask" IsChecked="{Binding OutputOptions.UseMaskOutput}"/>
-                <Button Style="{StaticResource UseMaskButton}" Name="browseMaskButton" Content="Browse" Click="browseMaskButton_Click"/>
-                <TextBox Style="{StaticResource CustomArgsEnabled}" Text="{Binding OutputOptions.MaskOutputLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-            </DockPanel>
-            <DockPanel>
-                <ui:Checkbox Margin="5" VerticalAlignment="Center" Content="Include Audio" IsChecked="{Binding OutputOptions.UseAudio}"/>
-                <Button Style="{StaticResource UseAudioButton}" Name="browseAudioButton" Content="Browse" Click="browseAudioButton_Click"/>
-                <TextBox Style="{StaticResource CustomArgsEnabled}" Text="{Binding OutputOptions.AudioLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-            </DockPanel>
-            <DockPanel>
-                <ui:LabelledItem Label="Output Format" Margin="5">
+                <TextBox Style="{StaticResource TransparencyMaskBox}" Text="{Binding OutputOptions.MaskOutputLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            </StackPanel>
+            <StackPanel Margin="0,15,0,0">
+                <DockPanel HorizontalAlignment="Center" Margin="5">
+                    <ui:Checkbox Margin="5" VerticalAlignment="Center" Content="{ui:LangText main.render.includeAudio}" IsChecked="{Binding OutputOptions.UseAudio}"/>
+                    <Button Style="{StaticResource UseAudioButton}" Name="browseAudioButton" Content="{ui:LangText main.browse}" Click="browseAudioButton_Click"/>
+                </DockPanel>
+                <TextBox Style="{StaticResource IncludeAudioBox}" Text="{Binding OutputOptions.AudioLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            </StackPanel>
+            <ui:Title HorizontalAlignment="Center" Content="Output Quality"/>
+            <DockPanel Margin="0,0,0,0" HorizontalAlignment="Center">
+                <ui:LabelledItem Label="{ui:LangText main.render.outputFormat}" Margin="5">
                     <ui:EnumComboBox
-                    Style="{DynamicResource RenderType}"
-                    Selected="{Binding OutputOptions.SelectedOutputType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  
-                >
-                        <ui:EnumComboBoxItem EnumValue="{x:Static models:OutputType.H264CRF}" Content="h.264 CRF"/>
+                        Style="{DynamicResource RenderType}"
+                        Selected="{Binding OutputOptions.SelectedOutputType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  
+                        Margin="5,0,0,0"
+                    >
+                        <ui:EnumComboBoxItem EnumValue="{x:Static models:OutputType.H264CRF}" Content="{ui:LangText main.render.h264crf}"/>
                         <!--<ui:EnumComboBoxItem EnumValue="{x:Static models:OutputType.H264NVENCCRF}" Content="h.264 NVENC CRF"/>-->
-                        <ui:EnumComboBoxItem EnumValue="{x:Static models:OutputType.H264Bitrate}" Content="h.264 Bitrate"/>
-                        <ui:EnumComboBoxItem EnumValue="{x:Static models:OutputType.H264NVENCBitrate}" Content="h.264 NVENC Bitrate"/>
-                        <ui:EnumComboBoxItem EnumValue="{x:Static models:OutputType.Custom}" Content="Custom"/>
+                        <ui:EnumComboBoxItem EnumValue="{x:Static models:OutputType.H264Bitrate}" Content="{ui:LangText main.render.h264bitrate}"/>
+                        <ui:EnumComboBoxItem EnumValue="{x:Static models:OutputType.H264NVENCBitrate}" Content="{ui:LangText main.render.h264nvencBitrate}"/>
+                        <ui:EnumComboBoxItem EnumValue="{x:Static models:OutputType.Custom}" Content="{ui:LangText main.render.custom}"/>
                     </ui:EnumComboBox>
                 </ui:LabelledItem>
-                <ui:LabelledItem Label="Bitrate" Margin="5">
+                <ui:LabelledItem Label="{ui:LangText main.render.bitrate}" Margin="5">
                     <ui:LabelledItem.Style>
                         <Style TargetType="ui:LabelledItem" BasedOn="{StaticResource MatLabelledItem}">
                             <Setter Property="Visibility" Value="Collapsed"/>
@@ -128,12 +158,12 @@
                         </Style>
                     </ui:LabelledItem.Style>
                     <ui:NumberBox
-                    Style="{DynamicResource RenderBitrate}"
-                    Value="{Binding OutputOptions.Bitrate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DecimalIntConvert}}"
-                    Width="100"
-                />
+                        Style="{DynamicResource RenderBitrate}"
+                        Value="{Binding OutputOptions.Bitrate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DecimalIntConvert}}"
+                        MinWidth="100"
+                    />
                 </ui:LabelledItem>
-                <ui:LabelledItem Label="Crf" Margin="5">
+                <ui:LabelledItem Label="{ui:LangText main.render.crf}" Margin="5">
                     <ui:LabelledItem.Style>
                         <Style TargetType="ui:LabelledItem" BasedOn="{StaticResource MatLabelledItem}">
                             <Setter Property="Visibility" Value="Collapsed"/>
@@ -148,26 +178,24 @@
                         </Style>
                     </ui:LabelledItem.Style>
                     <ui:NumberBox
-                    Style="{DynamicResource RenderCRF}"
-                    Value="{Binding OutputOptions.CRF, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DecimalIntConvert}}"
-                    Width="100"
-                />
+                        Style="{DynamicResource RenderCRF}"
+                        Value="{Binding OutputOptions.CRF, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DecimalIntConvert}}"
+                        MinWidth="60"
+                    />
                 </ui:LabelledItem>
             </DockPanel>
-            <ui:LabelledItem Label="Args" HorizontalAlignment="Stretch">
-                <TextBox Style="{StaticResource CustomArgsEnabled}" Text="{Binding OutputOptions.FFmpegArgs, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBox Style="{StaticResource CustomArgsEnabled}" Text="{Binding OutputOptions.FFmpegArgs, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <ui:LabelledItem Margin="0,25,0,5" HorizontalAlignment="Center" Label="{ui:LangText main.render.startOffset}">
+                <ui:NumberBox MinWidth="60" Style="{StaticResource StartOffset}" Value="{Binding OutputOptions.StartOffset, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DecimalDoubleConvert}}"/>
             </ui:LabelledItem>
-            <ui:LabelledItem Label="Start Offset (seconds)">
-                <ui:NumberBox Style="{StaticResource StartOffset}" Value="{Binding OutputOptions.StartOffset, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DecimalDoubleConvert}}"/>
-            </ui:LabelledItem>
-            <ui:LoaderButton Grid.Column="0" Margin="5" Style="{DynamicResource StartRender}" Name="startRender" Click="startRender_Click">Start Render</ui:LoaderButton>
+            <ui:LoaderButton Width="500" Height="40" Content="{ui:LangText main.startRender}" Margin="20" Style="{DynamicResource StartRender}" Name="startRender" Click="startRender_Click"/>
         </StackPanel>
         <ui:Overlay>
-            <Grid.Style>
+            <ui:Overlay.Style>
                 <Style TargetType="ui:Overlay" BasedOn="{StaticResource MatOverlay}">
                     <Setter Property="Showing" Value="{Binding IsRendering}"/>
                 </Style>
-            </Grid.Style>
+            </ui:Overlay.Style>
             <local:RenderProgress/>
         </ui:Overlay>
     </Grid>

@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using Newtonsoft;
 using Newtonsoft.Json.Linq;
 using System.Threading;
+using System.Diagnostics;
 
 namespace Zenith.Models
 {
@@ -22,20 +23,6 @@ namespace Zenith.Models
 
         bool watcherReading = false;
 
-        async Task<string> TryReadFile(string path)
-        {
-            for (int i = 0; i < 100; i++)
-            {
-                if (!File.Exists(path)) throw new FileNotFoundException();
-                try
-                {
-                    return File.ReadAllText(path);
-                }
-                catch { await Task.Delay(100); }
-            }
-            throw new Exception("Unable to read settings file after 100 attempts");
-        }
-
         public SaveableModel(string savePath)
         {
             savePath = Path.GetFullPath(savePath);
@@ -43,10 +30,11 @@ namespace Zenith.Models
 
             watcher.Path = Path.GetDirectoryName(savePath);
             watcher.Filter = Path.GetFileName(savePath);
-            watcher.EnableRaisingEvents = true;
             watcher.Changed += Watcher_Changed;
 
             PropertyChanged += SaveableModel_PropertyChanged;
+            
+            watcher.EnableRaisingEvents = true;
 
             ReadSettings();
         }
@@ -58,6 +46,8 @@ namespace Zenith.Models
             {
                 var json = JsonConvert.SerializeObject(this);
                 lastJson = json;
+                var dir = Path.GetDirectoryName(savePath);
+                if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
                 File.WriteAllText(savePath, json);
             }
         }
@@ -69,7 +59,7 @@ namespace Zenith.Models
                 try
                 {
                     watcherReading = true;
-                    var json = TryReadFile(savePath).GetAwaiter().GetResult();
+                    var json = FileUtil.TryReadFile(savePath).GetAwaiter().GetResult();
                     if (json == lastJson) return;
                     var data = (JObject)JsonConvert.DeserializeObject(json);
                     foreach (var t in this.GetType().GetProperties())

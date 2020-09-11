@@ -20,7 +20,9 @@ namespace Zenith.Models
         public RenderArgsModel RenderArgs { get; set; } = new RenderArgsModel();
         public OutputArgsModel OutputOptions { get; set; } = new OutputArgsModel();
         public MidiArgsModel Midi { get; set; } = new MidiArgsModel();
-        public SettingsModel Settings { get; set; } = new SettingsModel();
+        public CacheModel Cache { get; set; } = CacheModel.Instance;
+        public SettingsModel Settings { get; set; } = SettingsModel.Instance;
+        public LanguagesModel Lang { get; set; } = LanguagesModel.Instance;
 
         public ObservableCollection<IModuleRender> RenderModules { get; } = new ObservableCollection<IModuleRender>();
         public IModuleRender SelectedModule { get; set; } = null;
@@ -221,7 +223,17 @@ namespace Zenith.Models
                     RenderProgress = new RenderProgressModel(RenderPipeline);
 
                     var device = new DeviceGroup();
-                    var preview = new WindowPreview(device);
+                    PreviewBase preview;
+                    if (render)
+                    {
+                        var elpreview = new ElementPreview(device);
+                        preview = elpreview;
+                        RenderProgress.PreviewElement = elpreview.Element;
+                    }
+                    else
+                    {
+                        preview = new WindowPreview(device);
+                    }
                     RenderPipeline.Start(preview, cancel).Wait();
                     device.Dispose();
                     RenderPipeline.Dispose();
@@ -312,6 +324,22 @@ namespace Zenith.Models
         {
             PropertyChanged += BaseModel_PropertyChanged;
             Midi.PropertyChanged += Midi_PropertyChanged;
+
+            Lang.PropertyChanged += Lang_PropertyChanged;
+            Settings.PropertyChanged += Settings_PropertyChanged;
+        }
+
+        private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(Settings.SelectedLanguage))
+            {
+
+            }
+        }
+
+        private void Lang_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         private void Midi_PropertyChanged(object sender, PropertyChangedEventArgs e)

@@ -28,13 +28,13 @@
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding Midi.LoadStatus}" Value="{x:Static models:MidiLoadStatus.Unloaded}">
                         <Setter Property="IsEnabled" Value="True"/>
-                        <Setter Property="Content" Value="Load MIDI"/>
+                        <Setter Property="Content" Value="{ui:LangText main.loadMidi}"/>
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
 
             <Style x:Key="UnloadMidiButton" TargetType="{x:Type Button}" BasedOn="{StaticResource MatButton}">
-                <Setter Property="Content" Value="Unload"/>
+                <Setter Property="Content" Value="{ui:LangText main.unload}"/>
                 <Setter Property="IsEnabled" Value="False"/>
                 <Setter Property="Height" Value="36"/>
                 <Style.Triggers>
@@ -76,12 +76,12 @@
             </Style>
 
             <Style x:Key="ReloadKDMAPI" BasedOn="{StaticResource MatLoadableButton}" TargetType="ui:LoaderButton">
-                <Setter Property="Content" Value="Load KDMAPI"/>
+                <Setter Property="Content" Value="{ui:LangText main.loadKdmapi}"/>
                 <Setter Property="IsEnabled" Value="True"/>
                 <Setter Property="Loading" Value="{Binding LoadingKdmapi}"/>
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding KdmapiConnected}" Value="true">
-                        <Setter Property="Content" Value="Unload KDMAPI"/>
+                        <Setter Property="Content" Value="{ui:LangText main.unloadKdmapi}"/>
                     </DataTrigger>
                     <DataTrigger Binding="{Binding LoadingKdmapi}" Value="true">
                         <Setter Property="IsEnabled" Value="False"/>
@@ -127,11 +127,11 @@
                         </Style>
                     </StackPanel.Style>
                     <DockPanel HorizontalAlignment="Center">
-                        <Label>Notes:</Label>
+                        <Label Content="{ui:LangText main.notes}"/>
                         <Label Content="{Binding Midi.Loaded.MidiFile.NoteCount}"></Label>
                     </DockPanel>
                     <DockPanel HorizontalAlignment="Center">
-                        <Label>PPQ:</Label>
+                        <Label Content="{ui:LangText main.ppq}"/>
                         <Label Content="{Binding Midi.Loaded.MidiFile.PPQ}"></Label>
                     </DockPanel>
                 </StackPanel>
@@ -140,9 +140,9 @@
             </DockPanel>
             <StackPanel Grid.Column="1">
 
-                <ui:Title HorizontalAlignment="Center">Render Settings</ui:Title>
+                <ui:Title HorizontalAlignment="Center" Content="{ui:LangText main.gen.renderSettings}"/>
                 <DockPanel HorizontalAlignment="Center">
-                    <ui:LabelledItem Label="Width" MinLabelWidth="60" Margin="5">
+                    <ui:LabelledItem Label="{ui:LangText main.gen.width}" MinLabelWidth="60" Margin="5">
                         <ui:NumberBox
                             Style="{DynamicResource RenderWidth}"
                             Value="{Binding RenderArgs.Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DecimalIntConvert}}"
@@ -150,7 +150,7 @@
                         />
                     </ui:LabelledItem>
 
-                    <ui:LabelledItem Label="Height" Margin="5">
+                    <ui:LabelledItem Label="{ui:LangText main.gen.height}" Margin="5">
                         <ui:NumberBox
                             Style="{DynamicResource RendeHeight}"
                             Value="{Binding RenderArgs.Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DecimalIntConvert}}"
@@ -160,7 +160,7 @@
                 </DockPanel>
 
                 <DockPanel HorizontalAlignment="Center" Margin="10">
-                    <ui:LabelledItem Label="SSAA" Margin="5">
+                    <ui:LabelledItem Label="{ui:LangText main.gen.ssaa}" Margin="5">
                         <ui:NumberBox
                                 Style="{DynamicResource RendeSSAA}"
                                 Value="{Binding RenderArgs.SSAA, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DecimalIntConvert}}"
@@ -168,7 +168,7 @@
                             />
                     </ui:LabelledItem>
 
-                    <ui:LabelledItem Label="FPS" Margin="5">
+                    <ui:LabelledItem Label="{ui:LangText main.gen.fps}" Margin="5">
                         <ui:NumberBox
                                 Style="{DynamicResource RenderFPS}"
                                 Value="{Binding RenderArgs.FPS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DecimalIntConvert}}"
@@ -176,37 +176,36 @@
                             />
                     </ui:LabelledItem>
 
-                    <ui:LabelledItem Label="Note Sizing" Margin="5">
+                    <ui:LabelledItem Label="{ui:LangText main.gen.noteSizing}" Margin="5">
                         <ui:EnumComboBox
                             Style="{DynamicResource RenderNoteSize}"
                             Selected="{Binding RenderArgs.NoteSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  
                         >
-                            <ui:EnumComboBoxItem EnumValue="{x:Static models:NoteSize.Tick}" Content="{DynamicResource tickBased}"/>
-                            <ui:EnumComboBoxItem EnumValue="{x:Static models:NoteSize.Time}" Content="{DynamicResource timeBased}"/>
+                            <ui:EnumComboBoxItem EnumValue="{x:Static models:NoteSize.Tick}" Content="{ui:LangText main.noteSizes.tick}"/>
+                            <ui:EnumComboBoxItem EnumValue="{x:Static models:NoteSize.Time}" Content="{ui:LangText main.noteSizes.time}"/>
                         </ui:EnumComboBox>
                     </ui:LabelledItem>
                 </DockPanel>
                 <DockPanel HorizontalAlignment="Center">
-                    <ui:Checkbox VerticalAlignment="Center" Margin="5" IsEnabled="{Binding IsNotPlaying}" IsChecked="{Binding RenderArgs.IgnoreColorEvents, UpdateSourceTrigger=PropertyChanged}" Content="Ignore Color Events"/>
+                    <ui:Checkbox Content="{ui:LangText main.gen.ignoreColorEvents}" VerticalAlignment="Center" Margin="5" IsEnabled="{Binding IsNotPlaying}" IsChecked="{Binding RenderArgs.IgnoreColorEvents, UpdateSourceTrigger=PropertyChanged}"/>
                 </DockPanel>
 
-                <ui:Title Margin="0,70,0,00" HorizontalAlignment="Center">Preview</ui:Title>
-
+                <ui:Title Margin="0,70,0,00" HorizontalAlignment="Center" Content="{ui:LangText main.gen.preview}"/>
 
                 <DockPanel HorizontalAlignment="Center">
-                    <ui:Checkbox Margin="10" IsChecked="{Binding RealtimePlayback, UpdateSourceTrigger=PropertyChanged}" Content="Realtime playback"/>
-                    <ui:Checkbox Margin="10" IsChecked="{Binding VsyncEnabled, UpdateSourceTrigger=PropertyChanged}" Content="VSync Enabled"/>
-                    <ui:Checkbox Margin="10" IsChecked="{Binding MuteAudio, UpdateSourceTrigger=PropertyChanged}" Content="Mute Audio"/>
+                    <ui:Checkbox Margin="10" IsChecked="{Binding RealtimePlayback, UpdateSourceTrigger=PropertyChanged}" Content="{ui:LangText main.gen.realtimePlayback}"/>
+                    <ui:Checkbox Margin="10" IsChecked="{Binding VsyncEnabled, UpdateSourceTrigger=PropertyChanged}" Content="{ui:LangText main.gen.vsyncEnabled}"/>
+                    <ui:Checkbox Margin="10" IsChecked="{Binding MuteAudio, UpdateSourceTrigger=PropertyChanged}" Content="{ui:LangText main.gen.muteAudio}"/>
                 </DockPanel>
-                <Label Margin="0,20,0,0" HorizontalAlignment="Center" Content="Preview Speed"/>
+                <Label Margin="0,20,0,0" HorizontalAlignment="Center" Content="{ui:LangText main.gen.previewSpeed}"/>
                 <ui:ValueSlider Name="speedSlider" Value="{Binding PreviewSpeed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" DecimalPoints="2" Width="600" Maximum="50" Minimum="0.01" TrueMax="50" TrueMin="0.01" />
                 <Grid Margin="30">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <ui:LoaderButton Grid.Column="0" Margin="5" Style="{DynamicResource StartPreview}" Name="startPreview" Click="startPreview_Click">Start</ui:LoaderButton>
-                    <Button Grid.Column="1" Margin="5" IsEnabled="{Binding IsPlaying}" Name="stopPlayback" Click="stopPlayback_Click">Stop</Button>
+                    <ui:LoaderButton Grid.Column="0" Margin="5" Style="{DynamicResource StartPreview}" Name="startPreview" Click="startPreview_Click" Content="{ui:LangText main.start}"/>
+                    <Button Grid.Column="1" Margin="5" IsEnabled="{Binding IsPlaying}" Name="stopPlayback" Click="stopPlayback_Click" Content="{ui:LangText main.stop}"/>
                 </Grid>
             </StackPanel>
             <DockPanel Grid.Column="2" Margin="10" LastChildFill="True">
@@ -230,7 +229,7 @@
             </DockPanel>
         </Grid>
         <ui:Overlay>
-            <Grid.Style>
+            <ui:Overlay.Style>
                 <Style TargetType="ui:Overlay" BasedOn="{StaticResource MatOverlay}">
                     <Setter Property="Showing" Value="False"/>
                     <Style.Triggers>
@@ -242,7 +241,7 @@
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
-            </Grid.Style>
+            </ui:Overlay.Style>
             <DockPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                 <StackPanel>
                     <DockPanel>
@@ -271,7 +270,7 @@
                         Name="selectPreviousMidiList"
                         ScrollViewer.CanContentScroll="False"
                         HorizontalContentAlignment="Stretch"
-                        ItemsSource="{Binding Settings.HistoricalMidiFiles}"
+                        ItemsSource="{Binding Cache.HistoricalMidiFiles}"
                     >
                         <ListView.ItemTemplate>
                             <DataTemplate>

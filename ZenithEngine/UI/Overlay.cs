@@ -8,7 +8,7 @@ using System.Windows.Controls;
 
 namespace ZenithEngine.UI
 {
-    public class Overlay : Grid
+    public class Overlay : ContentControl
     {
         public bool Showing
         {

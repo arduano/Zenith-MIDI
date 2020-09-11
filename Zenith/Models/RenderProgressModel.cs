@@ -5,12 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
 using System.Diagnostics;
+using DX.WPF;
 
 namespace Zenith.Models
 {
     public class RenderProgressModel : INotifyPropertyChanged
     {
         public double Progress => (Seconds - StartSeconds) / EndSeconds;
+
+        public DXElement PreviewElement { get; set; }
 
         public double StartSeconds { get; }
         public double EndSeconds { get; }

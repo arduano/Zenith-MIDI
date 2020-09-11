@@ -306,7 +306,7 @@ namespace Zenith
 #else
             return Task.Run(() =>
             {
-                Runner(cancel);
+                Runner(preview, cancel);
             });
 #endif
         }

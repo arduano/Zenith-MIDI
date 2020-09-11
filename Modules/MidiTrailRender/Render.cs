@@ -294,8 +294,8 @@ namespace MIDITrailRender
 
                 float glowStrength = Math.Max(render.keyPressPos[Key], 0);
 
-                keyShader.ConstData.LeftColor.Emit.Alpha = 2 * glowStrength;
-                keyShader.ConstData.RightColor.Emit.Alpha = 2 * glowStrength;
+                keyShader.ConstData.LeftColor.Emit.Alpha = 20 * glowStrength;
+                keyShader.ConstData.RightColor.Emit.Alpha = 20 * glowStrength;
 
                 //keyShader.ConstData.LeftColor.Emit.Alpha = 0;
                 //keyShader.ConstData.RightColor.Emit.Alpha = 0;

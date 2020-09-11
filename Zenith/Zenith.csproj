@@ -174,8 +174,10 @@
     <Compile Include="InstanceSettings.cs" />
     <Compile Include="Logs.cs" />
     <Compile Include="Models\BaseModel.cs" />
+    <Compile Include="Models\CacheModel.cs" />
     <Compile Include="Models\Err.cs" />
     <Compile Include="Models\Errors.cs" />
+    <Compile Include="Models\FileUtil.cs" />
     <Compile Include="Models\LanguagesModel.cs" />
     <Compile Include="Models\LoadedMidiArgsModel.cs" />
     <Compile Include="Models\MidiArgsModel.cs" />
@@ -213,6 +215,9 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <EmbeddedResource Include="Languages\en\main.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
   </ItemGroup>

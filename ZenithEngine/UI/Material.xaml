@@ -398,6 +398,23 @@
     <Style x:Key="MatOverlay" TargetType="{x:Type local:Overlay}">
         <Setter Property="Visibility" Value="Hidden"/>
         <Setter Property="Background" Value="{DynamicResource OverlayBrush}"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:Overlay}">
+                    <Grid>
+                        <Border IsHitTestVisible="False" Background="{TemplateBinding Background}"/>
+                        <Border Margin="10">
+                            <ContentPresenter 
+                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                            />
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
     
     <Style BasedOn="{StaticResource MatButton}" TargetType="Button"/>

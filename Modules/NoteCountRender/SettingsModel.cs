@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -18,15 +19,59 @@ namespace NoteCountRender
         BottomSpread,
     }
 
+    class FontItem
+    {
+        public FontItem(string name, FontFamily font)
+        {
+            Name = name;
+            Font = font;
+        }
+
+        public string Name { get; }
+        public FontFamily Font { get; }
+    }
+
     class BaseModel : INotifyPropertyChanged
     {
         public SettingsModel State { get; set; } = new SettingsModel();
-        string[] AllFonts { get; set; } = null;
+        public FontItem[] AllFonts { get; } = null;
+        public FontItem Font { get; set; } = new FontItem("Arial", null);
 
         public BaseModel()
         {
             var fonts = Fonts.SystemFontFamilies;
-            AllFonts = fonts.Select(f => f.Source).ToArray();
+            AllFonts = fonts.Select(f => new FontItem(f.Source, f)).OrderBy(f => f.Name).ToArray();
+
+            this.PropertyChanged += BaseModel_PropertyChanged;
+
+            BindState();
+        }
+
+        void BindState()
+        {
+            Font = AllFonts.Where(f => f.Name == State.FontName).FirstOrDefault();
+            State.PropertyChanged += State_PropertyChanged;
+            State.FontName = Font.Name;
+        }
+
+        private void State_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(State.FontName))
+            {
+                Font = AllFonts.Where(f => f.Name == State.FontName).FirstOrDefault();
+            }
+        }
+
+        private void BaseModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(State))
+            {
+                BindState();
+            }
+            if (e.PropertyName == nameof(Font))
+            {
+                State.FontName = Font.Name;
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -34,7 +79,7 @@ namespace NoteCountRender
 
     class SettingsModel : INotifyPropertyChanged
     {
-        public string TextTemplate { get; set; } = 
+        public string TextTemplate { get; set; } =
 @"Notes: {nc}/{nc-max}/{nc-rem}
 Seconds: {sec}/{sec-max}/{sec-rem}
 Polyphony: {plph}

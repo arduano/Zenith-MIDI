@@ -15,18 +15,21 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <DockPanel HorizontalAlignment="Center">
-                <ui:LabelledItem Label="Notes Rendering:">
-                    <Label Content="{Binding RenderProgress.NotesRendering}"/>
+        <DockPanel Margin="50" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <StackPanel Width="500" HorizontalAlignment="Center" DockPanel.Dock="Bottom">
+                <DockPanel HorizontalAlignment="Center">
+                    <ui:LabelledItem Label="Notes Rendering:">
+                        <Label Content="{Binding RenderProgress.NotesRendering}"/>
+                    </ui:LabelledItem>
+                </DockPanel>
+                <ui:LabelledItem Label="FPS:">
+                    <Label Content="{Binding RenderProgress.FPS}"/>
                 </ui:LabelledItem>
-            </DockPanel>
-            <ui:LabelledItem Label="FPS:">
-                <Label Content="{Binding RenderProgress.FPS}"/>
-            </ui:LabelledItem>
-            <Label Content="{Binding RenderProgress.Seconds}" />
-            <ProgressBar Height="20" Width="500" Value="{Binding RenderProgress.Progress, Mode=OneWay}" Minimum="0" Maximum="1"/>
-            <Button Grid.Column="1" Margin="5" IsEnabled="{Binding IsPlaying}" Name="stopPlayback" Click="stopPlayback_Click">Stop</Button>
-        </StackPanel>
+                <Label Content="{Binding RenderProgress.Seconds}" />
+                <ProgressBar Height="20" Width="500" Value="{Binding RenderProgress.Progress, Mode=OneWay}" Minimum="0" Maximum="1"/>
+                <Button Grid.Column="1" Margin="5" IsEnabled="{Binding IsPlaying}" Name="stopPlayback" Click="stopPlayback_Click">Stop</Button>
+            </StackPanel>
+            <ContentControl MinWidth="10" MinHeight="10" VerticalAlignment="Stretch" Content="{Binding RenderProgress.PreviewElement}" />
+        </DockPanel>
     </Grid>
 </UserControl>

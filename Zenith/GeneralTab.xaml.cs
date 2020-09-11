@@ -61,12 +61,12 @@ namespace Zenith
 
             void selectPreviousMidiList_SelectionChanged(object sender, SelectionChangedEventArgs e)
             {
-                Load(Data.Settings.HistoricalMidiFiles[selectPreviousMidiList.SelectedIndex].Path);
+                Load(Data.Cache.HistoricalMidiFiles[selectPreviousMidiList.SelectedIndex].Path);
             }
 
             void browseMidiButton_Click(object sender, RoutedEventArgs e)
             {
-                var path = Data.Settings.OpenFileDialog("BrowseMidi", "Midi files (*.mid)|*.mid");
+                var path = Data.Cache.OpenFileDialog("BrowseMidi", "Midi files (*.mid)|*.mid");
                 if (path != null) Load(path);
             }
 
@@ -91,7 +91,7 @@ namespace Zenith
             async void Load(string midi)
             {
                 Unbind();
-                Data.Settings.AddHistoricalMidiFile(midi);
+                Data.Cache.AddHistoricalMidiFile(midi);
                 await Data.Midi.LoadMidi(midi);
                 e.Loaded();
             }

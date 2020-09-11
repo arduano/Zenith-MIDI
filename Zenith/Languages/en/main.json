@@ -1,0 +1,61 @@
+﻿{
+  "main": {
+    "tabs": {
+      "general": "General",
+      "moduleSettings": "Module Settings",
+      "render": "Render"
+    },
+    "noteSizes": {
+      "tick": "Tick Based",
+      "time": "Time Based"
+    },
+    "gen": {
+      "renderSettings": "Render Settings",
+      "width": "Width",
+      "height": "Height",
+      "ssaa": "Super Sample",
+      "fps": "FPS",
+      "noteSizing": "Note Sizing",
+      "ignoreColorEvents": "Ignore Color Events",
+
+      "preview": "Preview",
+      "realtimePlayback": "Realtime Playback",
+      "vsyncEnabled": "VSync Enabled",
+      "muteAudio": "Mute Audio",
+      "previewSpeed": "Preview Speed"
+    },
+    "render": {
+      "outputFile": "Output File",
+      "transparencyMask": "Transparency Mask",
+      "includeAudio": "Include Audio",
+      "outputFormat": "Output Format",
+      "crf": "CRF",
+      "bitrate": "Bitrate",
+      "startOffset": "Start Offset (seconds)",
+
+      "h264crf": "H264 CRF",
+      "h264bitrate": "H264 Bitrate",
+      "h264nvencBitrate": "H264 NVENC CRF",
+      "custom": "Custom"
+    },
+    "loadMidi": "Load MIDI",
+    "unload": "Unload",
+    "loadKdmapi": "Load KDMAPI",
+    "unloadKdmapi": "Unload KDMAPI",
+    "start": "Start",
+    "stop": "Stop",
+    "cancel": "Cancel",
+    "startRender": "Start Render",
+    "browse": "Browse",
+    "notes": "Notes:",
+    "ppq": "PPQ:",
+  },
+  "errors": {
+
+  },
+  "mods": {
+    "miditrail": {
+
+    }
+  }
+}

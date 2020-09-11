@@ -1,9 +1,14 @@
-﻿using SharpDX.Windows;
+﻿using DX.WPF;
+using SharpDX.Direct3D11;
+using SharpDX.Windows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Threading;
 using ZenithEngine.DXHelper;
 
 namespace Zenith
@@ -56,26 +61,119 @@ namespace Zenith
 
     public class WindowPreview : PreviewBase
     {
-        ManagedRenderWindow window;
-        
+        public ManagedRenderWindow Window { get; private set; }
+
         public WindowPreview(DeviceGroup device) : base(device)
         { }
 
         protected override void RunInternal(Action<PreviewState> renderFrame, PreviewState state)
         {
-            window = new ManagedRenderWindow(Device, 1280, 720);
-            RenderLoop.Run(window, () =>
+            Window = new ManagedRenderWindow(Device, 1280, 720);
+            RenderLoop.Run(Window, () =>
             {
-                state.RenderTarget = window;
+                state.RenderTarget = Window;
                 renderFrame(state);
-                window.Present(state.VSync);
+                Window.Present(state.VSync);
             });
-            window.Dispose();
+            Window.Dispose();
         }
 
         protected override void StopInternal()
         {
-            window.Close();
+            Window.Close();
+        }
+    }
+
+    public class ElementPreview : PreviewBase
+    {
+        struct DXRenderTarget : IRenderSurface
+        {
+            public DXRenderTarget(D3D11 dX)
+            {
+                DX = dX;
+            }
+
+            public D3D11 DX { get; }
+
+            public Texture2D Texture => DX.RenderTarget;
+            public RenderTargetView RenderTarget => DX.RenderTargetView;
+            public DepthStencilView RenderTargetDepth => null;
+
+            public int Width => (int)DX.RenderSize.X;
+            public int Height => (int)DX.RenderSize.Y;
+        }
+
+        protected static T UI<T>(Func<T> load)
+        {
+            T data = default;
+            Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                data = load();
+            }).Wait();
+            return data;
+        }
+
+        public DXElement Element { get; } = UI(() => new DXElement());
+
+        public ElementPreview(DeviceGroup device) : base(device)
+        { }
+
+        bool ended = false;
+
+        protected override void RunInternal(Action<PreviewState> renderFrame, PreviewState state)
+        {
+            var scene = new EventScene<D3D11>();
+            var dx = new D3D11(Device);
+            dx.FPSLock = 0;
+
+            bool stopped = false;
+
+            Exception error = null;
+
+            void Scene_OnRender(object sender, DrawEventArgs e)
+            {
+                try
+                {
+                    state.RenderTarget = new DXRenderTarget(dx);
+                    renderFrame(state);
+                }
+                catch (OperationCanceledException)
+                {
+                    stopped = true;
+                    return;
+                }
+                catch (Exception err)
+                {
+                    error = err;
+                    stopped = true;
+                    return;
+                }
+                if (ended)
+                {
+                    scene.OnRender -= Scene_OnRender;
+                    stopped = true;
+                }
+            }
+
+            scene.OnRender += Scene_OnRender;
+
+            scene.Renderer = dx;
+            UI(() => Element.Renderer = scene);
+            dx.SingleThreadedRender = false;
+
+            SpinWait.SpinUntil(() => stopped);
+
+            if (error != null)
+            {
+                throw new AggregateException(error);
+            }
+
+            dx.Dispose();
+        }
+
+        protected override void StopInternal()
+        {
+            ended = true;
         }
     }
 }

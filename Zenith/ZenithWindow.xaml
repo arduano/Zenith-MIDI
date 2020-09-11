@@ -19,11 +19,6 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary x:Name="localization">
-                    <ResourceDictionary.MergedDictionaries>
-                        <ResourceDictionary Source="pack://siteoforigin:,,,/Languages/en/window.xaml" />
-                    </ResourceDictionary.MergedDictionaries>
-                </ResourceDictionary>
                 <ResourceDictionary Source="pack://application:,,,/ZenithEngine;component/UI/Material.xaml"/>
                 <ResourceDictionary>
                     <local:AndValueConverter x:Key="AndConverter"/>
@@ -35,12 +30,12 @@
     </Window.Resources>
     <DockPanel>
         <Grid>
-            <local:CustomTabs x:Name="windowTabs" Background="Transparent" BorderThickness="0" Margin="0,0,0,0">
-                <local:CustomTabs.Style>
-                    <Style TargetType="{x:Type local:CustomTabs}">
+            <TabControl x:Name="windowTabs" Background="Transparent" BorderThickness="0" Margin="0,0,0,0">
+                <TabControl.Style>
+                    <Style TargetType="{x:Type TabControl}">
                         <Setter Property="Template">
                             <Setter.Value>
-                                <ControlTemplate TargetType="{x:Type local:CustomTabs}">
+                                <ControlTemplate TargetType="{x:Type TabControl}">
                                     <Grid>
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="50"/>
@@ -56,42 +51,13 @@
                                                      Margin="0,0,0,0"
                                                      IsItemsHost="True"
                                                      Background="Transparent" />
-                                                <StackPanel MouseDown="updateDownloaded_MouseDown" Margin="20,0,0,0" VerticalAlignment="Center" Cursor="Arrow" WindowChrome.IsHitTestVisibleInChrome="True">
-                                                    <StackPanel.Style>
-                                                        <Style TargetType="StackPanel">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=UpdaterProgress}" Value="Downloaded">
-                                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </StackPanel.Style>
-                                                    <TextBlock Foreground="White" FontSize="14" Text="{DynamicResource updateReady}"/>
-                                                    <TextBlock Foreground="White" FontSize="14" Text="{DynamicResource clickToRestart}"/>
-                                                </StackPanel>
-                                                <StackPanel Margin="20,0,0,0" VerticalAlignment="Center">
-                                                    <StackPanel.Style>
-                                                        <Style TargetType="StackPanel">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=UpdaterProgress}" Value="Downloading">
-                                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </StackPanel.Style>
-                                                    <TextBlock Foreground="White" FontSize="20" Text="{DynamicResource updateDownloading}"/>
-                                                </StackPanel>
                                                 <DockPanel DockPanel.Dock="Right" VerticalAlignment="Stretch" HorizontalAlignment="Right" Margin="0,0,10,0" Grid.RowSpan="2" Width="52" Panel.ZIndex="100">
                                                     <Button Style="{StaticResource WindowButton}" Focusable="False" Name="ExitButton" Background="Red" Width="20" Height="20" Margin="3" DockPanel.Dock="Right" WindowChrome.IsHitTestVisibleInChrome="True" Click="ExitButton_Click"></Button>
                                                     <Button Style="{StaticResource WindowButton}" Focusable="False" Name="MinimiseButton" Background="Orange" Width="20" Height="20" Margin="3" DockPanel.Dock="Right" WindowChrome.IsHitTestVisibleInChrome="True" Click="MinimiseButton_Click"></Button>
                                                 </DockPanel>
                                             </DockPanel>
                                         </Border>
-                                        <Border
-                                             Grid.Row="1"
-                                             CornerRadius="0, 12, 12, 12" >
+                                        <Border Grid.Row="1">
                                             <ContentPresenter ContentSource="SelectedContent" />
                                         </Border>
                                     </Grid>
@@ -99,7 +65,7 @@
                             </Setter.Value>
                         </Setter>
                     </Style>
-                </local:CustomTabs.Style>
+                </TabControl.Style>
                 <TabControl.Resources>
                     <Style TargetType="TabItem" BasedOn="{StaticResource MainTabs}">
                         <Setter Property="Height" Value="50"/>
@@ -107,15 +73,15 @@
                         <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True"/>
                     </Style>
                 </TabControl.Resources>
-                <TabItem Header="{DynamicResource generalTab}" IsEnabled="{Binding NotRenderingOrPreviewing, ElementName=mainWindow}">
+                <TabItem Header="{ui:LangText main.tabs.general}" IsEnabled="{Binding NotRenderingOrPreviewing, ElementName=mainWindow}">
                     <local:GeneralTab />
                 </TabItem>
-                <TabItem Content="{Binding SelectedModule.SettingsControl}" Header="{DynamicResource moduleSettingsTab}" IsEnabled="{Binding NotRenderingOrPreviewing, ElementName=mainWindow}">
+                <TabItem Content="{Binding SelectedModule.SettingsControl}" Header="{ui:LangText main.tabs.moduleSettings}" IsEnabled="{Binding NotRenderingOrPreviewing, ElementName=mainWindow}">
                 </TabItem>
-                <TabItem Header="{DynamicResource renderTab}">
+                <TabItem Header="{ui:LangText main.tabs.render}">
                     <local:RenderTab />
                 </TabItem>
-            </local:CustomTabs>
+            </TabControl>
         </Grid>
     </DockPanel>
 </Window>

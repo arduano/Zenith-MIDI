@@ -378,6 +378,7 @@
     </Compile>
     <Compile Include="UI\InplaceConverter.cs" />
     <Compile Include="UI\LabelledItem.cs" />
+    <Compile Include="UI\LangText.cs" />
     <Compile Include="UI\LoaderButton.cs" />
     <Compile Include="UI\NumberBox.cs" />
     <Compile Include="UI\NumberSelect.xaml.cs">

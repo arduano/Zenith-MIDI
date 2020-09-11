@@ -39,19 +39,19 @@ namespace Zenith
 
         private void browseOutputButton_Click(object sender, RoutedEventArgs e)
         {
-            var path = Data.Settings.SaveFileDialog("RenderOutput", "H.264 video (*.mp4)|*.mp4|All types|*.*");
+            var path = Data.Cache.SaveFileDialog("RenderOutput", "H.264 video (*.mp4)|*.mp4|All types|*.*");
             if(path != null) Data.OutputOptions.OutputLocation = path;
         }
 
         private void browseMaskButton_Click(object sender, RoutedEventArgs e)
         {
-            var path = Data.Settings.SaveFileDialog("RenderMask", "H.264 video (*.mp4)|*.mp4|All types|*.*");
+            var path = Data.Cache.SaveFileDialog("RenderMask", "H.264 video (*.mp4)|*.mp4|All types|*.*");
             if (path != null) Data.OutputOptions.MaskOutputLocation = path;
         }
 
         private void browseAudioButton_Click(object sender, RoutedEventArgs e)
         {
-            var path = Data.Settings.OpenFileDialog("RenderAudio", "Common audio files (*.mp3;*.wav;*.ogg;*.flac)|*.mp3;*.wav;*.ogg;*.flac");
+            var path = Data.Cache.OpenFileDialog("RenderAudio", "Common audio files (*.mp3;*.wav;*.ogg;*.flac)|*.mp3;*.wav;*.ogg;*.flac");
             if (path != null) Data.OutputOptions.AudioLocation = path;
         }
 

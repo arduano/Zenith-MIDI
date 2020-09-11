@@ -265,6 +265,8 @@ namespace Zenith
 
             DataContext = DataBase;
 
+            Resources.MergedDictionaries.Add(DataBase.Lang.MergedLanguages);
+
             if (!DataBase.HasTriedLoadingModules)
                 Task.Run(() => DataBase.LoadAllModules());
             if (!DataBase.KdmapiConnected) 
