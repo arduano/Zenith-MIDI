@@ -21,6 +21,7 @@ using ZenithEngine.MIDI;
 using ZenithEngine.ModuleUI;
 using SharpDX.Direct3D11;
 using SharpDX;
+using ZenithEngine.UI;
 
 namespace PFARender
 {
@@ -41,66 +42,37 @@ namespace PFARender
                 public Keys() : base(Dock.Left) { }
 
                 [UIChild]
-                public UINumber left = new UINumber()
-                {
-                    Label = new DynamicResourceExtension("firstNote"),
-                    Min = 0,
-                    Max = 255,
-                    Value = 0,
-                };
+                public UINumber left = new UINumber("leftKey", new LangText("mods.common.firstNote"), 0, 0, 255);
 
                 [UIChild]
-                public UINumber right = new UINumber()
-                {
-                    Label = new DynamicResourceExtension("lastNote"),
-                    Min = 1,
-                    Max = 256,
-                    Value = 128,
-                };
+                public UINumber right = new UINumber("rightKey", new LangText("mods.common.lastNote"), 128, 1, 256);
             }
 
             [UIChild]
-            public Keys keys = new Keys();
+            public Keys keys = new Keys() { Margin = new Thickness(0) };
 
             [UIChild]
-            public UINumberSlider noteScreenTime = new UINumberSlider()
-            {
-                Label = new DynamicResourceExtension("noteScreenTime"),
-                SliderMin = 2,
-                SliderMax = 4096,
-                Min = 0.1,
-                Max = 1000000,
-                DecimalPoints = 2,
-                Step = 1,
-                Value = 400,
-            };
+            public UINumberSlider noteScreenTime = new UINumberSlider(
+                "noteScreenTime",
+                new LangText("mods.common.noteScreenTime"),
+                400, 1, 4000, 0.1m, 1000000, true
+            );
 
             [UIChild]
-            public UINumberSlider kbHeight = new UINumberSlider()
-            {
-                Label = new DynamicResourceExtension("pianoHeight"),
-                SliderMin = 0,
-                SliderMax = 2,
-                Min = 0,
-                Max = 2,
-                DecimalPoints = 2,
-                Step = 1,
-                Value = 1,
-                SliderWidth = 200,
-            };
+            public UINumberSlider kbHeight = new UINumberSlider(
+                "keyboardHeight",
+                new LangText("mods.common.pianoHeight"),
+                16, 0, 100
+            );
 
             [UIChild]
-            public UICheckbox sameWidthNotes = new UICheckbox()
-            {
-                Label = new DynamicResourceExtension("sameWidthNotes"),
-                IsChecked = false,
-            };
+            public UICheckbox sameWidthNotes = new UICheckbox("sameWidthNotes", new LangText("mods.common.sameWidthNotes"), true);
         }
         #endregion
 
         UI settings = LoadUI(() => new UI());
 
-        public override FrameworkElement SettingsControl => settings;
+        public override FrameworkElement SettingsControl => settings.Control;
 
         public override double StartOffset => settings.noteScreenTime.Value;
 
@@ -161,7 +133,7 @@ namespace PFARender
                 if (keyboard.BlackKey[firstNote]) kbfirstNote--;
                 if (keyboard.BlackKey[lastNote - 1]) kblastNote++;
 
-                float pianoHeight = 0.151f * settings.kbHeight;
+                float pianoHeight = 0.151f * (float)settings.kbHeight;
 
                 pianoHeight = pianoHeight / (settings.keys.right - settings.keys.left) * 128;
                 pianoHeight = pianoHeight / (1920.0f / 1080.0f) * Status.AspectRatio;
@@ -176,15 +148,18 @@ namespace PFARender
                 var keyed = Midi.IterateNotesKeyed(midiTime, renderCutoff);
                 multithread.Render(context, firstNote, lastNote, !sameWidth, (key, push) =>
                 {
+                    void pushQuad(float left, float top, float right, float bottom, Color4 topLeft, Color4 topRight, Color4 bottomRight, Color4 bottomLeft)
+                    {
+                        push(new Vert2D(left, top, topLeft));
+                        push(new Vert2D(right, top, topRight));
+                        push(new Vert2D(right, bottom, bottomRight));
+                        push(new Vert2D(left, bottom, bottomLeft));
+                    }
+
+                    var minBottom = pianoHeight - 0.1f;
+
                     foreach (var n in keyed[key])
                     {
-                        void pushQuad(float left, float top, float right, float bottom, Color4 topLeft, Color4 topRight, Color4 bottomRight, Color4 bottomLeft)
-                        {
-                            push(new Vert2D(left, top, topLeft));
-                            push(new Vert2D(right, top, topRight));
-                            push(new Vert2D(right, bottom, bottomRight));
-                            push(new Vert2D(left, bottom, bottomLeft));
-                        }
                         
                         if (n.Start < midiTime)
                         {
@@ -197,7 +172,10 @@ namespace PFARender
                         float end = (float)(1 - (renderCutoff - n.End) * notePosFactor);
                         float start = (float)(1 - (renderCutoff - n.Start) * notePosFactor);
                         if (!n.HasEnded)
-                            end = 1.2f;
+                            end = 1.1f;
+
+                        end = Math.Min(end, 1.1f);
+                        start = Math.Max(start, minBottom);
 
                         var leftCol = MultCol(n.Color.Left, 0.2f);
                         var rightCol = MultCol(n.Color.Right, 0.2f);

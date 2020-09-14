@@ -10,80 +10,34 @@ using Slider = ZenithEngine.UI.Slider;
 
 namespace ZenithEngine.ModuleUI
 {
-    public class UINumberSlider : Docked<double>, IValueItem<double>
+    public class UINumberSlider : BaseLabelledItem<ValueSlider, double>
     {
-        public static implicit operator double(UINumberSlider val) => val.Value;
-        public static implicit operator float(UINumberSlider val) => (float)val.Value;
-
-        NumberBox numberItem = new NumberBox() { MinWidth = 80 };
-        Slider sliderItem = new Slider();
-
-        public double ValueInternal
+        public UINumberSlider(string name, object label, double value, double minimum, double maximum, decimal trueMinimum, decimal trueMaximum, bool logarithmic = false)
+            : base(name, label, new ValueSlider(), value)
         {
-            get => (double)numberItem.Value;
-            set { if (numberItem.Value != (decimal)value) numberItem.Value = (decimal)value; }
+            Minimum = minimum;
+            Maximum = maximum;
+            TrueMin = trueMinimum;
+            TrueMax = trueMaximum;
         }
 
-        double cacheValue = 0;
-        public override double Value
-        {
-            get => cacheValue;
-            set
-            {
-                cacheValue = value;
-                UITools.SyncValue(this);
-            }
-        }
+        public UINumberSlider(string name, object label, double value, double minimum, double maximum)
+            : this(name, label, value, minimum, maximum, (decimal)minimum, (decimal)maximum, false)
+        { }
 
-        public override event EventHandler<double> ValueChanged;
+        public double NumWidth { get => InnerControl.Width; set => InnerControl.Width = value; }
+        public double NumHeight { get => InnerControl.Height; set => InnerControl.Height = value; }
+        public double NumMinWidth { get => InnerControl.MinWidth; set => InnerControl.MinWidth = value; }
+        public double NumMinHeight { get => InnerControl.MinHeight; set => InnerControl.MinHeight = value; }
+        public double NumMaxWidth { get => InnerControl.MaxWidth; set => InnerControl.MaxWidth = value; }
+        public double NumMaxHeight { get => InnerControl.MaxHeight; set => InnerControl.MaxHeight = value; }
 
-        public double MinNumberWidth
-        {
-            get => numberItem.MinWidth;
-            set => numberItem.MinWidth = value;
-        }
-
-        public double SliderWidth
-        {
-            get => sliderItem.Width;
-            set => sliderItem.Width = value;
-        }
-
-        public double SliderMax
-        {
-            get => unlog(sliderItem.Maximum);
-            set => sliderItem.Maximum = log(value);
-        }
-
-        public double SliderMin
-        {
-            get => unlog(sliderItem.Minimum);
-            set => sliderItem.Minimum = log(value);
-        }
-
-        public double Max
-        {
-            get => (double)numberItem.Maximum;
-            set => numberItem.Maximum = (decimal)value;
-        }
-
-        public double Min
-        {
-            get => (double)numberItem.Minimum;
-            set => numberItem.Minimum = (decimal)value;
-        }
-
-        public double Step
-        {
-            get => (double)numberItem.Step;
-            set => numberItem.Step = (decimal)value;
-        }
-
-        public int DecimalPoints
-        {
-            get => numberItem.DecimalPoints;
-            set => numberItem.DecimalPoints = value;
-        }
+        public double Minimum { get => InnerControl.Minimum; set => InnerControl.Minimum = value; }
+        public double Maximum { get => InnerControl.Maximum; set => InnerControl.Maximum = value; }
+        public decimal TrueMin { get => InnerControl.TrueMin; set => InnerControl.TrueMin = value; }
+        public decimal TrueMax { get => InnerControl.TrueMax; set => InnerControl.TrueMax = value; }
+        public int DecimalPoints { get => InnerControl.DecimalPoints; set => InnerControl.DecimalPoints = value; }
+        public decimal Step { get => InnerControl.Step; set => InnerControl.Step = value; }
 
         bool logarithmic = false;
         public bool Logarithmic
@@ -91,52 +45,22 @@ namespace ZenithEngine.ModuleUI
             get => logarithmic;
             set
             {
+                if (logarithmic == value) return;
                 logarithmic = value;
-                if (log(SliderMax) != sliderItem.Maximum) sliderItem.Maximum = log(SliderMax);
-                if (log(SliderMin) != sliderItem.Minimum) sliderItem.Minimum = log(SliderMin);
+                if (logarithmic)
+                {
+                    InnerControl.NudToSlider = v => Math.Log(v, 2);
+                    InnerControl.SliderToNud = v => Math.Pow(2, v);
+                }
+                else
+                {
+                    InnerControl.NudToSlider = v => v;
+                    InnerControl.SliderToNud = v => v;
+                }
             }
         }
 
-        double log(double v) => logarithmic ? Math.Log(v, 2) : v;
-        double unlog(double v) => logarithmic ? Math.Pow(2, v) : v;
-
-        public UINumberSlider()
-        {
-            HorizontalAlignment = HorizontalAlignment.Left;
-            Children.Add(labelItem);
-            Children.Add(sliderItem);
-            Children.Add(numberItem);
-            SetDock(labelItem, Dock.Left);
-            SetDock(sliderItem, Dock.Left);
-            SetDock(numberItem, Dock.Left);
-
-            Margin = new Thickness(0, 0, 10, 10);
-            sliderItem.Margin = new Thickness(0, 4, 0, 0);
-
-            numberItem.ValueChanged += (s, e) =>
-            {
-                sliderItem.Value = log((double)e.NewValue);
-                ValueChanged?.Invoke(this, (double)e.NewValue);
-            };
-
-            sliderItem.UserValueChanged += (s, e) =>
-            {
-                numberItem.Value = (decimal)unlog(sliderItem.Value);
-            };
-
-            DecimalPoints = 2;
-            Step = 1;
-            Max = 10000;
-            SliderMax = 1000;
-            Min = 0;
-            SliderMin = 0;
-            Logarithmic = false;
-
-            MinNumberWidth = 80;
-            SliderWidth = 400;
-
-            UITools.BindValue(this);
-        }
+        public override double ValueInternal { get => InnerControl.Value; set => InnerControl.Value = value; }
 
         public override void Parse(string value)
         {

@@ -455,8 +455,8 @@ namespace Zenith
                 HwndSource.FromHwnd(handle).AddHook(new HwndSourceHook(WindowProc));
             };
 
-            tempoMultSlider.nudToSlider = v => Math.Log(v, 2);
-            tempoMultSlider.sliderToNud = v => Math.Pow(2, v);
+            tempoMultSlider.NudToSlider = v => Math.Log(v, 2);
+            tempoMultSlider.SliderToNud = v => Math.Pow(2, v);
 
             bool dontUpdateLanguages = false;
 

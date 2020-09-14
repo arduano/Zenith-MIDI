@@ -29,11 +29,12 @@ namespace ZenithEngine.ModuleUI
             }
         }
 
-        public UILabel()
+        public UILabel(object label)
         {
             Margin = new Thickness(0, 0, 5, 5);
             HorizontalAlignment = HorizontalAlignment.Left;
             VerticalAlignment = VerticalAlignment.Top;
+            Label = label;
         }
     }
 }

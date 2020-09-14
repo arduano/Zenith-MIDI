@@ -10,9 +10,9 @@
         <ResourceDictionary Source="pack://application:,,,/ZenithEngine;component/UI/Material.xaml"/>
     </UserControl.Resources>
         <DockPanel LastChildFill="True">
-            <Button DockPanel.Dock="Top" x:Name="reloadButton" Height="26" Content="{DynamicResource palettes_reload}" Margin="0,0,0,6" VerticalAlignment="Top" Click="ReloadButton_Click"/>
-            <Button DockPanel.Dock="Bottom" x:Name="openPaletteFolder" Margin="0,10,0,0" Height="26" Content="{DynamicResource palettes_openFolder}" Click="openPaletteFolder_Click"/>
-            <ui:Checkbox x:Name="randomiseOrder" DockPanel.Dock="Bottom" Content="{DynamicResource palettes_randomise}" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" CheckToggled="randomiseOrder_CheckToggled" IsChecked="True"/>
+        <Button DockPanel.Dock="Top" x:Name="reloadButton" Height="26" Content="{ui:LangText mods.common.reload}" Margin="0,0,0,6" VerticalAlignment="Top" Click="ReloadButton_Click"/>
+        <Button DockPanel.Dock="Bottom" x:Name="openPaletteFolder" Margin="0,10,0,0" Height="26" Content="{ui:LangText mods.common.openFolder}" Click="openPaletteFolder_Click"/>
+        <ui:Checkbox x:Name="randomiseOrder" DockPanel.Dock="Bottom" Content="{ui:LangText mods.common.randomizeOrder}" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" CheckToggled="randomiseOrder_CheckToggled" IsChecked="True"/>
             <ListBox x:Name="paletteList" Margin="0" SelectionChanged="PaletteList_SelectionChanged"/>
         </DockPanel>
 </UserControl>

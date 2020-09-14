@@ -27,7 +27,7 @@ namespace ZenithEngine.UI
         }
 
         public static readonly DependencyProperty MinimumProperty =
-            DependencyProperty.Register("Minimum", typeof(double), typeof(ValueSlider), new PropertyMetadata(0.0));
+            DependencyProperty.Register("Minimum", typeof(double), typeof(ValueSlider), new PropertyMetadata(0.0, (s, e) => (s as ValueSlider).OnSliderMetaChange(e)));
 
 
         public double Maximum
@@ -37,7 +37,7 @@ namespace ZenithEngine.UI
         }
 
         public static readonly DependencyProperty MaximumProperty =
-            DependencyProperty.Register("Maximum", typeof(double), typeof(ValueSlider), new PropertyMetadata(1.0));
+            DependencyProperty.Register("Maximum", typeof(double), typeof(ValueSlider), new PropertyMetadata(1.0, (s, e) => (s as ValueSlider).OnSliderMetaChange(e)));
 
 
         public double Value
@@ -57,7 +57,7 @@ namespace ZenithEngine.UI
         }
 
         public static readonly DependencyProperty DecimalPointsProperty =
-            DependencyProperty.Register("DecimalPoints", typeof(int), typeof(ValueSlider), new PropertyMetadata(0));
+            DependencyProperty.Register("DecimalPoints", typeof(int), typeof(ValueSlider), new PropertyMetadata(2));
 
 
         public decimal TrueMin
@@ -87,6 +87,47 @@ namespace ZenithEngine.UI
         public static readonly RoutedEvent ValueChangedEvent = EventManager.RegisterRoutedEvent(
                 "ValueChanged", RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<double>), typeof(ValueSlider));
 
+
+        public double SliderWidth
+        {
+            get { return (double)GetValue(SliderWidthProperty); }
+            set { SetValue(SliderWidthProperty, value); }
+        }
+
+        public static readonly DependencyProperty SliderWidthProperty =
+            DependencyProperty.Register("SliderWidth", typeof(double), typeof(ValueSlider), new PropertyMetadata(double.NaN));
+
+
+        public double MinNUDWidth
+        {
+            get { return (double)GetValue(MinNUDWidthProperty); }
+            set { SetValue(MinNUDWidthProperty, value); }
+        }
+
+        public static readonly DependencyProperty MinNUDWidthProperty =
+            DependencyProperty.Register("MinNUDWidth", typeof(double), typeof(ValueSlider), new PropertyMetadata(80.0));
+
+
+        public Func<double, double> SliderToNud
+        {
+            get { return (Func<double, double>)GetValue(SliderToNudProperty); }
+            set { SetValue(SliderToNudProperty, value); }
+        }
+
+        public static readonly DependencyProperty SliderToNudProperty =
+            DependencyProperty.Register("SliderToNud", typeof(Func<double, double>), typeof(ValueSlider), new PropertyMetadata((Func<double, double>)(a => a), (s, e) => (s as ValueSlider).OnSliderMetaChange(e)));
+
+
+        public Func<double, double> NudToSlider
+        {
+            get { return (Func<double, double>)GetValue(NudToSliderProperty); }
+            set { SetValue(NudToSliderProperty, value); }
+        }   
+
+        public static readonly DependencyProperty NudToSliderProperty =
+            DependencyProperty.Register("NudToSlider", typeof(Func<double, double>), typeof(ValueSlider), new PropertyMetadata((Func<double, double>)(a => a), (s, e) => (s as ValueSlider).OnSliderMetaChange(e)));
+
+
         public event RoutedPropertyChangedEventHandler<double> ValueChanged
         {
             add { AddHandler(ValueChangedEvent, value); }
@@ -95,15 +136,19 @@ namespace ZenithEngine.UI
 
         void OnValueChange(DependencyPropertyChangedEventArgs e)
         {
-            if (!ignoreslider) slider.Value = nudToSlider(Value);
+            if (!ignoreslider) slider.Value = NudToSlider(Value);
             if (!ignorevalue) updown.Value = (decimal)Value;
             ignoreslider = false;
             ignorevalue = false;
             RaiseEvent(new RoutedPropertyChangedEventArgs<double>((double)e.OldValue, (double)e.NewValue, ValueChangedEvent));
         }
 
-        public Func<double, double> sliderToNud = v => v;
-        public Func<double, double> nudToSlider = v => v;
+        void OnSliderMetaChange(DependencyPropertyChangedEventArgs e)
+        {
+            slider.Minimum = NudToSlider(Minimum);
+            slider.Maximum = NudToSlider(Maximum);
+            slider.Value = NudToSlider(Value);
+        }
 
         public ValueSlider()
         {
@@ -111,12 +156,14 @@ namespace ZenithEngine.UI
 
             FocusVisualStyle = null;
 
+            slider.SetBinding(Slider.WidthProperty, new Binding("SliderWidth") { Source = this });
             slider.SetBinding(Slider.MaximumProperty, new Binding("Maximum") { Source = this });
             slider.SetBinding(Slider.MinimumProperty, new Binding("Minimum") { Source = this });
             updown.SetBinding(NumberBox.MinimumProperty, new Binding("TrueMin") { Source = this });
             updown.SetBinding(NumberBox.MaximumProperty, new Binding("TrueMax") { Source = this });
             updown.SetBinding(NumberBox.DecimalPointsProperty, new Binding("DecimalPoints") { Source = this });
             updown.SetBinding(NumberBox.StepProperty, new Binding("Step") { Source = this });
+            updown.SetBinding(NumberBox.MinWidthProperty, new Binding("MinNUDWidth") { Source = this });
         }
 
         bool ignoreslider = false;
@@ -127,7 +174,7 @@ namespace ZenithEngine.UI
             if (IsInitialized)
             {
                 ignoreslider = true;
-                Value = sliderToNud(slider.Value);
+                Value = SliderToNud(slider.Value);
             }
         }
 

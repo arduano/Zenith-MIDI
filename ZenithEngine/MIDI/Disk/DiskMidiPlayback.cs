@@ -33,14 +33,30 @@ namespace ZenithEngine.MIDI.Disk
         protected long lastNoteCount = 0;
         public override long LastIterateNoteCount => lastNoteCount;
 
-        public DiskMidiPlayback(DiskMidiFile file, DiskReadProvider reader, double startDelay, bool timeBased) : base(file, file.TempoEvents[0].rawTempo, timeBased)
+        public DiskMidiPlayback(DiskMidiFile file, DiskReadProvider reader, double startDelay, bool timeBased, long? maxAllocation = null) : base(file, file.TempoEvents[0].rawTempo, timeBased)
         {
             midi = file;
 
             tracks = new DiskMidiTrack[file.TrackCount];
+
+            var maxSize = 10000000;
+
+            if (maxAllocation != null)
+            {
+                while(maxSize > 100000)
+                {
+                    var sum = file.TrackPositions
+                        .Select(t => (long)t.length)
+                        .Select(l => l <= maxSize ? l : maxSize * 2)
+                        .Sum();
+                    if (sum < maxAllocation) break;
+                    maxSize -= 1000;
+                }
+            }
+
             for (int i = 0; i < file.TrackCount; i++)
             {
-                var trackReader = new BufferByteReader(reader, 10000000, midi.TrackPositions[i].start, midi.TrackPositions[i].length);
+                var trackReader = new BufferByteReader(reader, maxSize, midi.TrackPositions[i].start, midi.TrackPositions[i].length);
                 tracks[i] = DiskMidiTrack.NewPlayerTrack(i, trackReader, this, midi.Tracks[i].InitialTrackColors);
             }
 

@@ -253,6 +253,8 @@
     <Compile Include="AuraSelect.xaml.cs">
       <DependentUpon>AuraSelect.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Models\BaseModel.cs" />
+    <Compile Include="Models\CameraModel.cs" />
     <Compile Include="ProfileManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -265,6 +267,15 @@
     <Compile Include="Settings.cs" />
     <Compile Include="SettingsCtrl.xaml.cs">
       <DependentUpon>SettingsCtrl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\AdvancedView.xaml.cs">
+      <DependentUpon>AdvancedView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CameraView.xaml.cs">
+      <DependentUpon>CameraView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MainView.xaml.cs">
+      <DependentUpon>MainView.xaml</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Shaders\notes.frag.glsl" />
     <Compile Include="UI.cs" />
@@ -292,6 +303,18 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <Page Include="SettingsCtrl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\AdvancedView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CameraView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MainView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

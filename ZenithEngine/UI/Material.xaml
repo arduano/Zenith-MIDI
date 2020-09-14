@@ -20,8 +20,8 @@
     <Style TargetType="{x:Type Label}" BasedOn="{StaticResource MatText}"/>
     <Style TargetType="{x:Type module:UILabel}" BasedOn="{StaticResource MatText}"/>
 
-    <Style TargetType="{x:Type local:Title}" BasedOn="{StaticResource MatTitleText}">
-        <Setter Property="Margin" Value="0,30,0,10"/>
+    <Style TargetType="{x:Type local:Title}" x:Key="MatTitle" BasedOn="{StaticResource MatTitleText}">
+        <Setter Property="Margin" Value="0,20,0,10"/>
     </Style>
 
     <Style x:Key="WindowButton" TargetType="Button">
@@ -421,6 +421,11 @@
     <Style BasedOn="{StaticResource MatLoadableButton}" TargetType="local:LoaderButton"/>
 
     <Style BasedOn="{StaticResource MatTextbox}" TargetType="{x:Type TextBox}"/>
+    
+    <Style BasedOn="{StaticResource MatTitle}" TargetType="{x:Type local:Title}"/>
+
+    <Style BasedOn="{StaticResource SubTabs}" TargetType="{x:Type TabControl}"/>
+    <Style BasedOn="{StaticResource SubTabItems}" TargetType="{x:Type TabItem}"/>
 
     <Style BasedOn="{StaticResource MatCheckbox}" TargetType="{x:Type CheckBox}"/>
     <Style BasedOn="{StaticResource MatCheckbox}" TargetType="{x:Type local:Checkbox}"/>

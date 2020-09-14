@@ -76,7 +76,12 @@
                 <TabItem Header="{ui:LangText main.tabs.general}" IsEnabled="{Binding NotRenderingOrPreviewing, ElementName=mainWindow}">
                     <local:GeneralTab />
                 </TabItem>
-                <TabItem Content="{Binding SelectedModule.SettingsControl}" Header="{ui:LangText main.tabs.moduleSettings}" IsEnabled="{Binding NotRenderingOrPreviewing, ElementName=mainWindow}">
+                <TabItem Header="{ui:LangText main.tabs.moduleSettings}" IsEnabled="{Binding NotRenderingOrPreviewing, ElementName=mainWindow}">
+                    <ContentControl Content="{Binding SelectedModule.SettingsControl}">
+                        <ContentControl.Resources>
+                            <Style BasedOn="{StaticResource SubTabItems}" TargetType="{x:Type TabItem}"/>
+                        </ContentControl.Resources>
+                    </ContentControl>
                 </TabItem>
                 <TabItem Header="{ui:LangText main.tabs.render}">
                     <local:RenderTab />

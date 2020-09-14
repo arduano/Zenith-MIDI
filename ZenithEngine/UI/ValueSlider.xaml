@@ -7,6 +7,6 @@
              mc:Ignorable="d">
     <DockPanel LastChildFill="True">
         <local:NumberBox ValueChanged="Updown_ValueChanged" DockPanel.Dock="Right" MinWidth="80" x:Name="updown" Value="0.2" Maximum="1" Minimum="0" Margin="5,0,0,0" HorizontalAlignment="Left" />
-        <local:Slider x:Name="slider" VerticalAlignment="Bottom" UserValueChanged="Slider_ValueChanged" Margin="0,0,0,3"></local:Slider>
+        <local:Slider x:Name="slider" VerticalAlignment="Bottom" UserValueChanged="Slider_ValueChanged" Margin="0,0,0,6"></local:Slider>
     </DockPanel>
 </UserControl>

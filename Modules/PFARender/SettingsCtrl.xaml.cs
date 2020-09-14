@@ -47,8 +47,8 @@ namespace PFARender
         public SettingsCtrl(Settings settings) : base()
         {
             InitializeComponent();
-            noteDeltaScreenTime.nudToSlider = v => Math.Log(v, 2);
-            noteDeltaScreenTime.sliderToNud = v => Math.Pow(2, v);
+            noteDeltaScreenTime.NudToSlider = v => Math.Log(v, 2);
+            noteDeltaScreenTime.SliderToNud = v => Math.Pow(2, v);
             this.settings = settings;
             paletteList.SetPath("Plugins\\Assets\\Palettes", 0.8f);
             SetValues();

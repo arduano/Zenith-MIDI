@@ -22,6 +22,9 @@
                         <Trigger Property="Label" Value="{x:Null}">
                             <Setter Property="Visibility" Value="Collapsed" TargetName="label"/>
                         </Trigger>
+                        <Trigger Property="Label" Value="">
+                            <Setter Property="Visibility" Value="Collapsed" TargetName="label"/>
+                        </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

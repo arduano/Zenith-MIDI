@@ -38,10 +38,8 @@ namespace Zenith
         {
             InitializeComponent();
 
-            speedSlider.nudToSlider = v => Math.Log(v, 2);
-            speedSlider.sliderToNud = v => Math.Pow(2, v);
-            speedSlider.Minimum = Math.Log(0.01, 2);
-            speedSlider.Maximum = Math.Log(50, 2);
+            speedSlider.NudToSlider = v => Math.Log(v, 2);
+            speedSlider.SliderToNud = v => Math.Pow(2, v);
         }
 
         public BaseModel Data

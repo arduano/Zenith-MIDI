@@ -26,6 +26,8 @@ using System.Windows.Media;
 using SharpDX.Direct3D11;
 using Device = SharpDX.Direct3D11.Device;
 using Matrix = SharpDX.Matrix;
+using MIDITrailRender.Views;
+using MIDITrailRender.Models;
 
 namespace MIDITrailRender
 {
@@ -314,9 +316,10 @@ namespace MIDITrailRender
             KeyboardState Keyboard { get; }
             NoteBufferParts Buffer { get; }
             IEnumerable<Note> Notes { get; }
-            double NoteScale { get; }
-            double FrontMax { get; }
-            double MinLength { get; }
+            float NoteScale { get; }
+            float FrontMax { get; }
+            float BackMax { get; }
+            float MinLength { get; }
 
             Render render;
 
@@ -329,6 +332,7 @@ namespace MIDITrailRender
                 IEnumerable<Note> notes,
                 double noteScale,
                 double frontMax,
+                double backMax,
                 double minLength
             ) : base(transform)
             {
@@ -337,9 +341,10 @@ namespace MIDITrailRender
                 this.Keyboard = keyboard;
                 Buffer = buffer;
                 Notes = notes;
-                NoteScale = noteScale;
-                FrontMax = frontMax;
-                MinLength = minLength;
+                NoteScale = (float)noteScale;
+                FrontMax = (float)frontMax;
+                BackMax = (float)backMax;
+                MinLength = (float)minLength;
             }
 
             public override void Render(DeviceContext context)
@@ -390,11 +395,12 @@ namespace MIDITrailRender
 
                         var left = (float)notePos.Left - 0.5f;
                         var right = (float)notePos.Right - 0.5f;
-                        var middle = (keyPos.Left + keyPos.Right) / 2;
-                        left -= (float)middle - 0.5f;
-                        right -= (float)middle - 0.5f;
+                        var middle = (float)(keyPos.Left + keyPos.Right) / 2;
+                        left -= middle - 0.5f;
+                        right -= middle - 0.5f;
 
-                        if (!n.HasEnded || noteEnd > FrontMax) noteEnd = (float)FrontMax;
+                        if (!n.HasEnded || noteEnd > FrontMax) noteEnd = FrontMax;
+                        if (noteStart < BackMax) noteStart = BackMax;
 
                         if (noteEnd - noteStart < minLength)
                         {
@@ -428,12 +434,12 @@ namespace MIDITrailRender
         }
         #endregion
 
-        UI settings = LoadUI(() => new UI());
-        public override FrameworkElement SettingsControl => settings;
+        MainView settingsView = LoadUI(() => new MainView());
+        public override FrameworkElement SettingsControl => settingsView;
 
         public override double StartOffset => 0;
-
-        protected override NoteColorPalettePick PalettePicker => settings.Palette;
+        
+        protected override NoteColorPalettePick PalettePicker => null;
 
         ShaderProgram<KeyShaderConstant> keyShader;
         ShaderProgram<NoteShaderConstant> noteShader;
@@ -677,7 +683,7 @@ namespace MIDITrailRender
                 Cap = init.Add(bufferFromModel(noteModelsCaps["note-rounded"])),
             };
 
-            settings.Palette.PaletteChanged += ReloadTrackColors;
+            //settings.Palette.PaletteChanged += ReloadTrackColors;
         }
 
         public override void Init(DeviceGroup device, MidiPlayback midi, RenderStatus status)
@@ -697,10 +703,13 @@ namespace MIDITrailRender
 
         public override void RenderFrame(DeviceContext context, IRenderSurface renderSurface)
         {
-            int firstKey = settings.keys.left;
-            int lastKey = settings.keys.right;
+            var settings = settingsView.Data;
+            var camera = settings.Camera;
 
-            bool sameWidth = settings.sameWidthNotes;
+            int firstKey = 0;//settings.keys.left;
+            int lastKey = 128;//settings.keys.right;
+
+            bool sameWidth = true;//settings.sameWidthNotes;
 
             var keyboard = new KeyboardState(firstKey, lastKey, new KeyboardParams()
             {
@@ -716,11 +725,15 @@ namespace MIDITrailRender
 
             var time = Midi.PlayerPosition;
             var frontMax = frontNoteCutoff;
+            var backMax = -backNoteCutoff;
 
             var view =
-                Matrix.Translation(0, -0.2f, -0.7f) *
+                Matrix.Translation((float)camera.CamX, (float)camera.CamY, (float)camera.CamZ) *
+                Matrix.RotationY((float)(camera.CamRotY / 180 * Math.PI)) *
+                Matrix.RotationX((float)(camera.CamRotX / 180 * Math.PI)) *
+                Matrix.RotationZ((float)(camera.CamRotZ / 180 * Math.PI)) *
                 Matrix.Scaling(1, 1, -1);
-            var perspective = Matrix.PerspectiveFovLH((float)Math.PI / 3, Status.AspectRatio, 0.1f, 100f);
+            var perspective = Matrix.PerspectiveFovLH((float)(camera.CamFOV / 180 * Math.PI), Status.AspectRatio, 0.1f, 100f);
             var viewPos = view.TranslationVector;
 
             void sortObjectList(List<RenderObject> list)

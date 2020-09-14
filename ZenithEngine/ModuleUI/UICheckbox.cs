@@ -4,75 +4,46 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using ZenithEngine.UI;
 
 namespace ZenithEngine.ModuleUI
 {
-    public class UICheckbox : Checkbox, ISerializableItem, IValueItem<bool>
+    public class UICheckbox : BaseItem<Checkbox, bool>
     {
-        public static implicit operator bool(UICheckbox val) => val.Value;
-
-        public bool ValueInternal
+        public UICheckbox(string name, object label, bool isChecked) : base(name, new Checkbox(), isChecked)
         {
-            get => (bool)IsChecked;
-            set { if (IsChecked != value) IsChecked = value; }
+            Label = label;
         }
-
-        bool cacheValue = false;
-        public bool Value
-        {
-            get => cacheValue;
-            set
-            {
-                cacheValue = value;
-                UITools.SyncValue(this);
-            }
-        }
-
-        object label = null;
-
-        public event EventHandler<bool> ValueChanged;
 
         public object Label
         {
-            get => label; set
+            get => Control.Content;
+            set
             {
-                label = value;
-                if (label is DynamicResourceExtension)
+                Control.Content = value;
+                if (value is DynamicResourceExtension)
                 {
-                    var l = (DynamicResourceExtension)label;
-                    SetResourceReference(ContentProperty, l.ResourceKey);
-                }
-                else
-                {
-                    if (label is string) Content = (string)label;
-                    else Content = label.ToString();
+                    var l = (DynamicResourceExtension)value;
+                    Control.SetResourceReference(ContentControl.ContentProperty, l.ResourceKey);
                 }
             }
         }
 
-        public UICheckbox()
-        {
-            Margin = new Thickness(0, 5, 10, 10);
-            HorizontalAlignment = HorizontalAlignment.Left;
-            VerticalAlignment = VerticalAlignment.Top;
+        public override bool ValueInternal { get => Control.IsChecked ?? false; set => Control.IsChecked = value; }
 
-            CheckToggled += (s, e) =>
+        public override void Parse(string data)
+        {
+            try
             {
-                ValueChanged?.Invoke(this, (bool)IsChecked);
-            };
-
-            UITools.BindValue(this);
+                Value = Convert.ToBoolean(data);
+            }
+            catch { }
         }
 
-        public void Parse(string data)
+        public override string Serialize()
         {
-            IsChecked = Convert.ToBoolean(data);
-        }
-
-        public string Serialize()
-        {
-            return IsChecked.ToString();
+            return Value.ToString();
         }
     }
 }

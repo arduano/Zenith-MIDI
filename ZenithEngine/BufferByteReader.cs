@@ -23,20 +23,42 @@ namespace ZenithEngine
         BlockingCollection<byte[]> readReturn = new BlockingCollection<byte[]>();
         bool sentRequest = false;
 
+        bool isSingle = false;
+
         public BufferByteReader(DiskReadProvider stream, int buffersize, long streamstart, long streamlen)
         {
-            if (buffersize > streamlen) buffersize = (int)streamlen;
-            this.bufferSize = buffersize;
-            buffer = new byte[buffersize];
-            bufferNext = new byte[buffersize];
-            this.streamStart = streamstart;
             this.streamLen = streamlen;
             this.stream = stream;
-            UpdateBuffer(pos, true);
+            this.streamStart = streamstart;
+            if (buffersize > streamlen)
+            {
+                isSingle = true;
+                buffersize = (int)streamlen;
+                this.bufferSize = buffersize;
+                buffer = new byte[buffersize];
+                UpdateBufferSingle();
+            }
+            else
+            {
+                this.bufferSize = buffersize;
+                buffer = new byte[buffersize];
+                bufferNext = new byte[buffersize];
+                UpdateBuffer(pos, true);
+            }
+        }
+
+        void UpdateBufferSingle()
+        {
+            stream.Request(new ReadDiskRequest(streamStart, bufferSize, buffer, readReturn));
+            buffer = readReturn.Take();
+            sentRequest = false;
+            maxBufferPos = (int)bufferSize;
         }
 
         void UpdateBuffer(long pos, bool first = false)
         {
+            if (isSingle)
+                throw new Exception("Cant update a buffer thats marked as single");
             if (first)
             {
                 if (sentRequest)
@@ -73,7 +95,10 @@ namespace ZenithEngine
             {
                 pos += bufferPos;
                 bufferPos = 0;
-                UpdateBuffer(pos);
+                if (pos < streamLen)
+                {
+                    UpdateBuffer(pos);
+                }
                 return b;
             }
             else throw new IndexOutOfRangeException();
@@ -87,7 +112,10 @@ namespace ZenithEngine
             {
                 pos += bufferPos;
                 bufferPos = 0;
-                UpdateBuffer(pos);
+                if (pos < streamLen)
+                {
+                    UpdateBuffer(pos);
+                }
                 return b;
             }
             else throw new IndexOutOfRangeException();
@@ -113,7 +141,7 @@ namespace ZenithEngine
         {
             for (int i = 0; i < count; i++)
             {
-                if(Pushback != -1)
+                if (Pushback != -1)
                 {
                     Pushback = -1;
                     continue;
@@ -162,9 +190,9 @@ namespace ZenithEngine
             this.reader = reader;
             Task.Run(() =>
             {
-                foreach(var request in requests.GetConsumingEnumerable())
+                foreach (var request in requests.GetConsumingEnumerable())
                 {
-                    if(reader.Position != request.from)
+                    if (reader.Position != request.from)
                     {
                         reader.Position = request.from;
                     }

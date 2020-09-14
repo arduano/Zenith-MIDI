@@ -10,6 +10,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Threading;
 using System.Threading;
+using System.Windows.Controls;
 
 namespace ZenithEngine.ModuleUI
 {
@@ -38,6 +39,12 @@ namespace ZenithEngine.ModuleUI
     {
         void Parse(string data);
         string Serialize();
+        string ItemName { get; }
+    }
+
+    public interface IControl
+    {
+        UIElement Control { get; }
     }
 
     public interface IValueItem<T>
@@ -50,16 +57,19 @@ namespace ZenithEngine.ModuleUI
 
     public class UIContainerData
     {
-        public UIContainerData(UIElement[] elements, Dictionary<string, ISerializableItem> items, Dictionary<string, ISerializableContainer> containers)
+        public UIContainerData(
+            UIElement[] elements, 
+            Dictionary<string, ISerializableItem> dataItems,
+            ISerializableContainer[] containers)
         {
             Elements = elements;
-            Items = items;
+            DataItems = dataItems;
             Containers = containers;
         }
 
         public UIElement[] Elements { get; }
-        public Dictionary<string, ISerializableItem> Items { get; }
-        public Dictionary<string, ISerializableContainer> Containers { get; }
+        public Dictionary<string, ISerializableItem> DataItems { get; }
+        public ISerializableContainer[] Containers { get; }
     }
 
     public static class UITools
@@ -77,105 +87,50 @@ namespace ZenithEngine.ModuleUI
                                      .Single()).Order
                            select property;
 
-            var containers = new Dictionary<string, ISerializableContainer>();
-            var items = new Dictionary<string, ISerializableItem>();
+            var elements = new List<UIElement>();
+            var dataItems = new Dictionary<string, ISerializableItem>();
+            var containers = new List<ISerializableContainer>();
 
-            var elements = selected.Select(m =>
+            foreach(var m in selected)
             {
-                UIElement element = null;
+                object child = null;
                 if (m is PropertyInfo)
                 {
-                    element = (UIElement)(m as PropertyInfo).GetValue(item);
+                    child = (m as PropertyInfo).GetValue(item);
                 }
                 else if (m is FieldInfo)
                 {
-                    element = (UIElement)(m as FieldInfo).GetValue(item);
+                    child = (m as FieldInfo).GetValue(item);
                 }
                 else
                 {
                     throw new Exception("shouldnt reach here");
                 }
 
-                if (element is ISerializableContainer)
+                if (child is UIElement)
                 {
-                    containers.Add(m.Name, (ISerializableContainer)element);
+                    elements.Add((UIElement)child);
                 }
-                else if (element is ISerializableItem)
+                if(child is IControl)
                 {
-                    items.Add(m.Name, (ISerializableItem)element);
+                    elements.Add(((IControl)child).Control);
                 }
-
-                return element;
-            }).ToArray();
-
-            return new UIContainerData(elements, items, containers);
-        }
-
-        public static JObject SerializeContainer(UIContainerData container)
-        {
-            JToken test = "";
-
-            var obj = new JObject();
-
-            foreach (var item in container.Items)
-            {
-                obj.Add(item.Key, item.Value.Serialize());
-            }
-
-            foreach (var item in container.Containers)
-            {
-                obj.Add(item.Key, item.Value.Serialize());
-            }
-
-            return obj;
-        }
-
-        public static void ParseContainer(JObject data, UIContainerData container)
-        {
-            foreach (var item in data)
-            {
-                if (container.Containers.ContainsKey(item.Key))
+                if (child is BaseElement)
                 {
-                    if (item.Value.Type != JTokenType.Object)
+                    if (child is ISerializableContainer)
                     {
-                        continue;
+                        var i = (ISerializableContainer)child;
+                        containers.Add(i);
                     }
-                    container.Containers[item.Key].Parse(item.Value as JObject);
-                }
-            }
-
-            foreach (var item in data)
-            {
-                if (container.Containers.ContainsKey(item.Key))
-                {
-                    if (item.Value.Type != JTokenType.Object)
+                    if (child is ISerializableItem)
                     {
-                        continue;
+                        var i = (ISerializableItem)child;
+                        dataItems.Add(i.ItemName, i);
                     }
-                    container.Containers[item.Key].Parse(item.Value as JObject);
                 }
             }
-        }
 
-        public static void SyncValue<T>(IValueItem<T> item)
-        {
-            if (Thread.CurrentThread.ManagedThreadId != item.Dispatcher.Thread.ManagedThreadId)
-            {
-                item.Dispatcher.InvokeAsync(() => item.ValueInternal = item.Value).Wait();
-            }
-            else
-            {
-                item.ValueInternal = item.Value;
-            }
-        }
-
-        public static void BindValue<T>(IValueItem<T> item)
-        {
-            item.ValueChanged += (s, e) =>
-            {
-                item.Value = item.ValueInternal;
-            };
-            item.Value = item.ValueInternal;
+            return new UIContainerData(elements.ToArray(), dataItems, containers.ToArray());
         }
     }
 }

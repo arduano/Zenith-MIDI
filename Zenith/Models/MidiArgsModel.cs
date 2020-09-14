@@ -39,7 +39,7 @@ namespace Zenith.Models
                     });
                     try
                     {
-                        var file = new DiskMidiFile(filename, reporter, cancel);
+                        var file = new DiskMidiFile(filename, reporter, cancel, 8L * 1024 * 1024 * 1024);
                         Loaded = new LoadedMidiArgsModel(file, filename);
                         LoadStatus = MidiLoadStatus.Loaded;
                     }

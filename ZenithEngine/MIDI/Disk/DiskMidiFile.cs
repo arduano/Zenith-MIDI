@@ -74,8 +74,10 @@ namespace ZenithEngine.MIDI.Disk
 
         internal List<TrackPos> TrackPositions { get; } = new List<TrackPos>();
 
-        public DiskMidiFile(string filename) : this(filename, null, new CancellationTokenSource().Token) { }
-        public DiskMidiFile(string filename, IProgress<MidiParseProgress> progress, CancellationToken cancel)
+        public long MaxBufferMemory { get; }
+
+        public DiskMidiFile(string filename, long? maxBufferMemory = null) : this(filename, null, new CancellationTokenSource().Token, maxBufferMemory) { }
+        public DiskMidiFile(string filename, IProgress<MidiParseProgress> progress, CancellationToken cancel, long? maxBufferMemory = null)
         {
             MidiFileReader = new StreamReader(filename).BaseStream;
             ParseHeaderChunk();
@@ -90,6 +92,8 @@ namespace ZenithEngine.MIDI.Disk
             Tracks = new IMidiTrack[TrackCount];
 
             cancel.ThrowIfCancellationRequested();
+
+            MaxBufferMemory = MaxBufferMemory;
 
             Console.WriteLine("Loading tracks into memory, biggest tracks first.");
             Console.WriteLine("Please expect this to start slow, especially on bigger midis.");
@@ -257,7 +261,7 @@ namespace ZenithEngine.MIDI.Disk
 
         public override MidiPlayback GetMidiPlayback(double startOffset, bool timeBased)
         {
-            return new DiskMidiPlayback(this, FileReadProvider, startOffset, timeBased);
+            return new DiskMidiPlayback(this, FileReadProvider, startOffset, timeBased, MaxBufferMemory);
         }
 
         public override MidiPlayback GetMidiPlayback(double startOffsetTicks, double startOffsetSeconds, bool timeBased)

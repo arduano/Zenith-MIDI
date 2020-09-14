@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using ZenithEngine.ModuleUI;
+using ZenithEngine.UI;
 
 namespace FlatRender
 {
@@ -16,60 +17,30 @@ namespace FlatRender
             public Keys() : base(Dock.Left) { }
 
             [UIChild]
-            public UINumber left = new UINumber()
-            {
-                Label = new DynamicResourceExtension("firstNote"),
-                Min = 0,
-                Max = 255,
-                Value = 0,
-            };
+            public UINumber left = new UINumber("leftKey", new LangText("mods.common.firstNote"), 0, 0, 255);
 
             [UIChild]
-            public UINumber right = new UINumber()
-            {
-                Label = new DynamicResourceExtension("lastNote"),
-                Min = 1,
-                Max = 256,
-                Value = 128,
-            };
+            public UINumber right = new UINumber("rightKey", new LangText("mods.common.lastNote"), 128, 1, 256);
         }
 
         [UIChild]
-        public Keys keys = new Keys();
+        public Keys keys = new Keys() { Margin = new Thickness(0) };
 
         [UIChild]
-        public UINumberSlider noteScreenTime = new UINumberSlider()
-        {
-            Label = new DynamicResourceExtension("noteScreenTime"),
-            SliderMin = 2,
-            SliderMax = 4096,
-            Min = 0.1,
-            Max = 1000000,
-            DecimalPoints = 2,
-            Step = 1,
-            Value = 400,
-        };
+        public UINumberSlider noteScreenTime = new UINumberSlider(
+            "noteScreenTime",
+            new LangText("mods.common.noteScreenTime"),
+            400, 1, 4000, 0.1m, 1000000, true
+        );
 
         [UIChild]
-        public UINumberSlider kbHeight = new UINumberSlider()
-        {
-            Label = new DynamicResourceExtension("pianoHeight"),
-            SliderMin = 0,
-            SliderMax = 100,
-            Min = 0,
-            Max = 100,
-            DecimalPoints = 2,
-            Step = 1,
-            Value = 16,
-            SliderWidth = 200,
-        };
+        public UINumberSlider kbHeight = new UINumberSlider(
+            "keyboardHeight",
+            new LangText("mods.common.pianoHeight"),
+            16, 0, 100
+        );
 
         [UIChild]
-        public UICheckbox sameWidthNotes = new UICheckbox()
-        {
-            Label = new DynamicResourceExtension("sameWidthNotes"),
-            IsChecked = true,
-        };
+        public UICheckbox sameWidthNotes = new UICheckbox("sameWidthNotes", new LangText("mods.common.sameWidthNotes"), true);
     }
-
 }

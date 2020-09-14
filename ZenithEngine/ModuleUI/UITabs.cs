@@ -9,82 +9,51 @@ using System.Windows.Controls;
 
 namespace ZenithEngine.ModuleUI
 {
-    public class UITabGroup : Grid, ISerializableContainer
+    public class UITabGroup : BaseContainerBasic<TabControl>
     {
-        UIContainerData childData;
-
-        public UITabGroup()
+        public UITabGroup() : base(new TabControl())
         {
-            childData = UITools.GetChildren(this);
-            HorizontalAlignment = HorizontalAlignment.Stretch;
-            VerticalAlignment = VerticalAlignment.Stretch;
-
-            var tabs = new TabControl();
-            tabs.HorizontalAlignment = HorizontalAlignment.Stretch;
-            tabs.VerticalAlignment = VerticalAlignment.Stretch;
-            tabs.Margin = new Thickness(10);
-
-            Children.Add(tabs);
-
-            foreach (var c in childData.Elements)
+            foreach (var c in ChildData.Elements)
             {
-                if (!(c is UITab)) throw new InvalidCastException("UITabGroup must only have UITab as children");
-                tabs.Items.Add((c as UITab).TabItem);
+                if (!(c is TabItem)) throw new InvalidCastException("UITabGroup must only have UITab as children");
+                Control.Items.Add(c as TabItem);
             }
-        }
-
-        public void Parse(JObject container)
-        {
-            UITools.ParseContainer(container, childData);
-        }
-
-        public JObject Serialize()
-        {
-            return UITools.SerializeContainer(childData);
         }
     }
 
-    public class UITab : Control, ISerializableContainer
+    public class UITab : BaseContainerBasic<TabItem>
     {
-        UIContainerData childData;
+        DockPanel panel = new DockPanel();
 
-        public TabItem TabItem { get; }
-
-        public new Thickness Margin { get => dock.Margin; set => dock.Margin = value; }
-        DockPanel dock = new DockPanel();
-
-        public UITab(string name, bool lastItemFill = false)
+        public UITab(object name) : this(name, Dock.Top) { }
+        public UITab(object name, Dock dock, bool lastChildFill = false) : base(new TabItem())
         {
-            Margin = new Thickness(10);
-
-            childData = UITools.GetChildren(this);
-
-            TabItem = new TabItem();
-            TabItem.Header = name;
-
-            TabItem.HorizontalAlignment = HorizontalAlignment.Stretch;
-            TabItem.VerticalAlignment = VerticalAlignment.Stretch;
-
-            TabItem.Content = dock;
-            dock.HorizontalAlignment = HorizontalAlignment.Stretch;
-            dock.VerticalAlignment = VerticalAlignment.Stretch;
-            dock.LastChildFill = lastItemFill;
-
-            foreach (var c in childData.Elements)
+            Control.Content = panel;
+            foreach (var e in ChildData.Elements)
             {
-                dock.Children.Add(c);
-                DockPanel.SetDock(c, Dock.Top);
+                DockPanel.SetDock(e, dock);
+                panel.Children.Add(e);
             }
+            panel.LastChildFill = lastChildFill;
         }
 
-        public void Parse(JObject container)
+        object label = null;
+        public object Name
         {
-            UITools.ParseContainer(container, childData);
-        }
-
-        public JObject Serialize()
-        {
-            return UITools.SerializeContainer(childData);
+            get => label;
+            set
+            {
+                label = value;
+                if (label is DynamicResourceExtension)
+                {
+                    var l = (DynamicResourceExtension)label;
+                    Control.SetResourceReference(TabItem.HeaderProperty, l.ResourceKey);
+                }
+                else
+                {
+                    Control.Header = label;
+                }
+            }
         }
     }
 }

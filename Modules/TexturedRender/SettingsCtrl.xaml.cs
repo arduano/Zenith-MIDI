@@ -77,8 +77,8 @@ namespace TexturedRender
         {
             this.settings = settings;
             InitializeComponent();
-            noteDeltaScreenTime.nudToSlider = v => Math.Log(v, 2);
-            noteDeltaScreenTime.sliderToNud = v => Math.Pow(2, v);
+            noteDeltaScreenTime.NudToSlider = v => Math.Log(v, 2);
+            noteDeltaScreenTime.SliderToNud = v => Math.Pow(2, v);
             inited = true;
             paletteList.SetPath("Plugins\\Assets\\Palettes", 1f);
             ReloadPacks();

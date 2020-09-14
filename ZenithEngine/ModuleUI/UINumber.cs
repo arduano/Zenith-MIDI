@@ -9,80 +9,35 @@ using System.Windows;
 
 namespace ZenithEngine.ModuleUI
 {
-    public class UINumber : Docked<decimal>, IValueItem<decimal>
+    public class UINumber : BaseLabelledItem<NumberBox, decimal>
     {
-        public static implicit operator decimal(UINumber val) => val.Value;
         public static implicit operator int(UINumber val) => (int)val.Value;
         public static implicit operator double(UINumber val) => (double)val.Value;
-        public static implicit operator float(UINumber val) => (float)val.Value;
 
-        NumberBox numberItem = new NumberBox() { MinWidth = 80 };
-
-        public decimal ValueInternal
+        public UINumber(string name, object label, decimal value, decimal minimum, decimal maximum, int decimalsPoints = 0) : base(name, label, new NumberBox(), value)
         {
-            get => numberItem.Value;
-            set { if (numberItem.Value != value) numberItem.Value = value; }
+            Minimum = minimum;
+            Maximum = maximum;
+            DecimalPoints = decimalsPoints;
         }
 
-        decimal cacheValue = 0;
-        public override decimal Value
-        {
-            get => cacheValue;
-            set
-            {
-                cacheValue = value;
-                UITools.SyncValue(this);
-            }
-        }
+        public UINumber(string name, decimal value, decimal minimum, decimal maximum, int decimalsPoints = 0)
+            : this(name, null, value, minimum, maximum, decimalsPoints)
+        { }
 
-        public override event EventHandler<decimal> ValueChanged;
+        public double NumWidth { get => InnerControl.Width; set => InnerControl.Width = value; }
+        public double NumHeight { get => InnerControl.Height; set => InnerControl.Height = value; }
+        public double NumMinWidth { get => InnerControl.MinWidth; set => InnerControl.MinWidth = value; }
+        public double NumMinHeight { get => InnerControl.MinHeight; set => InnerControl.MinHeight = value; }
+        public double NumMaxWidth { get => InnerControl.MaxWidth; set => InnerControl.MaxWidth = value; }
+        public double NumMaxHeight { get => InnerControl.MaxHeight; set => InnerControl.MaxHeight = value; }
 
-        public double MinNumberWidth
-        {
-            get => numberItem.MinWidth;
-            set => numberItem.MinWidth = value;
-        }
+        public decimal Minimum { get => InnerControl.Minimum; set => InnerControl.Minimum = value; }
+        public decimal Maximum { get => InnerControl.Maximum; set => InnerControl.Maximum = value; }
+        public int DecimalPoints { get => InnerControl.DecimalPoints; set => InnerControl.DecimalPoints = value; }
+        public decimal Step { get => InnerControl.Step; set => InnerControl.Step = value; }
 
-        public decimal Max
-        {
-            get => numberItem.Maximum;
-            set => numberItem.Maximum = value;
-        }
-
-        public decimal Min
-        {
-            get => numberItem.Minimum;
-            set => numberItem.Minimum = value;
-        }
-
-        public decimal Step
-        {
-            get => numberItem.Step;
-            set => numberItem.Step = value;
-        }
-
-        public int DecimalPoints
-        {
-            get => numberItem.DecimalPoints;
-            set => numberItem.DecimalPoints = value;
-        }
-
-        public UINumber()
-        {
-            Children.Add(labelItem);
-            Children.Add(numberItem);
-            SetDock(labelItem, Dock.Left);
-            SetDock(numberItem, Dock.Left);
-
-            Margin = new Thickness(0, 0, 10, 10);
-
-            numberItem.ValueChanged += (s, e) =>
-            {
-                ValueChanged?.Invoke(this, e.NewValue);
-            };
-
-            UITools.BindValue(this);
-        }
+        public override decimal ValueInternal { get => InnerControl.Value; set => InnerControl.Value = value; }
 
         public override void Parse(string value)
         {

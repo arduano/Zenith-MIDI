@@ -9,31 +9,17 @@ using System.Windows.Controls;
 
 namespace ZenithEngine.ModuleUI
 {
-    public class UIDock : DockPanel, ISerializableContainer
+    public class UIDock : BaseContainer<DockPanel>
     {
-        UIContainerData childData;
-
-        public UIDock(Dock stack)
-        {
-            childData = UITools.GetChildren(this);
-            HorizontalAlignment = HorizontalAlignment.Left;
-            VerticalAlignment = VerticalAlignment.Top;
-            foreach (var c in childData.Elements)
-            {
-                Children.Add(c);
-                SetDock(c, stack);
-            }
-        }
         public UIDock() : this(Dock.Top) { }
-
-        public void Parse(JObject container)
+        public UIDock(Dock dock, bool lastChildFill = false) : base(new DockPanel())
         {
-            UITools.ParseContainer(container, childData);
-        }
-
-        public JObject Serialize()
-        {
-            return UITools.SerializeContainer(childData);
+            foreach(var e in ChildData.Elements)
+            {
+                DockPanel.SetDock(e, dock);
+                Control.Children.Add(e);
+            }
+            Control.LastChildFill = lastChildFill;
         }
     }
 }

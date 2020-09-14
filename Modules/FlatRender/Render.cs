@@ -33,8 +33,7 @@ namespace FlatRender
 
         UI settings = LoadUI(() => new UI());
 
-        public override FrameworkElement SettingsControl => settings;
-
+        public override FrameworkElement SettingsControl => settings.Control;
         public override double StartOffset => settings.noteScreenTime;
 
         protected override NoteColorPalettePick PalettePicker => settings.Palette;
@@ -75,7 +74,7 @@ namespace FlatRender
                 if (keyboard.BlackKey[firstNote]) kbfirstNote--;
                 if (keyboard.BlackKey[lastNote - 1]) kblastNote++;
 
-                float pianoHeight = settings.kbHeight / 100;
+                float pianoHeight = (float)settings.kbHeight / 100;
 
                 double notePosFactor = 1 / screenTime * (1 - pianoHeight);
 
@@ -88,6 +87,7 @@ namespace FlatRender
                 {
                     float left = (float)keyboard.Notes[key].Left;
                     float right = (float)keyboard.Notes[key].Right;
+                    var minBottom = pianoHeight - 0.1f;
                     foreach (var n in keyed[key])
                     {
                         if (n.Start < midiTime)
@@ -99,6 +99,9 @@ namespace FlatRender
                         float start = (float)(1 - (renderCutoff - n.Start) * notePosFactor);
                         if (!n.HasEnded)
                             end = 1;
+
+                        end = Math.Min(end, 1.1f);
+                        start = Math.Max(start, minBottom);
 
                         push(new Vert2D(left, start, n.Color.Right));
                         push(new Vert2D(left, end, n.Color.Right));

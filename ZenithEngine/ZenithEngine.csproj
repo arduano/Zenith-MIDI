@@ -85,9 +85,6 @@
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MrMitch.Loaders, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MrMitch.Loaders.1.2.0.0\lib\net46\MrMitch.Loaders.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -308,7 +305,10 @@
     <Compile Include="GLEngine\ModelBuffer.cs" />
     <Compile Include="IO\ZipDirectory.cs" />
     <Compile Include="Modules\PureModule.cs" />
-    <Compile Include="ModuleUI\Docked.cs" />
+    <Compile Include="ModuleUI\BaseContainer.cs" />
+    <Compile Include="ModuleUI\BaseElement.cs" />
+    <Compile Include="ModuleUI\BaseItem.cs" />
+    <Compile Include="ModuleUI\BaseLabelledItem.cs" />
     <Compile Include="ModuleUI\Misc.cs" />
     <Compile Include="GLEngine\RenderSurface.cs" />
     <Compile Include="GLEngine\ShaderPresets.cs" />

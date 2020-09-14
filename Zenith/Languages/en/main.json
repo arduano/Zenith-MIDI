@@ -54,8 +54,34 @@
 
   },
   "mods": {
-    "miditrail": {
+    "common": {
+      "reload": "Reload",
+      "openFolder": "Open Folder",
+      "randomizeOrder": "Randomize color order",
+      "firstNote": "First Note",
+      "lastNote": "Last Note",
+      "pianoHeight": "Piano Height %",
+      "sameWidthNotes": "Same Width Notes",
+      "noteScreenTime": "Note Screen Time",
 
+      "x": "X",
+      "y": "Y",
+      "z": "Z",
+      "start": "Start",
+      "end": "End",
+      "left": "Left",
+      "right": "Right"
+    },
+    "miditrail": {
+      "tabs": {
+        "camera": "Camera",
+      },
+      "camera": {
+        "position": "Position",
+        "rotation": "Rotation",
+        "noteViewDistance": "Note View Distance",
+        "fov": "FOV",
+      }
     }
   }
 }
