@@ -27,16 +27,11 @@ using SharpDX.Direct3D11;
 using Device = SharpDX.Direct3D11.Device;
 using Matrix = SharpDX.Matrix;
 using MIDITrailRender.Views;
+using MIDITrailRender.Logic;
 using MIDITrailRender.Models;
 
 namespace MIDITrailRender
 {
-    struct IndexNorm
-    {
-        public int vertIndex;
-        public int normIndex;
-    }
-
     struct BasicVert
     {
         public Vector3 Pos;
@@ -46,196 +41,6 @@ namespace MIDITrailRender
         {
             Pos = pos;
             Normal = normal;
-        }
-    }
-
-    [StructLayoutAttribute(LayoutKind.Sequential)]
-    public struct KeyVert
-    {
-        [AssemblyElement("POS", Format.R32G32B32_Float)]
-        public Vector3 Pos;
-
-        [AssemblyElement("NORM", Format.R32G32B32_Float)]
-        public Vector3 Normal;
-
-        [AssemblyElement("SIDE", Format.R32_Float)]
-        public float Side;
-
-        public KeyVert(Vector3 pos, Vector3 normal, float side)
-        {
-            Pos = pos;
-            Normal = normal;
-            Side = side;
-        }
-    }
-
-    [StructLayoutAttribute(LayoutKind.Sequential)]
-    public struct NoteVert
-    {
-        [AssemblyElement("POS", Format.R32G32B32_Float)]
-        public Vector3 Pos;
-
-        [AssemblyElement("NORM", Format.R32G32B32_Float)]
-        public Vector3 Normal;
-
-        [AssemblyElement("SIDE", Format.R32_Float)]
-        public float Side;
-
-        [AssemblyElement("CORNER", Format.R32G32B32_Float)]
-        public Vector3 Corner;
-
-        public NoteVert(Vector3 pos, Vector3 normal, float side, Vector3 corner)
-        {
-            Pos = pos;
-            Normal = normal;
-            Side = side;
-            Corner = corner;
-        }
-    }
-
-    [StructLayoutAttribute(LayoutKind.Sequential, Pack = 16)]
-    public struct FullColorData
-    {
-        public Color4 Diffuse;
-        public Color4 Emit;
-        public Color4 Specular;
-    }
-
-    [StructLayoutAttribute(LayoutKind.Sequential, Pack = 16)]
-    public struct KeyShaderConstant
-    {
-        public Matrix Model;
-        public Matrix View;
-        public Vector3 ViewPos;
-        public float Time;
-        public FullColorData LeftColor;
-        public FullColorData RightColor;
-    }
-
-    [StructLayoutAttribute(LayoutKind.Sequential, Pack = 16)]
-    public struct NoteShaderConstant
-    {
-        public Matrix Model;
-        public Matrix View;
-        public Vector3 ViewPos;
-    }
-
-    [StructLayoutAttribute(LayoutKind.Sequential)]
-    public struct NoteInstance
-    {
-        [AssemblyElement("LEFT", Format.R32_Float)]
-        public float Left;
-
-        [AssemblyElement("RIGHT", Format.R32_Float)]
-        public float Right;
-
-        [AssemblyElement("START", Format.R32_Float)]
-        public float Start;
-
-        [AssemblyElement("END", Format.R32_Float)]
-        public float End;
-
-        [AssemblyElement("COLORLEFT", Format.R32G32B32A32_Float)]
-        public Color4 ColorLeft;
-
-        [AssemblyElement("COLORRIGHT", Format.R32G32B32A32_Float)]
-        public Color4 ColorRight;
-
-        [AssemblyElement("SCALE", Format.R32_Float)]
-        public float Scale;
-
-        [AssemblyElement("HEIGHT", Format.R32_Float)]
-        public float Height;
-
-        public NoteInstance(float left, float right, float start, float end, Color4 colorLeft, Color4 colorRight, float scale, float extraScale)
-        {
-            Left = left;
-            Right = right;
-            Start = start;
-            End = end;
-            ColorLeft = colorLeft;
-            ColorRight = colorRight;
-            Scale = scale;
-            Height = extraScale;
-        }
-    }
-
-    class KeyModelDataEdge : DeviceInitiable
-    {
-        public ModelBuffer<KeyVert>[] Models { get; set; }
-
-        public ModelBuffer<KeyVert> GetKey(int key) => Models[key % 12];
-
-        public KeyModelDataEdge(ModelBuffer<KeyVert>[] models)
-        {
-            Models = models;
-        }
-
-        protected override void InitInternal()
-        {
-            foreach (var m in Models) m.Init(Device);
-        }
-
-        protected override void DisposeInternal()
-        {
-            foreach (var m in Models) m.Dispose();
-        }
-    }
-
-    class KeyModelDataType : DeviceInitiable
-    {
-        public KeyModelDataEdge Normal { get; set; }
-        public KeyModelDataEdge Left { get; set; }
-        public KeyModelDataEdge Right { get; set; }
-
-        protected override void InitInternal()
-        {
-            Normal.Init(Device);
-            Left.Init(Device);
-            Right.Init(Device);
-        }
-
-        protected override void DisposeInternal()
-        {
-            Normal.Dispose();
-            Left.Dispose();
-            Right.Dispose();
-        }
-    }
-
-    class NoteBufferParts : DeviceInitiable
-    {
-        public ShapeBuffer<NoteInstance> Body { get; set; }
-        public ShapeBuffer<NoteInstance> Cap { get; set; }
-
-        protected override void InitInternal()
-        {
-            Body.Init(Device);
-            Cap.Init(Device);
-        }
-
-        protected override void DisposeInternal()
-        {
-            Body.Dispose();
-            Cap.Dispose();
-        }
-    }
-
-    class KeyModelData : DeviceInitiable
-    {
-        public KeyModelDataType SameWidth { get; set; }
-        public KeyModelDataType DifferentWidth { get; set; }
-
-        protected override void InitInternal()
-        {
-            SameWidth.Init(Device);
-            DifferentWidth.Init(Device);
-        }
-
-        protected override void DisposeInternal()
-        {
-            SameWidth.Dispose();
-            DifferentWidth.Dispose();
         }
     }
 
@@ -465,11 +270,7 @@ namespace MIDITrailRender
         DepthStencilStateKeeper depthStencil;
         DepthStencilStateKeeper noDepthStencil;
 
-        KeyModelData keyModels;
-
-        NoteBufferParts flatNoteBuffer;
-        NoteBufferParts cubeNoteBuffer;
-        NoteBufferParts roundedNoteBuffer;
+        FullModelData allModels;
 
         float[] keyPressPos = new float[256];
         float[] keyPressVel = new float[256];
@@ -486,140 +287,7 @@ namespace MIDITrailRender
                     return reader.ReadToEnd();
             }
 
-            var factory = new ObjLoaderFactory();
-            var objLoader = factory.Create();
-            var obj = objLoader.Load(new BufferedStream(File.OpenRead("D:/keys.obj")));
-
-            Dictionary<string, ModelBuffer<KeyVert>> keyModels = new Dictionary<string, ModelBuffer<KeyVert>>();
-            Dictionary<string, ModelBuffer<NoteVert>> noteModelsBody = new Dictionary<string, ModelBuffer<NoteVert>>();
-            Dictionary<string, ModelBuffer<NoteVert>> noteModelsCaps = new Dictionary<string, ModelBuffer<NoteVert>>();
-
-            Parallel.ForEach(obj.Groups, group =>
-            {
-                if (group.Name.StartsWith("p-"))
-                    return;
-
-                bool isNote = group.Name.StartsWith("note-");
-
-                var verts = new List<BasicVert>();
-                var indices = new List<int>();
-                var bodyVerts = new List<BasicVert>();
-                var bodyIndices = new List<int>();
-                var capVerts = new List<BasicVert>();
-                var capIndices = new List<int>();
-
-                foreach (var f in group.Faces)
-                {
-                    if (f.Count != 3) throw new Exception("Non triangle faces not supported");
-                    bool body = true;
-                    if (isNote)
-                    {
-                        for (int i = 0; i < 3; i++)
-                        {
-                            var v = f[i];
-                            var norm = obj.Normals[v.NormalIndex - 1];
-                            var dot = Vector3.Dot(new Vector3(norm.X, norm.Y, norm.Z), new Vector3(0, 0, 1));
-                            if (Math.Abs(dot) > 0.1)
-                            {
-                                body = false;
-                                break;
-                            }
-                        }
-                    }
-                    for (int i = 0; i < 3; i++)
-                    {
-                        var v = f[i];
-                        var vert = obj.Vertices[v.VertexIndex - 1];
-                        var norm = obj.Normals[v.NormalIndex - 1];
-                        var vertItem = new BasicVert(
-                            new Vector3(vert.X, vert.Y, vert.Z),
-                            new Vector3(norm.X, norm.Y, norm.Z)
-                        );
-                        verts.Add(vertItem);
-                        indices.Add(indices.Count);
-                        if (isNote)
-                        {
-                            if (body)
-                            {
-                                bodyVerts.Add(vertItem);
-                                bodyIndices.Add(bodyIndices.Count);
-                            }
-                            else
-                            {
-                                capVerts.Add(vertItem);
-                                capIndices.Add(capIndices.Count);
-                            }
-                        }
-                    }
-                }
-
-                var zMin = verts.Select(v => v.Pos.Z).Min();
-                var zMax = verts.Select(v => v.Pos.Z).Max();
-                var zRange = zMax - zMin;
-                var zMiddle = (zMax + zMin) / 2;
-
-                var xMin = verts.Select(v => v.Pos.X).Min();
-                var xMax = verts.Select(v => v.Pos.X).Max();
-                var xRange = xMax - xMin;
-                var xMiddle = (xMax + xMin) / 2;
-
-                if (isNote)
-                {
-                    Vector3 normalizeCorner(Vector3 pos)
-                    {
-                        return new Vector3(
-                                pos.X > 0 ? 1 : 0,
-                                pos.Y > -0.5 ? 1 : 0,
-                                pos.Z > 0 ? 1 : 0
-                            );
-                    }
-
-                    var noteBodyVerts = bodyVerts.Select(v => new NoteVert(v.Pos, v.Normal, (v.Pos.X - xMin) / xRange, normalizeCorner(v.Pos))).ToArray();
-                    var noteCapVerts = capVerts.Select(v => new NoteVert(v.Pos, v.Normal, (v.Pos.X - xMin) / xRange, normalizeCorner(v.Pos))).ToArray();
-                    var shapeBody = new ModelBuffer<NoteVert>(noteBodyVerts, bodyIndices.ToArray());
-                    var shapeCap = new ModelBuffer<NoteVert>(noteCapVerts, capIndices.ToArray());
-                    lock (noteModelsBody)
-                        noteModelsBody.Add(group.Name, shapeBody);
-                    lock (noteModelsCaps)
-                        noteModelsCaps.Add(group.Name, shapeCap);
-                }
-                else
-                {
-                    var keyVerts = verts.Select(v => new KeyVert(v.Pos, v.Normal, (v.Pos.Z - zMin) / zRange)).ToArray();
-                    var shape = new ModelBuffer<KeyVert>(keyVerts, indices.ToArray());
-                    lock (keyModels)
-                        keyModels.Add(group.Name, shape);
-                }
-            });
-
-            ModelBuffer<KeyVert>[] getArray(string category, string side)
-            {
-                var keys = new ModelBuffer<KeyVert>[12];
-                for (int i = 0; i < 12; i++)
-                {
-                    if (KeyboardState.IsBlackKey(i))
-                        keys[i] = keyModels[$"black-{category}"];
-                    else
-                        keys[i] = keyModels[$"white-{category}-{side}-{i}"];
-                }
-                return keys;
-            }
-
-            this.keyModels = init.Add(new KeyModelData()
-            {
-                SameWidth = new KeyModelDataType()
-                {
-                    Left = new KeyModelDataEdge(getArray("sw", "left")),
-                    Normal = new KeyModelDataEdge(getArray("sw", "both")),
-                    Right = new KeyModelDataEdge(getArray("sw", "right")),
-                },
-                DifferentWidth = new KeyModelDataType()
-                {
-                    Left = new KeyModelDataEdge(getArray("dw", "left")),
-                    Normal = new KeyModelDataEdge(getArray("dw", "both")),
-                    Right = new KeyModelDataEdge(getArray("dw", "right")),
-                }
-            });
+            allModels = init.Add(ModelLoader.LoadAllModels());
 
             var resources = assembly.GetManifestResourceNames();
 
@@ -665,24 +333,6 @@ namespace MIDITrailRender
                 return new ShapeBuffer<NoteInstance>(new InstancedBufferFlusher<NoteVert, NoteInstance>(1024 * 64, model));
             }
 
-            flatNoteBuffer = new NoteBufferParts()
-            {
-                Body = init.Add(bufferFromModel(noteModelsBody["note-flat"])),
-                Cap = null
-            };
-
-            cubeNoteBuffer = new NoteBufferParts()
-            {
-                Body = init.Add(bufferFromModel(noteModelsBody["note-cube"])),
-                Cap = init.Add(bufferFromModel(noteModelsCaps["note-cube"])),
-            };
-
-            roundedNoteBuffer = new NoteBufferParts()
-            {
-                Body = init.Add(bufferFromModel(noteModelsBody["note-rounded"])),
-                Cap = init.Add(bufferFromModel(noteModelsCaps["note-rounded"])),
-            };
-
             //settings.Palette.PaletteChanged += ReloadTrackColors;
         }
 
@@ -711,6 +361,8 @@ namespace MIDITrailRender
 
             bool sameWidth = true;//settings.sameWidthNotes;
 
+            var time = Midi.PlayerPosition;
+
             var keyboard = new KeyboardState(firstKey, lastKey, new KeyboardParams()
             {
                 BlackKey2setOffset = 0.15 * 2,
@@ -722,10 +374,6 @@ namespace MIDITrailRender
             float frontNoteCutoff = 10;
             float backNoteCutoff = 0.5f;
             float noteScale = 5000;
-
-            var time = Midi.PlayerPosition;
-            var frontMax = frontNoteCutoff;
-            var backMax = -backNoteCutoff;
 
             var view =
                 Matrix.Translation((float)camera.CamX, (float)camera.CamY, (float)camera.CamZ) *
@@ -744,7 +392,7 @@ namespace MIDITrailRender
                 });
             }
 
-            var noteBuffer = roundedNoteBuffer.Body;
+            var noteBuffer = allModels.Notes.Rounded.Body;
 
             noteShader.ConstData.View = view;
             noteShader.ConstData.ViewPos = keyShader.ConstData.View.TranslationVector;
@@ -766,7 +414,10 @@ namespace MIDITrailRender
                 List<RenderObject> renderObjects = new List<RenderObject>();
                 List<RenderObject> renderNotes = new List<RenderObject>();
 
-                var keySet = sameWidth ? keyModels.SameWidth : keyModels.DifferentWidth;
+                var keySet = sameWidth ? allModels.Keys.SameWidth : allModels.Keys.DifferentWidth;
+
+                var frontMax = frontNoteCutoff;
+                var backMax = -backNoteCutoff;
 
                 var iterators = Midi.IterateNotesKeyed(Midi.PlayerPosition - backNoteCutoff * noteScale, Midi.PlayerPosition + frontNoteCutoff * noteScale);
                 for (int i = firstKey; i < lastKey; i++)
@@ -794,12 +445,13 @@ namespace MIDITrailRender
                     var nro = new NoteRenderObject(
                         this,
                         keyboard,
-                        roundedNoteBuffer,
+                        allModels.Notes.Rounded,
                         translation,
                         0,
                         iterators[i],
                         noteScale,
                         frontMax,
+                        backMax,
                         keyboard.WhiteNoteWidth / 2
                     );
                     renderNotes.Add(nro);

@@ -8,6 +8,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using ZenithEngine;
+using ZenithEngine.DXHelper;
+using ZenithEngine.Modules;
 using ZenithShared;
 
 namespace Zenith
@@ -17,8 +20,6 @@ namespace Zenith
         [STAThread]
         static void Main(string[] args)
         {
-            //new test();
-            //return;
 #if !DEBUG
             try
             {

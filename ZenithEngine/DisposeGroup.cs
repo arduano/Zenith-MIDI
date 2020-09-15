@@ -15,8 +15,10 @@ namespace ZenithEngine
         public void Dispose()
         {
             if (disposed) return;
-            foreach (var i in items)
-                i.Dispose();
+            for (int i = items.Count - 1; i >= 0; i--)
+            {
+                items[i].Dispose();
+            }
             disposed = true;
         }
 

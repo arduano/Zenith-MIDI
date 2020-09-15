@@ -123,7 +123,6 @@ namespace ZenithEngine.DXHelper
             {
                 swapChain = new SwapChain(factory, device, desc);
             }
-            dispose.Add(device);
             dispose.Add(swapChain);
             var context = device.ImmediateContext;
 

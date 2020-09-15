@@ -20,12 +20,16 @@ namespace ZenithEngine.DXHelper
 
         protected override void DisposeInternal()
         {
-            foreach (var i in items) i.Dispose();
+            for(int i = items.Count - 1; i >= 0; i--)
+            {
+                items[i].Dispose();
+            }
         }
 
         protected override void InitInternal()
         {
-            foreach (var i in items) i.Init(Device);
+            foreach (var i in items) 
+                i.Init(Device);
         }
 
         public T Replace<T>(IDeviceInitiable prevItem, T newItem) where T : IDeviceInitiable

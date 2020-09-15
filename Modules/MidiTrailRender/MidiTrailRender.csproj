@@ -253,6 +253,7 @@
     <Compile Include="AuraSelect.xaml.cs">
       <DependentUpon>AuraSelect.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Logic\Util.cs" />
     <Compile Include="Models\BaseModel.cs" />
     <Compile Include="Models\CameraModel.cs" />
     <Compile Include="ProfileManager.cs" />
@@ -263,6 +264,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Render.cs" />
+    <Compile Include="Logic\Batches.cs" />
+    <Compile Include="Logic\ModelLoader.cs" />
+    <Compile Include="Logic\RenderTypes.cs" />
     <Compile Include="Render_old.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="SettingsCtrl.xaml.cs">
@@ -288,6 +292,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="models.obj" />
     <None Include="packages.config" />
     <EmbeddedResource Include="Shaders\keys.vert.glsl" />
     <EmbeddedResource Include="Shaders\keys.frag.glsl" />

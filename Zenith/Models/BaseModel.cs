@@ -235,8 +235,8 @@ namespace Zenith.Models
                         preview = new WindowPreview(device);
                     }
                     RenderPipeline.Start(preview, cancel).Wait();
-                    device.Dispose();
                     RenderPipeline.Dispose();
+                    device.Dispose();
                     RenderPipeline = null;
                     RenderStatus = null;
                     RenderProgress = null;
