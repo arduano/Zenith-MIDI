@@ -254,7 +254,10 @@
       <DependentUpon>AuraSelect.xaml</DependentUpon>
     </Compile>
     <Compile Include="Logic\Camera.cs" />
+    <Compile Include="Logic\KeyboardPhysics.cs" />
     <Compile Include="Logic\NoteRenderer.cs" />
+    <Compile Include="Logic\KeyboardHandler.cs" />
+    <Compile Include="Logic\RenderObjects.cs" />
     <Compile Include="Logic\Util.cs" />
     <Compile Include="Models\BaseModel.cs" />
     <Compile Include="Models\CameraModel.cs" />

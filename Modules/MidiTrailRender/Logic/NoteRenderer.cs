@@ -113,7 +113,7 @@ namespace MIDITrailRender.Logic
 
             var noteStreamPositions = keyboard.Keys.Select(k => new Vector3((float)(k.Left + k.Right) / 2 - 0.5f, 0, 0)).ToArray();
             var order = Enumerable.Range(keyboard.FirstKey, keyboard.LastKey)
-                .OrderBy(k => -(noteStreamPositions[k] - camera.ViewLocation).Length())
+                .OrderBy(k => -(noteStreamPositions[k] + camera.ViewLocation).Length())
                 .ToArray();
 
             var notes = playback.IterateNotesKeyed(time + startCutoff * noteScale, time + endCutoff * noteScale);
