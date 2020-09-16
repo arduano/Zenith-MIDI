@@ -114,129 +114,6 @@ namespace MIDITrailRender
                     Model.BindAndDraw(context);
             }
         }
-
-        class NoteRenderObject : RenderObject
-        {
-            public int Key { get; }
-            KeyboardState Keyboard { get; }
-            NoteBufferParts Buffer { get; }
-            IEnumerable<Note> Notes { get; }
-            float NoteScale { get; }
-            float FrontMax { get; }
-            float BackMax { get; }
-            float MinLength { get; }
-
-            Render render;
-
-            public NoteRenderObject(
-                Render render,
-                KeyboardState keyboard, 
-                NoteBufferParts buffer,
-                Matrix transform,
-                int key,
-                IEnumerable<Note> notes,
-                double noteScale,
-                double frontMax,
-                double backMax,
-                double minLength
-            ) : base(transform)
-            {
-                Key = key;
-                this.render = render;
-                this.Keyboard = keyboard;
-                Buffer = buffer;
-                Notes = notes;
-                NoteScale = (float)noteScale;
-                FrontMax = (float)frontMax;
-                BackMax = (float)backMax;
-                MinLength = (float)minLength;
-            }
-
-            public override void Render(DeviceContext context)
-            {
-                var noteShader = render.noteShader;
-                noteShader.ConstData.Model = Transform;
-
-                //keyShader.ConstData.LeftColor.Diffuse = Keyboard.Colors[Key].Left;
-                //keyShader.ConstData.RightColor.Diffuse = Keyboard.Colors[Key].Right;
-
-                //keyShader.ConstData.LeftColor.Emit.Alpha = 0;
-                //keyShader.ConstData.RightColor.Emit.Alpha = 0;
-
-                //keyShader.ConstData.LeftColor.Emit = Keyboard.Colors[Key].Left;
-                //keyShader.ConstData.RightColor.Emit = Keyboard.Colors[Key].Right;
-
-                //float glowStrength = Math.Max(render.keyPressPos[Key], 0);
-
-                //keyShader.ConstData.LeftColor.Emit.Alpha = 2 * glowStrength;
-                //keyShader.ConstData.RightColor.Emit.Alpha = 2 * glowStrength;
-
-                ////keyShader.ConstData.LeftColor.Emit.Alpha = 0;
-                ////keyShader.ConstData.RightColor.Emit.Alpha = 0;
-
-                //keyShader.ConstData.LeftColor.Specular = new Color4(1, 1, 1, 1);
-                //keyShader.ConstData.RightColor.Specular = new Color4(1, 1, 1, 1);
-
-                var keyboard = Keyboard;
-                var time = render.Midi.PlayerPosition;
-                var minLength = (float)MinLength;
-
-                void Loop(ShapeBuffer<NoteInstance> buffer)
-                {
-                    buffer.UseContext(context);
-                    foreach (var n in Notes)
-                    {
-                        if (n.Start < time && (n.End > time || !n.HasEnded))
-                        {
-                            keyboard.PressKey(n.Key);
-                            keyboard.BlendNote(n.Key, n.Color);
-                        }
-
-                        var notePos = keyboard.Notes[n.Key];
-                        var keyPos = keyboard.Keys[n.Key];
-
-                        var noteStart = (float)((n.Start - time) / NoteScale);
-                        var noteEnd = (float)((n.End - time) / NoteScale);
-
-                        var left = (float)notePos.Left - 0.5f;
-                        var right = (float)notePos.Right - 0.5f;
-                        var middle = (float)(keyPos.Left + keyPos.Right) / 2;
-                        left -= middle - 0.5f;
-                        right -= middle - 0.5f;
-
-                        if (!n.HasEnded || noteEnd > FrontMax) noteEnd = FrontMax;
-                        if (noteStart < BackMax) noteStart = BackMax;
-
-                        if (noteEnd - noteStart < minLength)
-                        {
-                            var noteMiddle = (noteStart + noteEnd) / 2;
-                            noteStart = noteMiddle - minLength / 2;
-                            noteEnd = noteMiddle + minLength / 2;
-                        }
-
-                        buffer.Push(new NoteInstance(
-                            left,
-                            right,
-                            noteStart,
-                            noteEnd,
-                            n.Color.Left,
-                            n.Color.Right,
-                            (float)keyboard.BlackNoteWidth,
-                            (float)keyboard.BlackNoteWidth
-                        ));
-                    }
-                    buffer.Flush();
-                }
-
-                using (noteShader.UseOn(context))
-                {
-                    using (render.noDepthStencil.UseOn(context))
-                        Loop(Buffer.Body);
-                    using (render.depthStencil.UseOn(context))
-                        Loop(Buffer.Cap);
-                }
-            }
-        }
         #endregion
 
         MainView settingsView = LoadUI(() => new MainView());
@@ -247,7 +124,6 @@ namespace MIDITrailRender
         protected override NoteColorPalettePick PalettePicker => null;
 
         ShaderProgram<KeyShaderConstant> keyShader;
-        ShaderProgram<NoteShaderConstant> noteShader;
 
         CompositeRenderSurface depthSurface;
         CompositeRenderSurface cutoffSurface;
@@ -265,12 +141,13 @@ namespace MIDITrailRender
         ShaderProgram quadShader;
         ShaderProgram alphaAddFixShader;
 
+        DepthStencilStateKeeper depthStencil;
+
         RasterizerStateKeeper rasterizer;
 
-        DepthStencilStateKeeper depthStencil;
-        DepthStencilStateKeeper noDepthStencil;
-
         FullModelData allModels;
+
+        NoteRenderer noteRenderer;
 
         float[] keyPressPos = new float[256];
         float[] keyPressVel = new float[256];
@@ -288,6 +165,7 @@ namespace MIDITrailRender
             }
 
             allModels = init.Add(ModelLoader.LoadAllModels());
+            noteRenderer = init.Add(new NoteRenderer(allModels));
 
             var resources = assembly.GetManifestResourceNames();
 
@@ -299,20 +177,6 @@ namespace MIDITrailRender
                 "PS"
             ));
 
-            noteShader = init.Add(new ShaderProgram<NoteShaderConstant>(
-                ReadEmbed("MIDITrailRender.Shaders.notes.fx"),
-                typeof(NoteVert),
-                typeof(NoteInstance),
-                "4_0",
-                "VS",
-                "PS"
-            ));
-
-
-            //noteShader = new ShaderProgram(
-            //    ReadEmbed("MIDITrailRender.Shaders.notes.hlsl"),
-            //);
-
             plainShader = init.Add(Shaders.BasicTextured());
             colorspaceShader = init.Add(Shaders.Colorspace());
             colorCutoffShader = init.Add(Shaders.ColorCutoff());
@@ -320,7 +184,6 @@ namespace MIDITrailRender
             compositor = init.Add(new Compositor());
 
             depthStencil = init.Add(new DepthStencilStateKeeper(DepthStencilPresets.Basic));
-            noDepthStencil = init.Add(new DepthStencilStateKeeper(DepthStencilPresets.Always));
 
             rasterizer = init.Add(new RasterizerStateKeeper());
             rasterizer.Description.CullMode = CullMode.Front;
@@ -384,6 +247,8 @@ namespace MIDITrailRender
             var perspective = Matrix.PerspectiveFovLH((float)(camera.CamFOV / 180 * Math.PI), Status.AspectRatio, 0.1f, 100f);
             var viewPos = view.TranslationVector;
 
+            var cameraData = new Camera(settings, Status);
+
             void sortObjectList(List<RenderObject> list)
             {
                 list.Sort((a, b) =>
@@ -393,11 +258,6 @@ namespace MIDITrailRender
             }
 
             var noteBuffer = allModels.Notes.Rounded.Body;
-
-            noteShader.ConstData.View = view;
-            noteShader.ConstData.ViewPos = keyShader.ConstData.View.TranslationVector;
-            noteShader.ConstData.View *= perspective;
-            noteShader.ConstData.Model = Matrix.Identity;
 
             using (depthSurface.UseViewAndClear(context))
             using (depthStencil.UseOn(context))
@@ -442,36 +302,10 @@ namespace MIDITrailRender
 
                     var keyPart = isFirst ? keySet.Right : isLast ? keySet.Left : keySet.Normal;
 
-                    var nro = new NoteRenderObject(
-                        this,
-                        keyboard,
-                        allModels.Notes.Rounded,
-                        translation,
-                        0,
-                        iterators[i],
-                        noteScale,
-                        frontMax,
-                        backMax,
-                        keyboard.WhiteNoteWidth / 2
-                    );
-                    renderNotes.Add(nro);
                     renderObjects.Add(new KeyRenderObject(this, keyboard, keyPart.GetKey(i), model, i));
                 }
 
-                sortObjectList(renderNotes);
-                if (sameWidth)
-                {
-                    foreach (var m in renderNotes)
-                        m.Render(context);
-                }
-                else
-                {
-                    var notes = renderNotes.Cast<NoteRenderObject>();
-                    foreach (var m in notes.Where(n => !keyboard.BlackKey[n.Key]))
-                        m.Render(context);
-                    foreach (var m in notes.Where(n => keyboard.BlackKey[n.Key]))
-                        m.Render(context);
-                }
+                noteRenderer.RenderNotes(context, settings, Midi, cameraData, keyboard);
 
                 float timeScale = (float)(Midi.PlayerPositionSeconds - lastMidiTime) * 60;
                 for (int i = 0; i < 256; i++)

@@ -53,6 +53,9 @@ namespace ZenithEngine.ModuleUtil
 
         public KeyboardState (int firstNote, int lastNote, KeyboardParams options)
         {
+            FirstKey = firstNote;
+            LastKey = lastNote;
+
             for (int i = 0; i < BlackKey.Length; i++) BlackKey[i] = IsBlackKey(i);
             int b = 0;
             int w = 0;
@@ -202,6 +205,9 @@ namespace ZenithEngine.ModuleUtil
             if (n < 0) n += 12;
             return n == 1 || n == 3 || n == 6 || n == 8 || n == 10;
         }
+
+        public int FirstKey { get; }
+        public int LastKey { get; }
 
         public Pos[] Keys { get; } = new Pos[257];
         public Pos[] Notes { get; } = new Pos[257];

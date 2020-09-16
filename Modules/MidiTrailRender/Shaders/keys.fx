@@ -530,13 +530,13 @@ float4 PS(Frag pixel) : SV_Target
     float4 emitColor = lerp(colorLeft.emitColor, colorRight.emitColor, pixel.side);
     float4 specularColor = lerp(colorLeft.specularColor, colorRight.specularColor, pixel.side);
 
-	float4 testpos = pixel.worldPos / 10 + float4(0, 0, 0, time / 300);
-	float test1 = noise(testpos * 100);
-	float test2 = noise((testpos + float4(0, 10, 0, 0)) * 100);
-	float test3 = noise((testpos + float4(0, 0, 10, 0)) * 100);
-	float test = noise(testpos + float4(test1, test2, test3, 0) * 2);
-	test = clamp(test, 0, 1);
-	emitColor.rgb *= lerp(-0.1, 1, test);
+		float4 testpos = pixel.worldPos / 10 + float4(0, 0, 0, time / 300);
+		float test1 = noise(testpos * 100);
+		float test2 = noise((testpos + float4(0, 10, 0, 0)) * 100);
+		float test3 = noise((testpos + float4(0, 0, 10, 0)) * 100);
+		float test = noise(testpos + float4(test1, test2, test3, 0) * 2);
+		test = clamp(test, 0, 1);
+		emitColor.rgb *= lerp(-0.1, 1, test);
 
     float4 outputColor = float4(diffuseColor.rgb * diffuseStrength + specularColor.rgb * specularColor.a * specular + emitColor.rgb * emitColor.a * emitStrength, diffuseColor.a);
 
