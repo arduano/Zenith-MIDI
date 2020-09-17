@@ -16,6 +16,7 @@ namespace MIDITrailRender.Logic
         public Color4 Diffuse;
         public Color4 Emit;
         public Color4 Specular;
+        public Color4 Water;
     }
 
     [StructLayoutAttribute(LayoutKind.Sequential, Pack = 16)]

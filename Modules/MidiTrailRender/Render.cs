@@ -47,7 +47,7 @@ namespace MIDITrailRender
 
         public override double StartOffset => 0;
         
-        protected override NoteColorPalettePick PalettePicker => null;
+        protected override NoteColorPalettePick PalettePicker => settingsView.Data.General.PalettePicker;
 
         CompositeRenderSurface depthSurface;
         CompositeRenderSurface cutoffSurface;
@@ -107,12 +107,7 @@ namespace MIDITrailRender
             addBlendState = init.Add(new BlendStateKeeper(BlendPreset.Add));
             pureBlendState = init.Add(new BlendStateKeeper(BlendPreset.PreserveColor));
 
-            ShapeBuffer<NoteInstance> bufferFromModel(ModelBuffer<NoteVert> model)
-            {
-                return new ShapeBuffer<NoteInstance>(new InstancedBufferFlusher<NoteVert, NoteInstance>(1024 * 64, model));
-            }
-
-            //settings.Palette.PaletteChanged += ReloadTrackColors;
+            settingsView.Data.General.PalettePicker.PaletteChanged += ReloadTrackColors;
         }
 
         public override void Init(DeviceGroup device, MidiPlayback midi, RenderStatus status)
@@ -159,9 +154,10 @@ namespace MIDITrailRender
             ITextureResource lastSurface;
             if (useGlow)
             {
+                var glowConfig = settings.Glow;
                 compositor.Composite(context, depthSurface, colorCutoffShader, cutoffSurface);
-                pingPongGlow.GlowSigma = 20;
-                pingPongGlow.ApplyOn(context, cutoffSurface, 3, 1);
+                pingPongGlow.GlowSigma = (float)glowConfig.GlowSigma;
+                pingPongGlow.ApplyOn(context, cutoffSurface, (float)glowConfig.GlowStrength, (float)glowConfig.GlowBrightness);
                 compositor.Composite(context, depthSurface, colorspaceShader, preFinalSurface);
                 using (addBlendState.UseOn(context))
                     compositor.Composite(context, cutoffSurface, plainShader, preFinalSurface, false);

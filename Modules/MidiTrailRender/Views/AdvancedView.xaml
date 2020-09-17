@@ -8,8 +8,17 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <TabControl Margin="10">
+        <TabItem Header="{ui:LangText mods.miditrail.tabs.general}">
+            <local:GeneralView/>
+        </TabItem>
         <TabItem Header="{ui:LangText mods.miditrail.tabs.camera}">
             <local:CameraView/>
+        </TabItem>
+        <TabItem Header="{ui:LangText mods.miditrail.tabs.glow}">
+            <local:GlowView/>
+        </TabItem>
+        <TabItem Header="{ui:LangText mods.miditrail.tabs.keys}">
+            <local:KeysView/>
         </TabItem>
     </TabControl>
 </UserControl>

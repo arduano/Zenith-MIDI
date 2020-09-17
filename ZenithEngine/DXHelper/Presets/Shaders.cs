@@ -21,7 +21,7 @@ namespace ZenithEngine.DXHelper.Presets
 
     public static class Shaders
     {
-        static string ReadShaderText(string shaderName)
+        public static string ReadShaderText(string shaderName)
         {
             var assembly = Assembly.GetExecutingAssembly();
             var all = assembly.GetManifestResourceNames().ToArray();

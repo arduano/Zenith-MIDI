@@ -58,8 +58,8 @@
       "reload": "Reload",
       "openFolder": "Open Folder",
       "randomizeOrder": "Randomize color order",
-      "firstNote": "First Note",
-      "lastNote": "Last Note",
+      "firstNote": "First Key",
+      "lastNote": "Last Key",
       "pianoHeight": "Piano Height %",
       "sameWidthNotes": "Same Width Notes",
       "noteScreenTime": "Note Screen Time",
@@ -75,12 +75,30 @@
     "miditrail": {
       "tabs": {
         "camera": "Camera",
+        "general": "General",
+        "glow": "Glow",
+        "keys": "Keys"
       },
       "camera": {
         "position": "Position",
         "rotation": "Rotation",
         "noteViewDistance": "Note View Distance",
-        "fov": "FOV",
+        "fov": "FOV"
+      },
+      "general": {
+        "noteScale": "Note Scale"
+      },
+      "glow": {
+        "useGlow": "Use Glow",
+        "size": "Size",
+        "strength": "Strength",
+        "brightness": "Brightness"
+      },
+      "color": {
+        "diffuse": "Diffuse",
+        "specular": "Specular",
+        "emit": "Emit",
+        "water": "Water"
       }
     }
   }

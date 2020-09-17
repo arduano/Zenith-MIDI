@@ -23,7 +23,7 @@ namespace MIDITrailRender.Logic
             keyModels = init.Add(allModels.Keys);
 
             keyShader = init.Add(new ShaderProgram<KeyShaderConstant>(
-                Util.ReadEmbed("MIDITrailRender.Shaders.keys.fx"),
+                Util.ReadShader("keys.fx"),
                 typeof(KeyVert),
                 "4_0",
                 "VS",
@@ -43,7 +43,8 @@ namespace MIDITrailRender.Logic
         {
             KeyboardHandler handler;
             ModelBuffer<KeyVert> model;
-            float pressDepth;
+
+            PhysicsKey physics;
 
             KeyboardState.Col keyColor;
 
@@ -68,7 +69,7 @@ namespace MIDITrailRender.Logic
 
                 var pos = new Vector3((float)middle, 0, 0);
                 var modelmat = Matrix.Identity *
-                    Matrix.RotationX((float)Math.PI / 2 * physics[key] * 0.03f) *
+                    Matrix.RotationX((float)Math.PI / 2 * physics.Keys[key].Press * 0.03f) *
                     Matrix.Translation(0, 0, -1) *
                     Matrix.Scaling((float)keyboard.BlackKeyWidth * 2 * 0.865f) *
                     Matrix.Translation(pos) *
@@ -77,8 +78,8 @@ namespace MIDITrailRender.Logic
 
                 var obj = new KeyRenderObject(config, handler, keyPart.GetKey(key), pos, modelmat);
 
-                obj.pressDepth = physics[key];
                 obj.keyColor = keyboard.Colors[key];
+                obj.physics = physics.Keys[key];
 
                 return obj;
             }
@@ -89,9 +90,50 @@ namespace MIDITrailRender.Logic
                 this.handler = handler;
             }
 
+            static Color4 AdjustDiffuse(Color4 col, float fac)
+            {
+                col.Red *= fac;
+                col.Green *= fac;
+                col.Blue *= fac;
+                return col;
+            }
+
+            static Color4 AdjustSpec(Color4 col, float fac)
+            {
+                return new Color4(1, 1, 1, fac);
+            }
+
+            static Color4 AdjustEmit(Color4 col, float fac)
+            {
+                col.Alpha *= fac;
+                return col;
+            }
+
+            static Color4 AdjustWater(Color4 col, float fac)
+            {
+                return AdjustEmit(col, fac);
+            }
+
             public override void Render(DeviceContext context, Camera camera)
             {
+                var keyConfig = Config.Keys;
+                var unpCol = keyConfig.UnpressedColor;
+                var pCol = keyConfig.PressedColor;
+
+                var blend = Math.Max(0, Math.Min(1, physics.Press));
+
+                var leftCol = physics.GetLeftCol(true);
+                var rightCol = physics.GetRightCol(true);
+
+                var leftWater = leftCol;
+                var rightWater = rightCol;
+
                 var keyShader = handler.keyShader;
+
+                var diffuse = Util.Lerp((float)unpCol.Diffuse, (float)pCol.Diffuse, blend);
+                var specular = Util.Lerp((float)unpCol.Specular, (float)pCol.Specular, blend);
+                var emit = Util.Lerp((float)unpCol.Emit, (float)pCol.Emit, blend);
+                var water = Util.Lerp((float)unpCol.Water, (float)pCol.Water, blend);
 
                 keyShader.ConstData.View = camera.ViewPerspective;
                 keyShader.ConstData.ViewPos = camera.ViewLocation;
@@ -99,25 +141,17 @@ namespace MIDITrailRender.Logic
 
                 keyShader.ConstData.Model = Transform;
 
-                keyShader.ConstData.LeftColor.Diffuse = keyColor.Left;
-                keyShader.ConstData.RightColor.Diffuse = keyColor.Right;
+                keyShader.ConstData.LeftColor.Diffuse = AdjustDiffuse(leftCol, diffuse);
+                keyShader.ConstData.RightColor.Diffuse = AdjustDiffuse(rightCol, diffuse);
 
-                keyShader.ConstData.LeftColor.Emit.Alpha = 0;
-                keyShader.ConstData.RightColor.Emit.Alpha = 0;
+                keyShader.ConstData.LeftColor.Specular = AdjustSpec(leftCol, specular);
+                keyShader.ConstData.RightColor.Specular = AdjustSpec(rightCol, specular);
 
-                keyShader.ConstData.LeftColor.Emit = keyColor.Left;
-                keyShader.ConstData.RightColor.Emit = keyColor.Right;
+                keyShader.ConstData.LeftColor.Emit = AdjustEmit(leftCol, emit);
+                keyShader.ConstData.RightColor.Emit = AdjustEmit(rightCol, emit);
 
-                float glowStrength = Math.Max(pressDepth, 0);
-
-                keyShader.ConstData.LeftColor.Emit.Alpha = 20 * glowStrength;
-                keyShader.ConstData.RightColor.Emit.Alpha = 20 * glowStrength;
-
-                //keyShader.ConstData.LeftColor.Emit.Alpha = 0;
-                //keyShader.ConstData.RightColor.Emit.Alpha = 0;
-
-                keyShader.ConstData.LeftColor.Specular = new Color4(1, 1, 1, 1);
-                keyShader.ConstData.RightColor.Specular = new Color4(1, 1, 1, 1);
+                keyShader.ConstData.LeftColor.Water = AdjustEmit(leftWater, water);
+                keyShader.ConstData.RightColor.Water = AdjustEmit(rightWater, water);
 
                 using (keyShader.UseOn(context))
                     model.BindAndDraw(context);

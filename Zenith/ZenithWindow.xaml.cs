@@ -277,6 +277,14 @@ namespace Zenith
                 IntPtr handle = (new WindowInteropHelper(this)).Handle;
                 HwndSource.FromHwnd(handle).AddHook(new HwndSourceHook(WindowProc));
             };
+
+            //Task.Run(async () =>
+            //{
+            //    await DataBase.Midi.LoadMidi(@"D:\Midi\tau2.5.9.mid");
+            //    await DataBase.ModuleLoadTask.Await();
+            //    DataBase.SelectedModule = DataBase.RenderModules.Where(m => m.Name.ToLower().Contains("trail")).First();
+            //    await DataBase.StartPreview();
+            //});
         }
 
         private void updateDownloaded_MouseDown(object sender, MouseButtonEventArgs e)

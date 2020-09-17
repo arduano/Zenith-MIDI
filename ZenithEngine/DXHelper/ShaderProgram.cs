@@ -178,7 +178,7 @@ namespace ZenithEngine.DXHelper
 
             var code = GetPreparedCode();
 
-            Console.WriteLine(string.Join("\n", code.Split('\n').Select((s, i) => $"{i}. {s}").ToArray()));
+            Console.WriteLine(string.Join("\n", code.Split('\n').Select((s, i) => $"{i + 1}. {s}").ToArray()));
 
             VertexShaderByteCode = dispose.Add(ShaderBytecode.Compile(code, vertEntry, "vs_" + version, ShaderFlags.None, EffectFlags.None));
             VertexShader = dispose.Add(new VertexShader(Device, VertexShaderByteCode));

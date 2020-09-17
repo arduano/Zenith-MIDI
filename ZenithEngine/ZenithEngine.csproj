@@ -501,7 +501,9 @@
   <ItemGroup>
     <EmbeddedResource Include="DXHelper\Presets\Shaders\multiTexture.fx" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="DXHelper\Presets\Shaders\noise.fx" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

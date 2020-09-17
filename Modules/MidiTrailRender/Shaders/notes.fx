@@ -1,17 +1,3 @@
-struct FullColor {
-    float4 diffuseColor;
-    float4 emitColor;
-    float4 specularColor;
-};
-
-struct Frag {
-    float4 pos : SV_POSITION;
-    float4 worldPos : POS;
-    float3 normModel : NORM_MODEL;
-    float3 normView : NORM_VIEW;
-    float side : SIDE;
-    FullColor color: COLOR;
-};
 
 cbuffer c {
     float4x4 matModel;
@@ -35,8 +21,9 @@ Frag VS(NoteVert vert)
     pos.z += (-edge - vert.start) * vert.corner.z + (edge - vert.end) * (1 - vert.corner.z);
     pos.y += (bottom - vert.height) * (1 - vert.corner.y);
 
-    output.worldPos = mul(matModel, float4(pos, 1));
-    output.pos = mul(matView, output.worldPos);
+    float4 worldPos = mul(matModel, float4(pos, 1));
+    output.pos = mul(matView, worldPos);
+    output.worldPos = worldPos.xyz;
 
     output.side = vert.side;
 

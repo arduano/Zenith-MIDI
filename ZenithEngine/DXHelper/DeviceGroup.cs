@@ -29,11 +29,27 @@ namespace ZenithEngine.DXHelper
 
         public void Dispose()
         {
-            D3Device.ImmediateContext.ClearState();
-            D3Device.ImmediateContext.Flush();
-            D3Device.Dispose();
-            D2Factory.Dispose();
-            DWFactory.Dispose();
+            try
+            {
+                D3Device.ImmediateContext.ClearState();
+                D3Device.ImmediateContext.Flush();
+            }
+            catch { }
+            try
+            {
+                D3Device.Dispose();
+            }
+            catch { }
+            try
+            {
+                D2Factory.Dispose();
+            }
+            catch { }
+            try
+            {
+                DWFactory.Dispose();
+            }
+            catch { }
         }
     }
 }

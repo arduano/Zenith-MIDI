@@ -27,7 +27,7 @@ namespace MIDITrailRender.Logic
             noteModels = init.Add(allModels.Notes);
 
             noteShader = init.Add(new ShaderProgram<NoteShaderConstant>(
-                Util.ReadEmbed("MIDITrailRender.Shaders.notes.fx"),
+                Util.ReadShader("notes.fx"),
                 typeof(NoteVert),
                 typeof(NoteInstance),
                 "4_0",
