@@ -56,14 +56,16 @@ namespace PFARender
                 "noteScreenTime",
                 new LangText("mods.common.noteScreenTime"),
                 400, 1, 4000, 0.1m, 1000000, true
-            );
+            )
+            { SliderWidth = 700 };
 
             [UIChild]
             public UINumberSlider kbHeight = new UINumberSlider(
                 "keyboardHeight",
                 new LangText("mods.common.pianoHeight"),
-                16, 0, 100
-            );
+                1, 0, 4
+            )
+            { SliderWidth = 400 };
 
             [UIChild]
             public UICheckbox sameWidthNotes = new UICheckbox("sameWidthNotes", new LangText("mods.common.sameWidthNotes"), true);
@@ -160,7 +162,7 @@ namespace PFARender
 
                     foreach (var n in keyed[key])
                     {
-                        
+
                         if (n.Start < midiTime)
                         {
                             keyboard.BlendNote(n.Key, n.Color);

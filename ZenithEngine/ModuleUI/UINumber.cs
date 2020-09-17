@@ -19,6 +19,7 @@ namespace ZenithEngine.ModuleUI
             Minimum = minimum;
             Maximum = maximum;
             DecimalPoints = decimalsPoints;
+            Value = value;
         }
 
         public UINumber(string name, decimal value, decimal minimum, decimal maximum, int decimalsPoints = 0)

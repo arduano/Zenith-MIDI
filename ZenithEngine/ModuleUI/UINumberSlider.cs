@@ -19,6 +19,7 @@ namespace ZenithEngine.ModuleUI
             Maximum = maximum;
             TrueMin = trueMinimum;
             TrueMax = trueMaximum;
+            Value = value;
         }
 
         public UINumberSlider(string name, object label, double value, double minimum, double maximum)
@@ -38,6 +39,9 @@ namespace ZenithEngine.ModuleUI
         public decimal TrueMax { get => InnerControl.TrueMax; set => InnerControl.TrueMax = value; }
         public int DecimalPoints { get => InnerControl.DecimalPoints; set => InnerControl.DecimalPoints = value; }
         public decimal Step { get => InnerControl.Step; set => InnerControl.Step = value; }
+
+        public double SliderWidth { get => InnerControl.SliderWidth; set => InnerControl.SliderWidth = value; }
+        public double MinNUDWidth { get => InnerControl.MinNUDWidth; set => InnerControl.MinNUDWidth = value; }
 
         bool logarithmic = false;
         public bool Logarithmic
@@ -60,7 +64,10 @@ namespace ZenithEngine.ModuleUI
             }
         }
 
-        public override double ValueInternal { get => InnerControl.Value; set => InnerControl.Value = value; }
+        public override double ValueInternal { 
+            get => InnerControl.Value; 
+            set => InnerControl.Value = value;
+        }
 
         public override void Parse(string value)
         {
