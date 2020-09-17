@@ -123,7 +123,7 @@ namespace Zenith
         protected override void RunInternal(Action<PreviewState> renderFrame, PreviewState state)
         {
             var scene = new EventScene<D3D11>();
-            var dx = new D3D11(Device);
+            var dx = new D3D11(Device.D3Device);
             dx.FPSLock = 0;
 
             bool stopped = false;
