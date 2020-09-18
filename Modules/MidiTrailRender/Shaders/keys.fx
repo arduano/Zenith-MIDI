@@ -14,7 +14,8 @@ Frag VS(KeyVert vert)
     float4 worldPos = mul(matModel, float4(vert.pos, 1));
     output.pos = mul(matView, worldPos);
     output.worldPos = worldPos.xyz;
-
+    output.waterPos = output.worldPos;
+    
     output.side = vert.side;
 
     output.normModel = normalize(mul((float3x3)matModel, vert.normal));
@@ -47,11 +48,7 @@ float4 PS(Frag pixel) : SV_Target
     float diffuseStrength = lerp(0.2, 0, viewShadow) + lerp(0.1, 1, shade);
     float emitStrength = lerp(0.7, 1, viewShadow);
 
-    float4 diffuseColor = pixel.color.diffuseColor;
-    float4 emitColor = pixel.color.emitColor;
-    float4 specularColor = pixel.color.specularColor;
-
-    float water = getWater(pixel.worldPos, time, 0.1);
+    float water = getWater(pixel.waterPos, time, 0.1);
 
     float4 outputColor = parseColor(pixel.color, diffuseStrength, specular, emitStrength, water);
 

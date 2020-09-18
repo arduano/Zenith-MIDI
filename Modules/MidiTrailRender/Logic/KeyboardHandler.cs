@@ -70,7 +70,6 @@ namespace MIDITrailRender.Logic
                 var pos = new Vector3((float)middle, 0, 0);
                 var modelmat = Matrix.Identity *
                     Matrix.RotationX((float)Math.PI / 2 * physics.Keys[key].Press * 0.03f) *
-                    Matrix.Translation(0, 0, -1) *
                     Matrix.Scaling((float)keyboard.BlackKeyWidth * 2 * 0.865f) *
                     Matrix.Translation(pos) *
                     Matrix.RotationY((float)Math.PI / 2 * 0) *
@@ -128,12 +127,24 @@ namespace MIDITrailRender.Logic
                 var leftWater = leftCol;
                 var rightWater = rightCol;
 
+                if (keyConfig.WaterSecondaryColor)
+                {
+                    leftWater = rightCol;
+                    rightWater = leftWater;
+                    rightCol = leftCol;
+                }
+
                 var keyShader = handler.keyShader;
 
                 var diffuse = Util.Lerp((float)unpCol.Diffuse, (float)pCol.Diffuse, blend);
                 var specular = Util.Lerp((float)unpCol.Specular, (float)pCol.Specular, blend);
                 var emit = Util.Lerp((float)unpCol.Emit, (float)pCol.Emit, blend);
                 var water = Util.Lerp((float)unpCol.Water, (float)pCol.Water, blend);
+
+                if (keyConfig.EnableWater)
+                    keyShader.RemoveDefine("NO_WATER");
+                else
+                    keyShader.SetDefine("NO_WATER");
 
                 keyShader.ConstData.View = camera.ViewPerspective;
                 keyShader.ConstData.ViewPos = camera.ViewLocation;
@@ -150,8 +161,8 @@ namespace MIDITrailRender.Logic
                 keyShader.ConstData.LeftColor.Emit = AdjustEmit(leftCol, emit);
                 keyShader.ConstData.RightColor.Emit = AdjustEmit(rightCol, emit);
 
-                keyShader.ConstData.LeftColor.Water = AdjustEmit(leftWater, water);
-                keyShader.ConstData.RightColor.Water = AdjustEmit(rightWater, water);
+                keyShader.ConstData.LeftColor.Water = AdjustWater(leftWater, water);
+                keyShader.ConstData.RightColor.Water = AdjustWater(rightWater, water);
 
                 using (keyShader.UseOn(context))
                     model.BindAndDraw(context);

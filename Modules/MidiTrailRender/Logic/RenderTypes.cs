@@ -1,4 +1,5 @@
-﻿using SharpDX;
+﻿using MIDITrailRender.Models;
+using SharpDX;
 using SharpDX.DXGI;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,33 @@ namespace MIDITrailRender.Logic
     }
 
     [StructLayoutAttribute(LayoutKind.Sequential, Pack = 16)]
+    public struct FullColorConfig
+    {
+        public float Diffuse;
+        public float Emit;
+        public float Specular;
+        public float Water;
+
+        public static FullColorConfig FromColorModel(FullColorModel model)
+        {
+            return new FullColorConfig()
+            {
+                Diffuse = (float)model.Diffuse,
+                Emit = (float)model.Emit,
+                Specular = (float)model.Specular,
+                Water = (float)model.Water,
+            };
+        }
+    }
+
+    [StructLayoutAttribute(LayoutKind.Sequential, Pack = 16)]
+    public struct FullColorAdjust
+    {
+        public FullColorConfig Unpressed;
+        public FullColorConfig Pressed;
+    }
+
+    [StructLayoutAttribute(LayoutKind.Sequential, Pack = 16)]
     public struct KeyShaderConstant
     {
         public Matrix Model;
@@ -36,6 +64,9 @@ namespace MIDITrailRender.Logic
         public Matrix Model;
         public Matrix View;
         public Vector3 ViewPos;
+        public float Time;
+        public FullColorAdjust ColAdjust;
+        public float WaterOffset;
     }
 
     [StructLayoutAttribute(LayoutKind.Sequential)]
@@ -109,7 +140,10 @@ namespace MIDITrailRender.Logic
         [AssemblyElement("HEIGHT", Format.R32_Float)]
         public float Height;
 
-        public NoteInstance(float left, float right, float start, float end, Color4 colorLeft, Color4 colorRight, float scale, float extraScale)
+        [AssemblyElement("PRESS", Format.R16_Float)]
+        public Half Press;
+
+        public NoteInstance(float left, float right, float start, float end, Color4 colorLeft, Color4 colorRight, float scale, float extraScale, bool pressed)
         {
             Left = left;
             Right = right;
@@ -119,6 +153,7 @@ namespace MIDITrailRender.Logic
             ColorRight = colorRight;
             Scale = scale;
             Height = extraScale;
+            Press = pressed ? 1 : 0;
         }
     }
 }

@@ -46,6 +46,10 @@ namespace MIDITrailRender.Logic
 
             float noteScale = (float)settings.General.NoteScale;
 
+            var noteConfig = settings.Notes;
+
+            var blackKeyWidth = (float)keyboard.BlackNoteWidth;
+
             IEnumerable<int> filterBlack(IEnumerable<int> original)
             {
                 if (settings.General.SameWidthNotes)
@@ -76,13 +80,11 @@ namespace MIDITrailRender.Logic
 
                 foreach (var n in notes)
                 {
-                    if (modifyKeyboard)
+                    bool touching = n.Start < time && (n.End > time || !n.HasEnded);
+                    if (modifyKeyboard && touching)
                     {
-                        if (n.Start < time && (n.End > time || !n.HasEnded))
-                        {
-                            keyboard.PressKey(n.Key);
-                            keyboard.BlendNote(n.Key, n.Color);
-                        }
+                        keyboard.PressKey(n.Key);
+                        keyboard.BlendNote(n.Key, n.Color);
                     }
 
                     var noteStart = (float)((n.Start - time) / noteScale);
@@ -105,8 +107,9 @@ namespace MIDITrailRender.Logic
                         noteEnd,
                         n.Color.Left,
                         n.Color.Right,
-                        (float)keyboard.BlackNoteWidth,
-                        (float)keyboard.BlackNoteWidth
+                        blackKeyWidth,
+                        blackKeyWidth,
+                        touching
                     );
                 }
             }
@@ -122,7 +125,29 @@ namespace MIDITrailRender.Logic
 
             noteShader.ConstData.View = camera.ViewPerspective;
             noteShader.ConstData.ViewPos = camera.ViewLocation;
-            noteShader.ConstData.Model = Matrix.Identity;
+            noteShader.ConstData.Model = 
+                Matrix.Translation(0, blackKeyWidth / 2, 0) *
+                Matrix.RotationX((float)(noteConfig.Angle / 180 * Math.PI)) *
+                Matrix.Translation(0, -blackKeyWidth / 2, 0) *
+                Matrix.Translation(0, 0, (float)noteConfig.Offset * blackKeyWidth * 10.7f);
+            noteShader.ConstData.Time = (float)camera.Time;
+            noteShader.ConstData.WaterOffset = (float)playback.PlayerPosition / noteScale;
+
+            if (settings.Keys.WaterSecondaryColor)
+                noteShader.SetDefine("WATER_SECONDARY");
+            else
+                noteShader.RemoveDefine("WATER_SECONDARY");
+
+            if (settings.Keys.EnableWater)
+                noteShader.RemoveDefine("NO_WATER");
+            else
+                noteShader.SetDefine("NO_WATER");
+
+            noteShader.ConstData.ColAdjust = new FullColorAdjust()
+            {
+                Unpressed = FullColorConfig.FromColorModel(settings.Keys.UnpressedColor),
+                Pressed = FullColorConfig.FromColorModel(settings.Keys.PressedColor),
+            };
 
             using (noteShader.UseOn(context))
             {
@@ -141,7 +166,7 @@ namespace MIDITrailRender.Logic
                         using (depthStencil.UseOn(context))
                         {
                             var fluser = noteParts.Cap;
-                        fluser.UseContext(context);
+                            fluser.UseContext(context);
                             foreach (var n in TransformNotes(notes[k], k, false))
                                 fluser.Push(n);
                             fluser.Flush();

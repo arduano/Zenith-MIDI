@@ -1,0 +1,32 @@
+﻿<UserControl x:Class="MIDITrailRender.Views.NotesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ui="clr-namespace:ZenithEngine.UI;assembly=ZenithEngine" 
+             xmlns:local="clr-namespace:MIDITrailRender.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <StackPanel Margin="10">
+        <ui:LabelledItem Label="angle">
+            <ui:ValueSlider
+                Minimum="0"
+                Maximum="180"
+                TrueMin="0"
+                TrueMax="180"
+                SliderWidth="700"
+                Value="{Binding Notes.Angle, Mode=TwoWay}"
+            />
+        </ui:LabelledItem>
+        <ui:LabelledItem Label="offset">
+            <ui:ValueSlider
+                Minimum="0"
+                Maximum="1"
+                TrueMin="0"
+                TrueMax="1"
+                SliderWidth="700"
+                Value="{Binding Notes.Offset, Mode=TwoWay}"
+            />
+        </ui:LabelledItem>
+    </StackPanel>
+</UserControl>

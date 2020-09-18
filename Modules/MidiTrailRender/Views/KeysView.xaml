@@ -7,10 +7,10 @@
              xmlns:local="clr-namespace:MIDITrailRender.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <StackPanel>
-        <ui:Title Content="unpressed"/>
+    <StackPanel Margin="10">
+        <ui:Title Content="{ui:LangText mods.miditrail.keys.unpressed}"/>
         <local:FullColorView DataContext="{Binding Keys.UnpressedColor}"/>
-        <ui:Title Content="pressed"/>
+        <ui:Title Content="{ui:LangText mods.miditrail.keys.pressed}"/>
         <local:FullColorView DataContext="{Binding Keys.PressedColor}"/>
     </StackPanel>
 </UserControl>

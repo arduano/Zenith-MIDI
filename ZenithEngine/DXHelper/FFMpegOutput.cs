@@ -24,6 +24,7 @@ namespace ZenithEngine.DXHelper
 
         Texture2D stagingTexture;
         Compositor composite;
+        BlendStateKeeper blendState;
         ShaderProgram basicShader;
 
         Task writeTask = null;
@@ -55,6 +56,7 @@ namespace ZenithEngine.DXHelper
             staging = init.Add(new CompositeRenderSurface(width, height, format: SharpDX.DXGI.Format.R8G8B8A8_UNorm));
             composite = init.Add(new Compositor());
             basicShader = init.Add(Shaders.BasicTextured());
+            blendState = init.Add(new BlendStateKeeper(BlendPreset.PreserveColor));
 
             init.Init(device);
 
@@ -110,7 +112,8 @@ namespace ZenithEngine.DXHelper
 
             writeTask?.Wait();
             if (lastContext != null) lastContext.UnmapSubresource(stagingTexture, 0);
-            composite.Composite(context, data, basicShader, staging);
+            using (blendState.UseOn(context))
+                composite.Composite(context, data, basicShader, staging);
             context.CopyResource(staging.Texture, stagingTexture);
             DataStream d;
             context.MapSubresource(stagingTexture, 0, MapMode.Read, MapFlags.None, out d);

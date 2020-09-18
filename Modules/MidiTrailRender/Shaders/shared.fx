@@ -6,14 +6,65 @@ struct FullColor {
     float4 waterColor;
 };
 
+struct ColorSides {
+    FullColor left;
+    FullColor right;
+};
+
+struct ColorConfig {
+    float diffuse;
+    float emit;
+    float spec;
+    float water;
+};
+
+struct ColorAdjust {
+    ColorConfig unpress;
+    ColorConfig press;
+};
+
 struct Frag {
     float4 pos : SV_POSITION;
     float3 worldPos : POS;
+    float3 waterPos : WATER_POS;
     float3 normModel : NORM_MODEL;
     float3 normView : NORM_VIEW;
     float side : SIDE;
     FullColor color: COLOR;
 };
+
+float4 adjustDiffuse(float4 col, float fac){
+    col.rgb *= fac;
+    return col;
+}
+
+float4 adjustSpec(float fac){
+    return float4(1, 1, 1, fac);
+}
+
+float4 adjustEmit(float4 col, float fac){
+    col.a *= fac;
+    return col;
+}
+
+FullColor colorFromSides(float4 left, float4 right, float side, float trigger, ColorAdjust adjust) {
+    FullColor col = (FullColor)0;
+    
+    #ifdef WATER_SECONDARY
+    float4 basecol = left;
+    float4 watercol = right;
+    #else
+    float4 basecol = lerp(left, right, side);
+    float4 watercol = basecol;
+    #endif
+
+    col.diffuseColor = adjustDiffuse(basecol, lerp(adjust.unpress.diffuse, adjust.press.diffuse, trigger));
+    col.emitColor = adjustEmit(basecol, lerp(adjust.unpress.emit, adjust.press.emit, trigger));
+    col.specularColor = adjustSpec(lerp(adjust.unpress.spec, adjust.press.spec, trigger));
+    col.waterColor = adjustEmit(basecol, lerp(adjust.unpress.water, adjust.press.water, trigger));
+
+    return col;
+}
 
 float pnoise(float4 n)
 {
@@ -31,6 +82,10 @@ float getTurbulent(float3 pos, float time, float scale) {
 }
 
 float getWater(float3 pos, float time, float scale) {
+    #ifdef NO_WATER
+    return 0;
+    #endif
+
     float noise = 0;
     noise += getTurbulent(pos, time, scale);
     noise += getTurbulent(pos + float3(100, 100, 100), time, scale);

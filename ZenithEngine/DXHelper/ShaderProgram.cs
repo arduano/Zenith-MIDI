@@ -1,12 +1,9 @@
 ﻿using SharpDX;
 using SharpDX.D3DCompiler;
-using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Buffer = SharpDX.Direct3D11.Buffer;
 
 namespace ZenithEngine.DXHelper

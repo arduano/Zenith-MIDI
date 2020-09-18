@@ -3,6 +3,9 @@ cbuffer c {
     float4x4 matModel;
     float4x4 matView;
     float3 viewPos;
+    float time;
+    ColorAdjust colAdjust;
+    float waterOffset;
 }
 
 Frag VS(NoteVert vert)
@@ -30,11 +33,14 @@ Frag VS(NoteVert vert)
     output.normModel = normalize(mul((float3x3)matModel, vert.normal));
     output.normView = normalize(mul((float3x3)matView, output.normModel));
 
-    output.color.diffuseColor = vert.colorleft * vert.side + vert.colorright * (1 - vert.side);
-    output.color.specularColor = float4(1, 1, 1, 1);
+    // output.color.diffuseColor = vert.colorleft * vert.side + vert.colorright * (1 - vert.side);
+    // output.color.specularColor = float4(1, 1, 1, 1);
 
-    output.color.emitColor = output.color.diffuseColor;
-    output.color.emitColor.xyz *= 0;
+    // output.color.emitColor = output.color.diffuseColor;
+    // output.color.emitColor.xyz *= 0;
+
+    output.color = colorFromSides(vert.colorleft, vert.colorright, vert.side, vert.press, colAdjust);
+    output.waterPos = mul(matModel, float4(0, 0, -waterOffset, 1)).xyz + output.worldPos;
 
     return output;
 }
@@ -65,7 +71,9 @@ float4 PS(Frag pixel) : SV_Target
     float4 emitColor = pixel.color.emitColor;
     float4 specularColor = pixel.color.specularColor;
 
-    float4 outputColor = float4(diffuseColor.rgb * diffuseStrength + specularColor.rgb * specularColor.a * specular + emitColor.rgb * emitColor.a * emitStrength, diffuseColor.a);
+    float water = getWater(pixel.waterPos, time, 0.1);
+
+    float4 outputColor = parseColor(pixel.color, diffuseStrength, specular, emitStrength, water);
 
     return outputColor;
 }
