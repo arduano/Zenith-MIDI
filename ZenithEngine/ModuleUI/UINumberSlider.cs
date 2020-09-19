@@ -20,6 +20,8 @@ namespace ZenithEngine.ModuleUI
             TrueMin = trueMinimum;
             TrueMax = trueMaximum;
             Value = value;
+            SliderWidth = 500;
+            InnerControl.ValueChanged += (s, e) => UpdateValue();
         }
 
         public UINumberSlider(string name, object label, double value, double minimum, double maximum)

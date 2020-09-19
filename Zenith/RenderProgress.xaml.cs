@@ -36,9 +36,10 @@ namespace Zenith
             InitializeComponent();
         }
 
-        private async void stopPlayback_Click(object sender, RoutedEventArgs e)
+        private async void stopPlayback_LoaderClick(object sender, ZenithEngine.UI.LoadableRoutedEventArgs e)
         {
             await Data.StopPlayback();
+            e.Loaded();
         }
     }
 }

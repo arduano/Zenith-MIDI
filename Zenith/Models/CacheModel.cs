@@ -27,7 +27,7 @@ namespace Zenith.Models
         public SavedHistoricalFile[] HistoricalMidiFiles { get; set; } = new SavedHistoricalFile[0];
 
         public static CacheModel Instance { get; } = new CacheModel();
-        private CacheModel() : base("cache.json")
+        private CacheModel() : base(".cfg/cache.json")
         { }
 
         public string GetCachedFilePath(string key)

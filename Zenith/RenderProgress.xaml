@@ -27,7 +27,7 @@
                 </ui:LabelledItem>
                 <Label Content="{Binding RenderProgress.Seconds}" />
                 <ProgressBar Height="20" Width="500" Value="{Binding RenderProgress.Progress, Mode=OneWay}" Minimum="0" Maximum="1"/>
-                <Button Grid.Column="1" Margin="5" IsEnabled="{Binding IsPlaying}" Name="stopPlayback" Click="stopPlayback_Click">Stop</Button>
+                <ui:LoaderButton Grid.Column="1" Margin="5" IsEnabled="{Binding IsPlaying}" Name="stopPlayback" LoaderClick="stopPlayback_LoaderClick">Stop</ui:LoaderButton>
             </StackPanel>
             <ContentControl MinWidth="10" MinHeight="10" VerticalAlignment="Stretch" Content="{Binding RenderProgress.PreviewElement}" />
         </DockPanel>

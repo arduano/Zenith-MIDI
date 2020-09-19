@@ -46,14 +46,13 @@ namespace FlatRender
         {
             settings.Palette.PaletteChanged += ReloadTrackColors;
 
-            //quadBuffer = init.Add(new Flat2dShapeBuffer(1024 * 64));
-            //flatShader = init.Add(Shaders.BasicFlat());
-            //multithread = init.Add(new ThreadedKeysLoop<Vert2D>(1 << 12));
+            quadBuffer = init.Add(new Flat2dShapeBuffer(1024 * 64));
+            flatShader = init.Add(Shaders.BasicFlat());
+            multithread = init.Add(new ThreadedKeysLoop<Vert2D>(1 << 12));
         }
 
         public override void RenderFrame(DeviceContext context, IRenderSurface renderSurface)
         {
-            return;
             double screenTime = settings.noteScreenTime;
 
             Midi.CheckParseDistance(screenTime);

@@ -326,10 +326,10 @@
       <PluginPdbs Include="$(OutputPath)Plugins/*.pdb ; $(OutputPath)Plugins/*.xml" />
     </ItemGroup>
     <ItemGroup>
-      <Pluginlib Include="$(OutputPath)lib/*Render.dll" />
+      <Pluginlib Include="$(OutputPath).lib/*Render.dll" />
     </ItemGroup>
     <Move SourceFiles="@(MoveToDebugFolder)" DestinationFolder="$(OutputPath)debug" OverwriteReadOnlyFiles="true" />
-    <Move SourceFiles="@(MoveToLibFolder)" DestinationFolder="$(OutputPath)lib" OverwriteReadOnlyFiles="true" />
+    <Move SourceFiles="@(MoveToLibFolder)" DestinationFolder="$(OutputPath).lib" OverwriteReadOnlyFiles="true" />
     <Move SourceFiles="@(PluginPdbs)" DestinationFolder="$(OutputPath)debug" OverwriteReadOnlyFiles="true" />
     <Delete Files="@(Pluginlib)" />
   </Target>

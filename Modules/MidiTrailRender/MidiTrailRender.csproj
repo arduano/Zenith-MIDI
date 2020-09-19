@@ -97,6 +97,9 @@
     <Reference Include="PropertyChanged, Version=3.2.8.0, Culture=neutral, PublicKeyToken=ee3ee20bcf148ddd, processorArchitecture=MSIL">
       <HintPath>..\..\packages\PropertyChanged.Fody.3.2.8\lib\net40\PropertyChanged.dll</HintPath>
     </Reference>
+    <Reference Include="SharpCompress, Version=0.24.0.0, Culture=neutral, PublicKeyToken=afb0a02973931d96, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SharpCompress.0.24.0\lib\net45\SharpCompress.dll</HintPath>
+    </Reference>
     <Reference Include="SharpDX, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <HintPath>..\..\packages\SharpDX.4.2.0\lib\net45\SharpDX.dll</HintPath>
     </Reference>
@@ -254,6 +257,7 @@
       <DependentUpon>AuraSelect.xaml</DependentUpon>
     </Compile>
     <Compile Include="Logic\Camera.cs" />
+    <Compile Include="Logic\GlowPass.cs" />
     <Compile Include="Logic\KeyboardPhysics.cs" />
     <Compile Include="Logic\NoteRenderer.cs" />
     <Compile Include="Logic\KeyboardHandler.cs" />
@@ -264,7 +268,9 @@
     <Compile Include="Models\FullColorModel.cs" />
     <Compile Include="Models\GeneralModel.cs" />
     <Compile Include="Models\GlowModel.cs" />
+    <Compile Include="Models\GlowPassModel.cs" />
     <Compile Include="Models\KeysModel.cs" />
+    <Compile Include="Models\LightModel.cs" />
     <Compile Include="Models\NotesModel.cs" />
     <Compile Include="ProfileManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -294,11 +300,17 @@
     <Compile Include="Views\GeneralView.xaml.cs">
       <DependentUpon>GeneralView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\GlowPassView.xaml.cs">
+      <DependentUpon>GlowPassView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\GlowView.xaml.cs">
       <DependentUpon>GlowView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\KeysView.xaml.cs">
       <DependentUpon>KeysView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LightView.xaml.cs">
+      <DependentUpon>LightView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
@@ -315,7 +327,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="models.obj" />
+    <EmbeddedResource Include="models.obj.xz" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -323,11 +335,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <EmbeddedResource Include="Languages\en\miditrail.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
     <Page Include="SettingsCtrl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -348,11 +355,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\GlowPassView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\GlowView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\KeysView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\LightView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

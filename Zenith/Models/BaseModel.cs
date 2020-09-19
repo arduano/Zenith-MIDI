@@ -219,7 +219,6 @@ namespace Zenith.Models
                         RenderPipeline.PreviewSpeed = 1;
                     }
 
-
                     RenderProgress = new RenderProgressModel(RenderPipeline);
 
                     var device = new DeviceGroup();
@@ -234,12 +233,19 @@ namespace Zenith.Models
                     {
                         preview = new WindowPreview(device);
                     }
-                    RenderPipeline.Start(preview, cancel).Wait();
-                    RenderPipeline.Dispose();
-                    device.Dispose();
-                    RenderPipeline = null;
-                    RenderStatus = null;
-                    RenderProgress = null;
+                    try
+                    {
+                        cancel.ThrowIfCancellationRequested();
+                        RenderPipeline.Start(preview, cancel).Wait();
+                    }
+                    finally
+                    {
+                        RenderPipeline.Dispose();
+                        device.Dispose();
+                        RenderPipeline = null;
+                        RenderStatus = null;
+                        RenderProgress = null;
+                    }
                 });
                 try
                 {

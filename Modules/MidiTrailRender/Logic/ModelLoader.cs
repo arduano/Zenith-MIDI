@@ -1,5 +1,7 @@
 ﻿using ObjLoader.Loader.Data.Elements;
 using ObjLoader.Loader.Loaders;
+using OpenTK.Graphics.OpenGL;
+using SharpCompress.Compressors.Xz;
 using SharpDX;
 using System;
 using System.Collections.Generic;
@@ -79,7 +81,9 @@ namespace MIDITrailRender.Logic
         {
             var factory = new ObjLoaderFactory();
             var objLoader = factory.Create();
-            return objLoader.Load(Util.OpenEmbedStream("MIDITrailRender.models.obj"));
+            var embed = Util.OpenEmbedStream("MIDITrailRender.models.obj.xz");
+            var extract = new XZStream(embed);
+            return objLoader.Load(extract);
         }
 
         static IEnumerable<LabelledNoteFace> CategorizeVertices(IEnumerable<Face> faces, LoadResult obj)

@@ -29,7 +29,8 @@ namespace MIDITrailRender.Logic
                 Matrix.RotationX((float)(camera.CamRotX / 180 * Math.PI)) *
                 Matrix.RotationZ((float)(camera.CamRotZ / 180 * Math.PI)) *
                 Matrix.Scaling(1, 1, -1);
-            Perspective = Matrix.PerspectiveFovLH((float)(camera.CamFOV / 180 * Math.PI), status.AspectRatio, 0.01f, 100f);
+            Perspective = Matrix.PerspectiveFovLH((float)(camera.CamFOV / 180 * Math.PI), status.AspectRatio, 0.01f, 100f)
+                * Matrix.Translation(0, (float)camera.OffsetZ, 0);
             ViewPerspective = View * Perspective;
             Time = time;
         }

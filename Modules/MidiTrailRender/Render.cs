@@ -50,7 +50,8 @@ namespace MIDITrailRender
         protected override NoteColorPalettePick PalettePicker => settingsView.Data.General.PalettePicker;
 
         CompositeRenderSurface depthSurface;
-        CompositeRenderSurface cutoffSurface;
+        CompositeRenderSurface glowInterm1;
+        CompositeRenderSurface glowInterm2;
         CompositeRenderSurface preFinalSurface;
         Compositor compositor;
         ShaderProgram plainShader;
@@ -61,6 +62,9 @@ namespace MIDITrailRender
         BlendStateKeeper pureBlendState;
 
         PingPongGlow pingPongGlow;
+
+        GlowPass glowPass1;
+        GlowPass glowPass2;
 
         ShaderProgram quadShader;
         ShaderProgram alphaAddFixShader;
@@ -115,9 +119,13 @@ namespace MIDITrailRender
             lastMidiTime = midi.PlayerPositionSeconds;
 
             init.Replace(ref depthSurface, new CompositeRenderSurface(status.RenderWidth, status.RenderHeight, true));
-            init.Replace(ref cutoffSurface, new CompositeRenderSurface(status.RenderWidth, status.RenderHeight));
+            init.Replace(ref glowInterm1, new CompositeRenderSurface(status.RenderWidth, status.RenderHeight));
+            init.Replace(ref glowInterm2, new CompositeRenderSurface(status.RenderWidth, status.RenderHeight));
             init.Replace(ref preFinalSurface, new CompositeRenderSurface(status.RenderWidth, status.RenderHeight));
             init.Replace(ref pingPongGlow, new PingPongGlow(status.RenderWidth, status.RenderHeight));
+
+            init.Replace(ref glowPass1, new GlowPass(status.RenderWidth, status.RenderHeight));
+            init.Replace(ref glowPass2, new GlowPass(status.RenderWidth, status.RenderHeight));
 
             keyboardPhysics = new KeyboardPhysics();
 
@@ -149,18 +157,10 @@ namespace MIDITrailRender
                 camera.RenderOrdered(keys, context);
             }
 
-            bool useGlow = true;
-
             ITextureResource lastSurface;
-            if (useGlow)
+            if (settings.Glow.Pass.UseGlow)
             {
-                var glowConfig = settings.Glow;
-                compositor.Composite(context, depthSurface, colorCutoffShader, cutoffSurface);
-                pingPongGlow.GlowSigma = (float)glowConfig.GlowSigma;
-                pingPongGlow.ApplyOn(context, cutoffSurface, (float)glowConfig.GlowStrength, (float)glowConfig.GlowBrightness);
-                compositor.Composite(context, depthSurface, colorspaceShader, preFinalSurface);
-                using (addBlendState.UseOn(context))
-                    compositor.Composite(context, cutoffSurface, plainShader, preFinalSurface, false);
+                glowPass1.ApplyGlow(context, settings.Glow.Pass, depthSurface, preFinalSurface);
                 lastSurface = preFinalSurface;
             }
             else

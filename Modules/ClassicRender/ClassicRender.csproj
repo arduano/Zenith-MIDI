@@ -149,11 +149,6 @@
     <None Include="preview.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Languages\en\classic.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
     <Page Include="SettingsCtrl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

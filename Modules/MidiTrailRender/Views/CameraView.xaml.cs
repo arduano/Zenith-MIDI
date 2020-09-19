@@ -42,6 +42,9 @@ namespace MIDITrailRender.Views
 
             zPos.NudToSlider = NtoS;
             zPos.SliderToNud = StoN;
+
+            zOffset.NudToSlider = NtoS;
+            zOffset.SliderToNud = StoN;
         }
     }
 }

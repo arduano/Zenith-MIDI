@@ -14,7 +14,8 @@
                     Minimum="0"
                     Maximum="1"
                     TrueMin="0"
-                    TrueMax="1"
+                    TrueMax="2"
+                    Step="0.1"
                     SliderWidth="400"
                 />
         </ui:LabelledItem>
@@ -25,6 +26,7 @@
                     Maximum="2"
                     TrueMin="0"
                     TrueMax="10"
+                    Step="0.1"
                     SliderWidth="400"
                 />
         </ui:LabelledItem>
@@ -35,18 +37,32 @@
                     Maximum="2"
                     TrueMin="0"
                     TrueMax="20"
+                    Step="0.1"
                     SliderWidth="400"
                 />
         </ui:LabelledItem>
-        <ui:LabelledItem Label="{ui:LangText mods.miditrail.color.water}">
-            <ui:ValueSlider 
+        <StackPanel>
+            <StackPanel.Style>
+                <Style TargetType="StackPanel">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ShowWater, ElementName=view}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Style>
+            <ui:LabelledItem Label="{ui:LangText mods.miditrail.color.water}">
+                <ui:ValueSlider 
                     Value="{Binding Water, Mode=TwoWay}"
                     Minimum="0"
                     Maximum="2"
                     TrueMin="0"
                     TrueMax="20"
+                    Step="0.1"
                     SliderWidth="400"
                 />
-        </ui:LabelledItem>
+            </ui:LabelledItem>
+        </StackPanel>
     </StackPanel>
 </UserControl>

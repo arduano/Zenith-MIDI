@@ -4,6 +4,8 @@ cbuffer c {
     float4x4 matView;
     float3 viewPos;
     float time;
+    float3 lightPos;
+	float lightStrength;
     ColorAdjust colAdjust;
     float waterOffset;
 }
@@ -73,7 +75,7 @@ float4 PS(Frag pixel) : SV_Target
 
     float water = getWater(pixel.waterPos, time, 0.1);
 
-    float4 outputColor = parseColor(pixel.color, diffuseStrength, specular, emitStrength, water);
+    float4 outputColor = parseColor(pixel.color, diffuseStrength * lightStrength, specular * lightStrength, emitStrength, water);
 
     return outputColor;
 }

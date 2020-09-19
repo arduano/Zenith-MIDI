@@ -13,7 +13,7 @@ namespace Zenith.Models
         public string SelectedLanguage { get; set; }
 
         public static SettingsModel Instance { get; } = new SettingsModel();
-        public SettingsModel() : base("settings.json")
+        public SettingsModel() : base(".cfg/settings.json")
         { }
     }
 }

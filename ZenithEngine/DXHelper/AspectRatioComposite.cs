@@ -18,13 +18,15 @@ namespace ZenithEngine.DXHelper
 
         protected TextureSampler sampler;
         protected BlendStateKeeper blendstate;
+        protected BlendStateKeeper pureBlendstate;
 
         public AspectRatioComposite()
         {
             solidShader = init.Add(Shaders.BasicFlat());
             textureShader = init.Add(Shaders.BasicTextured());
-            sampler = init.Add(new TextureSampler());
+            sampler = init.Add(new TextureSampler(SamplerPresets.Clip));
             blendstate = init.Add(new BlendStateKeeper());
+            pureBlendstate = init.Add(new BlendStateKeeper(BlendPreset.PreserveColor));
             solidFill = init.Add(new Flat2dShapeBuffer(16));
             texFill = init.Add(new Textured2dShapeBuffer(16));
         }
@@ -49,7 +51,7 @@ namespace ZenithEngine.DXHelper
             }
 
             //using(raster.UseOn(context))
-            using(blendstate.UseOn(context))
+            using (blendstate.UseOn(context))
             using (target.UseViewAndClear(context))
             {
                 using (solidShader.UseOn(context))
@@ -63,6 +65,7 @@ namespace ZenithEngine.DXHelper
 
                 using (textureShader.UseOn(context))
                 using (sampler.UseOnPS(context))
+                using (pureBlendstate.UseOn(context))
                 using (source.UseOnPS(context))
                 {
                     texFill.UseContext(context);

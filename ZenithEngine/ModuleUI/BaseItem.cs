@@ -11,7 +11,7 @@ namespace ZenithEngine.ModuleUI
 {
     public abstract class BaseItem<C> : BaseElement<C>, ISerializableItem
         where C : Control
-    { 
+    {
         public string ItemName { get; }
 
         public BaseItem(string name, C control) : base(control)
@@ -57,6 +57,10 @@ namespace ZenithEngine.ModuleUI
         public BaseItem(string name, C control, T value) : this(name, control)
         {
             Value = value;
+            ValueChanged += v =>
+            {
+                if (!Value.Equals(v)) Value = v;
+            };
         }
 
         public BaseItem(string name, C control) : base(name, control)
@@ -75,11 +79,21 @@ namespace ZenithEngine.ModuleUI
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                ValueInternal = value;
+                if (!ValueInternal.Equals(value))
+                {
+                    ValueInternal = value;
+                    ValueChanged?.Invoke(value);
+                }
             });
             cachedValue = value;
         }
 
+        protected void UpdateValue()
+        {
+            Value = ValueInternal;
+        }
+
         public abstract T ValueInternal { get; set; }
+        public event Action<T> ValueChanged;
     }
 }

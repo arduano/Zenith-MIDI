@@ -146,6 +146,9 @@ namespace MIDITrailRender.Logic
                 else
                     keyShader.SetDefine("NO_WATER");
 
+                keyShader.ConstData.LightPos = Config.Light.ToVector();
+                keyShader.ConstData.LightStrength = (float)Config.Light.Strength;
+
                 keyShader.ConstData.View = camera.ViewPerspective;
                 keyShader.ConstData.ViewPos = camera.ViewLocation;
                 keyShader.ConstData.Time = (float)camera.Time;

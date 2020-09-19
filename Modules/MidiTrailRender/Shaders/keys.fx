@@ -4,6 +4,8 @@ cbuffer c {
     float4x4 matView;
     float3 viewPos;
 	float time;
+    float3 lightPos;
+	float lightStrength;
     FullColor colorLeft;
     FullColor colorRight;
 }
@@ -33,7 +35,7 @@ float4 PS(Frag pixel) : SV_Target
 
     float3 viewDir = normalize(pixel.worldPos + viewPos).xyz;
 
-    float3 light = normalize(float3(1, 1, 2));
+    float3 light = normalize(lightPos);
 
     float shade = dot(worldNorm, light);
     shade = max(shade, 0);
@@ -50,7 +52,7 @@ float4 PS(Frag pixel) : SV_Target
 
     float water = getWater(pixel.waterPos, time, 0.1);
 
-    float4 outputColor = parseColor(pixel.color, diffuseStrength, specular, emitStrength, water);
+    float4 outputColor = parseColor(pixel.color, diffuseStrength * lightStrength, specular * lightStrength, emitStrength, water);
 
     return outputColor;
 }

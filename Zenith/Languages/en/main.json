@@ -35,7 +35,7 @@
 
       "h264crf": "H264 CRF",
       "h264bitrate": "H264 Bitrate",
-      "h264nvencBitrate": "H264 NVENC CRF",
+      "h264nvencBitrate": "H264 NVENC Bitrate",
       "custom": "Custom"
     },
     "loadMidi": "Load MIDI",
@@ -78,7 +78,8 @@
         "general": "General",
         "glow": "Glow",
         "keys": "Keys",
-        "notes": "Notes"
+        "notes": "Notes",
+        "light": "Light"
       },
       "camera": {
         "position": "Position",
@@ -99,17 +100,27 @@
         "diffuse": "Diffuse",
         "specular": "Specular",
         "emit": "Emit",
-        "water": "Water"
+        "water": "Water",
+        "enableWater": "Water Enabled"
       },
       "keys": {
-        "pressed": "Pressed",
-        "unpressed": "Unpressed"
+        "pressed": "Pressed Shading",
+        "unpressed": "Unpressed Shading"
+      },
+      "light": {
+        "lightX": "Light X",
+        "lightZ": "Light Z",
+        "lightStrength": "Light Strength"
       },
       "notes": {
         "angle": "Angle",
         "offset": "Offset",
-        "hit": "Hit",
-        "notHit": "Not Hit"
+        "hit": "Hit Shading",
+        "notHit": "Not Hit Shading",
+        "noteType": "Note Type",
+        "flat": "Flat",
+        "cube": "Cube",
+        "round": "Round"
       }
     }
   }

@@ -17,6 +17,7 @@ namespace MIDITrailRender.Logic
         DepthStencilStateKeeper depthStencil;
         DepthStencilStateKeeper noDepthStencil;
         ShaderProgram<NoteShaderConstant> noteShader;
+        RasterizerStateKeeper flatRaster;
 
         NoteModelData noteModels;
 
@@ -24,6 +25,7 @@ namespace MIDITrailRender.Logic
         {
             depthStencil = init.Add(new DepthStencilStateKeeper(DepthStencilPresets.Basic));
             noDepthStencil = init.Add(new DepthStencilStateKeeper(DepthStencilPresets.Always));
+            flatRaster = init.Add(new RasterizerStateKeeper());
             noteModels = init.Add(allModels.Notes);
 
             noteShader = init.Add(new ShaderProgram<NoteShaderConstant>(
@@ -52,7 +54,7 @@ namespace MIDITrailRender.Logic
 
             IEnumerable<int> filterBlack(IEnumerable<int> original)
             {
-                if (settings.General.SameWidthNotes)
+                if (settings.General.SameWidthNotes || true)
                 {
                     foreach (var i in original)
                         yield return i;
@@ -121,7 +123,16 @@ namespace MIDITrailRender.Logic
 
             var notes = playback.IterateNotesKeyed(time + startCutoff * noteScale, time + endCutoff * noteScale);
 
-            var noteParts = noteModels.Rounded;
+            NoteBufferParts noteParts = null;
+            if (noteConfig.NoteType == NoteType.Flat)
+                noteParts = noteModels.Flat;
+            if (noteConfig.NoteType == NoteType.Cube)
+                noteParts = noteModels.Cube;
+            if (noteConfig.NoteType == NoteType.Round)
+                noteParts = noteModels.Rounded;
+
+            noteShader.ConstData.LightPos = settings.Light.ToVector();
+            noteShader.ConstData.LightStrength = (float)settings.Light.Strength;
 
             noteShader.ConstData.View = camera.ViewPerspective;
             noteShader.ConstData.ViewPos = camera.ViewLocation;
@@ -133,21 +144,23 @@ namespace MIDITrailRender.Logic
             noteShader.ConstData.Time = (float)camera.Time;
             noteShader.ConstData.WaterOffset = (float)playback.PlayerPosition / noteScale;
 
-            if (settings.Keys.WaterSecondaryColor)
+            if (settings.Notes.WaterSecondaryColor)
                 noteShader.SetDefine("WATER_SECONDARY");
             else
                 noteShader.RemoveDefine("WATER_SECONDARY");
 
-            if (settings.Keys.EnableWater)
+            if (settings.Notes.EnableWater)
                 noteShader.RemoveDefine("NO_WATER");
             else
                 noteShader.SetDefine("NO_WATER");
 
             noteShader.ConstData.ColAdjust = new FullColorAdjust()
             {
-                Unpressed = FullColorConfig.FromColorModel(settings.Keys.UnpressedColor),
-                Pressed = FullColorConfig.FromColorModel(settings.Keys.PressedColor),
+                Unpressed = FullColorConfig.FromColorModel(settings.Notes.UnpressedColor),
+                Pressed = FullColorConfig.FromColorModel(settings.Notes.PressedColor),
             };
+
+            var rasterApplied = noteConfig.NoteType == NoteType.Flat && false ? flatRaster.UseOn(context) : null;
 
             using (noteShader.UseOn(context))
             {
@@ -174,6 +187,8 @@ namespace MIDITrailRender.Logic
                     }
                 }
             }
+
+            rasterApplied?.Dispose();
         }
     }
 }

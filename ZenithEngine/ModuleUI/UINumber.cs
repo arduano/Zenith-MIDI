@@ -20,6 +20,8 @@ namespace ZenithEngine.ModuleUI
             Maximum = maximum;
             DecimalPoints = decimalsPoints;
             Value = value;
+            MinNUDWidth = 80;
+            InnerControl.ValueChanged += (s, e) => UpdateValue();
         }
 
         public UINumber(string name, decimal value, decimal minimum, decimal maximum, int decimalsPoints = 0)
@@ -37,6 +39,7 @@ namespace ZenithEngine.ModuleUI
         public decimal Maximum { get => InnerControl.Maximum; set => InnerControl.Maximum = value; }
         public int DecimalPoints { get => InnerControl.DecimalPoints; set => InnerControl.DecimalPoints = value; }
         public decimal Step { get => InnerControl.Step; set => InnerControl.Step = value; }
+        public double MinNUDWidth { get => InnerControl.MinWidth; set => InnerControl.MinWidth = value; }
 
         public override decimal ValueInternal { get => InnerControl.Value; set => InnerControl.Value = value; }
 

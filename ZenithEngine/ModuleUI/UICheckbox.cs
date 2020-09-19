@@ -14,6 +14,7 @@ namespace ZenithEngine.ModuleUI
         public UICheckbox(string name, object label, bool isChecked) : base(name, new Checkbox(), isChecked)
         {
             Label = label;
+            Control.CheckToggled += (s, e) => UpdateValue();
         }
 
         public object Label

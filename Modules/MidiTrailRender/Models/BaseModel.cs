@@ -16,6 +16,7 @@ namespace MIDITrailRender.Models
         public GlowModel Glow { get; set; } = new GlowModel();
         public KeysModel Keys { get; set; } = new KeysModel();
         public NotesModel Notes { get; set; } = new NotesModel();
+        public LightModel Light { get; set; } = new LightModel();
 
         public event PropertyChangedEventHandler PropertyChanged;
     }

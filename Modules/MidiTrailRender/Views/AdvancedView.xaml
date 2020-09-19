@@ -23,5 +23,8 @@
         <TabItem Header="{ui:LangText mods.miditrail.tabs.notes}">
             <local:NotesView/>
         </TabItem>
+        <TabItem Header="{ui:LangText mods.miditrail.tabs.light}">
+            <local:LightView/>
+        </TabItem>
     </TabControl>
 </UserControl>

@@ -30,8 +30,9 @@ namespace FlatRender
         public UINumberSlider noteScreenTime = new UINumberSlider(
             "noteScreenTime",
             new LangText("mods.common.noteScreenTime"),
-            400, 1, 4000, 0.1m, 1000000, true
-        );
+            400, 1, 10000, 0.1m, 1000000, true
+        )
+        { SliderWidth = 700, MinNUDWidth = 120 };
 
         [UIChild]
         public UINumberSlider kbHeight = new UINumberSlider(

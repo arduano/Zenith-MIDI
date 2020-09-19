@@ -56,7 +56,7 @@ namespace ZenithEngine.Modules
             pureBlendState = init.Add(new BlendStateKeeper(BlendPreset.PreserveColor));
             raster = init.Add(new RasterizerStateKeeper());
             composite = init.Add(new Compositor());
-            sampler = init.Add(new TextureSampler());
+            sampler = init.Add(new TextureSampler(SamplerPresets.Wrap));
             alphaFix = init.Add(Shaders.AlphaAddFix());
         }
 

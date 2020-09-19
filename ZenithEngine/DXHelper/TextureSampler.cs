@@ -7,6 +7,12 @@ using System.Threading.Tasks;
 
 namespace ZenithEngine.DXHelper
 {
+    public enum SamplerPresets
+    {
+        Wrap,
+        Clip
+    }
+
     public class TextureSampler : DeviceInitiable
     {
         public static implicit operator SamplerState(TextureSampler sampler) => sampler.Sampler;
@@ -14,18 +20,52 @@ namespace ZenithEngine.DXHelper
         public SamplerState Sampler { get; private set; }
         public SamplerStateDescription Description { get; }
 
-        public TextureSampler() : this(new SamplerStateDescription()
+        public static SamplerStateDescription WrapSampler()
         {
-            Filter = Filter.MinMagMipLinear,
-            AddressU = TextureAddressMode.Wrap,
-            AddressV = TextureAddressMode.Wrap,
-            AddressW = TextureAddressMode.Wrap,
-            MipLodBias = 0,
-            MaximumAnisotropy = 1,
-            ComparisonFunction = Comparison.Always,
-            MinimumLod = 0,
-            MaximumLod = float.MaxValue
-        })
+            return new SamplerStateDescription()
+            {
+                Filter = Filter.MinMagMipLinear,
+                AddressU = TextureAddressMode.Wrap,
+                AddressV = TextureAddressMode.Wrap,
+                AddressW = TextureAddressMode.Wrap,
+                MipLodBias = 0,
+                MaximumAnisotropy = 1,
+                ComparisonFunction = Comparison.Always,
+                MinimumLod = 0,
+                MaximumLod = float.MaxValue
+            };
+        }
+
+        public static SamplerStateDescription ClipSampler()
+        {
+            return new SamplerStateDescription()
+            {
+                Filter = Filter.MinMagMipLinear,
+                AddressU = TextureAddressMode.Clamp,
+                AddressV = TextureAddressMode.Clamp,
+                AddressW = TextureAddressMode.Clamp,
+                MipLodBias = 0,
+                MaximumAnisotropy = 1,
+                ComparisonFunction = Comparison.Always,
+                MinimumLod = 0,
+                MaximumLod = float.MaxValue
+            };
+        }
+
+        static SamplerStateDescription StateFromPreset(SamplerPresets preset)
+        {
+            switch (preset)
+            {
+                case SamplerPresets.Wrap:
+                    return WrapSampler();
+                case SamplerPresets.Clip:
+                    return ClipSampler();
+                default:
+                    throw new NotImplementedException("Specified sampler preset not implemented yet");
+            }
+        }
+
+        public TextureSampler(SamplerPresets preset) : this(StateFromPreset(preset))
         { }
         public TextureSampler(SamplerStateDescription desc)
         {

@@ -1,0 +1,39 @@
+﻿<UserControl x:Class="MIDITrailRender.Views.LightView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ui="clr-namespace:ZenithEngine.UI;assembly=ZenithEngine" 
+             xmlns:local="clr-namespace:MIDITrailRender.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <Style TargetType="ui:ValueSlider" x:Key="PositionSlider">
+            <Setter Property="Minimum" Value="-10"/>
+            <Setter Property="Maximum" Value="10"/>
+            <Setter Property="TrueMin" Value="-1000"/>
+            <Setter Property="TrueMax" Value="1000"/>
+            <Setter Property="DecimalPoints" Value="3"/>
+            <Setter Property="SliderWidth" Value="700"/>
+            <Setter Property="MinNUDWidth" Value="100"/>
+        </Style>
+    </UserControl.Resources>
+    <StackPanel>
+        <ui:LabelledItem Label="{ui:LangText mods.miditrail.light.lightX}">
+            <ui:ValueSlider Name="xPos" Style="{StaticResource PositionSlider}" Value="{Binding Light.LightX, Mode=TwoWay}"/>
+        </ui:LabelledItem>
+        <ui:LabelledItem Label="{ui:LangText mods.miditrail.light.lightZ}">
+            <ui:ValueSlider Name="zPos" Style="{StaticResource PositionSlider}" Value="{Binding Light.LightZ, Mode=TwoWay}"/>
+        </ui:LabelledItem>
+        <ui:LabelledItem Label="{ui:LangText mods.miditrail.light.lightStrength}">
+            <ui:ValueSlider 
+                Minimum="0"
+                Maximum="2"
+                TrueMin="0"
+                TrueMax="10"
+                SliderWidth="500"
+                Value="{Binding Light.Strength, Mode=TwoWay}"/>
+        </ui:LabelledItem>
+
+    </StackPanel>
+</UserControl>

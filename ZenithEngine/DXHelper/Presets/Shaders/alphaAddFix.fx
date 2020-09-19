@@ -11,5 +11,5 @@ float4 PS(in float2 uv : UV, in float4 col : COLOR) : SV_Target
     float4 color = Texture.Sample(Sampler, uv);
     //return color;
     if(color.a == 0) return float4(0, 0, 0, 0);
-    return float4(color.xyz / color.a, color.a);
+    return float4(color.xyz, color.a);
 }

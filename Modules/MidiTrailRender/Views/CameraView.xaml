@@ -58,7 +58,10 @@
                 <ui:ValueSlider Name="yPos" Style="{StaticResource PositionSlider}" Value="{Binding Camera.CamY, Mode=TwoWay}"/>
             </ui:LabelledItem>
             <ui:LabelledItem Label="{ui:LangText mods.common.z}">
-                <ui:ValueSlider Name="zPos"  Style="{StaticResource PositionSlider}" Value="{Binding Camera.CamZ, Mode=TwoWay}"/>
+                <ui:ValueSlider Name="zPos" Style="{StaticResource PositionSlider}" Value="{Binding Camera.CamZ, Mode=TwoWay}"/>
+            </ui:LabelledItem>
+            <ui:LabelledItem Label="offset">
+                <ui:ValueSlider Name="zOffset" Style="{StaticResource PositionSlider}" Value="{Binding Camera.OffsetZ, Mode=TwoWay}"/>
             </ui:LabelledItem>
         </StackPanel>
         <StackPanel>
