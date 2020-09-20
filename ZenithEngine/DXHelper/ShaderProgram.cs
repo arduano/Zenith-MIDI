@@ -3,6 +3,7 @@ using SharpDX.D3DCompiler;
 using SharpDX.Direct3D11;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Buffer = SharpDX.Direct3D11.Buffer;
 
@@ -200,8 +201,8 @@ namespace ZenithEngine.DXHelper
         }
 
         public ShaderProgram SetDefine(string define) => SetDefine(define, "");
-        public ShaderProgram SetDefine(string define, int value) => SetDefine(define, value.ToString());
-        public ShaderProgram SetDefine(string define, float value) => SetDefine(define, value.ToString());
+        public ShaderProgram SetDefine(string define, int value) => SetDefine(define, value.ToString(CultureInfo.InvariantCulture));
+        public ShaderProgram SetDefine(string define, float value) => SetDefine(define, value.ToString(CultureInfo.InvariantCulture));
         public ShaderProgram SetDefine(string define, string value)
         {
             if (defines.ContainsKey(define))

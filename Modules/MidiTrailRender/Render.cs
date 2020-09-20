@@ -35,72 +35,44 @@ namespace MIDITrailRender
     public partial class Render : PureModule
     {
         #region Info
-        public override string Name { get; } = "MIDITrail";
-        public override string Description { get; } = "aaa";
+        public override string Name { get; } = "MIDITrail++";
+        public override string Description { get; } = "Inspired by the fairly old program called MIDITrail, this module renders a 3D piano roll with highly customizable settings and effects";
         public override ImageSource PreviewImage { get; } = LoadPreviewBitmap(Properties.Resources.preview);
-        public override string LanguageDictName { get; } = "miditrail";
         #endregion
 
 
         MainView settingsView = LoadUI(() => new MainView());
-        public override FrameworkElement SettingsControl => settingsView;
+        public override ISerializableContainer SettingsControl => settingsView;
 
         public override double StartOffset => 0;
         
         protected override NoteColorPalettePick PalettePicker => settingsView.Data.General.PalettePicker;
 
         CompositeRenderSurface depthSurface;
-        CompositeRenderSurface glowInterm1;
-        CompositeRenderSurface glowInterm2;
         CompositeRenderSurface preFinalSurface;
         Compositor compositor;
-        ShaderProgram plainShader;
         ShaderProgram colorspaceShader;
-        ShaderProgram colorCutoffShader;
 
-        BlendStateKeeper addBlendState;
         BlendStateKeeper pureBlendState;
 
         PingPongGlow pingPongGlow;
 
-        GlowPass glowPass1;
-        GlowPass glowPass2;
-
-        ShaderProgram quadShader;
-        ShaderProgram alphaAddFixShader;
+        GlowPass glowPass;
 
         DepthStencilStateKeeper depthStencil;
-
         RasterizerStateKeeper rasterizer;
-
-        FullModelData allModels;
 
         NoteRenderer noteRenderer;
         KeyboardPhysics keyboardPhysics;
         KeyboardHandler keyboardHandler;
 
-        double lastMidiTime = 0;
-
         public Render()
         {
-            var assembly = Assembly.GetExecutingAssembly();
-            string ReadEmbed(string name)
-            {
-                using (var stream = assembly.GetManifestResourceStream(name))
-                using (var reader = new StreamReader(stream))
-                    return reader.ReadToEnd();
-            }
-
-            allModels = init.Add(ModelLoader.LoadAllModels());
+            var allModels = init.Add(ModelLoader.LoadAllModels());
             noteRenderer = init.Add(new NoteRenderer(allModels));
             keyboardHandler = init.Add(new KeyboardHandler(allModels));
 
-            var resources = assembly.GetManifestResourceNames();
-
-            plainShader = init.Add(Shaders.BasicTextured());
             colorspaceShader = init.Add(Shaders.Colorspace());
-            colorCutoffShader = init.Add(Shaders.ColorCutoff());
-            alphaAddFixShader = init.Add(Shaders.AlphaAddFix());
             compositor = init.Add(new Compositor());
 
             depthStencil = init.Add(new DepthStencilStateKeeper(DepthStencilPresets.Basic));
@@ -108,7 +80,6 @@ namespace MIDITrailRender
             rasterizer = init.Add(new RasterizerStateKeeper());
             rasterizer.Description.CullMode = CullMode.Front;
 
-            addBlendState = init.Add(new BlendStateKeeper(BlendPreset.Add));
             pureBlendState = init.Add(new BlendStateKeeper(BlendPreset.PreserveColor));
 
             settingsView.Data.General.PalettePicker.PaletteChanged += ReloadTrackColors;
@@ -116,16 +87,11 @@ namespace MIDITrailRender
 
         public override void Init(DeviceGroup device, MidiPlayback midi, RenderStatus status)
         {
-            lastMidiTime = midi.PlayerPositionSeconds;
-
             init.Replace(ref depthSurface, new CompositeRenderSurface(status.RenderWidth, status.RenderHeight, true));
-            init.Replace(ref glowInterm1, new CompositeRenderSurface(status.RenderWidth, status.RenderHeight));
-            init.Replace(ref glowInterm2, new CompositeRenderSurface(status.RenderWidth, status.RenderHeight));
             init.Replace(ref preFinalSurface, new CompositeRenderSurface(status.RenderWidth, status.RenderHeight));
             init.Replace(ref pingPongGlow, new PingPongGlow(status.RenderWidth, status.RenderHeight));
 
-            init.Replace(ref glowPass1, new GlowPass(status.RenderWidth, status.RenderHeight));
-            init.Replace(ref glowPass2, new GlowPass(status.RenderWidth, status.RenderHeight));
+            init.Replace(ref glowPass, new GlowPass(status.RenderWidth, status.RenderHeight));
 
             keyboardPhysics = new KeyboardPhysics();
 
@@ -160,7 +126,7 @@ namespace MIDITrailRender
             ITextureResource lastSurface;
             if (settings.Glow.Pass.UseGlow)
             {
-                glowPass1.ApplyGlow(context, settings.Glow.Pass, depthSurface, preFinalSurface);
+                glowPass.ApplyGlow(context, settings.Glow.Pass, depthSurface, preFinalSurface);
                 lastSurface = preFinalSurface;
             }
             else
@@ -170,8 +136,6 @@ namespace MIDITrailRender
 
             using (pureBlendState.UseOn(context))
                 compositor.Composite(context, lastSurface, colorspaceShader, renderSurface);
-
-            lastMidiTime = Midi.PlayerPositionSeconds;
         }
     }
 }

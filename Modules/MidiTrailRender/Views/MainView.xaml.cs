@@ -1,4 +1,6 @@
 ﻿using MIDITrailRender.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,13 +15,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ZenithEngine.ModuleUI;
 
 namespace MIDITrailRender.Views
 {
     /// <summary>
     /// Interaction logic for MainView.xaml
     /// </summary>
-    public partial class MainView : UserControl
+    public partial class MainView : UserControl, ISerializableContainer
     {
         public BaseModel Data { get; private set; } = new BaseModel();
 
@@ -28,6 +31,20 @@ namespace MIDITrailRender.Views
             DataContext = Data;
 
             InitializeComponent();
+        }
+
+        public void Parse(JObject data)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                Data = data.ToObject<BaseModel>();
+                DataContext = Data;
+            });
+        }
+
+        public JObject Serialize()
+        {
+            return JObject.FromObject(Data);
         }
     }
 }

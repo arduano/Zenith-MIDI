@@ -21,9 +21,7 @@ namespace ZenithEngine.Modules
 
         public abstract ImageSource PreviewImage { get; }
 
-        public abstract string LanguageDictName { get; }
-
-        public virtual FrameworkElement SettingsControl { get; }
+        public virtual ISerializableContainer SettingsControl { get; }
 
         public abstract double StartOffset { get; }
 

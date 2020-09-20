@@ -12,6 +12,7 @@ using System.IO;
 using System.Windows;
 using ZenithEngine.MIDI.Audio;
 using ZenithEngine.DXHelper;
+using ZenithEngine.ModuleUI;
 
 namespace Zenith.Models
 {
@@ -26,6 +27,11 @@ namespace Zenith.Models
 
         public ObservableCollection<IModuleRender> RenderModules { get; } = new ObservableCollection<IModuleRender>();
         public IModuleRender SelectedModule { get; set; } = null;
+        public UIElement SelectedModuleSettings => 
+            SelectedModule == null ? null : 
+            SelectedModule.SettingsControl is FrameworkElement ? SelectedModule.SettingsControl as FrameworkElement: 
+            SelectedModule.SettingsControl is IControl ? (SelectedModule.SettingsControl as IControl).Control : 
+            null;
         ModuleManager moduleManager { get; } = new ModuleManager();
 
         #region Module Loader

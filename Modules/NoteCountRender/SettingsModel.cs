@@ -19,7 +19,7 @@ namespace NoteCountRender
         BottomSpread,
     }
 
-    class FontItem
+    public class FontItem
     {
         public FontItem(string name, FontFamily font)
         {
@@ -31,7 +31,7 @@ namespace NoteCountRender
         public FontFamily Font { get; }
     }
 
-    class BaseModel : INotifyPropertyChanged
+    public class BaseModel : INotifyPropertyChanged
     {
         public SettingsModel State { get; set; } = new SettingsModel();
         public FontItem[] AllFonts { get; } = null;
@@ -77,7 +77,7 @@ namespace NoteCountRender
         public event PropertyChangedEventHandler PropertyChanged;
     }
 
-    class SettingsModel : INotifyPropertyChanged
+    public class SettingsModel : INotifyPropertyChanged
     {
         public string TextTemplate { get; set; } =
 @"Notes: {nc}/{nc-max}/{nc-rem}

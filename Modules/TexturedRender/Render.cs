@@ -21,8 +21,6 @@ namespace TexturedRender
         public override string Description => "Plugin for loading and rendering custom resource packs, " +
             "with settings defined in a .json file";
 
-        public override string LanguageDictName { get; } = "textured";
-
         public override ImageSource PreviewImage { get; } =  LoadPreviewBitmap(Properties.Resources.preview);
 
         public override double StartOffset => 0;
@@ -30,7 +28,7 @@ namespace TexturedRender
         protected override NoteColorPalettePick PalettePicker => null;//settings.mainPart.data.Palette;
 
         UI settings = LoadUI(() => new UI());
-        public override FrameworkElement SettingsControl => settings.Control;
+        public override ISerializableContainer SettingsControl => settings;
 
         #region UI
         class UI : UITabGroup

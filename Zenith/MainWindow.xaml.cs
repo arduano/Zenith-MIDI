@@ -629,34 +629,34 @@ namespace Zenith
 
         public void SelectModule(int id)
         {
-            pluginControl = null;
-            if (id == -1)
-            {
-                ModuleRunner.ClearModule();
-                return;
-            }
-            pluginsList.SelectedIndex = id;
-            ModuleRunner.UseModule(RenderModules[id]);
-            var module = ModuleRunner.CurrentModule;
-            previewImage.Source = module.PreviewImage;
-            pluginDescription.Text = module.Description;
+            //pluginControl = null;
+            //if (id == -1)
+            //{
+            //    ModuleRunner.ClearModule();
+            //    return;
+            //}
+            //pluginsList.SelectedIndex = id;
+            //ModuleRunner.UseModule(RenderModules[id]);
+            //var module = ModuleRunner.CurrentModule;
+            //previewImage.Source = module.PreviewImage;
+            //pluginDescription.Text = module.Description;
 
-            var c = module.SettingsControl;
-            if (c == null) return;
-            pluginsSettings.Children.Clear();
-            pluginsSettings.Children.Add(c);
-            c.VerticalAlignment = VerticalAlignment.Stretch;
-            c.HorizontalAlignment = HorizontalAlignment.Stretch;
-            c.Width = double.NaN;
-            c.Height = double.NaN;
-            c.Margin = new Thickness(0);
-            pluginControl = c;
-            if (languageSelect.SelectedIndex != -1 && Languages[languageSelect.SelectedIndex].ContainsKey(module.LanguageDictName))
-            {
-                c.Resources.MergedDictionaries.Clear();
-                c.Resources.MergedDictionaries.Add(Languages[0][module.LanguageDictName]);
-                c.Resources.MergedDictionaries.Add(Languages[languageSelect.SelectedIndex][module.LanguageDictName]);
-            }
+            //var c = module.SettingsControl;
+            //if (c == null) return;
+            //pluginsSettings.Children.Clear();
+            //pluginsSettings.Children.Add(c);
+            //c.VerticalAlignment = VerticalAlignment.Stretch;
+            //c.HorizontalAlignment = HorizontalAlignment.Stretch;
+            //c.Width = double.NaN;
+            //c.Height = double.NaN;
+            //c.Margin = new Thickness(0);
+            //pluginControl = c;
+            //if (languageSelect.SelectedIndex != -1 && Languages[languageSelect.SelectedIndex].ContainsKey(module.LanguageDictName))
+            //{
+            //    c.Resources.MergedDictionaries.Clear();
+            //    c.Resources.MergedDictionaries.Add(Languages[0][module.LanguageDictName]);
+            //    c.Resources.MergedDictionaries.Add(Languages[languageSelect.SelectedIndex][module.LanguageDictName]);
+            //}
         }
 
         private void LoadButton_Click(object sender, RoutedEventArgs e)
@@ -906,16 +906,16 @@ namespace Zenith
 
         private void LanguageSelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var renderer = ModuleRunner.CurrentModule;
-            if (renderer != null)
-            {
-                pluginControl.Resources.MergedDictionaries.Clear();
-                pluginControl.Resources.MergedDictionaries.Add(Languages[0][renderer.LanguageDictName]);
-                pluginControl.Resources.MergedDictionaries.Add(Languages[languageSelect.SelectedIndex][renderer.LanguageDictName]);
-            }
-            Resources.MergedDictionaries[0].MergedDictionaries.Clear();
-            Resources.MergedDictionaries[0].MergedDictionaries.Add(Languages[0]["window"]);
-            Resources.MergedDictionaries[0].MergedDictionaries.Add(Languages[languageSelect.SelectedIndex]["window"]);
+            //var renderer = ModuleRunner.CurrentModule;
+            //if (renderer != null)
+            //{
+            //    pluginControl.Resources.MergedDictionaries.Clear();
+            //    pluginControl.Resources.MergedDictionaries.Add(Languages[0][renderer.LanguageDictName]);
+            //    pluginControl.Resources.MergedDictionaries.Add(Languages[languageSelect.SelectedIndex][renderer.LanguageDictName]);
+            //}
+            //Resources.MergedDictionaries[0].MergedDictionaries.Clear();
+            //Resources.MergedDictionaries[0].MergedDictionaries.Add(Languages[0]["window"]);
+            //Resources.MergedDictionaries[0].MergedDictionaries.Add(Languages[languageSelect.SelectedIndex]["window"]);
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

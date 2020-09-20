@@ -18,6 +18,7 @@ using ZenithEngine.DXHelper.Presets;
 using ZenithEngine.DXHelper.D2D;
 using OpenTK.Graphics;
 using System.Text.RegularExpressions;
+using ZenithEngine.ModuleUI;
 
 namespace NoteCountRender
 {
@@ -58,15 +59,15 @@ namespace NoteCountRender
         public override string Name { get; } = "Note Count";
         public override string Description { get; } = "blah blah blah";
         public override ImageSource PreviewImage { get; } = LoadPreviewBitmap(Properties.Resources.preview);
-        public override string LanguageDictName { get; } = "notecounter";
         #endregion
 
         public override double StartOffset => 0;
 
         protected override NoteColorPalettePick PalettePicker => null;
 
-        BaseModel Data { get; } = new BaseModel();
-        public override FrameworkElement SettingsControl => LoadUI(() => new SettingsCtrl() { DataContext = Data });
+        SettingsCtrl settingsView = LoadUI(() => new SettingsCtrl());
+        BaseModel Data => settingsView.Data;
+        public override ISerializableContainer SettingsControl => settingsView;
 
         public Render()
         {

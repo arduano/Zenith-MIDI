@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using ZenithEngine.DXHelper;
 using ZenithEngine.MIDI;
+using ZenithEngine.ModuleUI;
 
 namespace ZenithEngine.Modules
 {
@@ -20,9 +21,7 @@ namespace ZenithEngine.Modules
         bool Initialized { get; }
         ImageSource PreviewImage { get; }
 
-        string LanguageDictName { get; }
-
-        FrameworkElement SettingsControl { get; }
+        ISerializableContainer SettingsControl { get; }
         public double StartOffset { get; }
 
         void Init(DeviceGroup device, MidiPlayback midi, RenderStatus status);

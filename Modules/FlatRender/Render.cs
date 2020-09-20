@@ -28,12 +28,11 @@ namespace FlatRender
         public override string Name { get; } = "Flat";
         public override string Description { get; } = "Flat renderer, requested by SquareWaveMidis for his channel";
         public override ImageSource PreviewImage { get; } = LoadPreviewBitmap(Properties.Resources.preview);
-        public override string LanguageDictName { get; } = "flat";
         #endregion
 
         UI settings = LoadUI(() => new UI());
 
-        public override FrameworkElement SettingsControl => settings.Control;
+        public override ISerializableContainer SettingsControl => settings;
         public override double StartOffset => settings.noteScreenTime;
 
         protected override NoteColorPalettePick PalettePicker => settings.Palette;

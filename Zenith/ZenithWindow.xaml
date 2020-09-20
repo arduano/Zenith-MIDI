@@ -77,7 +77,7 @@
                     <local:GeneralTab />
                 </TabItem>
                 <TabItem Header="{ui:LangText main.tabs.moduleSettings}" IsEnabled="{Binding NotRenderingOrPreviewing, ElementName=mainWindow}">
-                    <ContentControl Content="{Binding SelectedModule.SettingsControl}">
+                    <ContentControl Content="{Binding SelectedModuleSettings}">
                         <ContentControl.Resources>
                             <Style BasedOn="{StaticResource SubTabItems}" TargetType="{x:Type TabItem}"/>
                         </ContentControl.Resources>

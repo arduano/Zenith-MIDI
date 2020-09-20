@@ -31,7 +31,6 @@ namespace PFARender
         public override string Name => "PFA+";
         public override string Description => "A replica of PFA with some special extra features";
         public override ImageSource PreviewImage { get; } = LoadPreviewBitmap(Properties.Resources.preview);
-        public override string LanguageDictName { get; } = "pfa";
         #endregion
 
         #region UI
@@ -74,7 +73,7 @@ namespace PFARender
 
         UI settings = LoadUI(() => new UI());
 
-        public override FrameworkElement SettingsControl => settings.Control;
+        public override ISerializableContainer SettingsControl => settings;
 
         public override double StartOffset => settings.noteScreenTime.Value;
 
