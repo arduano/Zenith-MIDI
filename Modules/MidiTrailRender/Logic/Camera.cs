@@ -17,6 +17,7 @@ namespace MIDITrailRender.Logic
         public Vector3 ViewLocation { get; }
         public Matrix Perspective { get; }
         public Matrix ViewPerspective { get; }
+        public Vector4 PerspectiveAdjust { get; }
         public double Time { get; }
 
         public Camera(BaseModel context, RenderStatus status, double time)
@@ -29,8 +30,17 @@ namespace MIDITrailRender.Logic
                 Matrix.RotationX((float)(camera.CamRotX / 180 * Math.PI)) *
                 Matrix.RotationZ((float)(camera.CamRotZ / 180 * Math.PI)) *
                 Matrix.Scaling(1, 1, -1);
-            Perspective = Matrix.PerspectiveFovLH((float)(camera.CamFOV / 180 * Math.PI), status.AspectRatio, 0.01f, 100f)
-                * Matrix.Translation(0, (float)camera.OffsetZ, 0);
+            Perspective = Matrix.PerspectiveFovLH((float)(camera.CamFOV / 180 * Math.PI), status.AspectRatio, 0.01f, 100f);
+
+            if (camera.UseOrthro)
+            {
+                PerspectiveAdjust = new Vector4((float)camera.OrthroX, (float)camera.OrthroY, (float)camera.OrthroScaleX, (float)camera.OrthroScaleY);
+            }
+            else
+            {
+                PerspectiveAdjust = new Vector4(0, 0, 1, 1);
+            }
+
             ViewPerspective = View * Perspective;
             Time = time;
         }
@@ -38,7 +48,7 @@ namespace MIDITrailRender.Logic
         public void RenderOrdered(IEnumerable<RenderObject> objects, DeviceContext context)
         {
             var ordered = objects.OrderBy(obj => -(obj.Position - ViewLocation).Length());
-            foreach(var obj in ordered)
+            foreach (var obj in ordered)
             {
                 obj.Render(context, this);
             }

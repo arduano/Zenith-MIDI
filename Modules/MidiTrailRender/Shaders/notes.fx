@@ -4,6 +4,7 @@ cbuffer c {
     float4x4 matView;
     float3 viewPos;
     float time;
+    float4 orthro;
     float3 lightPos;
 	float lightStrength;
     ColorAdjust colAdjust;
@@ -43,6 +44,8 @@ Frag VS(NoteVert vert)
 
     output.color = colorFromSides(vert.colorleft, vert.colorright, vert.side, vert.press, colAdjust);
     output.waterPos = mul(matModel, float4(0, 0, -waterOffset, 1)).xyz + output.worldPos;
+
+    output.pos = perspectiveAdjust(output.pos, orthro);
 
     return output;
 }

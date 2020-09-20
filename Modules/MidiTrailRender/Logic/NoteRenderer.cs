@@ -134,6 +134,8 @@ namespace MIDITrailRender.Logic
             noteShader.ConstData.LightPos = settings.Light.ToVector();
             noteShader.ConstData.LightStrength = (float)settings.Light.Strength;
 
+            noteShader.ConstData.PerspectiveAdjust = camera.PerspectiveAdjust;
+
             noteShader.ConstData.View = camera.ViewPerspective;
             noteShader.ConstData.ViewPos = camera.ViewLocation;
             noteShader.ConstData.Model = 

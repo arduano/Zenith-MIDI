@@ -4,6 +4,7 @@ cbuffer c {
     float4x4 matView;
     float3 viewPos;
 	float time;
+    float4 orthro;
     float3 lightPos;
 	float lightStrength;
     FullColor colorLeft;
@@ -24,6 +25,8 @@ Frag VS(KeyVert vert)
     output.normView = normalize(mul((float3x3)matView, output.normModel));
 
     output.color = lerpColor(colorLeft, colorRight, vert.side);
+
+    output.pos = perspectiveAdjust(output.pos, orthro);
 
     return output;
 }

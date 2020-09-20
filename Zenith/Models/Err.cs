@@ -45,6 +45,10 @@ namespace Zenith.Models
             {
                 HandleUIError(e);
             }
+            catch (OperationCanceledException e)
+            {
+                throw e;
+            }
             catch (Exception e)
             {
                 HandleUnknownError(e);

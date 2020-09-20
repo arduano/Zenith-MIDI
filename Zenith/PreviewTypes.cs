@@ -3,7 +3,9 @@ using SharpDX.Direct3D11;
 using SharpDX.Windows;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -69,6 +71,8 @@ namespace Zenith
         protected override void RunInternal(Action<PreviewState> renderFrame, PreviewState state)
         {
             Window = new ManagedRenderWindow(Device, 1280, 720);
+            Window.Text = "Zenith Preview";
+            Window.Icon = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
             RenderLoop.Run(Window, () =>
             {
                 state.RenderTarget = Window;

@@ -7,11 +7,13 @@
              xmlns:local="clr-namespace:MIDITrailRender.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <StackPanel Margin="10">
-        <ui:Checkbox Name="water" Content="{ui:LangText mods.miditrail.color.enableWater}" IsChecked="{Binding Keys.EnableWater, Mode=TwoWay}"/>
-        <ui:Title Content="{ui:LangText mods.miditrail.keys.unpressed}"/>
-        <local:FullColorView DataContext="{Binding Keys.UnpressedColor}" ShowWater="{Binding IsChecked, ElementName=water}"/>
-        <ui:Title Content="{ui:LangText mods.miditrail.keys.pressed}"/>
-        <local:FullColorView DataContext="{Binding Keys.PressedColor}" ShowWater="{Binding IsChecked, ElementName=water}"/>
-    </StackPanel>
+    <ScrollViewer Margin="10">
+        <StackPanel>
+            <ui:Checkbox Name="water" Content="{ui:LangText mods.miditrail.color.enableWater}" IsChecked="{Binding Keys.EnableWater, Mode=TwoWay}"/>
+            <ui:Title Content="{ui:LangText mods.miditrail.keys.unpressed}"/>
+            <local:FullColorView DataContext="{Binding Keys.UnpressedColor}" ShowWater="{Binding IsChecked, ElementName=water}"/>
+            <ui:Title Content="{ui:LangText mods.miditrail.keys.pressed}"/>
+            <local:FullColorView DataContext="{Binding Keys.PressedColor}" ShowWater="{Binding IsChecked, ElementName=water}"/>
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>

@@ -38,7 +38,7 @@ namespace ZenithEngine.ModuleUI
         public decimal Minimum { get => InnerControl.Minimum; set => InnerControl.Minimum = value; }
         public decimal Maximum { get => InnerControl.Maximum; set => InnerControl.Maximum = value; }
         public int DecimalPoints { get => InnerControl.DecimalPoints; set => InnerControl.DecimalPoints = value; }
-        public decimal Step { get => InnerControl.Step; set => InnerControl.Step = value; }
+        public decimal? Step { get => InnerControl.Step; set => InnerControl.Step = value; }
         public double MinNUDWidth { get => InnerControl.MinWidth; set => InnerControl.MinWidth = value; }
 
         public override decimal ValueInternal { get => InnerControl.Value; set => InnerControl.Value = value; }

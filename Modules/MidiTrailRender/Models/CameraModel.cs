@@ -17,7 +17,11 @@ namespace MIDITrailRender.Models
         public double CamRotY { get; set; } = 0;
         public double CamRotZ { get; set; } = 0;
 
-        public double OffsetZ { get; set; } = 0;
+        public bool UseOrthro { get; set; } = false;
+        public double OrthroX { get; set; } = 0;
+        public double OrthroY { get; set; } = 0;
+        public double OrthroScaleX { get; set; } = 1;
+        public double OrthroScaleY { get; set; } = 1;
 
         public double RenderDistForward { get; set; } = 1.2;
         public double RenderDistBack { get; set; } = 0.15;

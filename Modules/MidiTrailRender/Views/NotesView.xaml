@@ -8,9 +8,10 @@
              xmlns:local="clr-namespace:MIDITrailRender.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <StackPanel Margin="10">
-        <ui:LabelledItem Label="{ui:LangText mods.miditrail.notes.angle}" Margin="0,0,10,10">
-            <ui:ValueSlider
+    <ScrollViewer Margin="10">
+        <StackPanel>
+            <ui:LabelledItem Label="{ui:LangText mods.miditrail.notes.angle}" Margin="0,0,10,10">
+                <ui:ValueSlider
                 Minimum="0"
                 Maximum="180"
                 TrueMin="0"
@@ -18,9 +19,9 @@
                 SliderWidth="700"
                 Value="{Binding Notes.Angle, Mode=TwoWay}"
             />
-        </ui:LabelledItem>
-        <ui:LabelledItem Label="{ui:LangText mods.miditrail.notes.offset}" Margin="0,0,10,10">
-            <ui:ValueSlider
+            </ui:LabelledItem>
+            <ui:LabelledItem Label="{ui:LangText mods.miditrail.notes.offset}" Margin="0,0,10,10">
+                <ui:ValueSlider
                 Minimum="0"
                 Maximum="1"
                 TrueMin="0"
@@ -28,23 +29,24 @@
                 SliderWidth="700"
                 Value="{Binding Notes.Offset, Mode=TwoWay}"
             />
-        </ui:LabelledItem>
-        <ui:LabelledItem Label="{ui:LangText mods.miditrail.notes.noteType}" Margin="0,0,10,10">
-            <ui:EnumComboBox 
+            </ui:LabelledItem>
+            <ui:LabelledItem Label="{ui:LangText mods.miditrail.notes.noteType}" Margin="0,0,10,10">
+                <ui:EnumComboBox 
                 Enum="{x:Type models:NoteType}" 
                 MinWidth="80" 
                 VerticalContentAlignment="Center" 
                 Selected="{Binding Notes.NoteType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
             >
-                <ui:EnumComboBoxItem EnumValue="{x:Static models:NoteType.Flat}" Content="{ui:LangText mods.miditrail.notes.flat}"/>
-                <ui:EnumComboBoxItem EnumValue="{x:Static models:NoteType.Cube}" Content="{ui:LangText mods.miditrail.notes.cube}"/>
-                <ui:EnumComboBoxItem EnumValue="{x:Static models:NoteType.Round}" Content="{ui:LangText mods.miditrail.notes.round}"/>
-            </ui:EnumComboBox>
-        </ui:LabelledItem>
-        <ui:Checkbox Name="water" Content="{ui:LangText mods.miditrail.color.enableWater}" IsChecked="{Binding Notes.EnableWater, Mode=TwoWay}"/>
-        <ui:Title Content="{ui:LangText mods.miditrail.notes.notHit}"/>
-        <local:FullColorView DataContext="{Binding Notes.UnpressedColor}" ShowWater="{Binding IsChecked, ElementName=water}"/>
-        <ui:Title Content="{ui:LangText mods.miditrail.notes.hit}"/>
-        <local:FullColorView DataContext="{Binding Notes.PressedColor}" ShowWater="{Binding IsChecked, ElementName=water}"/>
-    </StackPanel>
+                    <ui:EnumComboBoxItem EnumValue="{x:Static models:NoteType.Flat}" Content="{ui:LangText mods.miditrail.notes.flat}"/>
+                    <ui:EnumComboBoxItem EnumValue="{x:Static models:NoteType.Cube}" Content="{ui:LangText mods.miditrail.notes.cube}"/>
+                    <ui:EnumComboBoxItem EnumValue="{x:Static models:NoteType.Round}" Content="{ui:LangText mods.miditrail.notes.round}"/>
+                </ui:EnumComboBox>
+            </ui:LabelledItem>
+            <ui:Checkbox Name="water" Content="{ui:LangText mods.miditrail.color.enableWater}" IsChecked="{Binding Notes.EnableWater, Mode=TwoWay}"/>
+            <ui:Title Content="{ui:LangText mods.miditrail.notes.notHit}"/>
+            <local:FullColorView DataContext="{Binding Notes.UnpressedColor}" ShowWater="{Binding IsChecked, ElementName=water}"/>
+            <ui:Title Content="{ui:LangText mods.miditrail.notes.hit}"/>
+            <local:FullColorView DataContext="{Binding Notes.PressedColor}" ShowWater="{Binding IsChecked, ElementName=water}"/>
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>

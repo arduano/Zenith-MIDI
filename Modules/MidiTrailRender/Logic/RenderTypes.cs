@@ -54,6 +54,7 @@ namespace MIDITrailRender.Logic
         public Matrix View;
         public Vector3 ViewPos;
         public float Time;
+        public Vector4 PerspectiveAdjust;
         public Vector3 LightPos;
         public float LightStrength;
         public FullColorData LeftColor;
@@ -67,6 +68,7 @@ namespace MIDITrailRender.Logic
         public Matrix View;
         public Vector3 ViewPos;
         public float Time;
+        public Vector4 PerspectiveAdjust;
         public Vector3 LightPos;
         public float LightStrength;
         public FullColorAdjust ColAdjust;

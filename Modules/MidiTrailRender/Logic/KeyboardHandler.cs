@@ -153,6 +153,8 @@ namespace MIDITrailRender.Logic
                 keyShader.ConstData.ViewPos = camera.ViewLocation;
                 keyShader.ConstData.Time = (float)camera.Time;
 
+                keyShader.ConstData.PerspectiveAdjust = camera.PerspectiveAdjust;
+
                 keyShader.ConstData.Model = Transform;
 
                 keyShader.ConstData.LeftColor.Diffuse = AdjustDiffuse(leftCol, diffuse);

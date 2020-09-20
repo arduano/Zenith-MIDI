@@ -18,22 +18,24 @@
             <Setter Property="MinNUDWidth" Value="100"/>
         </Style>
     </UserControl.Resources>
-    <StackPanel>
-        <ui:LabelledItem Label="{ui:LangText mods.miditrail.light.lightX}">
-            <ui:ValueSlider Name="xPos" Style="{StaticResource PositionSlider}" Value="{Binding Light.LightX, Mode=TwoWay}"/>
-        </ui:LabelledItem>
-        <ui:LabelledItem Label="{ui:LangText mods.miditrail.light.lightZ}">
-            <ui:ValueSlider Name="zPos" Style="{StaticResource PositionSlider}" Value="{Binding Light.LightZ, Mode=TwoWay}"/>
-        </ui:LabelledItem>
-        <ui:LabelledItem Label="{ui:LangText mods.miditrail.light.lightStrength}">
-            <ui:ValueSlider 
+    <ScrollViewer Margin="10">
+        <StackPanel>
+            <ui:LabelledItem Label="{ui:LangText mods.miditrail.light.lightX}">
+                <ui:ValueSlider Name="xPos" Style="{StaticResource PositionSlider}" Value="{Binding Light.LightX, Mode=TwoWay}"/>
+            </ui:LabelledItem>
+            <ui:LabelledItem Label="{ui:LangText mods.miditrail.light.lightZ}">
+                <ui:ValueSlider Name="zPos" Style="{StaticResource PositionSlider}" Value="{Binding Light.LightZ, Mode=TwoWay}"/>
+            </ui:LabelledItem>
+            <ui:LabelledItem Label="{ui:LangText mods.miditrail.light.lightStrength}">
+                <ui:ValueSlider 
                 Minimum="0"
                 Maximum="2"
                 TrueMin="0"
                 TrueMax="10"
                 SliderWidth="500"
                 Value="{Binding Light.Strength, Mode=TwoWay}"/>
-        </ui:LabelledItem>
+            </ui:LabelledItem>
 
-    </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>

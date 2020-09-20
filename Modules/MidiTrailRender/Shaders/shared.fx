@@ -114,3 +114,19 @@ float4 parseColor(FullColor col, float diffuseStrength, float specularStrength, 
     float3 water = waterColor.rgb * waterColor.a * waterStength;
     return float4(diffuse + specular + emit + water, diffuseColor.a);
 }
+
+float adjustCoord(float val, float fac, float w, float scale){
+    float adjusted = val / w;
+    float iso = val * scale;
+    return lerp(adjusted, iso, fac);
+}
+
+float4 perspectiveAdjust(float4 v, float4 scales)
+{
+    float w = abs(v.w);
+    v.x = adjustCoord(v.x, scales.x, w, scales.z);
+    v.y = adjustCoord(v.y, scales.y, w, scales.w);
+    v.z /= w;
+    v.w = sign(v.w);
+	return v;
+}

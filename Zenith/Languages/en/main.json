@@ -85,6 +85,12 @@
         "position": "Position",
         "rotation": "Rotation",
         "noteViewDistance": "Note View Distance",
+        "perspective": "Perspective",
+        "useOrthro": "Use Orthrographic",
+        "scalex": "Scale X",
+        "scaley": "Scale Y",
+        "strengthx": "Strength X",
+        "strengthy": "Strength Y",
         "fov": "FOV"
       },
       "general": {

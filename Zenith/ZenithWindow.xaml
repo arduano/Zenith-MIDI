@@ -10,7 +10,7 @@
         mc:Ignorable="d"
         TextOptions.TextFormattingMode="Ideal" 
         TextOptions.TextRenderingMode="Auto" WindowStyle="None"
-        Title="Zenith" Height="720" Width="1280" MinWidth="780" MinHeight="550" Closing="Window_Closing"
+        Title="Zenith" Height="720" Width="1280" Closing="Window_Closing"
         Background="{DynamicResource BackgroundBrush}" Name="mainWindow"
         >
     <WindowChrome.WindowChrome>

@@ -23,9 +23,9 @@ namespace ZenithEngine.UI
         public decimal Maximum
         { get => (decimal)GetValue(MaximumProperty); set => SetValue(MaximumProperty, value); }
         public static readonly DependencyProperty MaximumProperty = DependencyProperty.Register("Maximum", typeof(decimal), typeof(NumberBox), new PropertyMetadata((decimal)1000, new PropertyChangedCallback(OnPropertyChange)));
-        public decimal Step
-        { get => (decimal)GetValue(StepProperty); set => SetValue(StepProperty, value); }
-        public static readonly DependencyProperty StepProperty = DependencyProperty.Register("Step", typeof(decimal), typeof(NumberBox), new PropertyMetadata((decimal)1));
+        public decimal? Step
+        { get => (decimal?)GetValue(StepProperty); set => SetValue(StepProperty, value); }
+        public static readonly DependencyProperty StepProperty = DependencyProperty.Register("Step", typeof(decimal?), typeof(NumberBox), new PropertyMetadata(null));
 
         public static readonly RoutedEvent ValueChangedEvent = EventManager.RegisterRoutedEvent(
             "ValueChanged", RoutingStrategy.Bubble,
@@ -53,6 +53,11 @@ namespace ZenithEngine.UI
         public NumberBox() : base()
         {
             KeyDown += UserControl_KeyDown;
+        }
+
+        decimal GetStep()
+        {
+            return Step ?? (decimal)Math.Pow(10, -DecimalPoints + 1);
         }
 
         public override void OnApplyTemplate()
@@ -186,7 +191,7 @@ namespace ZenithEngine.UI
 
         private void UpButton_Click(object sender, RoutedEventArgs e)
         {
-            var d = Value + Step;
+            var d = Value + GetStep();
             if (d < Minimum) d = Minimum;
             if (d > Maximum) d = Maximum;
             var old = Value;
@@ -198,7 +203,7 @@ namespace ZenithEngine.UI
 
         private void DownButton_Click(object sender, RoutedEventArgs e)
         {
-            var d = Value - Step;
+            var d = Value - GetStep();
             if (d < Minimum) d = Minimum;
             if (d > Maximum) d = Maximum;
             var old = Value;

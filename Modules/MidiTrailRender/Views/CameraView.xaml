@@ -38,6 +38,26 @@
             <Setter Property="MinNUDWidth" Value="100"/>
         </Style>
 
+        <Style TargetType="ui:ValueSlider" x:Key="OrthroFacSlider">
+            <Setter Property="Minimum" Value="0"/>
+            <Setter Property="Maximum" Value="1"/>
+            <Setter Property="TrueMin" Value="0"/>
+            <Setter Property="TrueMax" Value="1"/>
+            <Setter Property="DecimalPoints" Value="2"/>
+            <Setter Property="SliderWidth" Value="500"/>
+            <Setter Property="MinNUDWidth" Value="80"/>
+        </Style>
+
+        <Style TargetType="ui:ValueSlider" x:Key="OrthroScaleSlider">
+            <Setter Property="Minimum" Value="0.1"/>
+            <Setter Property="Maximum" Value="5"/>
+            <Setter Property="TrueMin" Value="0.01"/>
+            <Setter Property="TrueMax" Value="100"/>
+            <Setter Property="DecimalPoints" Value="3"/>
+            <Setter Property="SliderWidth" Value="500"/>
+            <Setter Property="MinNUDWidth" Value="80"/>
+        </Style>
+
         <Style TargetType="ui:ValueSlider" x:Key="FOVSlider">
             <Setter Property="Minimum" Value="1"/>
             <Setter Property="Maximum" Value="170"/>
@@ -48,45 +68,75 @@
             <Setter Property="MinNUDWidth" Value="100"/>
         </Style>
     </UserControl.Resources>
-    <StackPanel>
+    <ScrollViewer Margin="10">
         <StackPanel>
-            <ui:Title Content="{ui:LangText mods.miditrail.camera.position}"/>
-            <ui:LabelledItem Label="{ui:LangText mods.common.x}">
-                <ui:ValueSlider Name="xPos" Style="{StaticResource PositionSlider}" Value="{Binding Camera.CamX, Mode=TwoWay}"/>
-            </ui:LabelledItem>
-            <ui:LabelledItem Label="{ui:LangText mods.common.y}">
-                <ui:ValueSlider Name="yPos" Style="{StaticResource PositionSlider}" Value="{Binding Camera.CamY, Mode=TwoWay}"/>
-            </ui:LabelledItem>
-            <ui:LabelledItem Label="{ui:LangText mods.common.z}">
-                <ui:ValueSlider Name="zPos" Style="{StaticResource PositionSlider}" Value="{Binding Camera.CamZ, Mode=TwoWay}"/>
-            </ui:LabelledItem>
-            <ui:LabelledItem Label="offset">
-                <ui:ValueSlider Name="zOffset" Style="{StaticResource PositionSlider}" Value="{Binding Camera.OffsetZ, Mode=TwoWay}"/>
-            </ui:LabelledItem>
+            <StackPanel>
+                <ui:Title Content="{ui:LangText mods.miditrail.camera.position}"/>
+                <ui:LabelledItem Label="{ui:LangText mods.common.x}">
+                    <ui:ValueSlider Name="xPos" Style="{StaticResource PositionSlider}" Value="{Binding Camera.CamX, Mode=TwoWay}"/>
+                </ui:LabelledItem>
+                <ui:LabelledItem Label="{ui:LangText mods.common.y}">
+                    <ui:ValueSlider Name="yPos" Style="{StaticResource PositionSlider}" Value="{Binding Camera.CamY, Mode=TwoWay}"/>
+                </ui:LabelledItem>
+                <ui:LabelledItem Label="{ui:LangText mods.common.z}">
+                    <ui:ValueSlider Name="zPos" Style="{StaticResource PositionSlider}" Value="{Binding Camera.CamZ, Mode=TwoWay}"/>
+                </ui:LabelledItem>
+                <!--<ui:LabelledItem Label="offset">
+                    <ui:ValueSlider Name="zOffset" Style="{StaticResource PositionSlider}" Value="{Binding Camera.OffsetZ, Mode=TwoWay}"/>
+                </ui:LabelledItem>-->
+            </StackPanel>
+            <StackPanel>
+                <ui:Title Content="{ui:LangText mods.miditrail.camera.rotation}"/>
+                <ui:LabelledItem Label="{ui:LangText mods.common.x}">
+                    <ui:ValueSlider Name="xRot" Style="{StaticResource RotationSlider}" Value="{Binding Camera.CamRotX, Mode=TwoWay}"/>
+                </ui:LabelledItem>
+                <ui:LabelledItem Label="{ui:LangText mods.common.y}">
+                    <ui:ValueSlider Name="yRot" Style="{StaticResource RotationSlider}" Value="{Binding Camera.CamRotY, Mode=TwoWay}"/>
+                </ui:LabelledItem>
+                <ui:LabelledItem Label="{ui:LangText mods.common.z}">
+                    <ui:ValueSlider Name="zRot"  Style="{StaticResource RotationSlider}" Value="{Binding Camera.CamRotZ, Mode=TwoWay}"/>
+                </ui:LabelledItem>
+            </StackPanel>
+            <StackPanel>
+                <ui:Title Content="{ui:LangText mods.miditrail.camera.noteViewDistance}"/>
+                <ui:LabelledItem Label="{ui:LangText mods.common.start}">
+                    <ui:ValueSlider Style="{StaticResource MidiOffsetSlider}" Value="{Binding Camera.RenderDistForward, Mode=TwoWay}"/>
+                </ui:LabelledItem>
+                <ui:LabelledItem Label="{ui:LangText mods.common.end}">
+                    <ui:ValueSlider Style="{StaticResource MidiOffsetSlider}" Value="{Binding Camera.RenderDistBack, Mode=TwoWay}"/>
+                </ui:LabelledItem>
+            </StackPanel>
+            <StackPanel>
+                <ui:Title Content="{ui:LangText mods.miditrail.camera.perspective}"/>
+                <ui:LabelledItem Label="{ui:LangText mods.miditrail.camera.fov}">
+                    <ui:ValueSlider Style="{StaticResource FOVSlider}" Value="{Binding Camera.CamFOV, Mode=TwoWay}"/>
+                </ui:LabelledItem>
+                <ui:Checkbox Margin="0,10,0,5" Content="{ui:LangText mods.miditrail.camera.useOrthro}" IsChecked="{Binding Camera.UseOrthro, Mode=TwoWay}"/>
+                <StackPanel>
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Camera.UseOrthro}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                    <ui:LabelledItem Label="{ui:LangText mods.miditrail.camera.strengthx}">
+                        <ui:ValueSlider Name="orthroFacX" Style="{StaticResource OrthroFacSlider}" Value="{Binding Camera.OrthroX, Mode=TwoWay}"/>
+                    </ui:LabelledItem>
+                    <ui:LabelledItem Label="{ui:LangText mods.miditrail.camera.strengthy}">
+                        <ui:ValueSlider Name="orthroFacY" Style="{StaticResource OrthroFacSlider}" Value="{Binding Camera.OrthroY, Mode=TwoWay}"/>
+                    </ui:LabelledItem>
+                    <ui:LabelledItem Label="{ui:LangText mods.miditrail.camera.scalex}">
+                        <ui:ValueSlider Name="orthroScaleX" Style="{StaticResource OrthroScaleSlider}" Value="{Binding Camera.OrthroScaleX, Mode=TwoWay}"/>
+                    </ui:LabelledItem>
+                    <ui:LabelledItem Label="{ui:LangText mods.miditrail.camera.scaley}">
+                        <ui:ValueSlider Name="orthroScaleY" Style="{StaticResource OrthroScaleSlider}" Value="{Binding Camera.OrthroScaleY, Mode=TwoWay}"/>
+                    </ui:LabelledItem>
+                </StackPanel>
+            </StackPanel>
         </StackPanel>
-        <StackPanel>
-            <ui:Title Content="{ui:LangText mods.miditrail.camera.rotation}"/>
-            <ui:LabelledItem Label="{ui:LangText mods.common.x}">
-                <ui:ValueSlider Name="xRot" Style="{StaticResource RotationSlider}" Value="{Binding Camera.CamRotX, Mode=TwoWay}"/>
-            </ui:LabelledItem>
-            <ui:LabelledItem Label="{ui:LangText mods.common.y}">
-                <ui:ValueSlider Name="yRot" Style="{StaticResource RotationSlider}" Value="{Binding Camera.CamRotY, Mode=TwoWay}"/>
-            </ui:LabelledItem>
-            <ui:LabelledItem Label="{ui:LangText mods.common.z}">
-                <ui:ValueSlider Name="zRot"  Style="{StaticResource RotationSlider}" Value="{Binding Camera.CamRotZ, Mode=TwoWay}"/>
-            </ui:LabelledItem>
-            <ui:LabelledItem Label="{ui:LangText mods.miditrail.camera.fov}">
-                <ui:ValueSlider Style="{StaticResource FOVSlider}" Value="{Binding Camera.CamFOV, Mode=TwoWay}"/>
-            </ui:LabelledItem>
-        </StackPanel>
-        <StackPanel>
-            <ui:Title Content="{ui:LangText mods.miditrail.camera.noteViewDistance}"/>
-            <ui:LabelledItem Label="{ui:LangText mods.common.start}">
-                <ui:ValueSlider Style="{StaticResource MidiOffsetSlider}" Value="{Binding Camera.RenderDistForward, Mode=TwoWay}"/>
-            </ui:LabelledItem>
-            <ui:LabelledItem Label="{ui:LangText mods.common.end}">
-                <ui:ValueSlider Style="{StaticResource MidiOffsetSlider}" Value="{Binding Camera.RenderDistBack, Mode=TwoWay}"/>
-            </ui:LabelledItem>
-        </StackPanel>
-    </StackPanel>
+    </ScrollViewer>
 </UserControl>

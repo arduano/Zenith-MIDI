@@ -79,9 +79,9 @@ namespace ZenithEngine.UI
         public static readonly DependencyProperty TrueMaxProperty =
             DependencyProperty.Register("TrueMax", typeof(decimal), typeof(ValueSlider), new PropertyMetadata((decimal)1.0d));
 
-        public decimal Step
-        { get => (decimal)GetValue(StepProperty); set => SetValue(StepProperty, value); }
-        public static readonly DependencyProperty StepProperty = DependencyProperty.Register("Step", typeof(decimal), typeof(ValueSlider), new PropertyMetadata((decimal)1));
+        public decimal? Step
+        { get => (decimal?)GetValue(StepProperty); set => SetValue(StepProperty, value); }
+        public static readonly DependencyProperty StepProperty = DependencyProperty.Register("Step", typeof(decimal?), typeof(ValueSlider), new PropertyMetadata(null));
 
 
         public static readonly RoutedEvent ValueChangedEvent = EventManager.RegisterRoutedEvent(

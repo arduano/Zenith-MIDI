@@ -26,6 +26,8 @@ namespace Zenith.Models
         public SaveableModel(string savePath)
         {
             savePath = Path.GetFullPath(savePath);
+            var dir = Path.GetDirectoryName(savePath);
+            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
             this.savePath = savePath;
 
             watcher.Path = Path.GetDirectoryName(savePath);

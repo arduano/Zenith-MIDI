@@ -40,7 +40,7 @@ namespace ZenithEngine.ModuleUI
         public decimal TrueMin { get => InnerControl.TrueMin; set => InnerControl.TrueMin = value; }
         public decimal TrueMax { get => InnerControl.TrueMax; set => InnerControl.TrueMax = value; }
         public int DecimalPoints { get => InnerControl.DecimalPoints; set => InnerControl.DecimalPoints = value; }
-        public decimal Step { get => InnerControl.Step; set => InnerControl.Step = value; }
+        public decimal? Step { get => InnerControl.Step; set => InnerControl.Step = value; }
 
         public double SliderWidth { get => InnerControl.SliderWidth; set => InnerControl.SliderWidth = value; }
         public double MinNUDWidth { get => InnerControl.MinNUDWidth; set => InnerControl.MinNUDWidth = value; }
