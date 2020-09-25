@@ -16,7 +16,7 @@ namespace MIDITrailRender.Models
 
     public class NotesModel : INotifyPropertyChanged
     {
-        public bool EnableWater { get; set; } = true;
+        public bool EnableWater { get; set; } = false;
 
         public FullColorModel UnpressedColor { get; set; } = new FullColorModel()
         {

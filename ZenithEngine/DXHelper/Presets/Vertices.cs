@@ -50,4 +50,28 @@ namespace ZenithEngine.DXHelper.Presets
             Col = col;
         }
     }
+
+    [StructLayoutAttribute(LayoutKind.Sequential)]
+    public struct VertMultiTex2D
+    {
+        [AssemblyElement("POSITION", Format.R32G32_Float)]
+        public Vector2 Pos;
+
+        [AssemblyElement("UV", Format.R32G32_Float)]
+        public Vector2 UV;
+
+        [AssemblyElement("COLOR", Format.R32G32B32A32_Float)]
+        public Color4 Col;
+
+        [AssemblyElement("TEX", Format.R32_UInt)]
+        public int TexID;
+
+        public VertMultiTex2D(Vector2 pos, Vector2 uv, Color4 col, int texid)
+        {
+            Pos = pos;
+            UV = uv;
+            Col = col;
+            TexID = texid;
+        }
+    }
 }

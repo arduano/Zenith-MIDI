@@ -22,11 +22,6 @@ namespace TexturedRender
         Both
     }
 
-    public enum PackType
-    {
-        Folder, Zip, Zrp, Rar, SevenZip, Tar
-    }
-
     public class KeyboardOverlay : DeviceInitiable
     {
         public int FirstKey { get; set; }
@@ -64,7 +59,7 @@ namespace TexturedRender
     public class Pack : DeviceInitiable
     {
         public string Filepath { get; set; }
-        public PackType Filetype { get; set; }
+        //public PackType Filetype { get; set; }
 
         public List<string> SwitchOrder { get; set; } = new List<string>();
         public Dictionary<string, string> SwitchValues { get; set; } = new Dictionary<string, string>();

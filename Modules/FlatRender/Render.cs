@@ -68,11 +68,6 @@ namespace FlatRender
                     SameWidthNotes = sameWidth,
                 });
 
-                int kbfirstNote = firstNote;
-                int kblastNote = lastNote;
-                if (keyboard.BlackKey[firstNote]) kbfirstNote--;
-                if (keyboard.BlackKey[lastNote - 1]) kblastNote++;
-
                 float pianoHeight = (float)settings.kbHeight / 100;
 
                 double notePosFactor = 1 / screenTime * (1 - pianoHeight);
@@ -81,13 +76,13 @@ namespace FlatRender
 
                 double renderCutoff = midiTime + screenTime;
 
-                var keyed = Midi.IterateNotesKeyed(midiTime, renderCutoff);
+                var noteStreams = Midi.IterateNotesKeyed(midiTime, renderCutoff);
                 multithread.Render(context, firstNote, lastNote, !sameWidth, (key, push) =>
                 {
-                    float left = (float)keyboard.Notes[key].Left;
-                    float right = (float)keyboard.Notes[key].Right;
+                    float left = keyboard.Notes[key].Left;
+                    float right = keyboard.Notes[key].Right;
                     var minBottom = pianoHeight - 0.1f;
-                    foreach (var n in keyed[key])
+                    foreach (var n in noteStreams[key])
                     {
                         if (n.Start < midiTime)
                         {
@@ -97,7 +92,7 @@ namespace FlatRender
                         float end = (float)(1 - (renderCutoff - n.End) * notePosFactor);
                         float start = (float)(1 - (renderCutoff - n.Start) * notePosFactor);
                         if (!n.HasEnded)
-                            end = 1;
+                            end = 1.1f;
 
                         end = Math.Min(end, 1.1f);
                         start = Math.Max(start, minBottom);
@@ -109,14 +104,12 @@ namespace FlatRender
                     }
                 });
 
-                for (int n = kbfirstNote; n < kblastNote; n++)
+                foreach (var key in keyboard.IterateWhiteKeys())
                 {
-                    if (keyboard.BlackKey[n]) continue;
-
-                    float left = (float)(keyboard.Keys[n].Left);
-                    float right = (float)(keyboard.Keys[n].Right);
-                    var coll = keyboard.Colors[n].Left;
-                    var colr = keyboard.Colors[n].Right;
+                    float left = key.Left;
+                    float right = key.Right;
+                    var coll = key.Color.Left;
+                    var colr = key.Color.Right;
 
                     quadBuffer.Push(left, pianoHeight, colr);
                     quadBuffer.Push(right, pianoHeight, colr);
@@ -124,14 +117,12 @@ namespace FlatRender
                     quadBuffer.Push(left, 0, coll);
                 }
 
-                for (int n = kbfirstNote; n < kblastNote; n++)
+                foreach (var key in keyboard.IterateBlackKeys())
                 {
-                    if (!keyboard.BlackKey[n]) continue;
-
-                    float left = (float)(keyboard.Keys[n].Left);
-                    float right = (float)(keyboard.Keys[n].Right);
-                    var coll = keyboard.Colors[n].Left;
-                    var colr = keyboard.Colors[n].Right;
+                    float left = key.Left;
+                    float right = key.Right;
+                    var coll = key.Color.Left;
+                    var colr = key.Color.Right;
                     float keyBottom = (float)(pianoHeight / 10 * 3.7);
 
                     quadBuffer.Push(left, pianoHeight, colr);

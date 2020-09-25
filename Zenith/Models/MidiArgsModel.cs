@@ -43,9 +43,10 @@ namespace Zenith.Models
                         Loaded = new LoadedMidiArgsModel(file, filename);
                         LoadStatus = MidiLoadStatus.Loaded;
                     }
-                    catch (OperationCanceledException)
+                    catch (Exception e)
                     {
                         LoadStatus = MidiLoadStatus.Unloaded;
+                        throw e;
                     }
                 }); 
                 try

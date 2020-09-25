@@ -19,6 +19,7 @@ namespace ZenithEngine.DXHelper
 
         public int Width { get; }
         public int Height { get; }
+        public double AspectRatio => (double)Width / Height;
 
         byte[] internalBytes;
 
@@ -56,12 +57,13 @@ namespace ZenithEngine.DXHelper
                     BindFlags = BindFlags.ShaderResource,
                     Usage = ResourceUsage.Immutable,
                     CpuAccessFlags = CpuAccessFlags.None,
-                    Format = SharpDX.DXGI.Format.R8G8B8A8_UNorm,
+                    Format = SharpDX.DXGI.Format.B8G8R8A8_UNorm,
                     MipLevels = 1,
                     OptionFlags = ResourceOptionFlags.None,
                     SampleDescription = new SharpDX.DXGI.SampleDescription(1, 0),
                 }, new DataRectangle((IntPtr)data, Width * 4)));
             }
+            //TextureResource = dispose.Add(new ShaderResourceView(Device, Texture));
             TextureResource = dispose.Add(new ShaderResourceView(Device, Texture));
         }
     }

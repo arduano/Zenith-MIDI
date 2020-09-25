@@ -30,6 +30,8 @@ namespace ZenithEngine.MIDI.Disk
 
         int remainingTracks = 0;
 
+        object parseLock = new object();
+
         protected long lastNoteCount = 0;
         public override long LastIterateNoteCount => lastNoteCount;
 
@@ -70,26 +72,29 @@ namespace ZenithEngine.MIDI.Disk
 
         public override bool ParseUpTo(double time)
         {
-            for (; ParserPosition <= time && !stopped; TicksParsed++)
+            lock (parseLock)
             {
-                SecondsParsed += 1 * ParserTempoTickMultiplier;
-                int ut = 0;
-                for (int trk = 0; trk < Midi.TrackCount; trk++)
+                for (; ParserPosition <= time && !stopped; TicksParsed++)
                 {
-                    var t = Tracks[trk];
-                    if (!t.Ended)
+                    SecondsParsed += 1 * ParserTempoTickMultiplier;
+                    int ut = 0;
+                    for (int trk = 0; trk < Midi.TrackCount; trk++)
                     {
-                        ut++;
-                        t.Step(TicksParsed);
+                        var t = Tracks[trk];
+                        if (!t.Ended)
+                        {
+                            ut++;
+                            t.Step(TicksParsed);
+                        }
                     }
+                    remainingTracks = ut;
                 }
-                remainingTracks = ut;
+                foreach (var t in Tracks)
+                {
+                    if (!t.Ended) return true;
+                }
+                return false;
             }
-            foreach (var t in Tracks)
-            {
-                if (!t.Ended) return true;
-            }
-            return false;
         }
 
         int tempoEventId = 0;

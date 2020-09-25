@@ -72,6 +72,13 @@
       "left": "Left",
       "right": "Right"
     },
+    "textured": {
+      "packs": "Packs",
+      "switches": "Switches",
+      "view": "View",
+      "reloadPack": "Reload Pack",
+      "reloadList": "Reload List",
+    },
     "miditrail": {
       "tabs": {
         "camera": "Camera",

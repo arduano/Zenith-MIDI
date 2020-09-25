@@ -42,13 +42,16 @@ namespace MIDITrailRender.Logic
         {
             var startCutoff = (float)-settings.Camera.RenderDistBack;
             var endCutoff = (float)settings.Camera.RenderDistForward;
-            var minLength = (float)keyboard.WhiteNoteWidth / 2;
 
             var time = playback.PlayerPosition;
 
             float noteScale = (float)settings.General.NoteScale;
 
             var noteConfig = settings.Notes;
+
+            var minLength = 0f;
+            if (noteConfig.NoteType == NoteType.Round)
+                minLength = (float)keyboard.WhiteNoteWidth / 2;
 
             var blackKeyWidth = (float)keyboard.BlackNoteWidth;
 

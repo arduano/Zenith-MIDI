@@ -24,21 +24,12 @@ namespace ZenithEngine.ModuleUtil
         public Color4 WhiteKeyColor { get; set; } = Color4.White;
 
         public double[] AdvancedBlackKeyOffsets { get; set; } = new double[] { 0, 0, 0, 0, 0 };
+
+        public bool SideKeysMustBeWhite { get; set; } = true;
     }
 
     public class KeyboardState
     {
-        public class Pos
-        {
-            public Pos(double left, double right)
-            {
-                Left = left;
-                Right = right;
-            }
-
-            public double Left { get; private set; }
-            public double Right { get; private set; }
-        }
         public class Col
         {
             public Col(Color4 left, Color4 right)
@@ -51,10 +42,43 @@ namespace ZenithEngine.ModuleUtil
             public Color4 Right { get; set; }
         }
 
-        public KeyboardState (int firstNote, int lastNote, KeyboardParams options)
+        public class Pos
         {
+            public KeyboardState State { get; }
+
+            public Pos(KeyboardState state, float left, float right, int key)
+            {
+                Left = left;
+                Right = right;
+                Key = key;
+                State = state;
+            }
+
+            public int Key { get; private set; }
+
+            public float Left { get; private set; }
+            public float Right { get; private set; }
+
+            public Col Color => State.Colors[Key];
+            public bool Pressed => State.Pressed[Key];
+            public bool IsBlack => State.BlackKey[Key];
+            public bool IsWhite => !State.BlackKey[Key];
+        }
+
+        public KeyboardState(int firstNote, int lastNote, KeyboardParams options)
+        {
+            lastNote++;
+
+            FirstNote = firstNote;
+            LastNote = lastNote;
+
             FirstKey = firstNote;
             LastKey = lastNote;
+            if (options.SideKeysMustBeWhite)
+            {
+                if (IsBlackKey(firstNote)) FirstKey--;
+                if (IsBlackKey(lastNote - 1)) LastKey++;
+            }
 
             for (int i = 0; i < BlackKey.Length; i++) BlackKey[i] = IsBlackKey(i);
             int b = 0;
@@ -112,10 +136,10 @@ namespace ZenithEngine.ModuleUtil
                     widthArrayNotes[i] = samewidth;
                 }
 
-                BlackKeyWidth = samewidth;
-                WhiteKeyWidth = samewidth;
-                BlackNoteWidth = samewidth;
-                WhiteNoteWidth = samewidth;
+                BlackKeyWidth = (float)samewidth;
+                WhiteKeyWidth = (float)samewidth;
+                BlackNoteWidth = (float)samewidth;
+                WhiteNoteWidth = (float)samewidth;
             }
             else
             {
@@ -167,16 +191,16 @@ namespace ZenithEngine.ModuleUtil
                     widthArrayNotes[i] /= width;
                 }
 
-                BlackKeyWidth = options.BlackKeyScale / width;
-                WhiteKeyWidth = 1 / width;
-                BlackNoteWidth = options.BlackKeyScale * options.BlackNoteScale / width;
-                WhiteNoteWidth = 1 / width;
+                BlackKeyWidth = (float)(options.BlackKeyScale / width);
+                WhiteKeyWidth = (float)(1 / width);
+                BlackNoteWidth = (float)(options.BlackKeyScale * options.BlackNoteScale / width);
+                WhiteNoteWidth = (float)(1 / width);
             }
 
             for (int i = 0; i < 257; i++)
             {
-                Keys[i] = new Pos(leftArrayKeys[i], leftArrayKeys[i] + widthArrayKeys[i]);
-                Notes[i] = new Pos(leftArrayNotes[i], leftArrayNotes[i] + widthArrayNotes[i]);
+                Keys[i] = new Pos(this, (float)leftArrayKeys[i], (float)leftArrayKeys[i] + (float)widthArrayKeys[i], i);
+                Notes[i] = new Pos(this, (float)leftArrayNotes[i], (float)leftArrayNotes[i] + (float)widthArrayNotes[i], i);
 
                 if (BlackKey[i]) Colors[i] = new Col(options.BlackKeyColor, options.BlackKeyColor);
                 else Colors[i] = new Col(options.WhiteKeyColor, options.WhiteKeyColor);
@@ -206,20 +230,61 @@ namespace ZenithEngine.ModuleUtil
             return n == 1 || n == 3 || n == 6 || n == 8 || n == 10;
         }
 
+        public IEnumerable<Pos> IterateNotes(bool blackNotesAbove)
+        {
+            if (blackNotesAbove)
+            {
+                for (int i = FirstNote; i < LastNote; i++)
+                    if (!BlackKey[i])
+                        yield return Notes[i];
+                for (int i = FirstNote; i < LastNote; i++)
+                    if (BlackKey[i])
+                        yield return Notes[i];
+            }
+            else
+            {
+                for (int i = FirstNote; i < LastNote; i++)
+                    yield return Notes[i];
+            }
+        }
+
+        public IEnumerable<Pos> IterateKeys()
+        {
+            for (int i = FirstKey; i < LastKey; i++)
+                yield return Keys[i];
+        }
+
+        public IEnumerable<Pos> IterateWhiteKeys()
+        {
+            for (int i = FirstKey; i < LastKey; i++)
+                if (!BlackKey[i])
+                    yield return Keys[i];
+        }
+
+        public IEnumerable<Pos> IterateBlackKeys()
+        {
+            for (int i = FirstKey; i < LastKey; i++)
+                if (BlackKey[i])
+                    yield return Keys[i];
+        }
+
         public int FirstKey { get; }
         public int LastKey { get; }
+
+        public int FirstNote { get; }
+        public int LastNote { get; }
 
         public Pos[] Keys { get; } = new Pos[257];
         public Pos[] Notes { get; } = new Pos[257];
         public bool[] BlackKey { get; } = new bool[257];
         public int[] KeyNumber { get; } = new int[257];
 
-        public double BlackKeyWidth { get; }
-        public double WhiteKeyWidth { get; }
-        public double BlackNoteWidth { get; }
-        public double WhiteNoteWidth { get; }
+        public float BlackKeyWidth { get; }
+        public float WhiteKeyWidth { get; }
+        public float BlackNoteWidth { get; }
+        public float WhiteNoteWidth { get; }
 
-        public Col[] Colors { get; } = new Col[257]; 
-        public bool[] Pressed { get; } = new bool[257]; 
+        public Col[] Colors { get; } = new Col[257];
+        public bool[] Pressed { get; } = new bool[257];
     }
 }

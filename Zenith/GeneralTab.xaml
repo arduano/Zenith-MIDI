@@ -144,6 +144,7 @@
                 <DockPanel HorizontalAlignment="Center">
                     <ui:LabelledItem Label="{ui:LangText main.gen.width}" MinLabelWidth="60" Margin="5">
                         <ui:NumberBox
+                            Step="1"
                             Style="{DynamicResource RenderWidth}"
                             Value="{Binding RenderArgs.Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DecimalIntConvert}}"
                             Width="100"
@@ -152,6 +153,7 @@
 
                     <ui:LabelledItem Label="{ui:LangText main.gen.height}" Margin="5">
                         <ui:NumberBox
+                            Step="1"
                             Style="{DynamicResource RendeHeight}"
                             Value="{Binding RenderArgs.Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DecimalIntConvert}}"
                             Width="100"
@@ -162,10 +164,11 @@
                 <DockPanel HorizontalAlignment="Center" Margin="10">
                     <ui:LabelledItem Label="{ui:LangText main.gen.ssaa}" Margin="5">
                         <ui:NumberBox
-                                Style="{DynamicResource RendeSSAA}"
-                                Value="{Binding RenderArgs.SSAA, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DecimalIntConvert}}"
-                                Width="100"
-                            />
+                            Step="1"
+                            Style="{DynamicResource RendeSSAA}"
+                            Value="{Binding RenderArgs.SSAA, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DecimalIntConvert}}"
+                            Width="100"
+                        />
                     </ui:LabelledItem>
 
                     <ui:LabelledItem Label="{ui:LangText main.gen.fps}" Margin="5">

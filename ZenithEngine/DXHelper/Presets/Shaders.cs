@@ -1,4 +1,5 @@
-﻿using SharpDX;
+﻿using OpenTK.Graphics.ES11;
+using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,6 +18,13 @@ namespace ZenithEngine.DXHelper.Presets
         public bool Horizontal;
         public float Strength;
         public float Brightness;
+    }
+
+    public enum TextureShaderPreset
+    {
+        Darken,
+        Lighten,
+        Hybrid
     }
 
     public static class Shaders
@@ -74,10 +82,71 @@ namespace ZenithEngine.DXHelper.Presets
                 .SetDefine(color ? "COLORCHANGE" : "MASK");
         }
 
-        public static ShaderProgram MultiTexture(int texCount)
+        public static ShaderProgram MultiTexture(int texCount) =>
+            MultiTexture(texCount);
+
+        public static ShaderProgram MultiTexture(int texCount, TextureShaderPreset preset)
         {
-            return new ShaderProgram<GlowShaderParams>(ReadShaderText("multiTexture.fx"), typeof(VertTex2D), "4_0", "VS", "PS")
-                .SetDefine("COUNT", texCount);
+            switch (preset)
+            {
+                case TextureShaderPreset.Darken:
+                    return MultiTexture(texCount, @"
+    col = col * tex;
+");
+                case TextureShaderPreset.Lighten:
+                    return MultiTexture(texCount, @"
+    tex.rgb = 1 - tex.rgb;
+    col.rgb = 1 - col.rgb;
+    col = tex * col;
+    col.rgb = 1 - col.rgb;
+");
+                case TextureShaderPreset.Hybrid:
+                    return MultiTexture(texCount, @"
+    tex = tex * 2;
+    float4 out_color;
+    if(tex.r > 1){
+        out_color.r = 1 - (2 - tex.r) * (1 - col.r);
+    }
+    else out_color.r = tex.r * col.r;
+    if(tex.g > 1){
+        out_color.g = 1 - (2 - tex.g) * (1 - col.g);
+    }
+    else out_color.g = tex.g * col.g;
+    if(tex.b > 1){
+        out_color.b = 1 - (2 - tex.b) * (1 - col.b);
+    }
+    else out_color.b = tex.b * col.b;
+    out_color.a = tex.a * col.a;
+    col = out_color;
+");
+                default:
+                    throw new Exception("Shouldnt reach here");
+            }
+        }
+
+        public static ShaderProgram MultiTexture(int texCount, string applyCol = null)
+        {
+            string defs = "";
+            for(int i = 0; i < texCount; i++)
+            {
+                if (i != 0) defs += "\n";
+                defs += $"        case {i}: return Textures[{i}].Sample(Sampler, uv);";
+            }
+            var shader = ReadShaderText("multiTexture.fx").Replace("CASES", defs).Replace("COUNT", texCount.ToString());
+
+            if (applyCol != null)
+            {
+                shader = shader.Replace("COLAPPLY_CODE", applyCol);
+            }
+
+            var program = new ShaderProgram<GlowShaderParams>(shader, typeof(VertMultiTex2D), "4_0", "VS", "PS");
+
+            if (applyCol != null)
+            {
+                program.SetDefine("COLAPPLY");
+            }
+
+            return program;
         }
     }
 }

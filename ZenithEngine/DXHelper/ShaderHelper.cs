@@ -20,6 +20,7 @@ namespace ZenithEngine.DXHelper
                 case Format.R32G32_Float: return "float2";
                 case Format.R32_Float: return "float";
                 case Format.R16_Float: return "half";
+                case Format.R32_UInt: return "int";
                 default: throw new NotImplementedException($"Specified format not implemented yet: {format}");
             }
         }

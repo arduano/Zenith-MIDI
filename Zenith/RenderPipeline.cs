@@ -279,6 +279,17 @@ namespace Zenith
 
             EndTime = Playback.Midi.SecondsLength + 5;
             StartTime = Playback.PlayerPositionSeconds;
+
+            Status.PropertyChanged += Status_PropertyChanged;
+        }
+
+        private void Status_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(Status.PreviewAudioEnabled))
+            {
+                if (midiAudio != null)
+                    midiAudio.Muted = !Status.PreviewAudioEnabled;
+            }
         }
 
         public RenderPipeline(RenderStatus status, MidiPlayback playback, ModuleManager module) :
@@ -339,37 +350,45 @@ namespace Zenith
                 var context = device.D3Device.ImmediateContext;
                 preview.Run(state =>
                 {
-                    context.ClearRenderTargetView(state.RenderTarget);
-                    Module.RenderFrame(context, previewComposite.RenderTarget);
-
                     try
                     {
-                        previewComposite.RenderFrame(context, state.RenderTarget);
+                        context.ClearRenderTargetView(state.RenderTarget);
+                        Module.RenderFrame(context, previewComposite.RenderTarget);
+
+                        try
+                        {
+                            previewComposite.RenderFrame(context, state.RenderTarget);
+                        }
+                        catch (FFMpegException)
+                        {
+                            state.Stop();
+                            return;
+                        }
+
+                        if (!Paused)
+                        {
+                            if (Status.RealtimePlayback)
+                                Playback.AdvancePlayback(Math.Min(time.Elapsed.TotalSeconds, 5) * PreviewSpeed);
+                            else
+                                Playback.AdvancePlayback(1.0 / Status.FPS * PreviewSpeed);
+                        }
+                        time.Reset();
+                        time.Start();
+
+                        if (Playback.PlayerPositionSeconds > EndTime)
+                            state.Stop();
+                        if (!Status.Running)
+                            state.Stop();
+
+                        RenderProgress?.Invoke(this, new RenderProgressData((double)Playback.PlayerPositionSeconds, (long)Playback.LastIterateNoteCount, frameNum++));
+
+                        cancel.ThrowIfCancellationRequested();
                     }
-                    catch (FFMpegException)
+                    catch (Exception e)
                     {
                         state.Stop();
-                        return;
+                        throw e;
                     }
-
-                    if (!Paused)
-                    {
-                        if (Status.RealtimePlayback)
-                            Playback.AdvancePlayback(Math.Min(time.Elapsed.TotalSeconds, 5) * PreviewSpeed);
-                        else
-                            Playback.AdvancePlayback(1.0 / Status.FPS * PreviewSpeed);
-                    }
-                    time.Reset();
-                    time.Start();
-
-                    if (Playback.PlayerPositionSeconds > EndTime)
-                        state.Stop();
-                    if (!Status.Running) 
-                        state.Stop();
-
-                    RenderProgress?.Invoke(this, new RenderProgressData((double)Playback.PlayerPositionSeconds, (long)Playback.LastIterateNoteCount, frameNum++));
-
-                    cancel.ThrowIfCancellationRequested();
                 });
             }
             finally
@@ -379,177 +398,11 @@ namespace Zenith
             }
 
             RenderEnded?.Invoke(this, new EventArgs());
-
-            //var win = new PreviewWindow(1280, 720, GraphicsMode.Default, "test", GameWindowFlags.Default, DisplayDevice.Default, 1, 0, GraphicsContextFlags.Default);
-            //win.Run();
-
-            //Module.StartRender(Playback, Status);
-
-            //var disposer = new DisposeGroup();
-
-            //FFMpeg outputVid = null;
-            //FFMpeg outputMask = null;
-            //ShaderProgram maskedVidShader = null;
-            //ShaderProgram maskedMaskShader = null;
-            //RenderSurface surfaceVidSurface = null;
-            //RenderSurface surfaceMaskSurface = null;
-            //RenderSurface surfaceMaskedVidComposite = null;
-            //if (Rendering)
-            //{
-            //    outputVid = disposer.Add(new FFMpeg(Status.OutputWidth, Status.OutputHeight, Status.FPS, RenderArgs.Args, RenderArgs.OutputVideo));
-            //    if (RenderArgs.UseMask)
-            //    {
-            //        maskedVidShader = disposer.Add(ShaderProgram.Presets.BasicTextured("vec4(col.r / col.a, col.g / col.a, col.b / col.a, 1)"));
-            //        maskedMaskShader = disposer.Add(ShaderProgram.Presets.BasicTextured("vec4(col.a, col.a, col.a, 1)"));
-            //        outputMask = disposer.Add(new FFMpeg(Status.OutputWidth, Status.OutputHeight, Status.FPS, RenderArgs.Args, RenderArgs.OutputMask));
-            //        surfaceVidSurface = disposer.Add(RenderSurface.BasicFrame(Status.OutputWidth, Status.OutputHeight));
-            //        surfaceMaskSurface = disposer.Add(RenderSurface.BasicFrame(Status.OutputWidth, Status.OutputHeight));
-            //        surfaceMaskedVidComposite = disposer.Add(RenderSurface.BasicFrame(Status.OutputWidth, Status.OutputHeight / 2));
-            //    }
-            //}
-
-            //var buff = disposer.Add(new TexturedShapeBuffer(16, ShapePresets.Quads));
-            //var solidFill = disposer.Add(new BasicShapeBuffer(16, ShapePresets.Quads));
-            //var texShader = disposer.Add(TexturedShapeBuffer.GetBasicShader());
-            //var solidShader = disposer.Add(BasicShapeBuffer.GetBasicShader());
-
-            //if (!Rendering) midiAudio = disposer.Add(new MIDIAudio(Playback, new KDMAPIOutput()));
-
-            //var comp = disposer.Add(new Compositor());
-
-            //var surface = disposer.Add(RenderSurface.BasicFrame(Status.OutputWidth, Status.OutputHeight));
-
-            //void CompositeWithAspect(RenderSurface from)
-            //{
-            //    float winAspect = (float)win.Width / win.Height;
-            //    float fromAspect = (float)from.Width / from.Height;
-            //    var size = (winAspect - fromAspect) / winAspect;
-            //    var offset = size / 2;
-
-            //    Vector2 tl = new Vector2(offset, 0);
-            //    Vector2 br = new Vector2(1 - offset, 1);
-
-            //    if (size < 0)
-            //    {
-            //        size = ((1 / winAspect) - (1 / fromAspect)) / (1 / winAspect);
-            //        offset = size / 2;
-
-            //        tl = new Vector2(0, offset);
-            //        br = new Vector2(1, 1 - offset);
-            //    }
-
-            //    win.RenderTarget.BindSurfaceAndClear();
-
-            //    solidShader.Bind();
-            //    solidFill.PushVertex(0, 0, Color4.Gray);
-            //    solidFill.PushVertex(1, 0, Color4.Gray);
-            //    solidFill.PushVertex(1, 1, Color4.Gray);
-            //    solidFill.PushVertex(0, 1, Color4.Gray);
-            //    solidFill.PushVertex(tl.X, tl.Y, Color4.Black);
-            //    solidFill.PushVertex(br.X, tl.Y, Color4.Black);
-            //    solidFill.PushVertex(br.X, br.Y, Color4.Black);
-            //    solidFill.PushVertex(tl.X, br.Y, Color4.Black);
-            //    solidFill.Flush();
-
-            //    from.BindTexture();
-            //    texShader.Bind();
-            //    buff.PushQuad(tl, br);
-            //    buff.Flush();
-            //}
-
-
-            //win.ProcessEvents();
-            //win.VSync = VSyncMode.Off;
-
-            //Stopwatch time = new Stopwatch();
-            //time.Start();
-
-            //while (true)
-            //{
-            //    win.ProcessEvents();
-            //    win.VSync = VSyncMode.Off;
-            //    Playback.PushPlaybackEvents = Status.PreviewAudioEnabled && !Rendering;
-
-            //    try
-            //    {
-            //        // Let the module handle frame rendering
-            //        Module.RenderFrame(surface);
-            //    }
-            //    catch (Exception e)
-            //    {
-            //        MessageBox.Show("Module render call crashed!\n\n" + e.Message + "\n" + e.StackTrace, "Render crashed");
-            //        break;
-            //    }
-
-            //    using (new GLEnabler().Enable(EnableCap.Blend))
-            //    {
-            //        GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-
-            //        if (Rendering)
-            //        {
-            //            if (RenderArgs.UseMask)
-            //            {
-            //                comp.Composite(surface, maskedVidShader, surfaceVidSurface);
-            //                comp.Composite(surface, maskedMaskShader, surfaceMaskSurface);
-
-            //                surfaceMaskedVidComposite.BindSurfaceAndClear();
-            //                texShader.Bind();
-            //                surfaceVidSurface.BindTexture();
-            //                buff.PushQuad(0, 0, 0.5f, 1);
-            //                buff.Flush();
-            //                surfaceMaskSurface.BindTexture();
-            //                buff.PushQuad(0.5f, 0, 1, 1);
-            //                buff.Flush();
-
-            //                outputVid.WriteFrame(surfaceVidSurface);
-            //                outputMask.WriteFrame(surfaceMaskSurface);
-
-            //                CompositeWithAspect(surfaceMaskedVidComposite);
-            //            }
-            //            else
-            //            {
-            //                outputVid.WriteFrame(surface);
-            //                CompositeWithAspect(surface);
-            //            }
-            //        }
-            //        else
-            //        {
-            //            CompositeWithAspect(surface);
-            //        }
-            //    }
-
-            //    if (!Paused)
-            //    {
-            //        if (Status.RealtimePlayback)
-            //            Playback.AdvancePlayback(Math.Min(time.Elapsed.TotalSeconds, 5) * PreviewSpeed);
-            //        else
-            //            Playback.AdvancePlayback(1.0 / Status.FPS * PreviewSpeed);
-            //    }
-            //    time.Reset();
-            //    time.Start();
-
-            //    if (Playback.PlayerPositionSeconds > Playback.Midi.SecondsLength + 5)
-            //        break;
-            //    if (!Status.Running) break;
-
-            //    GC.Collect(2, GCCollectionMode.Optimized);
-
-            //    win.SwapBuffers();
-            //}
-
-            //Playback.Dispose();
-            //Module.EndRender();
-
-            //disposer.Dispose();
-
-            //win.Close();
-            //win.Dispose();
         }
 
         public void Dispose()
         {
-            //Status.Running = false;
-            //renderTask.Join();
+            Status.PropertyChanged -= Status_PropertyChanged;
         }
     }
 }

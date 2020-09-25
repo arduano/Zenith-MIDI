@@ -41,10 +41,10 @@ namespace PFARender
                 public Keys() : base(Dock.Left) { }
 
                 [UIChild]
-                public UINumber left = new UINumber("leftKey", new LangText("mods.common.firstNote"), 0, 0, 255);
+                public UINumber left = new UINumber("leftKey", new LangText("mods.common.firstNote"), 0, 0, 254);
 
                 [UIChild]
-                public UINumber right = new UINumber("rightKey", new LangText("mods.common.lastNote"), 128, 1, 256);
+                public UINumber right = new UINumber("rightKey", new LangText("mods.common.lastNote"), 127, 1, 255);
             }
 
             [UIChild]
@@ -67,7 +67,7 @@ namespace PFARender
             { SliderWidth = 400 };
 
             [UIChild]
-            public UICheckbox sameWidthNotes = new UICheckbox("sameWidthNotes", new LangText("mods.common.sameWidthNotes"), true);
+            public UICheckbox sameWidthNotes = new UICheckbox("sameWidthNotes", new LangText("mods.common.sameWidthNotes"), false);
         }
         #endregion
 
@@ -129,11 +129,6 @@ namespace PFARender
                     BlackKeyScale = 0.64f
                 });
 
-                int kbfirstNote = firstNote;
-                int kblastNote = lastNote;
-                if (keyboard.BlackKey[firstNote]) kbfirstNote--;
-                if (keyboard.BlackKey[lastNote - 1]) kblastNote++;
-
                 float pianoHeight = 0.151f * (float)settings.kbHeight;
 
                 pianoHeight = pianoHeight / (settings.keys.right - settings.keys.left) * 128;
@@ -146,7 +141,7 @@ namespace PFARender
 
                 double renderCutoff = midiTime + screenTime;
 
-                var keyed = Midi.IterateNotesKeyed(midiTime, renderCutoff);
+                var noteStreams = Midi.IterateNotesKeyed(midiTime, renderCutoff);
                 multithread.Render(context, firstNote, lastNote, !sameWidth, (key, push) =>
                 {
                     void pushQuad(float left, float top, float right, float bottom, Color4 topLeft, Color4 topRight, Color4 bottomRight, Color4 bottomLeft)
@@ -159,17 +154,16 @@ namespace PFARender
 
                     var minBottom = pianoHeight - 0.1f;
 
-                    foreach (var n in keyed[key])
+                    foreach (var n in noteStreams[key])
                     {
-
                         if (n.Start < midiTime)
                         {
                             keyboard.BlendNote(n.Key, n.Color);
                             keyboard.PressKey(n.Key);
                         }
 
-                        float left = (float)keyboard.Notes[key].Left;
-                        float right = (float)keyboard.Notes[key].Right;
+                        float left = keyboard.Notes[key].Left;
+                        float right = keyboard.Notes[key].Right;
                         float end = (float)(1 - (renderCutoff - n.End) * notePosFactor);
                         float start = (float)(1 - (renderCutoff - n.Start) * notePosFactor);
                         if (!n.HasEnded)
@@ -236,150 +230,143 @@ namespace PFARender
 
                 quadBuffer.PushQuad(0, topRedEnd, 1, topBarEnd, new Color4(.239f, .239f, .239f, 1));
 
-                for (int i = kbfirstNote; i < kblastNote; i++)
+                foreach (var key in keyboard.IterateWhiteKeys())
                 {
-                    if (!keyboard.BlackKey[i])
+                    float left = key.Left;
+                    float right = key.Right;
+
+                    Color4 leftCol = key.Color.Left;
+                    Color4 rightCol = key.Color.Right;
+
+                    if (key.Pressed)
                     {
-                        float left = (float)keyboard.Keys[i].Left;
-                        float right = (float)keyboard.Keys[i].Right;
+                        col1 = MultCol(rightCol, 0.5f);
+                        quadBuffer.PushQuad(left, topBarEnd, right, wEndDownT, col1, col1, leftCol, leftCol);
 
-                        Color4 leftCol = new Color4(255, 255, 255, 255).BlendWith(keyboard.Colors[i].Left);
-                        Color4 rightCol = new Color4(255, 255, 255, 255).BlendWith(keyboard.Colors[i].Right);
-
-                        if (keyboard.Pressed[i])
-                        {
-                            col1 = MultCol(rightCol, 0.5f);
-                            quadBuffer.PushQuad(left, topBarEnd, right, wEndDownT, col1, col1, leftCol, leftCol);
-
-                            col1 = MultCol(leftCol, 0.6f);
-                            quadBuffer.PushQuad(left, wEndDownT, right, 0, col1, col1, col1, col1);
-                        }
-                        else
-                        {
-                            col1 = MultCol(rightCol, 0.8f);
-                            quadBuffer.PushQuad(left, topBarEnd, right, wEndUpT, col1, col1, rightCol, rightCol);
-
-                            col1 = MultCol(leftCol, .529f);
-                            col2 = MultCol(leftCol, .329f);
-                            quadBuffer.PushQuad(left, wEndUpT, right, wEndUpB, col2, col2, col1, col1);
-
-                            col1 = MultCol(leftCol, .615f);
-                            col2 = MultCol(leftCol, .729f);
-                            quadBuffer.PushQuad(left, wEndUpB, right, 0, col2, col2, col1, col1);
-                        }
-
-                        var scleft = (float)Math.Floor(left * Status.OutputWidth - sepwdth / 2);
-                        var scright = (float)Math.Floor(left * Status.OutputWidth + sepwdth / 2);
-                        if (scleft == scright) scright++;
-                        scleft /= Status.OutputWidth;
-                        scright /= Status.OutputWidth;
-
-
-                        col1 = new Color4(.0431f, .0431f, .0431f, 1);
-                        col2 = new Color4(.556f, .556f, .556f, 1);
-                        quadBuffer.PushQuad(scleft, topBarEnd, scright, 0, col1, col2, col2, col1);
+                        col1 = MultCol(leftCol, 0.6f);
+                        quadBuffer.PushQuad(left, wEndDownT, right, 0, col1, col1, col1, col1);
                     }
+                    else
+                    {
+                        col1 = MultCol(rightCol, 0.8f);
+                        quadBuffer.PushQuad(left, topBarEnd, right, wEndUpT, col1, col1, rightCol, rightCol);
+
+                        col1 = MultCol(leftCol, .529f);
+                        col2 = MultCol(leftCol, .329f);
+                        quadBuffer.PushQuad(left, wEndUpT, right, wEndUpB, col2, col2, col1, col1);
+
+                        col1 = MultCol(leftCol, .615f);
+                        col2 = MultCol(leftCol, .729f);
+                        quadBuffer.PushQuad(left, wEndUpB, right, 0, col2, col2, col1, col1);
+                    }
+
+                    var scleft = (float)Math.Floor(left * Status.OutputWidth - sepwdth / 2);
+                    var scright = (float)Math.Floor(left * Status.OutputWidth + sepwdth / 2);
+                    if (scleft == scright) scright++;
+                    scleft /= Status.OutputWidth;
+                    scright /= Status.OutputWidth;
+
+                    col1 = new Color4(.0431f, .0431f, .0431f, 1);
+                    col2 = new Color4(.556f, .556f, .556f, 1);
+                    quadBuffer.PushQuad(scleft, topBarEnd, scright, 0, col1, col2, col2, col1);
                 }
 
                 quadBuffer.UseContext(context);
 
-                for (int i = kbfirstNote; i < kblastNote; i++)
+                foreach (var key in keyboard.IterateBlackKeys())
                 {
-                    if (keyboard.BlackKey[i])
+                    float left = key.Left;
+                    float right = key.Right;
+
+                    Color4 leftCol = key.Color.Left;
+                    Color4 rightCol = key.Color.Right;
+
+                    float ileft = left + (float)keyboard.BlackKeyWidth / 8;
+                    float iright = right - (float)keyboard.BlackKeyWidth / 8;
+
+                    Color4 middleCol = new Color4(
+                        (leftCol.Red + rightCol.Red) / 2,
+                        (leftCol.Green + rightCol.Green) / 2,
+                        (leftCol.Blue + rightCol.Blue) / 2,
+                        (leftCol.Alpha + rightCol.Alpha) / 2
+                        );
+
+                    if (!key.Pressed)
                     {
-                        float left = (float)keyboard.Keys[i].Left;
-                        float right = (float)keyboard.Keys[i].Right;
+                        col1 = AddCol(rightCol, 0.25f);
+                        col2 = AddCol(leftCol, 0.15f);
+                        col3 = AddCol(leftCol, 0.0f);
+                        col4 = AddCol(leftCol, 0.3f);
 
-                        float ileft = left + (float)keyboard.BlackKeyWidth / 8;
-                        float iright = right - (float)keyboard.BlackKeyWidth / 8;
+                        quadBuffer.Push(ileft, bKeyUSplitLT, col1);
+                        quadBuffer.Push(iright, bKeyUSplitRT, col1);
+                        quadBuffer.Push(iright, bKeyUpT, col2);
+                        quadBuffer.Push(ileft, bKeyUpT, col2);
 
-                        Color4 leftCol = new Color4(0, 0, 0, 255).BlendWith(keyboard.Colors[i].Left);
-                        Color4 rightCol = new Color4(0, 0, 0, 255).BlendWith(keyboard.Colors[i].Right);
+                        quadBuffer.Push(ileft, bKeyUSplitLB, col3);
+                        quadBuffer.Push(iright, bKeyUSplitRB, col3);
+                        quadBuffer.Push(iright, bKeyUSplitRT, col1);
+                        quadBuffer.Push(ileft, bKeyUSplitLT, col1);
 
-                        Color4 middleCol = new Color4(
-                            (leftCol.Red + rightCol.Red) / 2,
-                            (leftCol.Green + rightCol.Green) / 2,
-                            (leftCol.Blue + rightCol.Blue) / 2,
-                            (leftCol.Alpha + rightCol.Alpha) / 2
-                            );
+                        quadBuffer.Push(ileft, bKeyUpB, col3);
+                        quadBuffer.Push(iright, bKeyUpB, col3);
+                        quadBuffer.Push(iright, bKeyUSplitRB, col3);
+                        quadBuffer.Push(ileft, bKeyUSplitLB, col3);
 
-                        if (!keyboard.Pressed[i])
-                        {
-                            col1 = AddCol(rightCol, 0.25f);
-                            col2 = AddCol(leftCol, 0.15f);
-                            col3 = AddCol(leftCol, 0.0f);
-                            col4 = AddCol(leftCol, 0.3f);
+                        quadBuffer.Push(left, bKeyEnd, col3);
+                        quadBuffer.Push(ileft, bKeyUpB, col4);
+                        quadBuffer.Push(ileft, bKeyUpT, col4);
+                        quadBuffer.Push(left, topBarEnd, col3);
 
-                            quadBuffer.Push(ileft, bKeyUSplitLT, col1);
-                            quadBuffer.Push(iright, bKeyUSplitRT, col1);
-                            quadBuffer.Push(iright, bKeyUpT, col2);
-                            quadBuffer.Push(ileft, bKeyUpT, col2);
+                        quadBuffer.Push(right, bKeyEnd, col3);
+                        quadBuffer.Push(iright, bKeyUpB, col4);
+                        quadBuffer.Push(iright, bKeyUpT, col4);
+                        quadBuffer.Push(right, topBarEnd, col3);
 
-                            quadBuffer.Push(ileft, bKeyUSplitLB, col3);
-                            quadBuffer.Push(iright, bKeyUSplitRB, col3);
-                            quadBuffer.Push(iright, bKeyUSplitRT, col1);
-                            quadBuffer.Push(ileft, bKeyUSplitLT, col1);
+                        quadBuffer.Push(left, bKeyEnd, col3);
+                        quadBuffer.Push(right, bKeyEnd, col3);
+                        quadBuffer.Push(iright, bKeyUpB, col4);
+                        quadBuffer.Push(ileft, bKeyUpB, col4);
+                    }
+                    else
+                    {
+                        col1 = MultCol(middleCol, 0.85f);
+                        col2 = MultCol(rightCol, 0.85f);
+                        col3 = MultCol(middleCol, 0.7f);
+                        col4 = MultCol(leftCol, 0.7f);
 
-                            quadBuffer.Push(ileft, bKeyUpB, col3);
-                            quadBuffer.Push(iright, bKeyUpB, col3);
-                            quadBuffer.Push(iright, bKeyUSplitRB, col3);
-                            quadBuffer.Push(ileft, bKeyUSplitLB, col3);
+                        quadBuffer.Push(ileft, bKeyUSplitLT, col1);
+                        quadBuffer.Push(iright, bKeyUSplitRT, col1);
+                        quadBuffer.Push(iright, bKeyDownT, col2);
+                        quadBuffer.Push(ileft, bKeyDownT, col2);
 
-                            quadBuffer.Push(left, bKeyEnd, col3);
-                            quadBuffer.Push(ileft, bKeyUpB, col4);
-                            quadBuffer.Push(ileft, bKeyUpT, col4);
-                            quadBuffer.Push(left, topBarEnd, col3);
+                        quadBuffer.Push(ileft, bKeyUSplitLB, col3);
+                        quadBuffer.Push(iright, bKeyUSplitRB, col3);
+                        quadBuffer.Push(iright, bKeyUSplitRT, col1);
+                        quadBuffer.Push(ileft, bKeyUSplitLT, col1);
 
-                            quadBuffer.Push(right, bKeyEnd, col3);
-                            quadBuffer.Push(iright, bKeyUpB, col4);
-                            quadBuffer.Push(iright, bKeyUpT, col4);
-                            quadBuffer.Push(right, topBarEnd, col3);
+                        quadBuffer.Push(ileft, bKeyDownB, col4);
+                        quadBuffer.Push(iright, bKeyDownB, col4);
+                        quadBuffer.Push(iright, bKeyUSplitRB, col3);
+                        quadBuffer.Push(ileft, bKeyUSplitLB, col3);
 
-                            quadBuffer.Push(left, bKeyEnd, col3);
-                            quadBuffer.Push(right, bKeyEnd, col3);
-                            quadBuffer.Push(iright, bKeyUpB, col4);
-                            quadBuffer.Push(ileft, bKeyUpB, col4);
-                        }
-                        else
-                        {
-                            col1 = MultCol(middleCol, 0.85f);
-                            col2 = MultCol(rightCol, 0.85f);
-                            col3 = MultCol(middleCol, 0.7f);
-                            col4 = MultCol(leftCol, 0.7f);
+                        col1 = MultCol(leftCol, 0.7f);
+                        col2 = MultCol(rightCol, 0.7f);
 
-                            quadBuffer.Push(ileft, bKeyUSplitLT, col1);
-                            quadBuffer.Push(iright, bKeyUSplitRT, col1);
-                            quadBuffer.Push(iright, bKeyDownT, col2);
-                            quadBuffer.Push(ileft, bKeyDownT, col2);
+                        quadBuffer.Push(left, bKeyEnd, col1);
+                        quadBuffer.Push(ileft, bKeyDownB, leftCol);
+                        quadBuffer.Push(ileft, bKeyDownT, rightCol);
+                        quadBuffer.Push(left, topBarEnd, col2);
 
-                            quadBuffer.Push(ileft, bKeyUSplitLB, col3);
-                            quadBuffer.Push(iright, bKeyUSplitRB, col3);
-                            quadBuffer.Push(iright, bKeyUSplitRT, col1);
-                            quadBuffer.Push(ileft, bKeyUSplitLT, col1);
+                        quadBuffer.Push(right, bKeyEnd, col1);
+                        quadBuffer.Push(iright, bKeyDownB, leftCol);
+                        quadBuffer.Push(iright, bKeyDownT, rightCol);
+                        quadBuffer.Push(right, topBarEnd, col2);
 
-                            quadBuffer.Push(ileft, bKeyDownB, col4);
-                            quadBuffer.Push(iright, bKeyDownB, col4);
-                            quadBuffer.Push(iright, bKeyUSplitRB, col3);
-                            quadBuffer.Push(ileft, bKeyUSplitLB, col3);
-
-                            col1 = MultCol(leftCol, 0.7f);
-                            col2 = MultCol(rightCol, 0.7f);
-
-                            quadBuffer.Push(left, bKeyEnd, col1);
-                            quadBuffer.Push(ileft, bKeyDownB, leftCol);
-                            quadBuffer.Push(ileft, bKeyDownT, rightCol);
-                            quadBuffer.Push(left, topBarEnd, col2);
-
-                            quadBuffer.Push(right, bKeyEnd, col1);
-                            quadBuffer.Push(iright, bKeyDownB, leftCol);
-                            quadBuffer.Push(iright, bKeyDownT, rightCol);
-                            quadBuffer.Push(right, topBarEnd, col2);
-
-                            quadBuffer.Push(left, bKeyEnd, col1);
-                            quadBuffer.Push(right, bKeyEnd, col1);
-                            quadBuffer.Push(iright, bKeyDownB, leftCol);
-                            quadBuffer.Push(ileft, bKeyDownB, leftCol);
-                        }
+                        quadBuffer.Push(left, bKeyEnd, col1);
+                        quadBuffer.Push(right, bKeyEnd, col1);
+                        quadBuffer.Push(iright, bKeyDownB, leftCol);
+                        quadBuffer.Push(ileft, bKeyDownB, leftCol);
                     }
                 }
 

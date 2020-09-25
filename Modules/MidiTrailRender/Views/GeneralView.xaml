@@ -12,10 +12,10 @@
         <StackPanel>
             <DockPanel LastChildFill="False" HorizontalAlignment="Left">
                 <ui:LabelledItem Margin="0,0,10,10" Label="{ui:LangText mods.common.firstNote}">
-                    <ui:NumberBox Width="80" Value="{Binding General.FirstKey, Mode=TwoWay}" Minimum="0" Maximum="255"/>
+                    <ui:NumberBox Width="80" Value="{Binding General.FirstKey, Mode=TwoWay}" Minimum="0" Maximum="254"/>
                 </ui:LabelledItem>
                 <ui:LabelledItem Margin="0,0,10,10" Label="{ui:LangText mods.common.lastNote}">
-                    <ui:NumberBox Width="80" Value="{Binding General.LastKey, Mode=TwoWay}" Minimum="1" Maximum="256"/>
+                    <ui:NumberBox Width="80" Value="{Binding General.LastKey, Mode=TwoWay}" Minimum="1" Maximum="255"/>
                 </ui:LabelledItem>
             </DockPanel>
             <ui:LabelledItem Margin="0,0,10,10" Label="{ui:LangText mods.miditrail.general.noteScale}">

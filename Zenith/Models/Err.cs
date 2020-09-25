@@ -18,6 +18,8 @@ namespace Zenith.Models
 
         static void HandleUnknownError(Exception e)
         {
+            if (e is OperationCanceledException) return;
+
             if (e is AggregateException)
             {
                 foreach (var ce in (e as AggregateException).InnerExceptions)
@@ -44,10 +46,6 @@ namespace Zenith.Models
             catch (UIException e)
             {
                 HandleUIError(e);
-            }
-            catch (OperationCanceledException e)
-            {
-                throw e;
             }
             catch (Exception e)
             {

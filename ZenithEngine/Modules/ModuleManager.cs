@@ -148,9 +148,10 @@ namespace ZenithEngine.Modules
                 using (blendState.UseOn(context))
                 {
                     CurrentModule.RenderFrame(context, fullSizeFrame);
-                    context.ClearRenderTargetView(outputSurface);
                 }
 
+                context.ClearRenderTargetView(outputSurface);
+                
                 using (pureBlendState.UseOn(context))
                 {
                     composite.Composite(context, fullSizeFrame, downscale, alphaFixFrame);

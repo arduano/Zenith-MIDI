@@ -18,7 +18,7 @@ namespace ZenithEngine.DXHelper
         public static implicit operator SamplerState(TextureSampler sampler) => sampler.Sampler;
 
         public SamplerState Sampler { get; private set; }
-        public SamplerStateDescription Description { get; }
+        public SamplerStateDescription Description;
 
         public static SamplerStateDescription WrapSampler()
         {

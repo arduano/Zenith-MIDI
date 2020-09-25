@@ -282,7 +282,7 @@ namespace Zenith
             //{
             //    await DataBase.Midi.LoadMidi(@"D:\Midi\tau2.5.9.mid");
             //    await DataBase.ModuleLoadTask.Await();
-            //    DataBase.SelectedModule = DataBase.RenderModules.Where(m => m.Name.ToLower().Contains("trail")).First();
+            //    DataBase.SelectedModule = DataBase.RenderModules.Where(m => m.Name.ToLower().Contains("texture")).First();
             //    await DataBase.StartPreview();
             //});
         }

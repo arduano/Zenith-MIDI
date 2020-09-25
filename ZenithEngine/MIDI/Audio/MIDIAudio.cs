@@ -23,6 +23,7 @@ namespace ZenithEngine.MIDI.Audio
         bool ended = false;
 
         public bool Paused { get; set; }
+        public bool Muted { get; set; }
 
         public double PlaybackSpeed { get; set; }
 
@@ -98,8 +99,14 @@ namespace ZenithEngine.MIDI.Audio
                     if (t - ev.time > 2)
                     {
                         var e = ev.val & 0xF0;
-                        if (e == 0x90 || e == 0x90) continue;
+                        if (e == 0x80 || e == 0x90) continue;
                     }
+                }
+
+                if (Muted)
+                {
+                    var e = ev.val & 0xF0;
+                    if (e == 0x90) continue;
                 }
 
                 if (Paused)

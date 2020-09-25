@@ -17,10 +17,10 @@ namespace FlatRender
             public Keys() : base(Dock.Left) { }
 
             [UIChild]
-            public UINumber left = new UINumber("leftKey", new LangText("mods.common.firstNote"), 0, 0, 255);
+            public UINumber left = new UINumber("leftKey", new LangText("mods.common.firstNote"), 0, 0, 254);
 
             [UIChild]
-            public UINumber right = new UINumber("rightKey", new LangText("mods.common.lastNote"), 128, 1, 256);
+            public UINumber right = new UINumber("rightKey", new LangText("mods.common.lastNote"), 127, 1, 255);
         }
 
         [UIChild]
