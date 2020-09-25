@@ -22,7 +22,8 @@
       "realtimePlayback": "Realtime Playback",
       "vsyncEnabled": "VSync Enabled",
       "muteAudio": "Mute Audio",
-      "previewSpeed": "Preview Speed"
+      "previewSpeed": "Preview Speed",
+      "paused": "Paused"
     },
     "render": {
       "outputFile": "Output File",

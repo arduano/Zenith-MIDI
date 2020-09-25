@@ -197,6 +197,7 @@ namespace Zenith.Models
                     }
 
                     RenderStatus = new RenderStatus(RenderArgs.Width, RenderArgs.Height, RenderArgs.SSAA);
+                    RenderStatus.FPS = RenderArgs.FPS;
                     if (!render)
                     {
                         RenderStatus.RealtimePlayback = RealtimePlayback;

@@ -42,7 +42,7 @@ namespace ZenithEngine.DXHelper
         {
             this.debugOutput = debugOutput;
 
-            string mainArgs = $"-f rawvideo -s {width}x{height} -pix_fmt rgb32 -r {fps} -i -";
+            string mainArgs = $"-f rawvideo -s {width}x{height} -pix_fmt bgr32 -r {fps} -i -";
             string args = $"{mainArgs} {extraArgs} \"{output}\" -y";
             process = new Process();
             process.StartInfo = new ProcessStartInfo("ffmpeg", args);

@@ -196,7 +196,11 @@ namespace TexturedRender
                                 throw new OpenerException($"Switch with the name {sw} not found on field {fpath}");
                             var swv = switches[sw];
                             if (!obj.ContainsKey(swv.SelectedValue))
-                                throw new OpenerException($"Value {swv.SelectedValue} missing missing for switch {sw} on field {fpath}");
+                            {
+                                if(!obj.ContainsKey(swv.Values[0]))
+                                    throw new OpenerException($"Value {swv.SelectedValue} and default value {swv.Values[0]} missing missing for switch {sw} on field {fpath}");
+                                return readField(obj[swv.Values[0]], ftype, fpath + swv.Values[0] + ".");
+                            }
                             return readField(obj[swv.SelectedValue], ftype, fpath + swv.SelectedValue + ".");
                         }
                     }

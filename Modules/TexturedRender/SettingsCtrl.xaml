@@ -90,7 +90,7 @@
                     </DockPanel>
                 </Grid>
             </TabItem>
-            <TabItem Header="{ui:LangText mods.textured.switches}">
+            <TabItem Name="switchesTab" Header="{ui:LangText mods.textured.switches}">
                 <Grid>
                     <ScrollViewer Margin="10">
                         <ScrollViewer.Resources>
@@ -170,6 +170,7 @@
                     </DockPanel>
                     <ui:LabelledItem Label="{ui:LangText mods.common.noteScreenTime}">
                         <ui:ValueSlider 
+                            Name="noteScreenTime"
                             Maximum="4000"
                             DecimalPoints="2"
                             Minimum="1"

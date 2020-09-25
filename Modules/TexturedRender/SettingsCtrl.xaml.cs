@@ -6,10 +6,12 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Media.Imaging;
 using Newtonsoft.Json.Linq;
 using ZenithEngine.IO;
 using ZenithEngine.ModuleUI;
+using ZenithEngine.UI;
 using Path = System.IO.Path;
 
 namespace TexturedRender
@@ -28,8 +30,16 @@ namespace TexturedRender
 
             InitializeComponent();
 
-            //noteDeltaScreenTime.NudToSlider = v => Math.Log(v, 2);
-            //noteDeltaScreenTime.SliderToNud = v => Math.Pow(2, v);
+            noteScreenTime.NudToSlider = v => Math.Log(v, 2);
+            noteScreenTime.SliderToNud = v => Math.Pow(2, v);
+
+            new InplaceConverter(
+                new[] { new Binding("LoadedPack.Switches.Length") },
+                len =>
+                    len[0] is int i && i == 0 ? Visibility.Collapsed : Visibility.Visible
+                )
+                .Set(switchesTab, TabItem.VisibilityProperty);
+
             Data.PalettePicker.SetPath("Plugins\\Assets\\Palettes", 1f);
             ReloadPacks();
         }

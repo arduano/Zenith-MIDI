@@ -198,7 +198,7 @@
                 <DockPanel HorizontalAlignment="Center">
                     <ui:Checkbox Margin="10" IsChecked="{Binding RealtimePlayback, UpdateSourceTrigger=PropertyChanged}" Content="{ui:LangText main.gen.realtimePlayback}"/>
                     <ui:Checkbox Margin="10" IsChecked="{Binding VsyncEnabled, UpdateSourceTrigger=PropertyChanged}" Content="{ui:LangText main.gen.vsyncEnabled}"/>
-                    <ui:Checkbox Margin="10" IsChecked="{Binding MuteAudio, UpdateSourceTrigger=PropertyChanged}" Content="{ui:LangText main.gen.muteAudio}"/>
+                    <ui:Checkbox Margin="10" IsChecked="{Binding Paused, UpdateSourceTrigger=PropertyChanged}" Content="{ui:LangText main.gen.paused}"/>
                 </DockPanel>
                 <Label Margin="0,20,0,0" HorizontalAlignment="Center" Content="{ui:LangText main.gen.previewSpeed}"/>
                 <ui:ValueSlider Name="speedSlider" Value="{Binding PreviewSpeed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" DecimalPoints="2" Width="600" Maximum="50" Minimum="0.01" TrueMax="50" TrueMin="0.01" />

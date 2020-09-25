@@ -73,10 +73,10 @@
                         <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True"/>
                     </Style>
                 </TabControl.Resources>
-                <TabItem Header="{ui:LangText main.tabs.general}" IsEnabled="{Binding NotRenderingOrPreviewing, ElementName=mainWindow}">
-                    <local:GeneralTab />
+                <TabItem Header="{ui:LangText main.tabs.general}" IsEnabled="{Binding IsNotRendering}">
+                    <local:GeneralTab /> 
                 </TabItem>
-                <TabItem Header="{ui:LangText main.tabs.moduleSettings}" IsEnabled="{Binding NotRenderingOrPreviewing, ElementName=mainWindow}">
+                <TabItem Header="{ui:LangText main.tabs.moduleSettings}" IsEnabled="{Binding IsNotRendering}">
                     <ContentControl Content="{Binding SelectedModuleSettings}">
                         <ContentControl.Resources>
                             <Style BasedOn="{StaticResource SubTabItems}" TargetType="{x:Type TabItem}"/>

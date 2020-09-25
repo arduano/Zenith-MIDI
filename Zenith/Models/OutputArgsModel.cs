@@ -79,7 +79,7 @@ namespace Zenith.Models
 
             if (SelectedOutputType == OutputType.H264Bitrate)
             {
-                FFmpegArgs = $"-pix_fmt yuv420p -vcodec libx264 -b:v {Bitrate}";
+                FFmpegArgs = $"-pix_fmt yuv420p -vcodec libx264 -b:v {Bitrate}k";
             }
             else if (SelectedOutputType == OutputType.H264CRF)
             {
@@ -87,7 +87,7 @@ namespace Zenith.Models
             }
             else if (SelectedOutputType == OutputType.H264NVENCBitrate)
             {
-                FFmpegArgs = $"-pix_fmt yuv420p -vcodec h264_nvenc -b:v {Bitrate}";
+                FFmpegArgs = $"-pix_fmt yuv420p -vcodec h264_nvenc -b:v {Bitrate}k";
             }
             else if (SelectedOutputType == OutputType.H264NVENCCRF)
             {

@@ -348,7 +348,8 @@ namespace Zenith
 
                 RenderStarted?.Invoke(this, new EventArgs());
                 var context = device.D3Device.ImmediateContext;
-                preview.Run(state =>
+
+                void RenderFrame(PreviewState state)
                 {
                     try
                     {
@@ -389,7 +390,9 @@ namespace Zenith
                         state.Stop();
                         throw e;
                     }
-                });
+                }
+
+                preview.Run(RenderFrame);
             }
             finally
             {

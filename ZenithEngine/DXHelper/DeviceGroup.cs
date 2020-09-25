@@ -22,7 +22,9 @@ namespace ZenithEngine.DXHelper
 
         public DeviceGroup()
         {
-            D3Device = new Direct3D11.Device(DriverType.Hardware, Direct3D11.DeviceCreationFlags.BgraSupport);
+            D3Device = new Direct3D11.Device(DriverType.Hardware, 
+                Direct3D11.DeviceCreationFlags.BgraSupport | 
+                Direct3D11.DeviceCreationFlags.DisableGpuTimeout);
             D2Factory = new Direct2D1.Factory();
             DWFactory = new DirectWrite.Factory();
         }

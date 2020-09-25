@@ -74,7 +74,7 @@ namespace ZenithEngine.MIDI.Disk
         {
             lock (parseLock)
             {
-                for (; ParserPosition <= time && !stopped; TicksParsed++)
+                for (; ParserPosition <= time + 1 && !stopped; TicksParsed++)
                 {
                     SecondsParsed += 1 * ParserTempoTickMultiplier;
                     int ut = 0;

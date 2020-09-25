@@ -129,6 +129,8 @@ namespace TexturedRender
                     AdvancedBlackKeyOffsets = pack.advancedBlackKeyOffsets,
                     BlackKeyColor = Color4.Black,
 
+                    SameWidthNotes = pack.sameWidthNotes,
+
                     BlackKey2setOffset = pack.blackKey2setOffset,
                     BlackKey3setOffset = pack.blackKey3setOffset,
                     BlackKeyScale = pack.blackKeyScale,
@@ -160,7 +162,7 @@ namespace TexturedRender
 
                 double bottomExtraTime = pack.notes
                     .Select(n => whiteKeyWidth / (n.bottomTexture?.AspectRatio ?? 9999))
-                    .Max() / notePosFactor;
+                    .Max();
                 bottomExtraTime /= notePosFactor;
 
                 double midiTime = Midi.PlayerPosition;
@@ -229,10 +231,12 @@ namespace TexturedRender
 
                     foreach (var n in stream)
                     {
-                        if (n.Start < midiTime)
+                        bool pressed = false;
+                        if (n.Start < midiTime && (n.End > midiTime || !n.HasEnded))
                         {
                             keyboard.PressKey(k);
                             keyboard.BlendNote(k, n.Color);
+                            pressed = true;
                         }
 
                         float top = (float)(1 - (renderCutoff - n.End) * notePosFactor);
@@ -259,6 +263,27 @@ namespace TexturedRender
                         { }
                         var texLocations = noteLocations[tex];
                         var noteOptions = noteTypesSorted[tex];
+
+                        Color4 leftCol = n.Color.Left;
+                        Color4 rightCol = n.Color.Right;
+
+                        if (key.IsBlack)
+                        {
+                            Color4 darken = new Color4(0, 0, 0, noteOptions.darkenBlackNotes);
+                            leftCol = leftCol.BlendWith(darken);
+                            rightCol = rightCol.BlendWith(darken);
+                        }
+
+                        if (pressed)
+                        {
+                            Color4 lighten = new Color4(
+                                noteOptions.highlightHitNotesColor[0] / 255f,
+                                noteOptions.highlightHitNotesColor[1] / 255f,
+                                noteOptions.highlightHitNotesColor[2] / 255f,
+                                noteOptions.highlightHitNotes);
+                            leftCol = leftCol.BlendWith(lighten);
+                            rightCol = rightCol.BlendWith(lighten);
+                        }
 
                         float topHeight;
                         float bottomHeight;
@@ -289,8 +314,8 @@ namespace TexturedRender
                                 new Vector2(right, top),
                                 new Vector2(0, 0),
                                 new Vector2(1, 1),
-                                n.Color.Left,
-                                n.Color.Right,
+                                leftCol,
+                                rightCol,
                                 texLocations.Top
                             );
                             pushNoteQuad(
@@ -298,8 +323,8 @@ namespace TexturedRender
                                 new Vector2(right, bottomCap),
                                 new Vector2(0, 0),
                                 new Vector2(1, 1),
-                                n.Color.Left,
-                                n.Color.Right,
+                                leftCol,
+                                rightCol,
                                 texLocations.Bottom
                             );
                         }
@@ -308,8 +333,8 @@ namespace TexturedRender
                             new Vector2(right, bottom),
                             new Vector2(0, 0),
                             new Vector2(1, 1),
-                            n.Color.Left,
-                            n.Color.Right,
+                            leftCol,
+                            rightCol,
                             texLocations.Middle
                         );
                     }
@@ -450,7 +475,7 @@ namespace TexturedRender
                     else top += keyboardHeightFull * (float)pack.blackKeyOversize / 100;
                     var uvleft = 0f;
                     var uvright = 1f;
-                    if (pack.whiteKeysFullOctave)
+                    if (pack.blackKeysFullOctave)
                     {
                         var num = keyboard.KeyNumber[k.Key] % 5;
                         uvleft = num * 1.0f / 5;
