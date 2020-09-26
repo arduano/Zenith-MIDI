@@ -1,4 +1,4 @@
-﻿using SharpDX.Direct3D11;
+using SharpDX.Direct3D11;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -263,6 +263,15 @@ namespace NoteCountRender
             data.Add(GetWithMaximum("nps-025", nps025));
             data.Add(EndProgressRemaining("nc", Midi.Midi.NoteCount, countedNotes, Midi.Midi.NoteCount - countedNotes));
             data.Add(EndProgressRemaining("sec", Midi.Midi.SecondsLength, Midi.PlayerPositionSeconds, Midi.Midi.SecondsLength - Midi.PlayerPositionSeconds));
+            data.Add(EndProgressRemaining("time",
+                                          new TimeSpan(0, 0, (int)Midi.Midi.SecondsLength).ToString("mm\\:ss"),
+                                          new TimeSpan(0, 0, (int)Midi.PlayerPositionSeconds).ToString("mm\\:ss"),
+                                          new TimeSpan(0, 0, (int)(Midi.Midi.SecondsLength - Midi.PlayerPositionSeconds)).ToString("mm\\:ss")));
+            data.Add(EndProgressRemaining("time-milli",
+                                          new TimeSpan(0, 0, 0, 0, (int)(Midi.Midi.SecondsLength * 1000)).ToString("mm\\:ss\\.fff"),
+                                          new TimeSpan(0, 0, 0, 0, (int)(Midi.PlayerPositionSeconds * 1000)).ToString("mm\\:ss\\.fff"),
+                                          new TimeSpan(0, 0, 0, 0, (int)((Midi.Midi.SecondsLength - Midi.PlayerPositionSeconds) * 1000)).ToString("mm\\:ss\\.fff")));
+            data.Add(EndProgressRemaining("tick", Midi.Midi.TickLength, Midi.PlayerPosition, Midi.Midi.TickLength - Midi.PlayerPosition));
 
             var rect = new RawRectangleF(0, 0, composite.Width, composite.Height);
 
