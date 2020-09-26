@@ -61,7 +61,7 @@ namespace TexturedRender
     {
         public static string FormatError(Exception e)
         {
-            if(e is OpenerException op)
+            if (e is OpenerException op)
                 return op.Message;
             if (e is TargetInvocationException t)
                 return FormatError(t.InnerException);
@@ -132,11 +132,11 @@ namespace TexturedRender
                 switch (text.ToLower())
                 {
                     case "normal": return NoteShaderType.Normal;
-                    case "inverted": return NoteShaderType.Inverted;
+                    case "inverse": return NoteShaderType.Inverted;
                     case "hybrid": return NoteShaderType.Hybrid;
                     default:
                         throw new OpenerException(
-                   $"\"{text}\" is not a valid shader type. Valid shader types are \"normal\", \"inverted\" and \"hybrid\""
+                   $"\"{text}\" is not a valid shader type. Valid shader types are \"normal\", \"inverse\" and \"hybrid\""
                );
                 }
             });
@@ -197,9 +197,10 @@ namespace TexturedRender
                             var swv = switches[sw];
                             if (!obj.ContainsKey(swv.SelectedValue))
                             {
-                                if(!obj.ContainsKey(swv.Values[0]))
-                                    throw new OpenerException($"Value {swv.SelectedValue} and default value {swv.Values[0]} missing missing for switch {sw} on field {fpath}");
-                                return readField(obj[swv.Values[0]], ftype, fpath + swv.Values[0] + ".");
+                                return null;
+                                //if(!obj.ContainsKey(swv.Values[0]))
+                                //    throw new OpenerException($"Value {swv.SelectedValue} and default value {swv.Values[0]} missing missing for switch {sw} on field {fpath}");
+                                //return readField(obj[swv.Values[0]], ftype, fpath + swv.Values[0] + ".");
                             }
                             return readField(obj[swv.SelectedValue], ftype, fpath + swv.SelectedValue + ".");
                         }
@@ -241,6 +242,7 @@ namespace TexturedRender
                 if (typeof(Array).IsAssignableFrom(f.FieldType))
                 {
                     var arr = (JArray)readField(token, typeof(JArray));
+                    if (arr == null) continue;
 
                     if (Attribute.IsDefined(f, typeof(WithLength)))
                     {
@@ -254,17 +256,23 @@ namespace TexturedRender
                     var a = (Array)newArr;
                     for (int i = 0; i < arr.Count; i++)
                     {
-                        a.SetValue(readField(arr[i], elType, path + $"[{i}]."), i);
+                        var val = readField(arr[i], elType, path + $"[{i}].");
+                        if (val == null)
+                            throw new OpenerException($"Can't have null in array {path}[{i}]");
+                        a.SetValue(val, i);
                     }
                     f.SetValue(this, newArr);
                 }
                 else if (typeof(SchemaLoadable).IsAssignableFrom(f.FieldType))
                 {
-                    f.SetValue(this, readField(token, f.FieldType));
+                    var val = readField(token, f.FieldType);
+                    if (val != null)
+                        f.SetValue(this, val);
                 }
                 else
                 {
                     var val = readField(token, f.FieldType);
+                    if (val == null) continue;
                     try
                     {
                         f.SetValue(this, val);

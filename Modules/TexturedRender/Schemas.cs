@@ -155,7 +155,7 @@ namespace TexturedRender
         [RequiredIf(nameof(useEndCaps), true)]
         public RenderTexture bottomTexture;
 
-        public float darkenBlackNotes = 0;
+        public float darkenBlackNotes = 1;
         public float highlightHitNotes = 0;
 
         [WithLength(3)]

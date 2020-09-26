@@ -54,7 +54,7 @@ namespace PFARender
             public UINumberSlider noteScreenTime = new UINumberSlider(
                 "noteScreenTime",
                 new LangText("mods.common.noteScreenTime"),
-                400, 1, 4000, 0.1m, 1000000, true
+                1000, 1, 4000, 0.1m, 1000000, true
             )
             { SliderWidth = 700 };
 
