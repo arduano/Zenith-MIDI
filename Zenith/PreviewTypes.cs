@@ -172,6 +172,8 @@ namespace Zenith
                 throw new AggregateException(error);
             }
 
+            UI(() => Element.Renderer = null);
+            scene.Renderer = null;
             dx.Dispose();
         }
 
