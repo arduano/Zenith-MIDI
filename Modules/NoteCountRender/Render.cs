@@ -123,9 +123,7 @@ namespace NoteCountRender
 
             string genZeros(int count)
             {
-                string s = "";
-                for (int i = 0; i < count; i++) s += "0";
-                return s;
+                return new string('0', count);
             }
 
             IEnumerable<string> splitThousands(string s)
@@ -264,13 +262,13 @@ namespace NoteCountRender
             data.Add(EndProgressRemaining("nc", Midi.Midi.NoteCount, countedNotes, Midi.Midi.NoteCount - countedNotes));
             data.Add(EndProgressRemaining("sec", Midi.Midi.SecondsLength, Midi.PlayerPositionSeconds, Midi.Midi.SecondsLength - Midi.PlayerPositionSeconds));
             data.Add(EndProgressRemaining("time",
-                                          new TimeSpan(0, 0, (int)Midi.Midi.SecondsLength).ToString("mm\\:ss"),
-                                          new TimeSpan(0, 0, (int)Midi.PlayerPositionSeconds).ToString("mm\\:ss"),
-                                          new TimeSpan(0, 0, (int)(Midi.Midi.SecondsLength - Midi.PlayerPositionSeconds)).ToString("mm\\:ss")));
+                                          TimeSpan.FromSeconds(Midi.Midi.SecondsLength).ToString("mm\\:ss"),
+                                          TimeSpan.FromSeconds(Midi.PlayerPositionSeconds).ToString("mm\\:ss"),
+                                          TimeSpan.FromSeconds(Midi.Midi.SecondsLength - Midi.PlayerPositionSeconds).ToString("mm\\:ss")));
             data.Add(EndProgressRemaining("time-milli",
-                                          new TimeSpan(0, 0, 0, 0, (int)(Midi.Midi.SecondsLength * 1000)).ToString("mm\\:ss\\.fff"),
-                                          new TimeSpan(0, 0, 0, 0, (int)(Midi.PlayerPositionSeconds * 1000)).ToString("mm\\:ss\\.fff"),
-                                          new TimeSpan(0, 0, 0, 0, (int)((Midi.Midi.SecondsLength - Midi.PlayerPositionSeconds) * 1000)).ToString("mm\\:ss\\.fff")));
+                                          TimeSpan.FromSeconds(Midi.Midi.SecondsLength).ToString("mm\\:ss\\.fff"),
+                                          TimeSpan.FromSeconds(Midi.PlayerPositionSeconds).ToString("mm\\:ss\\.fff"),
+                                          TimeSpan.FromSeconds(Midi.Midi.SecondsLength - Midi.PlayerPositionSeconds).ToString("mm\\:ss\\.fff")));
             data.Add(EndProgressRemaining("tick", Midi.Midi.TickLength, Midi.PlayerPosition, Midi.Midi.TickLength - Midi.PlayerPosition));
 
             var rect = new RawRectangleF(0, 0, composite.Width, composite.Height);
