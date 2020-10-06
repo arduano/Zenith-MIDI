@@ -144,13 +144,13 @@ namespace ZenithEngine.ModuleUtil
         {
             IEnumerable<int> iterateAllKeys()
             {
-                for (int i = firstKey; i < lastKey; i++)
+                for (int i = firstKey; i <= lastKey; i++)
                     yield return i;
             }
 
             IEnumerable<int> iterateSelectKeys(bool black)
             {
-                for (int i = firstKey; i < lastKey; i++)
+                for (int i = firstKey; i <= lastKey; i++)
                     if (KeyboardState.IsBlackKey(i) == black)
                         yield return i;
             }
