@@ -26,13 +26,5 @@ namespace Zenith.Models
         public NoteSize NoteSize { get; set; } = NoteSize.Tick;
 
         public event PropertyChangedEventHandler PropertyChanged;
-
-        public RenderArgsModel()
-        {
-            PropertyChanged += (s, e) =>
-            {
-                Console.WriteLine(e.PropertyName);
-            };
-        }
     }
 }

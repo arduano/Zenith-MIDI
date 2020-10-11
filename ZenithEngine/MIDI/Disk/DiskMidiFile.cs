@@ -93,7 +93,7 @@ namespace ZenithEngine.MIDI.Disk
 
             cancel.ThrowIfCancellationRequested();
 
-            MaxBufferMemory = MaxBufferMemory;
+            MaxBufferMemory = maxBufferMemory ?? 8L * 1024 * 1024 * 1024;
 
             Console.WriteLine("Loading tracks into memory, biggest tracks first.");
             Console.WriteLine("Please expect this to start slow, especially on bigger midis.");

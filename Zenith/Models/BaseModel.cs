@@ -240,6 +240,7 @@ namespace Zenith.Models
                     {
                         preview = new WindowPreview(device);
                     }
+
                     try
                     {
                         cancel.ThrowIfCancellationRequested();
