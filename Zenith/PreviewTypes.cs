@@ -10,8 +10,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Threading;
 using ZenithEngine.DXHelper;
+using Application = System.Windows.Application;
 
 namespace Zenith
 {
@@ -73,6 +75,7 @@ namespace Zenith
             Window = new ManagedRenderWindow(Device, 1280, 720);
             Window.Text = "Zenith Preview";
             Window.Icon = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
+            Window.KeyDown += Window_KeyDown;
             RenderLoop.Run(Window, () =>
             {
                 state.RenderTarget = Window;
@@ -80,6 +83,14 @@ namespace Zenith
                 Window.Present(state.VSync);
             });
             Window.Dispose();
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (Window != null && e.KeyCode == Keys.Enter)
+            {
+                Window.Fullscreen = !Window.Fullscreen;
+            }
         }
 
         protected override void StopInternal()

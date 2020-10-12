@@ -65,6 +65,7 @@ namespace ZenithEngine.DXHelper
         }
 
         bool fullscreen = false;
+        FormWindowState lastWindowState = FormWindowState.Normal;
         public bool Fullscreen
         {
             get => fullscreen;
@@ -94,6 +95,7 @@ namespace ZenithEngine.DXHelper
         {
             if (fullscreen)
             {
+                lastWindowState = WindowState;
                 FormBorderStyle = FormBorderStyle.None;
                 if (Focused)
                 {
@@ -106,6 +108,7 @@ namespace ZenithEngine.DXHelper
             }
             else
             {
+                WindowState = lastWindowState;
                 FormBorderStyle = FormBorderStyle.Sizable;
             }
         }
