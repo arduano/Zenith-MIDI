@@ -73,7 +73,7 @@ namespace MIDITrailRender.Logic
                 }
             }
 
-            IEnumerable<NoteInstance> TransformNotes(IEnumerable<Note> notes, int key, bool modifyKeyboard)
+            IEnumerable<NoteInstance> TransformNotes(IEnumerable<Note> notes, int key, bool modifyKeyboard, MidiPlayback playback)
             {
                 var notePos = keyboard.Notes[key];
                 var keyPos = keyboard.Keys[key];
@@ -105,9 +105,11 @@ namespace MIDITrailRender.Logic
                         noteEnd = noteMiddle + minLength / 2;
                     }
 
+                    float offset = (right - left) * (playback.PitchBends[n.Channel] / (8192.0f / 24.0f));
+
                     yield return new NoteInstance(
-                        left,
-                        right,
+                        left + offset,
+                        right + offset,
                         noteStart,
                         noteEnd,
                         n.Color.Left,
@@ -175,7 +177,7 @@ namespace MIDITrailRender.Logic
                     {
                         var fluser = noteParts.Body;
                         fluser.UseContext(context);
-                        foreach (var n in TransformNotes(notes[k], k, true))
+                        foreach (var n in TransformNotes(notes[k], k, true, playback))
                             fluser.Push(n);
                         fluser.Flush();
                     }
@@ -185,7 +187,7 @@ namespace MIDITrailRender.Logic
                         {
                             var fluser = noteParts.Cap;
                             fluser.UseContext(context);
-                            foreach (var n in TransformNotes(notes[k], k, false))
+                            foreach (var n in TransformNotes(notes[k], k, false, playback))
                                 fluser.Push(n);
                             fluser.Flush();
                         }

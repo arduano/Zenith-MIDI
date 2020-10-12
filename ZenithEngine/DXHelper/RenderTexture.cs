@@ -57,7 +57,7 @@ namespace ZenithEngine.DXHelper
                     BindFlags = BindFlags.ShaderResource,
                     Usage = ResourceUsage.Immutable,
                     CpuAccessFlags = CpuAccessFlags.None,
-                    Format = SharpDX.DXGI.Format.B8G8R8A8_UNorm,
+                    Format = SharpDX.DXGI.Format.R8G8B8A8_UNorm,
                     MipLevels = 1,
                     OptionFlags = ResourceOptionFlags.None,
                     SampleDescription = new SharpDX.DXGI.SampleDescription(1, 0),

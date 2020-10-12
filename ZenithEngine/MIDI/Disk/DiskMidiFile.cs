@@ -71,6 +71,7 @@ namespace ZenithEngine.MIDI.Disk
 
         public Tempo[] TempoEvents { get; private set; }
         public TimeSignature[] TimeSignatureEvents { get; private set; }
+        public PitchBend[][] PitchBendEvents { get; private set; }
 
         internal List<TrackPos> TrackPositions { get; } = new List<TrackPos>();
 
@@ -193,6 +194,12 @@ namespace ZenithEngine.MIDI.Disk
                 timesigMerge = new[] { new TimeSignature(0, 4, 4) }.Concat(timesigMerge).ToArray();
             }
             TimeSignatureEvents = timesigMerge;
+
+            PitchBendEvents = new PitchBend[16][];
+            for (int i = 0; i < 16; i++)
+            {
+                PitchBendEvents[i] = ZipMerger<PitchBend>.MergeMany(Tracks.Select(t => t.PitchBendEvents[i]).ToArray(), e => e.Position).ToArray();
+            }
 
             double time = 0;
             long ticks = TickLength;

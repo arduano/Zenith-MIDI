@@ -99,4 +99,16 @@ namespace ZenithEngine.MIDI
         public int Numerator { get; internal set; }
         public int Denominator { get; internal set; }
     }
+
+    public class PitchBend : PositionedEvent
+    {
+        public PitchBend(double pos, byte channel, short amount) : base(pos)
+        {
+            Channel = channel;
+            Amount = amount;
+        }
+
+        public byte Channel { get; internal set; }
+        public short Amount { get; internal set; }
+    }
 }

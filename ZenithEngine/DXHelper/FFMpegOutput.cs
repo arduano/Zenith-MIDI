@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Pipes;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -38,11 +39,13 @@ namespace ZenithEngine.DXHelper
 
         Stream debugOutput;
 
+        NamedPipeServerStream pipeStream = null;
+
         public FFMpegOutput(DeviceGroup device, int width, int height, int fps, string extraArgs, string output, Stream debugOutput = null)
         {
             this.debugOutput = debugOutput;
 
-            string mainArgs = $"-f rawvideo -s {width}x{height} -pix_fmt bgr32 -r {fps} -i -";
+            string mainArgs = $"-f rawvideo -s {width}x{height} -pix_fmt bgr32 -r {fps} -i async:\\\\.\\pipe\\zenithffmpeg";
             string args = $"{mainArgs} {extraArgs} \"{output}\" -y";
             process = new Process();
             process.StartInfo = new ProcessStartInfo("ffmpeg", args);
@@ -52,6 +55,8 @@ namespace ZenithEngine.DXHelper
             process.Start();
 
             frameSize = width * height * 4;
+
+            pipeStream = new NamedPipeServerStream("zenithffmpeg", PipeDirection.Out, NamedPipeServerStream.MaxAllowedServerInstances, PipeTransmissionMode.Byte, PipeOptions.None, 0, frameSize * 256);
 
             staging = init.Add(new CompositeRenderSurface(width, height, format: SharpDX.DXGI.Format.R8G8B8A8_UNorm));
             composite = init.Add(new Compositor());
@@ -93,6 +98,7 @@ namespace ZenithEngine.DXHelper
             writeTask?.Wait();
             if (lastContext != null) lastContext.UnmapSubresource(stagingTexture, 0);
             init.Dispose();
+            pipeStream.Close();
             process.StandardInput.Close();
             process.WaitForExit();
             diagnostic?.Wait();
@@ -121,7 +127,7 @@ namespace ZenithEngine.DXHelper
             {
                 try
                 {
-                    d.CopyTo(process.StandardInput.BaseStream);
+                    d.CopyTo(pipeStream);
                 }
                 catch { }
                 d.Dispose();

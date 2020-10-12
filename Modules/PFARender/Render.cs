@@ -162,8 +162,10 @@ namespace PFARender
                             keyboard.PressKey(n.Key);
                         }
 
-                        float left = keyboard.Notes[key].Left;
-                        float right = keyboard.Notes[key].Right;
+                        float width = keyboard.Notes[key].Right - keyboard.Notes[key].Left;
+                        float offset = width * (Midi.PitchBends[n.Channel] / (8192.0f / 24.0f));
+                        float left = keyboard.Notes[key].Left + offset;
+                        float right = keyboard.Notes[key].Right + offset;
                         float end = (float)(1 - (renderCutoff - n.End) * notePosFactor);
                         float start = (float)(1 - (renderCutoff - n.Start) * notePosFactor);
                         if (!n.HasEnded)

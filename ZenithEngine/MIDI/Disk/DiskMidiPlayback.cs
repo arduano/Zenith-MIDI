@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -68,6 +69,7 @@ namespace ZenithEngine.MIDI.Disk
             TimeSignature = midi.TimeSignatureEvents[0];
             TimeSeconds = -startDelay;
             TimeTicksFractional = -startDelay / ParserTempoTickMultiplier;
+            PitchBends = new short[16];
         }
 
         public override bool ParseUpTo(double time)
@@ -99,6 +101,7 @@ namespace ZenithEngine.MIDI.Disk
 
         int tempoEventId = 0;
         int timesigEventId = 0;
+        int[] pitchBendEventId = new int[16];
         public override void AdvancePlaybackTo(double time)
         {
             var offset = time - TimeSeconds;
@@ -152,6 +155,15 @@ namespace ZenithEngine.MIDI.Disk
                 midi.TimeSignatureEvents[timesigEventId].Position < TimeTicksFractional)
             {
                 TimeSignature = midi.TimeSignatureEvents[timesigEventId++];
+            }
+
+            for (int i = 0; i < 16; i++)
+            {
+                while (pitchBendEventId[i] != midi.PitchBendEvents[i].Length &&
+                    midi.PitchBendEvents[i][pitchBendEventId[i]].Position < TimeTicksFractional)
+                {
+                    PitchBends[i] = midi.PitchBendEvents[i][pitchBendEventId[i]++].Amount;
+                }
             }
 
             if (SecondsParsed < TimeSeconds) ParseUpTo(PlayerPosition);

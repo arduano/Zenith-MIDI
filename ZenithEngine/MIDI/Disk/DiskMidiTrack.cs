@@ -46,8 +46,10 @@ namespace ZenithEngine.MIDI.Disk
 
         FastList<Tempo> tempoEvents = new FastList<Tempo>();
         FastList<TimeSignature> timesigEvents = new FastList<TimeSignature>();
+        FastList<PitchBend>[] pitchBendEvents = new FastList<PitchBend>[16];
         public IEnumerable<Tempo> TempoEvents { get => tempoEvents; }
         public IEnumerable<TimeSignature> TimesigEvents { get => timesigEvents; }
+        public IEnumerable<PitchBend>[] PitchBendEvents { get => pitchBendEvents; }
 
         public NoteColor[] TrackColors { get; } = new NoteColor[16];
         public NoteColor[] InitialTrackColors { get; } = new NoteColor[16];
@@ -93,6 +95,8 @@ namespace ZenithEngine.MIDI.Disk
             Mode = mode;
             this.reader = reader;
             ID = id;
+            for (int i = 0; i < 16; i++)
+                pitchBendEvents[i] = new FastList<PitchBend>();
 
             if (initialTrackColors == null)
             {
@@ -401,7 +405,11 @@ namespace ZenithEngine.MIDI.Disk
                     byte l = reader.Read();
                     byte m = reader.Read();
 
-                    if (loading) return;
+                    if (loading)
+                    {
+                        pitchBendEvents[channel].Add(new PitchBend(ParseTimeTicks, (byte)channel, (short)(((m << 7) | l) - 8192)));
+                        return;
+                    }
 
                     if (MidiPlayback.PushPlaybackEvents)
                     {

@@ -230,7 +230,7 @@ namespace Zenith.Models
 
                     var device = new DeviceGroup();
                     PreviewBase preview;
-                    if (render)
+                    if (render && false)
                     {
                         var elpreview = new ElementPreview(device);
                         preview = elpreview;
