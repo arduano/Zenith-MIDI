@@ -73,6 +73,9 @@
       "left": "Left",
       "right": "Right"
     },
+    "pfa": {
+      "middleCSquare": "Middle C Square"
+    },
     "textured": {
       "packs": "Packs",
       "switches": "Switches",

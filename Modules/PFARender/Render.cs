@@ -68,6 +68,9 @@ namespace PFARender
 
             [UIChild]
             public UICheckbox sameWidthNotes = new UICheckbox("sameWidthNotes", new LangText("mods.common.sameWidthNotes"), false);
+
+            [UIChild]
+            public UICheckbox middleCSquare = new UICheckbox("middleCSquare", new LangText("mods.pfa.middleCSquare"), true);
         }
         #endregion
 
@@ -265,6 +268,25 @@ namespace PFARender
                     if (scleft == scright) scright++;
                     scleft /= Status.OutputWidth;
                     scright /= Status.OutputWidth;
+
+                    if (settings.middleCSquare.Value && key.Key == 60) // C4
+                    {
+                        double SnapToPixel(double input, int res)
+                        {
+                            return Math.Floor(input * res) / res;
+                        }
+
+                        double rightSnap = SnapToPixel(right, Status.RenderWidth);
+                        double leftSnap = SnapToPixel(left, Status.RenderWidth);
+                        double gap = (rightSnap - leftSnap) * 0.25f;
+                        double xPad = (rightSnap - leftSnap) * 0.5f;
+
+                        double yLen = SnapToPixel((float)(gap * 2.0f * settings.kbHeight * Status.AspectRatio), Status.RenderHeight);
+                        double yPos = gap + (key.Pressed ? 0.0f : wEndUpT);
+
+                        var col = MultCol(leftCol, .729f);
+                        quadBuffer.PushQuad((float)(leftSnap + gap), (float)(yPos + yLen), (float)(leftSnap + gap + xPad), (float)yPos, col, col, col, col);
+                    }
 
                     col1 = new Color4(.0431f, .0431f, .0431f, 1);
                     col2 = new Color4(.556f, .556f, .556f, 1);
