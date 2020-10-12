@@ -271,21 +271,19 @@ namespace PFARender
 
                     if (settings.middleCSquare.Value && key.Key == 60) // C4
                     {
-                        double SnapToPixel(double input, int res)
-                        {
-                            return Math.Floor(input * res) / res;
-                        }
+                        // TODO (Khang): cleanup, this is one massive hack for accuracy
+                        float rightSnap = (float)Math.Round(right * Status.RenderWidth);
+                        float leftSnap = (float)Math.Round(left * Status.RenderWidth);
+                        float gap = (float)Math.Round((rightSnap - leftSnap) * 0.25f);
+                        float xPad = (rightSnap - leftSnap) * 0.5f;
 
-                        double rightSnap = SnapToPixel(right, Status.RenderWidth);
-                        double leftSnap = SnapToPixel(left, Status.RenderWidth);
-                        double gap = (rightSnap - leftSnap) * 0.25f;
-                        double xPad = (rightSnap - leftSnap) * 0.5f;
+                        float yLen = (float)Math.Round(gap * 2.0f * settings.kbHeight);
+                        float yPos = 5.0f + (key.Pressed ? wEndDownT : wEndUpT) * Status.RenderHeight; // seems hardcoded to that in pfa too?
 
-                        double yLen = SnapToPixel((float)(gap * 2.0f * settings.kbHeight * Status.AspectRatio), Status.RenderHeight);
-                        double yPos = gap + (key.Pressed ? 0.0f : wEndUpT);
-
-                        var col = MultCol(leftCol, .729f);
-                        quadBuffer.PushQuad((float)(leftSnap + gap), (float)(yPos + yLen), (float)(leftSnap + gap + xPad), (float)yPos, col, col, col, col);
+                        // TODO (Khang): verify color accuracy
+                        var col = MultCol(leftCol, .8f);
+                        quadBuffer.PushQuad((leftSnap + gap) / Status.RenderWidth, (yPos + yLen) / Status.RenderHeight,
+                            (leftSnap + gap + xPad) / Status.RenderWidth, yPos / Status.RenderHeight, col, col, col, col);
                     }
 
                     col1 = new Color4(.0431f, .0431f, .0431f, 1);
