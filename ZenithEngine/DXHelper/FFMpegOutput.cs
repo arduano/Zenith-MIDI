@@ -34,9 +34,9 @@ namespace ZenithEngine.DXHelper
 
         int frameSize;
 
-        DeviceContext lastContext = null;
-
         Stream debugOutput;
+
+        MemoryStream cacheStream = new MemoryStream();
 
         public FFMpegOutput(DeviceGroup device, int width, int height, int fps, string extraArgs, string output, Stream debugOutput = null)
         {
@@ -91,11 +91,11 @@ namespace ZenithEngine.DXHelper
         public void Dispose()
         {
             writeTask?.Wait();
-            if (lastContext != null) lastContext.UnmapSubresource(stagingTexture, 0);
             init.Dispose();
             process.StandardInput.Close();
             process.WaitForExit();
             diagnostic?.Wait();
+            cacheStream.Close();
         }
 
         public bool HasClosed => process.HasExited;
@@ -111,20 +111,24 @@ namespace ZenithEngine.DXHelper
             }
 
             writeTask?.Wait();
-            if (lastContext != null) lastContext.UnmapSubresource(stagingTexture, 0);
             using (blendState.UseOn(context))
                 composite.Composite(context, data, basicShader, staging);
             context.CopyResource(staging.Texture, stagingTexture);
             DataStream d;
+            context.Flush();
             context.MapSubresource(stagingTexture, 0, MapMode.Read, MapFlags.None, out d);
+            cacheStream.Position = 0;
+            d.CopyTo(cacheStream);
+            d.Dispose();
+            context.UnmapSubresource(stagingTexture, 0);
             writeTask = Task.Run(() =>
             {
                 try
                 {
-                    d.CopyTo(process.StandardInput.BaseStream);
+                    cacheStream.Position = 0;
+                    cacheStream.CopyTo(process.StandardInput.BaseStream);
                 }
                 catch { }
-                d.Dispose();
             });
         }
     }

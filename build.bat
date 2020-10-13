@@ -3,9 +3,9 @@ rmdir /s /q build
 mkdir build
 
 call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\Tools\VsDevCmd.bat" 
-rmdir /s /q x64\Release
+rmdir /s /q bin\x64\Release
 MSBuild.exe Zenith.sln /t:Zenith /p:Configuration=Release /p:Platform=x64
-rmdir /s /q x86\Release
+rmdir /s /q bin\x86\Release
 MSBuild.exe Zenith.sln /t:Zenith /p:Configuration=Release /p:Platform=x86
 MSBuild.exe Zenith.sln /t:ZenithInstaller /p:Configuration=Release
 
