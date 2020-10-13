@@ -26,6 +26,10 @@ namespace Zenith.Models
         public double FPS { get; private set; }
         public long LastFrameNumber { get; private set; }
 
+        public DateTime RenderStartTime { get; }
+        public DateTime CurrentTime { get; private set;  }
+        public double TimeElapsed => (CurrentTime - RenderStartTime).TotalSeconds;
+
         Stopwatch frameTimer = null;
 
         public RenderProgressModel(RenderPipeline pipeline)
@@ -33,6 +37,7 @@ namespace Zenith.Models
             this.Pipeline = pipeline;
             StartSeconds = pipeline.StartTime;
             EndSeconds = pipeline.EndTime;
+            RenderStartTime = DateTime.Now;
 
             Pipeline.RenderProgress += Pipeline_RenderProgress;
         }
@@ -43,6 +48,7 @@ namespace Zenith.Models
         {
             Seconds = Pipeline.Playback.PlayerPositionSeconds;
             NotesRendering = Pipeline.Playback.LastIterateNoteCount;
+            CurrentTime = DateTime.Now;
 
             if(frameTimer == null)
             {

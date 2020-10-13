@@ -12,21 +12,33 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Styles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
+            <local:DispTimeConverter x:Key="DispTimeConverter" />
+            <local:ProgPrecentageConverter x:Key="ProgPrecentageConverter" />
+            <local:NoteCountConverter x:Key="NoteCountConverter" />
+            <local:FPSConverter x:Key="FPSConverter" />
+    </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
         <DockPanel Margin="50" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <StackPanel Width="500" HorizontalAlignment="Center" DockPanel.Dock="Bottom">
                 <DockPanel HorizontalAlignment="Center">
-                    <ui:LabelledItem Label="Notes Rendering:">
-                        <Label Content="{Binding RenderProgress.NotesRendering}"/>
+                    <ui:LabelledItem Label="{ui:LangText main.render.progress.notesRendering}">
+                        <Label Content="{Binding RenderProgress.NotesRendering, Converter={StaticResource NoteCountConverter}}"/>
                     </ui:LabelledItem>
                 </DockPanel>
-                <ui:LabelledItem Label="FPS:">
-                    <Label Content="{Binding RenderProgress.FPS}"/>
+                <ui:LabelledItem Label="{ui:LangText main.render.progress.fps}">
+                    <Label Content="{Binding RenderProgress.FPS, Converter={StaticResource FPSConverter}}"/>
                 </ui:LabelledItem>
-                <Label Content="{Binding RenderProgress.Seconds}" />
+                <ui:LabelledItem Label="{ui:LangText main.render.progress.midiTime}">
+                    <Label Content="{Binding RenderProgress.Seconds, Converter={StaticResource DispTimeConverter}}" />
+                </ui:LabelledItem>
+                <ui:LabelledItem Label="{ui:LangText main.render.progress.progress}">
+                    <Label Content="{Binding RenderProgress.Progress, Converter={StaticResource ProgPrecentageConverter}}" />
+                </ui:LabelledItem>
                 <ProgressBar Height="20" Width="500" Value="{Binding RenderProgress.Progress, Mode=OneWay}" Minimum="0" Maximum="1"/>
+                <ui:LabelledItem Label="{ui:LangText main.render.progress.timeElapsed}">
+                    <Label Content="{Binding RenderProgress.TimeElapsed, Converter={StaticResource DispTimeConverter}}" />
+                </ui:LabelledItem>
                 <ui:LoaderButton Grid.Column="1" Margin="5" IsEnabled="{Binding IsPlaying}" Name="stopPlayback" LoaderClick="stopPlayback_LoaderClick">Stop</ui:LoaderButton>
             </StackPanel>
             <ContentControl MinWidth="10" MinHeight="10" VerticalAlignment="Stretch" Content="{Binding RenderProgress.PreviewElement}" />

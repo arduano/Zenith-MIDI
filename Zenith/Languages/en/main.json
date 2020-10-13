@@ -37,7 +37,14 @@
       "h264crf": "H264 CRF",
       "h264bitrate": "H264 Bitrate",
       "h264nvencBitrate": "H264 NVENC Bitrate",
-      "custom": "Custom"
+      "custom": "Custom",
+      "progress": {
+        "notesRendering": "Notes Rendering:",
+        "fps": "FPS:",
+        "midiTime": "MIDI Time:",
+        "progress": "Progress:",
+        "timeElapsed": "Time Elapsed:"
+      }
     },
     "loadMidi": "Load MIDI",
     "unload": "Unload",
