@@ -280,8 +280,7 @@ namespace PFARender
                         float yLen = (float)Math.Round(gap * 2.0f * settings.kbHeight);
                         float yPos = 5.0f + (key.Pressed ? wEndDownT : wEndUpT) * Status.RenderHeight; // seems hardcoded to that in pfa too?
 
-                        // TODO (Khang): verify color accuracy
-                        var col = MultCol(leftCol, .8f);
+                        var col = MultCol(leftCol, (key.Pressed ? .5f : .8f));
                         quadBuffer.PushQuad((leftSnap + gap) / Status.RenderWidth, (yPos + yLen) / Status.RenderHeight,
                             (leftSnap + gap + xPad) / Status.RenderWidth, yPos / Status.RenderHeight, col, col, col, col);
                     }
