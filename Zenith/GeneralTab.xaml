@@ -44,6 +44,13 @@
                 </Style.Triggers>
             </Style>
 
+            <Style x:Key="ResolutionPreset" TargetType="{x:Type ui:EnumComboBox}" BasedOn="{StaticResource MatComboBox}">
+                <Setter Property="IsEnabled" Value="{Binding IsNotPlaying}"/>
+                <Setter Property="Enum" Value="{x:Type local:GeneralTab+ResPreset}"/>
+                <Setter Property="Padding" Value="6,5,6,6"/>
+                <Setter Property="MinWidth" Value="120"/>
+            </Style>
+
             <Style x:Key="RenderWidth" TargetType="{x:Type ui:NumberBox}" BasedOn="{StaticResource MatNumberBox}">
                 <Setter Property="IsEnabled" Value="{Binding IsNotPlaying}"/>
                 <Setter Property="Maximum" Value="15360"/>
@@ -142,12 +149,21 @@
 
                 <ui:Title HorizontalAlignment="Center" Content="{ui:LangText main.gen.renderSettings}"/>
                 <DockPanel HorizontalAlignment="Center">
+                    <ui:LabelledItem Label="{ui:LangText main.gen.resPreset}" Margin="5">
+                        <ui:EnumComboBox
+                            Style="{DynamicResource ResolutionPreset}"
+                            x:Name="resolutionPreset" SelectionChanged="ResPreset_SelectionChanged"
+                        >
+                        </ui:EnumComboBox>
+                    </ui:LabelledItem>
+
                     <ui:LabelledItem Label="{ui:LangText main.gen.width}" MinLabelWidth="60" Margin="5">
                         <ui:NumberBox
                             Step="1"
                             Style="{DynamicResource RenderWidth}"
                             Value="{Binding RenderArgs.Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DecimalIntConvert}}"
                             Width="100"
+                            x:Name="renderWidth"
                         />
                     </ui:LabelledItem>
 
@@ -157,6 +173,7 @@
                             Style="{DynamicResource RendeHeight}"
                             Value="{Binding RenderArgs.Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DecimalIntConvert}}"
                             Width="100"
+                            x:Name="renderHeight"
                         />
                     </ui:LabelledItem>
                 </DockPanel>

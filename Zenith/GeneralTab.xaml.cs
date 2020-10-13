@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -33,6 +34,24 @@ namespace Zenith
             DependencyProperty.Register("SelectingHistoricalMidi", typeof(bool), typeof(GeneralTab), new PropertyMetadata(false));
 
 
+        public enum ResPreset
+        {
+            [Description("1280x720")]
+            Res720p,
+            [Description("1920x1080")]
+            Res1080p,
+            [Description("2560x1440")]
+            Res1440p,
+            [Description("3840x2160")]
+            Res4k,
+            [Description("5120x2880")]
+            Res5k,
+            [Description("7680x4320")]
+            Res8k,
+            [Description("15360x8640")]
+            Res16k,
+        }
+
 
         public GeneralTab()
         {
@@ -40,6 +59,14 @@ namespace Zenith
 
             speedSlider.NudToSlider = v => Math.Log(v, 2);
             speedSlider.SliderToNud = v => Math.Pow(2, v);
+
+            foreach (var val in Enum.GetValues(typeof(ResPreset)).Cast<ResPreset>())
+            {
+                var item = new EnumComboBoxItem();
+                item.EnumValue = val;
+                item.Content = val.ToString().Replace("Res", "");
+                resolutionPreset.Items.Add(item);
+            }
         }
 
         public BaseModel Data
@@ -127,6 +154,24 @@ namespace Zenith
             if (Data.KdmapiConnected) await Data.UnloadKdmapi();
             else await Data.LoadKdmapi();
             e.Loaded();
+        }
+
+        private void ResPreset_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // TODO (Khang): should be a helper function and merged with the one in ZenithEngine
+            var val = (ResPreset)resolutionPreset.Selected;
+            var descSplit = (val.GetType()
+                  .GetField(val.ToString())
+                  .GetCustomAttributes(typeof(DescriptionAttribute), false)
+                  .FirstOrDefault() as DescriptionAttribute)
+                  .Description.Split('x');
+            if (descSplit.Length != 2)
+                throw new Exception("Resolution preset description didn't specify 2 numbers");
+            int tempWidth, tempHeight;
+            if (!Int32.TryParse(descSplit[0], out tempWidth) || !Int32.TryParse(descSplit[1], out tempHeight))
+                throw new Exception("Failed to parse resolution preset description");
+            renderWidth.Value = tempWidth;
+            renderHeight.Value = tempHeight;
         }
     }
 }
