@@ -11,6 +11,7 @@
     },
     "gen": {
       "renderSettings": "Render Settings",
+      "resPreset": "Preset",
       "width": "Width",
       "height": "Height",
       "ssaa": "Super Sample",
