@@ -82,6 +82,7 @@
       "right": "Right"
     },
     "pfa": {
+      "barColorHex": "Bar Color",
       "middleCSquare": "Middle C Square"
     },
     "textured": {
