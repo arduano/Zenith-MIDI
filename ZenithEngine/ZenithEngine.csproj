@@ -345,6 +345,7 @@
     <Compile Include="ModuleUI\UINumber.cs" />
     <Compile Include="ModuleUI\UINumberSlider.cs" />
     <Compile Include="ModuleUI\UITabs.cs" />
+    <Compile Include="ModuleUI\UITextBox.cs" />
     <Compile Include="ModuleUtil\ColorUtil.cs" />
     <Compile Include="ModuleUtil\Extensions.cs" />
     <Compile Include="ModuleUtil\KeyboardState.cs" />

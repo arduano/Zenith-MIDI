@@ -70,6 +70,9 @@ namespace PFARender
             public UICheckbox sameWidthNotes = new UICheckbox("sameWidthNotes", new LangText("mods.common.sameWidthNotes"), false);
 
             [UIChild]
+            public UITextBox barColorHex = new UITextBox("barColorHex", new LangText("mods.pfa.barColorHex"), "950A06", 6, 75);
+
+            [UIChild]
             public UICheckbox middleCSquare = new UICheckbox("middleCSquare", new LangText("mods.pfa.middleCSquare"), true);
         }
         #endregion
@@ -81,6 +84,11 @@ namespace PFARender
         public override double StartOffset => settings.noteScreenTime.Value;
 
         protected override NoteColorPalettePick PalettePicker => settings.Palette;
+
+        string lastBarColorText = "950A06";
+        float topBarR = 149f / 255f;
+        float topBarG = 10f / 255f;
+        float topBarB = 6f / 255f;
 
         Flat2dShapeBuffer quadBuffer;
         ShaderProgram flatShader;
@@ -114,8 +122,20 @@ namespace PFARender
         public override void RenderFrame(DeviceContext context, IRenderSurface renderSurface)
         {
             double screenTime = settings.noteScreenTime;
-
             Midi.CheckParseDistance(screenTime);
+
+            if (lastBarColorText != settings.barColorHex.Value && settings.barColorHex.Value.Length == 6)
+            {
+                lastBarColorText = settings.barColorHex.Value;
+                try
+                {
+                    int col = int.Parse(lastBarColorText, System.Globalization.NumberStyles.HexNumber);
+                    topBarR = ((col >> 16) & 0xFF) / 255.0f;
+                    topBarG = ((col >> 8) & 0xFF) / 255.0f;
+                    topBarB = ((col >> 0) & 0xFF) / 255.0f;
+                }
+                catch { }
+            }
 
             using (flatShader.UseOn(context))
             {
@@ -222,10 +242,6 @@ namespace PFARender
                 col1 = new Color4(.086f, .086f, .086f, 1);
                 col2 = new Color4(.0196f, .0196f, .0196f, 1);
                 quadBuffer.PushQuad(0, pianoHeight, 1, topRedStart, col2, col2, col1, col1);
-
-                float topBarR = .585f;
-                float topBarG = .0392f;
-                float topBarB = .0249f;
 
                 col1 = new Color4(topBarR, topBarG, topBarB, 1);
                 col2 = new Color4(topBarR / 2, topBarG / 2, topBarB / 2, 1);
