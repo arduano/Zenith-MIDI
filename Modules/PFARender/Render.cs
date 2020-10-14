@@ -124,9 +124,9 @@ namespace PFARender
             double screenTime = settings.noteScreenTime;
             Midi.CheckParseDistance(screenTime);
 
-            if (lastBarColorText != settings.barColorHex.Value && settings.barColorHex.Value.Length == 6)
+            if (lastBarColorText != settings.barColorHex && settings.barColorHex.Value.Length == 6)
             {
-                lastBarColorText = settings.barColorHex.Value;
+                lastBarColorText = settings.barColorHex;
                 try
                 {
                     int col = int.Parse(lastBarColorText, System.Globalization.NumberStyles.HexNumber);

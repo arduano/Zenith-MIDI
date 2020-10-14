@@ -9,6 +9,8 @@ namespace ZenithEngine.ModuleUI
 {
     public class UITextBox : BaseLabelledItem<TextBox, string>
     {
+        public static implicit operator string(UITextBox val) => val.Value;
+
         public UITextBox(string name, object label, string value, int maxLength, int width) : base(name, label, new TextBox(), value)
         {
             Value = value;
