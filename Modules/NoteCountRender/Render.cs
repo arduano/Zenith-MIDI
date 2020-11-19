@@ -202,6 +202,7 @@ namespace NoteCountRender
 
             countedNotes = 0;
             maximumVals = new Dictionary<string, object>();
+            npsFrames.Clear();
 
             base.Init(device, midi, status);
         }
