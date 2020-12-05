@@ -91,7 +91,7 @@ namespace ZenithEngine.MIDI.Audio
                         time() > ev.time - 0.2 * PlaybackSpeed
                     );
                     if (ended) continue;
-                    var ms = (ev.time - time()) * 1000 / PlaybackSpeed;
+                    var ms = PlaybackSpeed == 0 ? 0 : (ev.time - time()) * 1000 / PlaybackSpeed;
                     if (ms > 0) Thread.Sleep((int)ms);
                 }
                 else

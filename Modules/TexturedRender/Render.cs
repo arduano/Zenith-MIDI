@@ -189,7 +189,8 @@ namespace TexturedRender
                         newShader = lightenShader;
                     if (type == NoteShaderType.Hybrid)
                         newShader = hybridShader;
-                    shader = dispose.Replace(shader, newShader.UseOn(context));
+                    dispose.Remove(shader);
+                    shader = dispose.Add(newShader.UseOn(context));
                     shaderType = type;
                 }
 

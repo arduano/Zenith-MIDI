@@ -26,5 +26,5 @@ COLAPPLY_CODE
 float4 PS(in float2 uv : UV, in float4 col : COLOR, in int texid : TEX) : SV_Target
 {
     float4 tex = colFromTex(texid, uv);
-    return col * tex;
+    return applyColor(col, tex);
 }
