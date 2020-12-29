@@ -82,12 +82,18 @@ namespace NoteCountRender
         public string TextTemplate { get; set; } =
 @"Notes: {nc}/{nc-max}/{nc-rem}
 Seconds: {sec}/{sec-max}/{sec-rem}
+Time: {time}/{time-max}/{time-rem}
+Time: {time-milli}/{time-milli-max}/{time-milli-rem}
+BPM: {bpm}
 Polyphony: {plph}
 NPS:
 {nps-2}
 {nps-1}
 {nps-05}
-{nps-025}";
+{nps-025}
+Beat:
+{ts}
+{ts-n}/{ts-d}";
 
         public Alignments Alignment { get; set; } = Alignments.TopLeft;
         public string FontName { get; set; } = "Arial";
