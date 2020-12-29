@@ -271,9 +271,10 @@ namespace NoteCountRender
                                           TimeSpan.FromSeconds(Midi.PlayerPositionSeconds).ToString("mm\\:ss\\.fff"),
                                           TimeSpan.FromSeconds(Midi.Midi.SecondsLength - Midi.PlayerPositionSeconds).ToString("mm\\:ss\\.fff")));
             data.Add(EndProgressRemaining("tick", Midi.Midi.TickLength, Midi.PlayerPosition, Midi.Midi.TickLength - Midi.PlayerPosition));
-            data.Add(new Dictionary<string, object>() { { "ts", Midi.TimeSignature.Numerator.ToString() + "/" + Midi.TimeSignature.Denominator.ToString() } });
-            data.Add(new Dictionary<string, object>() { { "ts-n", Midi.TimeSignature.Numerator.ToString() } });
-            data.Add(new Dictionary<string, object>() { { "ts-d", Midi.TimeSignature.Denominator.ToString() } });
+            data.Add(new Dictionary<string, object>() { { "bpm", Midi.Tempo.realTempo.ToString() },
+                                                        { "ts", Midi.TimeSignature.Numerator.ToString() + "/" + Midi.TimeSignature.Denominator.ToString() },
+                                                        { "ts-n", Midi.TimeSignature.Numerator.ToString() },
+                                                        { "ts-d", Midi.TimeSignature.Denominator.ToString() } });
 
             var rect = new RawRectangleF(0, 0, composite.Width, composite.Height);
 
