@@ -84,6 +84,7 @@ namespace NoteCountRender
 Seconds: {sec}/{sec-max}/{sec-rem}
 Time: {time}/{time-max}/{time-rem}
 Time: {time-milli}/{time-milli-max}/{time-milli-rem}
+Tick: {tick}/{tick-max}/{tick-rem}
 BPM: {bpm}
 Polyphony: {plph}
 NPS:
@@ -91,6 +92,7 @@ NPS:
 {nps-1}
 {nps-05}
 {nps-025}
+Average NPS: {avgnps}/{avgnps-live}
 Beat:
 {ts}
 {ts-n}/{ts-d}";

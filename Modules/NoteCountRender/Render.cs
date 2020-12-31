@@ -75,8 +75,33 @@ namespace NoteCountRender
             plainShader = init.Add(Shaders.BasicTextured());
         }
 
-        Dictionary<string, object> EndProgressRemaining(string name, object end, object progress, object remaining)
+        Dictionary<string, object> EndProgressRemaining(string name, object end, object progress, object remaining = null)
         {
+            if (end is int)
+            {
+                progress = Math.Min(Convert.ToInt32(progress), Convert.ToInt32(end));
+                remaining = Convert.ToInt32(end) - Convert.ToInt32(progress);
+            }
+            else if (end is long)
+            {
+                progress = Math.Min(Convert.ToInt64(progress), Convert.ToInt64(end));
+                remaining = Convert.ToInt64(end) - Convert.ToInt64(progress);
+            }
+            else if (end is decimal)
+            {
+                progress = Math.Min(Convert.ToDecimal(progress), Convert.ToDecimal(end));
+                remaining = Convert.ToDecimal(end) - Convert.ToDecimal(progress);
+            }
+            else if (end is float)
+            {
+                progress = Math.Min(Convert.ToSingle(progress), Convert.ToSingle(end));
+                remaining = Convert.ToSingle(end) - Convert.ToSingle(progress);
+            }
+            else if (end is double)
+            {
+                progress = Math.Min(Convert.ToDouble(progress), Convert.ToDouble(end));
+                remaining = Convert.ToDouble(end) - Convert.ToDouble(progress);
+            }
             return new Dictionary<string, object>()
             {
                 { $"{name}", progress },
@@ -260,18 +285,20 @@ namespace NoteCountRender
             data.Add(GetWithMaximum("nps-2", nps2));
             data.Add(GetWithMaximum("nps-05", nps05));
             data.Add(GetWithMaximum("nps-025", nps025));
-            data.Add(EndProgressRemaining("nc", Midi.Midi.NoteCount, countedNotes, Midi.Midi.NoteCount - countedNotes));
-            data.Add(EndProgressRemaining("sec", Midi.Midi.SecondsLength, Midi.PlayerPositionSeconds, Midi.Midi.SecondsLength - Midi.PlayerPositionSeconds));
+            data.Add(EndProgressRemaining("nc", Midi.Midi.NoteCount, countedNotes));
+            data.Add(EndProgressRemaining("sec", Midi.Midi.SecondsLength, Midi.PlayerPositionSeconds));
             data.Add(EndProgressRemaining("time",
                                           TimeSpan.FromSeconds(Midi.Midi.SecondsLength).ToString("mm\\:ss"),
-                                          TimeSpan.FromSeconds(Midi.PlayerPositionSeconds).ToString("mm\\:ss"),
-                                          TimeSpan.FromSeconds(Midi.Midi.SecondsLength - Midi.PlayerPositionSeconds).ToString("mm\\:ss")));
+                                          TimeSpan.FromSeconds(Math.Min(Midi.Midi.SecondsLength, Midi.PlayerPositionSeconds)).ToString("mm\\:ss"),
+                                          TimeSpan.FromSeconds(Math.Max(0, Midi.Midi.SecondsLength - Midi.PlayerPositionSeconds)).ToString("mm\\:ss")));
             data.Add(EndProgressRemaining("time-milli",
                                           TimeSpan.FromSeconds(Midi.Midi.SecondsLength).ToString("mm\\:ss\\.fff"),
-                                          TimeSpan.FromSeconds(Midi.PlayerPositionSeconds).ToString("mm\\:ss\\.fff"),
-                                          TimeSpan.FromSeconds(Midi.Midi.SecondsLength - Midi.PlayerPositionSeconds).ToString("mm\\:ss\\.fff")));
-            data.Add(EndProgressRemaining("tick", Midi.Midi.TickLength, Midi.PlayerPosition, Midi.Midi.TickLength - Midi.PlayerPosition));
-            data.Add(new Dictionary<string, object>() { { "bpm", Midi.Tempo.realTempo },
+                                          TimeSpan.FromSeconds(Math.Min(Midi.Midi.SecondsLength, Midi.PlayerPositionSeconds)).ToString("mm\\:ss\\.fff"),
+                                          TimeSpan.FromSeconds(Math.Max(0, Midi.Midi.SecondsLength - Midi.PlayerPositionSeconds)).ToString("mm\\:ss\\.fff")));
+            data.Add(EndProgressRemaining("tick", Midi.Midi.TickLength, Midi.PlayerPosition));
+            data.Add(new Dictionary<string, object>() { { "avgnps", Midi.Midi.NoteCount / Midi.Midi.SecondsLength },
+                                                        { "avgnps-live", countedNotes / Math.Min(Midi.PlayerPositionSeconds, Midi.Midi.SecondsLength) },
+                                                        { "bpm", Midi.Tempo.realTempo },
                                                         { "bpm-dev", Midi.Tempo.rawTempo },
                                                         { "ts", Midi.TimeSignature.Numerator.ToString() + "/" + Midi.TimeSignature.Denominator.ToString() },
                                                         { "ts-n", Midi.TimeSignature.Numerator },
