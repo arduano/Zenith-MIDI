@@ -190,12 +190,12 @@ namespace Zenith
                 var args = pipeline.RenderArgs;
                 var status = pipeline.Status;
                 outputLogger = Logs.GetFFMpegLogger(false);
-                output = new FFMpegOutput(Device, status.RenderWidth, status.RenderHeight, status.FPS, args.Args, args.OutputVideo, outputLogger);
+                output = new FFMpegOutput(Device, status.OutputWidth, status.OutputHeight, status.FPS, args.Args, args.OutputVideo, outputLogger);
                 output.Errored += (s, e) => outputLogger.OpenLogData();
                 if (args.UseMask)
                 {
                     outputMaskLogger = Logs.GetFFMpegLogger(true);
-                    outputMask = new FFMpegOutput(Device, status.RenderWidth, status.RenderHeight, status.FPS, args.Args, args.OutputMask, outputLogger);
+                    outputMask = new FFMpegOutput(Device, status.OutputWidth, status.OutputHeight, status.FPS, args.Args, args.OutputMask, outputLogger);
                     outputMask.Errored += (s, e) => outputMaskLogger.OpenLogData();
                 }
             }
