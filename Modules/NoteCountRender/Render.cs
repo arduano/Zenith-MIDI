@@ -24,11 +24,13 @@ namespace NoteCountRender
 {
     struct DecimalFormat
     {
-        public DecimalFormat(int minDigits, int minDecimals, int round, string thousands = "", string point = ".")
+        public DecimalFormat(int minDigits, int minDecimals, int round, int floor = 0, int ceiling = 0, string thousands = "", string point = ".")
         {
             MinDigits = minDigits;
             MinDecimals = minDecimals;
             Round = round;
+            Floor = floor;
+            Ceiling = ceiling;
             Thousands = thousands;
             Point = point;
         }
@@ -36,6 +38,8 @@ namespace NoteCountRender
         public int MinDigits { get; }
         public int MinDecimals { get; }
         public int Round { get; }
+        public int Floor { get; }
+        public int Ceiling { get; }
 
         public string Thousands { get; }
         public string Point { get; }
@@ -136,8 +140,8 @@ namespace NoteCountRender
 
 
         string ProcessDecimal(decimal val, DecimalFormat format) =>
-            ProcessDecimal(val, format.Round, format.MinDecimals, format.MinDecimals, format.Thousands, format.Point);
-        string ProcessDecimal(decimal val, int round, int minDecimals, int minDigits, string thousands, string point)
+            ProcessDecimal(val, format.Round, format.Floor, format.Ceiling, format.MinDecimals, format.MinDecimals, format.Thousands, format.Point);
+        string ProcessDecimal(decimal val, int round, int floor, int ceiling, int minDecimals, int minDigits, string thousands, string point)
         {
             string fixString(string s)
             {
@@ -166,6 +170,8 @@ namespace NoteCountRender
             point = fixString(point);
 
             var txt = Decimal.Round(val, round).ToString();
+            if (floor > 0) txt = (Math.Floor((double)val * Math.Pow(10, floor)) / Math.Pow(10, floor)).ToString();
+            if (ceiling > 0) txt = (Math.Ceiling((double)val * Math.Pow(10, ceiling)) / Math.Pow(10, ceiling)).ToString();
 
             var split = txt.Split('.');
             string digits = split[0];
@@ -327,10 +333,10 @@ namespace NoteCountRender
         {
             var matches = search.Matches(text);
 
-            var defaultFormat = new DecimalFormat(0, 0, 0, ",", ".");
+            var defaultFormat = new DecimalFormat(0, 0, 0, 0, 0, ",", ".");
             var formatDefaults = new Dictionary<string, DecimalFormat>()
             {
-                { "sec", new DecimalFormat(0, 1, 1) }
+                { "sec", new DecimalFormat(0, 1, 0, 1) }
             };
 
             foreach (var _m in matches)
@@ -359,11 +365,13 @@ namespace NoteCountRender
 
                             var format = formatDefaults.ContainsKey(partNameBase) ? formatDefaults[partNameBase] : defaultFormat;
                             var round = GetValueForPart(metaParts, "rnd", format.Round);
+                            var floor = GetValueForPart(metaParts, "flr", format.Floor);
+                            var ceiling = GetValueForPart(metaParts, "cil", format.Ceiling);
                             var minDecimals = GetValueForPart(metaParts, "dec", format.MinDecimals);
                             var minDigits = GetValueForPart(metaParts, "dig", format.MinDigits);
                             var thousands = GetValueForPart(metaParts, "sep", format.Thousands);
                             var point = GetValueForPart(metaParts, "pnt", format.Point);
-                            var processed = ProcessDecimal(nv, round, minDecimals, minDigits, thousands, point);
+                            var processed = ProcessDecimal(nv, round, floor, ceiling, minDecimals, minDigits, thousands, point);
                             text = text.Replace(tag, processed);
                             continue;
                         }
