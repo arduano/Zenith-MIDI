@@ -99,4 +99,15 @@ namespace ZenithEngine.MIDI
         public int Numerator { get; internal set; }
         public int Denominator { get; internal set; }
     }
+
+    public class ControlChange : PositionedEvent
+    {
+        public ControlChange(long pos, byte channel, short amount) : base(pos)
+        {
+            Type = channel;
+            Value = amount;
+        }
+        public byte Type;
+        public short Value;
+    }
 }

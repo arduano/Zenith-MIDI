@@ -95,7 +95,11 @@ NPS:
 Average NPS: {avgnps}/{avgnps-live}
 Beat:
 {ts}
-{ts-n}/{ts-d}";
+{ts-n}/{ts-d}
+Pedals:
+Sustain: {pedal-sustain}
+Sostenuto: {pedal-sost}
+Soft: {pedal-soft}";
 
         public Alignments Alignment { get; set; } = Alignments.TopLeft;
         public string FontName { get; set; } = "Arial";

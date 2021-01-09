@@ -68,6 +68,7 @@ namespace ZenithEngine.MIDI.Disk
             TimeSignature = midi.TimeSignatureEvents[0];
             TimeSeconds = -startDelay;
             TimeTicksFractional = -startDelay / ParserTempoTickMultiplier;
+            ControlChange = new ControlChange[16];
         }
 
         public override bool ParseUpTo(double time)
@@ -99,6 +100,7 @@ namespace ZenithEngine.MIDI.Disk
 
         int tempoEventId = 0;
         int timesigEventId = 0;
+        int[] pedalEventId = new int[16];
         public override void AdvancePlaybackTo(double time)
         {
             var offset = time - TimeSeconds;
@@ -152,6 +154,19 @@ namespace ZenithEngine.MIDI.Disk
                 midi.TimeSignatureEvents[timesigEventId].Position < TimeTicksFractional)
             {
                 TimeSignature = midi.TimeSignatureEvents[timesigEventId++];
+            }
+
+            for (byte i = 0; i < 16; i++)
+            {
+                while (pedalEventId[i] != midi.CCEvents[i].Length &&
+                    midi.CCEvents[i][pedalEventId[i]].Position < TimeTicksFractional)
+                {
+                    for (byte c = 0; c < ControlChange.Length; c++)
+                    {
+                        ControlChange[i].Type = midi.CCEvents[i][pedalEventId[i]++].Type;
+                        ControlChange[i].Value = midi.CCEvents[i][pedalEventId[i]++].Value;
+                    }
+                }
             }
 
             if (SecondsParsed < TimeSeconds) ParseUpTo(PlayerPosition);

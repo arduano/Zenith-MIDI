@@ -310,6 +310,28 @@ namespace NoteCountRender
                                                         { "ts-n", Midi.TimeSignature.Numerator },
                                                         { "ts-d", Midi.TimeSignature.Denominator } });
 
+            for (int i = 0; i < 16; i++)
+            {
+                for (byte c = 0; c < Midi.ControlChange.Length; c++)
+                {
+                    var StateSum = 0;
+                    string type = "";
+                    object pedalState = new object();
+                    if (c == 64) type = "sustain";
+                    else if (c == 65) continue;
+                    else if (c == 66) type = "sost";
+                    else if (c == 67) type = "soft";
+                    var channel = i + 1;
+                    if (Midi.ControlChange[i].Value > 0) pedalState = "On";
+                    else pedalState = "Off";
+                    data.Add(new Dictionary<string, object>() { { $"pedal-{type}-{channel}", pedalState } });
+                    StateSum = Midi.ControlChange[c].Value;
+                    if (StateSum > 0) pedalState = "On";
+                    else pedalState = "Off";
+                    data.Add(new Dictionary<string, object>() { { $"pedal-{type}", pedalState } });
+            }
+            }
+
             var rect = new RawRectangleF(0, 0, composite.Width, composite.Height);
 
             var dataMerged = data.SelectMany(d => d).ToDictionary(e => e.Key, e => e.Value);
