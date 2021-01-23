@@ -71,7 +71,6 @@ namespace ZenithEngine.MIDI.Disk
 
         public Tempo[] TempoEvents { get; private set; }
         public TimeSignature[] TimeSignatureEvents { get; private set; }
-        public ControlChange[][] CCEvents { get; private set; }
 
         internal List<TrackPos> TrackPositions { get; } = new List<TrackPos>();
 
@@ -194,15 +193,6 @@ namespace ZenithEngine.MIDI.Disk
                 timesigMerge = new[] { new TimeSignature(0, 4, 4) }.Concat(timesigMerge).ToArray();
             }
             TimeSignatureEvents = timesigMerge;
-
-            CCEvents = new ControlChange[16][];
-            for (int i = 0; i < 16; i++)
-            {
-                for (int c = 0; c < 128; c++)
-                {
-                    CCEvents[i] = ZipMerger<ControlChange>.MergeMany(Tracks.Select(t => t.CCEvents[i][c]).ToArray(), e => e.Position).ToArray();
-                }
-            }
 
             double time = 0;
             long ticks = TickLength;

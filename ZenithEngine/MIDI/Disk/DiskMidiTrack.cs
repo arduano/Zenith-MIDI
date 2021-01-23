@@ -46,10 +46,8 @@ namespace ZenithEngine.MIDI.Disk
 
         FastList<Tempo> tempoEvents = new FastList<Tempo>();
         FastList<TimeSignature> timesigEvents = new FastList<TimeSignature>();
-        FastList<ControlChange>[][] ccEvents = new FastList<ControlChange>[16][];
         public IEnumerable<Tempo> TempoEvents { get => tempoEvents; }
         public IEnumerable<TimeSignature> TimesigEvents { get => timesigEvents; }
-        public IEnumerable<ControlChange>[][] CCEvents { get => ccEvents; }
 
         public NoteColor[] TrackColors { get; } = new NoteColor[16];
         public NoteColor[] InitialTrackColors { get; } = new NoteColor[16];
@@ -95,8 +93,6 @@ namespace ZenithEngine.MIDI.Disk
             Mode = mode;
             this.reader = reader;
             ID = id;
-            for (int i = 0; i < 16; i++)
-                ccEvents[i] = new FastList<ControlChange>[i];
 
             if (initialTrackColors == null)
             {
@@ -356,14 +352,7 @@ namespace ZenithEngine.MIDI.Disk
                     byte cc = reader.Read();
                     byte vv = reader.Read();
 
-                    if (loading)
-                    {
-                        if (cc == 64 || cc == 66 || cc == 67)
-                        {
-                            ccEvents[channel][cc].Add(new ControlChange(ParseTimeTicks, cc, vv));
-                        }
-                        return;
-                    };
+                    if (loading) return;
 
                     if (MidiPlayback.PushPlaybackEvents)
                     {
