@@ -46,8 +46,10 @@ namespace ZenithEngine.MIDI.Disk
 
         FastList<Tempo> tempoEvents = new FastList<Tempo>();
         FastList<TimeSignature> timesigEvents = new FastList<TimeSignature>();
+        FastList<Scale> scaleEvents = new FastList<Scale>();
         public IEnumerable<Tempo> TempoEvents { get => tempoEvents; }
         public IEnumerable<TimeSignature> TimesigEvents { get => timesigEvents; }
+        public IEnumerable<Scale> ScaleEvents { get => scaleEvents; }
 
         public NoteColor[] TrackColors { get; } = new NoteColor[16];
         public NoteColor[] InitialTrackColors { get; } = new NoteColor[16];
@@ -516,6 +518,19 @@ namespace ZenithEngine.MIDI.Disk
                             timesigEvents.Add(new TimeSignature(ParseTimeTicks, nn, dd));
                         }
                         reader.Skip(2);
+                    }
+                    else if (command == 0x59)
+                    {
+                        if (size != 2)
+                        {
+                            throw new Exception("Corrupt Track");
+                        }
+                        sbyte sf = Convert.ToSByte(reader.ReadFast());
+                        bool mi = Convert.ToBoolean(reader.ReadFast());
+                        if (loading)
+                        {
+                            scaleEvents.Add(new Scale(ParseTimeTicks, sf, mi));
+                        }
                     }
                     else
                     {

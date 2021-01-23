@@ -170,8 +170,8 @@ namespace NoteCountRender
             point = fixString(point);
 
             var txt = Decimal.Round(val, round).ToString();
-            if (floor > 0) txt = (Math.Floor((double)val * Math.Pow(10, floor)) / Math.Pow(10, floor)).ToString();
-            if (ceiling > 0) txt = (Math.Ceiling((double)val * Math.Pow(10, ceiling)) / Math.Pow(10, ceiling)).ToString();
+            if (floor > 0) txt = (Decimal.Floor(val * Convert.ToDecimal(Math.Pow(10, floor))) / Convert.ToDecimal(Math.Pow(10, floor))).ToString();
+            if (ceiling > 0) txt = (Decimal.Ceiling(val * Convert.ToDecimal(Math.Pow(10, ceiling))) / Convert.ToDecimal(Math.Pow(10, ceiling))).ToString();
 
             var split = txt.Split('.');
             string digits = split[0];
@@ -285,6 +285,11 @@ namespace NoteCountRender
             long nps05 = npsFrames.Where(n => n.Time > stime - 0.5).Select(n => n.Notes).Sum() * 2;
             long nps025 = npsFrames.Where(n => n.Time > stime - 0.25).Select(n => n.Notes).Sum() * 4;
 
+            string[] ScaleAbbTableMajor = { "Cb", "Gb", "Db", "Ab", "Eb", "Bb", "F", "C", "G", "D", "A", "E", "B", "F#", "C#" };
+            string[] ScaleAbbTableMinor = { "Ab", "Eb", "B", "F", "C", "G", "D", "A", "E", "B", "F#", "C#", "G#", "D#", "A#"};
+            string ScaleAbb = Midi.Scale.Ifminor == false ? ScaleAbbTableMajor[Midi.Scale.SFNum + 7] : ScaleAbbTableMinor[Midi.Scale.SFNum + 7] + "m";
+            string ScaleName = Midi.Scale.Ifminor == false ? ScaleAbbTableMajor[Midi.Scale.SFNum + 7] + "Major" : ScaleAbbTableMinor[Midi.Scale.SFNum + 7] + " minor";
+
             data.Add(GetWithMaximum("plph", polyphony));
             data.Add(GetWithMaximum("nps", nps1));
             data.Add(GetWithMaximum("nps-1", nps1));
@@ -308,7 +313,9 @@ namespace NoteCountRender
                                                         { "bpm-dev", Midi.Tempo.rawTempo },
                                                         { "ts", Midi.TimeSignature.Numerator.ToString() + "/" + Midi.TimeSignature.Denominator.ToString() },
                                                         { "ts-n", Midi.TimeSignature.Numerator },
-                                                        { "ts-d", Midi.TimeSignature.Denominator } });
+                                                        { "ts-d", Midi.TimeSignature.Denominator },
+                                                        { "scale-name", ScaleName }, 
+                                                        { "scale-abb", ScaleAbb } });
 
             var rect = new RawRectangleF(0, 0, composite.Width, composite.Height);
 

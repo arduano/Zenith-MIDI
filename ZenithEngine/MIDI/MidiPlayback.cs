@@ -64,6 +64,7 @@ namespace ZenithEngine.MIDI
         public FastList<PlaybackEvent> PlaybackEvents { get; protected set; }
         public Tempo Tempo { get; internal set; }
         public TimeSignature TimeSignature { get; internal set; }
+        public Scale Scale { get; internal set; }
 
         internal double ParserTempoTickMultiplier { get; set; } = 0;
 

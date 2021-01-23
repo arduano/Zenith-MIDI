@@ -68,6 +68,7 @@ namespace ZenithEngine.MIDI.Disk
             TimeSignature = midi.TimeSignatureEvents[0];
             TimeSeconds = -startDelay;
             TimeTicksFractional = -startDelay / ParserTempoTickMultiplier;
+            Scale = midi.ScaleEvents[0];
         }
 
         public override bool ParseUpTo(double time)
@@ -99,6 +100,7 @@ namespace ZenithEngine.MIDI.Disk
 
         int tempoEventId = 0;
         int timesigEventId = 0;
+        int scaleEventId = 0;
         public override void AdvancePlaybackTo(double time)
         {
             var offset = time - TimeSeconds;
@@ -152,6 +154,12 @@ namespace ZenithEngine.MIDI.Disk
                 midi.TimeSignatureEvents[timesigEventId].Position < TimeTicksFractional)
             {
                 TimeSignature = midi.TimeSignatureEvents[timesigEventId++];
+            }
+
+            while (scaleEventId != midi.ScaleEvents.Length &&
+                midi.ScaleEvents[scaleEventId].Position < TimeTicksFractional)
+            {
+                Scale = midi.ScaleEvents[scaleEventId++];
             }
 
             if (SecondsParsed < TimeSeconds) ParseUpTo(PlayerPosition);

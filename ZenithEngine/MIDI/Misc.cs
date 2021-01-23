@@ -99,4 +99,15 @@ namespace ZenithEngine.MIDI
         public int Numerator { get; internal set; }
         public int Denominator { get; internal set; }
     }
+
+    public class Scale: PositionedEvent
+    {
+        public Scale(long pos, sbyte sf, bool ifminor) : base(pos)
+        {
+            SFNum = sf;
+            Ifminor = ifminor;
+        }
+        public sbyte SFNum { get; internal set; }
+        public bool Ifminor { get; internal set; }
+    }
 }
