@@ -85,7 +85,9 @@ Seconds: {sec}/{sec-max}/{sec-rem}
 Time: {time}/{time-max}/{time-rem}
 Time: {time-milli}/{time-milli-max}/{time-milli-rem}
 Tick: {tick}/{tick-max}/{tick-rem}
+Bar: {bar}/{bar-max}/{bar-rem}
 BPM: {bpm}
+Raw BPM: {bpm-dev}
 Polyphony: {plph}
 NPS:
 {nps-2}

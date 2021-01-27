@@ -70,6 +70,8 @@ namespace ZenithEngine.MIDI.Disk
             TimeSeconds = -startDelay;
             TimeTicksFractional = -startDelay / ParserTempoTickMultiplier;
             Scale = midi.ScaleEvents[0];
+            Lyrics = midi.LyricsEvents[0];
+            BarCount = midi.BarCounts[0];
         }
 
         public override bool ParseUpTo(double time)
@@ -102,6 +104,7 @@ namespace ZenithEngine.MIDI.Disk
         int tempoEventId = 0;
         int timesigEventId = 0;
         int scaleEventId = 0;
+        int barcountId = 0;
         
         public override void AdvancePlaybackTo(double time)
         {
@@ -171,6 +174,13 @@ namespace ZenithEngine.MIDI.Disk
                 Lyrics = midi.LyricsEvents[lyricsEventId];
                 Lyrics.Text = encoding.GetString(midi.LyricsEvents[lyricsEventId].RawText);
             }
+
+            while (barcountId != midi.BarCounts.Length &&
+                midi.BarCounts[barcountId].Position < TimeTicksFractional)
+            {
+                BarCount = midi.BarCounts[barcountId++];
+            }
+            MaxBarCount = midi.BarCounts[midi.BarCounts.Length - 1].Count + (Convert.ToInt64(midi.TickLength - midi.BarCounts[midi.BarCounts.Length - 1].Position) / (midi.PPQ * TimeSignature.Numerator / TimeSignature.Denominator * 4));
 
             if (SecondsParsed < TimeSeconds) ParseUpTo(PlayerPosition);
 

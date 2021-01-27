@@ -121,4 +121,13 @@ namespace ZenithEngine.MIDI
         public byte[] RawText { get; internal set; }
         public string Text { get; internal set; }
     }
+
+    public class BarCount : PositionedEvent
+    {
+        public BarCount(long pos, long count) : base(pos)
+        {
+            Count = count;
+        }
+        public long Count { get; internal set; }
+    }
 }

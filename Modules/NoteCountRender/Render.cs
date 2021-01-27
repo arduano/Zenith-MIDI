@@ -296,6 +296,7 @@ namespace NoteCountRender
             data.Add(GetWithMaximum("nps-2", nps2));
             data.Add(GetWithMaximum("nps-05", nps05));
             data.Add(GetWithMaximum("nps-025", nps025));
+            data.Add(EndProgressRemaining("bar", Midi.BarCount.Count, Midi.MaxBarCount));
             data.Add(EndProgressRemaining("nc", Midi.Midi.NoteCount, countedNotes));
             data.Add(EndProgressRemaining("sec", Midi.Midi.SecondsLength, Midi.PlayerPositionSeconds));
             data.Add(EndProgressRemaining("time",

@@ -16,6 +16,7 @@ namespace ZenithEngine.MIDI
         IEnumerable<TimeSignature> TimesigEvents { get; }
         IEnumerable<Scale> ScaleEvents { get; }
         IEnumerable<TextData> LyricsEvents { get; }
+        IEnumerable<BarCount> BarCounts { get; }
         NoteColor[] InitialTrackColors { get; }
     }
 }

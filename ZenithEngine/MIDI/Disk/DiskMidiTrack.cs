@@ -49,10 +49,12 @@ namespace ZenithEngine.MIDI.Disk
         FastList<TimeSignature> timesigEvents = new FastList<TimeSignature>();
         FastList<Scale> scaleEvents = new FastList<Scale>();
         FastList<TextData> lyricsEvents = new FastList<TextData>();
+        FastList<BarCount> barCounts = new FastList<BarCount>();
         public IEnumerable<Tempo> TempoEvents { get => tempoEvents; }
         public IEnumerable<TimeSignature> TimesigEvents { get => timesigEvents; }
         public IEnumerable<Scale> ScaleEvents { get => scaleEvents; }
         public IEnumerable<TextData> LyricsEvents { get => lyricsEvents; }
+        public IEnumerable<BarCount> BarCounts { get => barCounts; }
 
         public NoteColor[] TrackColors { get; } = new NoteColor[16];
         public NoteColor[] InitialTrackColors { get; } = new NoteColor[16];
@@ -524,10 +526,13 @@ namespace ZenithEngine.MIDI.Disk
                         }
                         int nn = reader.ReadFast();
                         int dd = reader.ReadFast();
+                        long BarLength = MidiPlayback.Midi.PPQ * nn / dd * 4;
+                        long barcount = barCounts.ZeroLen ? 1 : barCounts.Last().Count + ((ParseTimeTicks - Convert.ToInt64(barCounts.Last().Position)) / BarLength);
                         if (loading)
                         {
                             dd = (int)Math.Pow(2, dd);
                             timesigEvents.Add(new TimeSignature(ParseTimeTicks, nn, dd));
+                            barCounts.Add(new BarCount(ParseTimeTicks, barcount));
                         }
                         reader.Skip(2);
                     }
