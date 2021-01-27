@@ -65,6 +65,7 @@ namespace ZenithEngine.MIDI
         public Tempo Tempo { get; internal set; }
         public TimeSignature TimeSignature { get; internal set; }
         public Scale Scale { get; internal set; }
+        public TextData Lyrics { get; internal set; }
 
         internal double ParserTempoTickMultiplier { get; set; } = 0;
 

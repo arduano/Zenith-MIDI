@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UtfUnknown;
 
 namespace ZenithEngine.MIDI.Disk
 {
@@ -101,6 +102,7 @@ namespace ZenithEngine.MIDI.Disk
         int tempoEventId = 0;
         int timesigEventId = 0;
         int scaleEventId = 0;
+        
         public override void AdvancePlaybackTo(double time)
         {
             var offset = time - TimeSeconds;
@@ -160,6 +162,14 @@ namespace ZenithEngine.MIDI.Disk
                 midi.ScaleEvents[scaleEventId].Position < TimeTicksFractional)
             {
                 Scale = midi.ScaleEvents[scaleEventId++];
+            }
+
+            Encoding encoding = midi.LyricsEvents.Length == 0 ? Encoding.Unicode : CharsetDetector.DetectFromBytes(midi.LyricsEvents[1].RawText).Detected?.Encoding;
+            for (int lyricsEventId = 0; lyricsEventId != midi.LyricsEvents.Length &&
+                midi.LyricsEvents[lyricsEventId].Position < TimeTicksFractional; lyricsEventId++)
+            {
+                Lyrics = midi.LyricsEvents[lyricsEventId];
+                Lyrics.Text = encoding.GetString(midi.LyricsEvents[lyricsEventId].RawText);
             }
 
             if (SecondsParsed < TimeSeconds) ParseUpTo(PlayerPosition);

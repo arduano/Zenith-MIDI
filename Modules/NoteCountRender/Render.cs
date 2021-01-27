@@ -311,6 +311,7 @@ namespace NoteCountRender
                                                         { "avgnps-live", countedNotes / Math.Min(Midi.PlayerPositionSeconds, Midi.Midi.SecondsLength) },
                                                         { "bpm", Midi.Tempo.realTempo },
                                                         { "bpm-dev", Midi.Tempo.rawTempo },
+                                                        { "lyrics", Midi.Lyrics?.Text },
                                                         { "ts", Midi.TimeSignature.Numerator.ToString() + "/" + Midi.TimeSignature.Denominator.ToString() },
                                                         { "ts-n", Midi.TimeSignature.Numerator },
                                                         { "ts-d", Midi.TimeSignature.Denominator },

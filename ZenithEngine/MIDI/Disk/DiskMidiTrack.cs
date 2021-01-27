@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UtfUnknown;
 
 namespace ZenithEngine.MIDI.Disk
 {
@@ -47,9 +48,11 @@ namespace ZenithEngine.MIDI.Disk
         FastList<Tempo> tempoEvents = new FastList<Tempo>();
         FastList<TimeSignature> timesigEvents = new FastList<TimeSignature>();
         FastList<Scale> scaleEvents = new FastList<Scale>();
+        FastList<TextData> lyricsEvents = new FastList<TextData>();
         public IEnumerable<Tempo> TempoEvents { get => tempoEvents; }
         public IEnumerable<TimeSignature> TimesigEvents { get => timesigEvents; }
         public IEnumerable<Scale> ScaleEvents { get => scaleEvents; }
+        public IEnumerable<TextData> LyricsEvents { get => lyricsEvents; }
 
         public NoteColor[] TrackColors { get; } = new NoteColor[16];
         public NoteColor[] InitialTrackColors { get; } = new NoteColor[16];
@@ -433,7 +436,16 @@ namespace ZenithEngine.MIDI.Disk
                     command = reader.Read();
                     int size = (int)ReadVariableLen();
 
-                    if (command == 0x0A)
+                    if (command == 0x05)
+                    {
+                        byte[] rawlyrics = new byte[size];
+                        for (int i = 0; i < size; i++)
+                        {
+                            rawlyrics[i] = reader.Read();
+                        }
+                        lyricsEvents.Add(new TextData(ParseTimeTicks, rawlyrics));
+                    }
+                    else if (command == 0x0A)
                     {
                         byte[] data = new byte[size];
                         for (int i = 0; i < size; i++)

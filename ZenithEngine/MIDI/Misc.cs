@@ -100,7 +100,7 @@ namespace ZenithEngine.MIDI
         public int Denominator { get; internal set; }
     }
 
-    public class Scale: PositionedEvent
+    public class Scale : PositionedEvent
     {
         public Scale(long pos, sbyte sf, bool ifminor) : base(pos)
         {
@@ -109,5 +109,16 @@ namespace ZenithEngine.MIDI
         }
         public sbyte SFNum { get; internal set; }
         public bool Ifminor { get; internal set; }
+    }
+
+    public class TextData : PositionedEvent
+    {
+        public TextData(long pos, byte[] rawtext, string text = "") : base(pos)
+        {
+            RawText = rawtext;
+            Text = text;
+        }
+        public byte[] RawText { get; internal set; }
+        public string Text { get; internal set; }
     }
 }

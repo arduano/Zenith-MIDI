@@ -98,7 +98,9 @@ Beat:
 {ts-n}/{ts-d}
 Scale:
 {scale-name}
-{scale-abb}";
+{scale-abb}
+Lyrics:
+{lyrics}";
 
         public Alignments Alignment { get; set; } = Alignments.TopLeft;
         public string FontName { get; set; } = "Arial";
