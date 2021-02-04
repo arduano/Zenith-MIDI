@@ -67,7 +67,7 @@ namespace MIDITrailRender.Logic
             }
             if (Touching)
             {
-                Vel += 0.1f * delta;
+                Vel += 1.0f * delta;
             }
             else
             {

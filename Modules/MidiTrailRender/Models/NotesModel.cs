@@ -9,9 +9,9 @@ namespace MIDITrailRender.Models
 {
     public enum NoteType
     {
-        Flat,
+        Round,
         Cube,
-        Round
+        Flat
     }
 
     public class NotesModel : INotifyPropertyChanged
@@ -23,14 +23,14 @@ namespace MIDITrailRender.Models
             Diffuse = 1,
             Emit = 0,
             Specular = 1,
-            Water = 0,
+            Water = 0.35,
         };
         public FullColorModel PressedColor { get; set; } = new FullColorModel()
         {
             Diffuse = 0.5,
             Emit = 0.5,
             Specular = 0,
-            Water = 0.5,
+            Water = 0.35,
         };
 
         public bool WaterSecondaryColor { get; set; } = true;

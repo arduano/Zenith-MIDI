@@ -10,9 +10,9 @@ namespace MIDITrailRender.Models
 {
     public class LightModel : INotifyPropertyChanged
     {
-        public double LightX { get; set; } = 1;
-        public double LightZ { get; set; } = 2;
-        public double Strength { get; set; } = 1.5;
+        public double LightX { get; set; } = 0;
+        public double LightZ { get; set; } = 0;
+        public double Strength { get; set; } = 1;
 
         public Vector3 ToVector()
         {

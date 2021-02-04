@@ -69,8 +69,8 @@ namespace MIDITrailRender.Logic
 
                 var pos = new Vector3((float)middle, 0, 0);
                 var modelmat = Matrix.Identity *
-                    Matrix.RotationX((float)Math.PI / 2 * physics.Keys[key].Press * 0.03f) *
-                    Matrix.Scaling((float)keyboard.BlackKeyWidth * 2 * 0.865f) *
+                    Matrix.RotationX((float)Math.PI / 2 * physics.Keys[key].Press * 0.05f) *
+                    Matrix.Scaling((float)keyboard.BlackKeyWidth * 2 * 0.85f) *
                     Matrix.Translation(pos) *
                     Matrix.RotationY((float)Math.PI / 2 * 0) *
                     Matrix.Translation(0, 0, 0);
