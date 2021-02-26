@@ -271,8 +271,15 @@ namespace TexturedRender
                         if (key.IsBlack)
                         {
                             Color4 darken = new Color4(0, 0, 0, 1f - noteOptions.darkenBlackNotes);
+
+                            var oldLeftAlpha = leftCol.Alpha;
+                            var oldRightAlpha = rightCol.Alpha;
+
                             leftCol = leftCol.BlendWith(darken);
                             rightCol = rightCol.BlendWith(darken);
+
+                            leftCol.Alpha = oldLeftAlpha;
+                            rightCol.Alpha = oldRightAlpha;
                         }
 
                         if (pressed)
