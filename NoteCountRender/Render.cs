@@ -187,8 +187,8 @@ namespace NoteCountRender
 
             double tempo = Tempo;
             
-            int seconds = (int)Math.Floor((double)frames * 1000 / renderSettings.fps);
-            int totalsec = (int)Math.Floor(CurrentMidi.secondsLength * 1000);
+            int seconds = (int)Math.Round((double)frames * 1000 / renderSettings.fps);
+            int totalsec = (int)Math.Round(CurrentMidi.secondsLength * 1000);
             int totalframes = (int)Math.Ceiling(CurrentMidi.secondsLength * renderSettings.fps);
             if (seconds > totalsec) seconds = totalsec;
             TimeSpan time = new TimeSpan(0, 0, 0, 0, seconds);
@@ -232,17 +232,17 @@ namespace NoteCountRender
                 text = text.Replace("{plph}", polyphony.ToString(sep + zeroes.plph));
                 text = text.Replace("{mplph}", Mplph.ToString(sep + zeroes.plph));
 
-                text = text.Replace("{currsec}", ((double)(seconds / 100) / 10).ToString(sep + "0.0"));
+                text = text.Replace("{currsec}", ((double)(seconds / 10) / 100).ToString(sep + "0.00"));
                 text = text.Replace("{currtime}", time.ToString("mm\\:ss"));
                 text = text.Replace("{cmiltime}", time.ToString("mm\\:ss\\.fff"));
                 text = text.Replace("{cfrtime}", time.ToString("mm\\:ss") + ";" + (frames % renderSettings.fps).ToString(fzp));
 
-                text = text.Replace("{totalsec}", ((double)(totalsec / 100) / 10).ToString(sep + "0.0"));
+                text = text.Replace("{totalsec}", ((double)(totalsec / 10) / 100).ToString(sep + "0.00"));
                 text = text.Replace("{totaltime}", totaltime.ToString("mm\\:ss"));
                 text = text.Replace("{tmiltime}", totaltime.ToString("mm\\:ss\\.fff"));
                 text = text.Replace("{tfrtime}", totaltime.ToString("mm\\:ss") + ";" + (totalframes % renderSettings.fps).ToString(fzp));
 
-                text = text.Replace("{remsec}", ((double)((totalsec - seconds) / 100) / 10).ToString(sep + "0.0"));
+                text = text.Replace("{remsec}", ((double)((totalsec - seconds) / 10) / 100).ToString(sep + "0.00"));
                 text = text.Replace("{remtime}", (totaltime - time).ToString("mm\\:ss"));
                 text = text.Replace("{rmiltime}", (totaltime - time).ToString("mm\\:ss\\.fff"));
                 text = text.Replace("{rfrtime}", (totaltime - time).ToString("mm\\:ss") + ";" + ((totalframes - frames + renderSettings.fps) % renderSettings.fps).ToString(fzp));
