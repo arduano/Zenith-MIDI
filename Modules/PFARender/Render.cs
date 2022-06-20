@@ -152,7 +152,7 @@ namespace PFARender
                     BlackKeyScale = 0.64f
                 });
 
-                float pianoHeight = 0.151f * (float)settings.kbHeight;
+                float pianoHeight = 0.1516f * (float)settings.kbHeight;
 
                 pianoHeight = pianoHeight / (settings.keys.right - settings.keys.left) * 128;
                 pianoHeight = pianoHeight / (1920.0f / 1080.0f) * Status.AspectRatio;
@@ -190,14 +190,14 @@ namespace PFARender
                         float end = (float)(1 - (renderCutoff - n.End) * notePosFactor);
                         float start = (float)(1 - (renderCutoff - n.Start) * notePosFactor);
                         if (!n.HasEnded)
-                            end = 1.1f;
+                            end = 1.5f;
 
-                        end = Math.Min(end, 1.1f);
+                        end = Math.Min(end, 1.5f);
                         start = Math.Max(start, minBottom);
 
                         var leftCol = MultCol(n.Color.Left, 0.2f);
                         var rightCol = MultCol(n.Color.Right, 0.2f);
-                        pushQuad(left, end, right, start, leftCol, rightCol, rightCol, leftCol);
+                        pushQuad(left, end, right, start, rightCol, leftCol, leftCol, rightCol);
 
                         if (end - start > paddingy * 2)
                         {
@@ -208,7 +208,7 @@ namespace PFARender
 
                             leftCol = MultCol(n.Color.Left, 0.5f);
                             rightCol = n.Color.Right;
-                            pushQuad(left, end, right, start, leftCol, rightCol, rightCol, leftCol);
+                            pushQuad(left, end, right, start, rightCol, leftCol, leftCol, rightCol);
                         }
                     }
                 });
@@ -228,8 +228,13 @@ namespace PFARender
 
                 float bKeyUSplitLT = pianoHeight * 0.78f;
                 float bKeyUSplitRT = pianoHeight * 0.71f;
-                float bKeyUSplitLB = pianoHeight * 0.65f;
-                float bKeyUSplitRB = pianoHeight * 0.58f;
+                float bKeyUSplitLB = pianoHeight * 0.64f;
+                float bKeyUSplitRB = pianoHeight * 0.57f;
+
+                float bKeyUSplitLTpressed = pianoHeight * 0.79f;
+                float bKeyUSplitRTpressed = pianoHeight * 0.72f;
+                float bKeyUSplitLBpressed = pianoHeight * 0.54f;
+                float bKeyUSplitRBpressed = pianoHeight * 0.47f;
 
                 float sepwdth = (float)Math.Round(keyboard.WhiteKeyWidth * Status.OutputWidth / 20);
                 if (sepwdth == 0) sepwdth = 1;
@@ -259,10 +264,10 @@ namespace PFARender
 
                     if (key.Pressed)
                     {
-                        col1 = MultCol(rightCol, 0.5f);
+                        col1 = MultCol(rightCol, 0.49f);
                         quadBuffer.PushQuad(left, topBarEnd, right, wEndDownT, col1, col1, leftCol, leftCol);
 
-                        col1 = MultCol(leftCol, 0.6f);
+                        col1 = MultCol(leftCol, 0.49f);
                         quadBuffer.PushQuad(left, wEndDownT, right, 0, col1, col1, col1, col1);
                     }
                     else
@@ -270,8 +275,8 @@ namespace PFARender
                         col1 = MultCol(rightCol, 0.8f);
                         quadBuffer.PushQuad(left, topBarEnd, right, wEndUpT, col1, col1, rightCol, rightCol);
 
-                        col1 = MultCol(leftCol, .529f);
-                        col2 = MultCol(leftCol, .329f);
+                        col1 = MultCol(leftCol, .619f);
+                        col2 = MultCol(leftCol, .229f);
                         quadBuffer.PushQuad(left, wEndUpT, right, wEndUpB, col2, col2, col1, col1);
 
                         col1 = MultCol(leftCol, .615f);
@@ -316,8 +321,8 @@ namespace PFARender
                     Color4 leftCol = key.Color.Left;
                     Color4 rightCol = key.Color.Right;
 
-                    float ileft = left + (float)keyboard.BlackKeyWidth / 8;
-                    float iright = right - (float)keyboard.BlackKeyWidth / 8;
+                    float ileft = left + (float)keyboard.BlackKeyWidth / 7;
+                    float iright = right - (float)keyboard.BlackKeyWidth / 7;
 
                     Color4 middleCol = new Color4(
                         (leftCol.Red + rightCol.Red) / 2,
@@ -329,7 +334,7 @@ namespace PFARender
                     if (!key.Pressed)
                     {
                         col1 = AddCol(rightCol, 0.25f);
-                        col2 = AddCol(leftCol, 0.15f);
+                        col2 = AddCol(leftCol, 0.12f);
                         col3 = AddCol(leftCol, 0.0f);
                         col4 = AddCol(leftCol, 0.3f);
 
@@ -365,28 +370,28 @@ namespace PFARender
                     }
                     else
                     {
-                        col1 = MultCol(middleCol, 0.85f);
-                        col2 = MultCol(rightCol, 0.85f);
-                        col3 = MultCol(middleCol, 0.7f);
-                        col4 = MultCol(leftCol, 0.7f);
+                        col1 = MultCol(middleCol, 1.00f);
+                        col2 = MultCol(rightCol, 1.00f);
+                        col3 = MultCol(middleCol, 0.48f);
+                        col4 = MultCol(leftCol, 0.48f);
 
-                        quadBuffer.Push(ileft, bKeyUSplitLT, col1);
-                        quadBuffer.Push(iright, bKeyUSplitRT, col1);
+                        quadBuffer.Push(ileft, bKeyUSplitLTpressed, col1);
+                        quadBuffer.Push(iright, bKeyUSplitRTpressed, col1);
                         quadBuffer.Push(iright, bKeyDownT, col2);
                         quadBuffer.Push(ileft, bKeyDownT, col2);
 
-                        quadBuffer.Push(ileft, bKeyUSplitLB, col3);
-                        quadBuffer.Push(iright, bKeyUSplitRB, col3);
-                        quadBuffer.Push(iright, bKeyUSplitRT, col1);
-                        quadBuffer.Push(ileft, bKeyUSplitLT, col1);
+                        quadBuffer.Push(ileft, bKeyUSplitLBpressed, col3);
+                        quadBuffer.Push(iright, bKeyUSplitRBpressed, col3);
+                        quadBuffer.Push(iright, bKeyUSplitRTpressed, col1);
+                        quadBuffer.Push(ileft, bKeyUSplitLTpressed, col1);
 
                         quadBuffer.Push(ileft, bKeyDownB, col4);
                         quadBuffer.Push(iright, bKeyDownB, col4);
-                        quadBuffer.Push(iright, bKeyUSplitRB, col3);
-                        quadBuffer.Push(ileft, bKeyUSplitLB, col3);
+                        quadBuffer.Push(iright, bKeyUSplitRBpressed, col3);
+                        quadBuffer.Push(ileft, bKeyUSplitLBpressed, col3);
 
-                        col1 = MultCol(leftCol, 0.7f);
-                        col2 = MultCol(rightCol, 0.7f);
+                        col1 = MultCol(leftCol, 0.81f);
+                        col2 = MultCol(rightCol, 0.5f);
 
                         quadBuffer.Push(left, bKeyEnd, col1);
                         quadBuffer.Push(ileft, bKeyDownB, leftCol);
