@@ -15,6 +15,8 @@
     <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=M9XRCSPYSMBCA&source=url"><img src="https://img.shields.io/badge/Donate-PayPal-green.svg?style=flat-square" alt="Donate"></a>
 </p>
 
+<strong>NOTE: I no longer support this project, I don't even have the means to compile new versions anymore as I'm on Linux and this project is Windows-only. I may answer GitHub issues, but don't expect further updates unless you're willing to take on maintenance yourself.</strong>
+
 ## Features
 - Much better performance than any other midi renderer currently out there, and extremely RAM optimised!
 - Custom render plugins! Anyone can make a render plugin and use it with my Zenith, just by dropping it into the Plugins folder!
